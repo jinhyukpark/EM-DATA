@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "wouter";
 import {
   FileText,
@@ -14,6 +14,9 @@ import {
   LayoutDashboard,
   Database,
   ChevronDown,
+  AlertTriangle,
+  X,
+  Bell,
 } from "lucide-react";
 import {
   AreaChart,
@@ -253,6 +256,23 @@ const chartColors = {
   Company: "hsl(12, 76%, 61%)",
 };
 
+const alertMessages = [
+  {
+    id: 1,
+    type: "error",
+    title: "Data Collection Error",
+    message: "Patent data collection failed at 14:32. Retrying in progress...",
+    time: "2 hours ago",
+  },
+  {
+    id: 2,
+    type: "warning",
+    title: "Delayed Update",
+    message: "News data update is delayed by 30 minutes due to source API issues.",
+    time: "45 minutes ago",
+  },
+];
+
 function CustomTooltip({ active, payload, label }: any) {
   if (active && payload && payload.length) {
     return (
@@ -407,8 +427,96 @@ function Sidebar() {
   );
 }
 
+function AlertBanner({ 
+  alerts, 
+  onDismiss, 
+  dismissedIds 
+}: { 
+  alerts: typeof alertMessages; 
+  onDismiss: (id: number) => void;
+  dismissedIds: Set<number>;
+}) {
+  const visibleAlerts = alerts.filter(a => !dismissedIds.has(a.id));
+  
+  if (visibleAlerts.length === 0) return null;
+
+  return (
+    <div className="space-y-2 mb-0">
+      <AnimatePresence>
+        {visibleAlerts.map((alert) => (
+          <motion.div
+            key={alert.id}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10, height: 0, marginBottom: 0 }}
+            transition={{ duration: 0.2 }}
+            className={`flex items-center justify-between px-4 py-3 rounded-lg border ${
+              alert.type === "error"
+                ? "bg-red-50 border-red-200"
+                : "bg-amber-50 border-amber-200"
+            }`}
+            data-testid={`alert-${alert.id}`}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className={`p-1.5 rounded-full ${
+                  alert.type === "error" ? "bg-red-100" : "bg-amber-100"
+                }`}
+              >
+                <AlertTriangle
+                  className={`w-4 h-4 ${
+                    alert.type === "error" ? "text-red-600" : "text-amber-600"
+                  }`}
+                  strokeWidth={2}
+                />
+              </div>
+              <div>
+                <p
+                  className={`text-sm font-medium ${
+                    alert.type === "error" ? "text-red-800" : "text-amber-800"
+                  }`}
+                >
+                  {alert.title}
+                </p>
+                <p
+                  className={`text-sm ${
+                    alert.type === "error" ? "text-red-600" : "text-amber-600"
+                  }`}
+                >
+                  {alert.message}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span
+                className={`text-xs ${
+                  alert.type === "error" ? "text-red-400" : "text-amber-400"
+                }`}
+              >
+                {alert.time}
+              </span>
+              <button
+                onClick={() => onDismiss(alert.id)}
+                className={`p-1 rounded hover:bg-black/5 transition-colors ${
+                  alert.type === "error" ? "text-red-400 hover:text-red-600" : "text-amber-400 hover:text-amber-600"
+                }`}
+                data-testid={`dismiss-alert-${alert.id}`}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const [timeRange, setTimeRange] = useState("daily");
+  const [dismissedAlerts, setDismissedAlerts] = useState<Set<number>>(new Set());
+  const [showAlerts, setShowAlerts] = useState(true);
+  
   const now = new Date();
   const formattedDate = now.toLocaleDateString("en-US", {
     year: "numeric",
@@ -431,6 +539,18 @@ export default function Dashboard() {
     }
   };
 
+  const handleDismissAlert = (id: number) => {
+    setDismissedAlerts(prev => new Set([...prev, id]));
+  };
+
+  const handleShowAllAlerts = () => {
+    setDismissedAlerts(new Set());
+    setShowAlerts(true);
+  };
+
+  const hiddenAlertCount = dismissedAlerts.size;
+  const hasActiveAlerts = alertMessages.length > 0;
+
   return (
     <div className="min-h-screen flex bg-slate-50">
       <Sidebar />
@@ -452,6 +572,21 @@ export default function Dashboard() {
                   <Calendar className="w-4 h-4" />
                   <span data-testid="current-date">{formattedDate}</span>
                 </div>
+                {hasActiveAlerts && hiddenAlertCount > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleShowAllAlerts}
+                    className="gap-2 border-red-200 hover:bg-red-50 text-red-600 relative"
+                    data-testid="show-alerts-button"
+                  >
+                    <Bell className="w-4 h-4" />
+                    <span>Alerts</span>
+                    <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                      {hiddenAlertCount}
+                    </span>
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
@@ -467,6 +602,16 @@ export default function Dashboard() {
         </header>
 
         <main className="flex-1 p-8 bg-white">
+          {showAlerts && (
+            <div className="mb-6">
+              <AlertBanner
+                alerts={alertMessages}
+                onDismiss={handleDismissAlert}
+                dismissedIds={dismissedAlerts}
+              />
+            </div>
+          )}
+
           <motion.section
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

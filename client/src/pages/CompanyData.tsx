@@ -17,6 +17,8 @@ import {
   Cloud,
   Download,
   Clock,
+  Activity,
+  PieChart as PieChartIcon,
 } from "lucide-react";
 import {
   BarChart,
@@ -227,62 +229,61 @@ export default function CompanyData() {
               <div className="chart-container-light">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                    <Database className="w-5 h-5 text-blue-600" />
+                    <Building2 className="w-5 h-5 text-blue-600" />
                   </div>
-                  <p className="text-sm font-medium text-slate-500">Total Data</p>
+                  <p className="text-sm font-medium text-slate-500">Total Companies</p>
                 </div>
                 <p className="text-3xl font-bold text-slate-800" data-testid="total-companies">{totalCompanies.toLocaleString()}</p>
-                <p className="text-sm text-slate-400 mt-1">records</p>
+                <p className="text-sm text-slate-400 mt-1">registered entities</p>
               </div>
 
               <div className="chart-container-light">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-emerald-600" />
+                    <Activity className="w-5 h-5 text-emerald-600" />
                   </div>
-                  <p className="text-sm font-medium text-slate-500">Today's Updates</p>
+                  <p className="text-sm font-medium text-slate-500">Active Companies</p>
                 </div>
-                <p className="text-3xl font-bold text-emerald-600" data-testid="today-updates">+127</p>
-                <p className="text-sm text-slate-400 mt-1">new records</p>
+                <p className="text-3xl font-bold text-emerald-600" data-testid="active-companies">32,104</p>
+                <p className="text-sm text-slate-400 mt-1">updated within 30 days</p>
               </div>
 
               <div className="chart-container-light">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-purple-600" />
+                    <TrendingUp className="w-5 h-5 text-purple-600" />
                   </div>
-                  <p className="text-sm font-medium text-slate-500">Batch Time</p>
+                  <p className="text-sm font-medium text-slate-500">New / Updated Today</p>
                 </div>
-                <p className="text-3xl font-bold text-slate-800" data-testid="batch-time">06:00</p>
-                <p className="text-sm text-slate-400 mt-1">daily schedule (KST)</p>
+                <p className="text-3xl font-bold text-purple-600" data-testid="today-updates">+127</p>
+                <p className="text-sm text-slate-400 mt-1">new or modified</p>
               </div>
 
               <div className="chart-container-light">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center">
-                    <Server className="w-5 h-5 text-orange-600" />
+                  <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center">
+                    <PieChartIcon className="w-5 h-5 text-amber-600" />
                   </div>
-                  <p className="text-sm font-medium text-slate-500">Server Info</p>
+                  <p className="text-sm font-medium text-slate-500">Coverage Ratio</p>
                 </div>
-                <div className="flex items-center justify-between">
-                  <p className="text-lg font-bold text-slate-800" data-testid="server-info">AWS EC2</p>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs text-emerald-600">Running</span>
+                <div className="space-y-3 mt-2">
+                  <div>
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="text-slate-500">Revenue</span>
+                      <span className="font-medium text-slate-700">78%</span>
+                    </div>
+                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-amber-500 rounded-full" style={{ width: "78%" }} />
+                    </div>
                   </div>
-                </div>
-                <div className="mt-3 pt-3 border-t border-slate-100 space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-400">IP Address</span>
-                    <span className="font-mono text-slate-700">10.0.2.145</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-400">Port</span>
-                    <span className="font-mono text-slate-700">8080, 443</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-400">Region</span>
-                    <span className="text-slate-700">ap-northeast-2</span>
+                  <div>
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="text-slate-500">Employee Info</span>
+                      <span className="font-medium text-slate-700">91%</span>
+                    </div>
+                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-emerald-500 rounded-full" style={{ width: "91%" }} />
+                    </div>
                   </div>
                 </div>
               </div>

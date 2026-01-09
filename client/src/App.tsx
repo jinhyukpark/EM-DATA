@@ -8,6 +8,7 @@ import Dashboard from "@/pages/Dashboard";
 import CompanyData from "@/pages/CompanyData";
 import Login from "@/pages/Login";
 import Settings from "@/pages/Settings";
+import QAReport from "@/pages/QAReport";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/settings/profile" component={Settings} />
       <Route path="/settings/users" component={Settings} />
       <Route path="/settings/permissions" component={Settings} />
+      <Route path="/qa-report" component={QAReport} />
       <Route component={NotFound} />
     </Switch>
   );

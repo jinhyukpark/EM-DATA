@@ -33,7 +33,7 @@ import { Button } from "@/components/ui/button";
 const dataTypes = [
   {
     id: "patent",
-    name: "특허",
+    name: "Patent",
     icon: FileText,
     total: 2847562,
     todayUpdate: 1247,
@@ -44,7 +44,7 @@ const dataTypes = [
   },
   {
     id: "paper",
-    name: "논문",
+    name: "Paper",
     icon: BookOpen,
     total: 1523847,
     todayUpdate: 892,
@@ -55,7 +55,7 @@ const dataTypes = [
   },
   {
     id: "news",
-    name: "뉴스",
+    name: "News",
     icon: Newspaper,
     total: 5847123,
     todayUpdate: 4521,
@@ -66,7 +66,7 @@ const dataTypes = [
   },
   {
     id: "stock",
-    name: "주식 데이터",
+    name: "Stock Data",
     icon: TrendingUp,
     total: 892456,
     todayUpdate: 2847,
@@ -77,7 +77,7 @@ const dataTypes = [
   },
   {
     id: "company",
-    name: "외감 기업",
+    name: "Audited Companies",
     icon: Building2,
     total: 34521,
     todayUpdate: 127,
@@ -96,11 +96,11 @@ const generateDailyData = () => {
     date.setDate(date.getDate() - i);
     data.push({
       date: `${date.getMonth() + 1}/${date.getDate()}`,
-      특허: Math.floor(Math.random() * 500) + 1000,
-      논문: Math.floor(Math.random() * 400) + 700,
-      뉴스: Math.floor(Math.random() * 2000) + 3500,
-      주식: Math.floor(Math.random() * 1000) + 2500,
-      외감기업: Math.floor(Math.random() * 50) + 80,
+      Patent: Math.floor(Math.random() * 500) + 1000,
+      Paper: Math.floor(Math.random() * 400) + 700,
+      News: Math.floor(Math.random() * 2000) + 3500,
+      Stock: Math.floor(Math.random() * 1000) + 2500,
+      Company: Math.floor(Math.random() * 50) + 80,
     });
   }
   return data;
@@ -110,26 +110,26 @@ const generateWeeklyData = () => {
   const data = [];
   for (let i = 11; i >= 0; i--) {
     data.push({
-      date: `${12 - i}주차`,
-      특허: Math.floor(Math.random() * 3000) + 7000,
-      논문: Math.floor(Math.random() * 2500) + 5000,
-      뉴스: Math.floor(Math.random() * 15000) + 25000,
-      주식: Math.floor(Math.random() * 8000) + 18000,
-      외감기업: Math.floor(Math.random() * 300) + 500,
+      date: `Week ${12 - i}`,
+      Patent: Math.floor(Math.random() * 3000) + 7000,
+      Paper: Math.floor(Math.random() * 2500) + 5000,
+      News: Math.floor(Math.random() * 15000) + 25000,
+      Stock: Math.floor(Math.random() * 8000) + 18000,
+      Company: Math.floor(Math.random() * 300) + 500,
     });
   }
   return data;
 };
 
 const generateMonthlyData = () => {
-  const months = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   return months.map((month) => ({
     date: month,
-    특허: Math.floor(Math.random() * 15000) + 30000,
-    논문: Math.floor(Math.random() * 10000) + 20000,
-    뉴스: Math.floor(Math.random() * 60000) + 100000,
-    주식: Math.floor(Math.random() * 30000) + 70000,
-    외감기업: Math.floor(Math.random() * 1500) + 2500,
+    Patent: Math.floor(Math.random() * 15000) + 30000,
+    Paper: Math.floor(Math.random() * 10000) + 20000,
+    News: Math.floor(Math.random() * 60000) + 100000,
+    Stock: Math.floor(Math.random() * 30000) + 70000,
+    Company: Math.floor(Math.random() * 1500) + 2500,
   }));
 };
 
@@ -137,11 +137,11 @@ const generateYearlyData = () => {
   const years = ["2020", "2021", "2022", "2023", "2024", "2025"];
   return years.map((year) => ({
     date: year,
-    특허: Math.floor(Math.random() * 200000) + 400000,
-    논문: Math.floor(Math.random() * 150000) + 250000,
-    뉴스: Math.floor(Math.random() * 800000) + 1200000,
-    주식: Math.floor(Math.random() * 400000) + 800000,
-    외감기업: Math.floor(Math.random() * 5000) + 30000,
+    Patent: Math.floor(Math.random() * 200000) + 400000,
+    Paper: Math.floor(Math.random() * 150000) + 250000,
+    News: Math.floor(Math.random() * 800000) + 1200000,
+    Stock: Math.floor(Math.random() * 400000) + 800000,
+    Company: Math.floor(Math.random() * 5000) + 30000,
   }));
 };
 
@@ -220,7 +220,7 @@ function StatCard({
 
         <div className="flex items-center justify-between pt-4 border-t border-slate-100">
           <div>
-            <p className="text-xs text-slate-400 mb-0.5">오늘 업데이트</p>
+            <p className="text-xs text-slate-400 mb-0.5">Today's Updates</p>
             <p
               className="text-lg font-semibold"
               style={{ color: data.color }}
@@ -230,7 +230,7 @@ function StatCard({
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-slate-400 mb-0.5">전일 대비</p>
+            <p className="text-xs text-slate-400 mb-0.5">vs Yesterday</p>
             <p
               className={`text-lg font-semibold ${isPositive ? "text-emerald-600" : "text-red-500"}`}
               data-testid={`diff-count-${data.id}`}
@@ -246,11 +246,11 @@ function StatCard({
 }
 
 const chartColors = {
-  특허: "hsl(217, 91%, 60%)",
-  논문: "hsl(160, 84%, 39%)",
-  뉴스: "hsl(43, 96%, 56%)",
-  주식: "hsl(291, 64%, 42%)",
-  외감기업: "hsl(12, 76%, 61%)",
+  Patent: "hsl(217, 91%, 60%)",
+  Paper: "hsl(160, 84%, 39%)",
+  News: "hsl(43, 96%, 56%)",
+  Stock: "hsl(291, 64%, 42%)",
+  Company: "hsl(12, 76%, 61%)",
 };
 
 function CustomTooltip({ active, payload, label }: any) {
@@ -277,7 +277,7 @@ function CustomTooltip({ active, payload, label }: any) {
 const menuItems = [
   {
     id: "dashboard",
-    name: "대시보드",
+    name: "Dashboard",
     icon: LayoutDashboard,
     path: "/",
   },
@@ -286,25 +286,25 @@ const menuItems = [
 const dataMenuItems = [
   {
     id: "company-data",
-    name: "기업데이터",
+    name: "Company Data",
     icon: Building2,
     path: "/data/company",
   },
   {
     id: "patent-data",
-    name: "특허데이터",
+    name: "Patent Data",
     icon: FileText,
     path: "/data/patent",
   },
   {
     id: "stock-data",
-    name: "주식데이터",
+    name: "Stock Data",
     icon: TrendingUp,
     path: "/data/stock",
   },
   {
     id: "news-data",
-    name: "뉴스데이터",
+    name: "News Data",
     icon: Newspaper,
     path: "/data/news",
   },
@@ -318,9 +318,9 @@ function Sidebar() {
     <aside className="w-64 bg-slate-900 min-h-screen flex flex-col" data-testid="sidebar">
       <div className="p-6 border-b border-slate-800">
         <h1 className="text-xl font-bold text-white tracking-tight">
-          데이터 품질 센터
+          Data Quality Center
         </h1>
-        <p className="text-xs text-slate-400 mt-1">Data Quality Center</p>
+        <p className="text-xs text-slate-400 mt-1">Internal Monitoring</p>
       </div>
 
       <nav className="flex-1 p-4">
@@ -355,7 +355,7 @@ function Sidebar() {
           >
             <div className="flex items-center gap-3">
               <Database className="w-5 h-5" strokeWidth={1.5} />
-              <span className="font-medium text-sm">내부 Data</span>
+              <span className="font-medium text-sm">Internal Data</span>
             </div>
             <ChevronDown
               className={`w-4 h-4 transition-transform duration-200 ${dataMenuOpen ? "rotate-180" : ""}`}
@@ -399,7 +399,7 @@ function Sidebar() {
           </div>
           <div>
             <p className="text-sm font-medium text-white">Admin</p>
-            <p className="text-xs text-slate-400">관리자</p>
+            <p className="text-xs text-slate-400">Administrator</p>
           </div>
         </div>
       </div>
@@ -410,7 +410,11 @@ function Sidebar() {
 export default function Dashboard() {
   const [timeRange, setTimeRange] = useState("daily");
   const now = new Date();
-  const formattedDate = `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일`;
+  const formattedDate = now.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   const getChartData = () => {
     switch (timeRange) {
@@ -437,10 +441,10 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-xl font-semibold tracking-tight text-slate-800">
-                  대시보드
+                  Dashboard
                 </h1>
                 <p className="text-sm text-slate-500 mt-0.5">
-                  데이터 수집 현황을 한눈에 확인하세요
+                  Monitor your data collection status at a glance
                 </p>
               </div>
               <div className="flex items-center gap-4">
@@ -455,7 +459,7 @@ export default function Dashboard() {
                   data-testid="refresh-button"
                 >
                   <RefreshCw className="w-4 h-4" />
-                  새로고침
+                  Refresh
                 </Button>
               </div>
             </div>
@@ -470,7 +474,7 @@ export default function Dashboard() {
             className="mb-10"
           >
             <h2 className="text-base font-semibold mb-6 text-slate-700">
-              데이터 현황 요약
+              Data Summary
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
               {dataTypes.map((data, index) => (
@@ -486,7 +490,7 @@ export default function Dashboard() {
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-base font-semibold text-slate-700">
-                데이터 수집 추이
+                Collection Trends
               </h2>
               <Tabs
                 value={timeRange}
@@ -499,28 +503,28 @@ export default function Dashboard() {
                     className="data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm text-slate-600"
                     data-testid="tab-daily"
                   >
-                    일별
+                    Daily
                   </TabsTrigger>
                   <TabsTrigger
                     value="weekly"
                     className="data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm text-slate-600"
                     data-testid="tab-weekly"
                   >
-                    주별
+                    Weekly
                   </TabsTrigger>
                   <TabsTrigger
                     value="monthly"
                     className="data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm text-slate-600"
                     data-testid="tab-monthly"
                   >
-                    월별
+                    Monthly
                   </TabsTrigger>
                   <TabsTrigger
                     value="yearly"
                     className="data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm text-slate-600"
                     data-testid="tab-yearly"
                   >
-                    년별
+                    Yearly
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -529,23 +533,23 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               <div className="chart-container-light" data-testid="area-chart">
                 <h3 className="text-sm font-medium text-slate-500 mb-6">
-                  누적 데이터 추이 (뉴스 제외)
+                  Cumulative Data Trends (Excluding News)
                 </h3>
                 <div className="h-[350px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={getChartData()}>
                       <defs>
                         <linearGradient id="colorPatent" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={chartColors.특허} stopOpacity={0.2} />
-                          <stop offset="95%" stopColor={chartColors.특허} stopOpacity={0} />
+                          <stop offset="5%" stopColor={chartColors.Patent} stopOpacity={0.2} />
+                          <stop offset="95%" stopColor={chartColors.Patent} stopOpacity={0} />
                         </linearGradient>
                         <linearGradient id="colorPaper" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={chartColors.논문} stopOpacity={0.2} />
-                          <stop offset="95%" stopColor={chartColors.논문} stopOpacity={0} />
+                          <stop offset="5%" stopColor={chartColors.Paper} stopOpacity={0.2} />
+                          <stop offset="95%" stopColor={chartColors.Paper} stopOpacity={0} />
                         </linearGradient>
                         <linearGradient id="colorStock" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={chartColors.주식} stopOpacity={0.2} />
-                          <stop offset="95%" stopColor={chartColors.주식} stopOpacity={0} />
+                          <stop offset="5%" stopColor={chartColors.Stock} stopOpacity={0.2} />
+                          <stop offset="95%" stopColor={chartColors.Stock} stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
@@ -566,24 +570,24 @@ export default function Dashboard() {
                       <Tooltip content={<CustomTooltip />} />
                       <Area
                         type="monotone"
-                        dataKey="특허"
-                        stroke={chartColors.특허}
+                        dataKey="Patent"
+                        stroke={chartColors.Patent}
                         strokeWidth={2}
                         fillOpacity={1}
                         fill="url(#colorPatent)"
                       />
                       <Area
                         type="monotone"
-                        dataKey="논문"
-                        stroke={chartColors.논문}
+                        dataKey="Paper"
+                        stroke={chartColors.Paper}
                         strokeWidth={2}
                         fillOpacity={1}
                         fill="url(#colorPaper)"
                       />
                       <Area
                         type="monotone"
-                        dataKey="주식"
-                        stroke={chartColors.주식}
+                        dataKey="Stock"
+                        stroke={chartColors.Stock}
                         strokeWidth={2}
                         fillOpacity={1}
                         fill="url(#colorStock)"
@@ -595,7 +599,7 @@ export default function Dashboard() {
 
               <div className="chart-container-light" data-testid="bar-chart">
                 <h3 className="text-sm font-medium text-slate-500 mb-6">
-                  데이터별 수집량 비교
+                  Collection Volume by Data Type
                 </h3>
                 <div className="h-[350px]">
                   <ResponsiveContainer width="100%" height="100%">
@@ -622,11 +626,11 @@ export default function Dashboard() {
                           <span className="text-slate-500 text-sm">{value}</span>
                         )}
                       />
-                      <Bar dataKey="특허" fill={chartColors.특허} radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="논문" fill={chartColors.논문} radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="뉴스" fill={chartColors.뉴스} radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="주식" fill={chartColors.주식} radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="외감기업" fill={chartColors.외감기업} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Patent" fill={chartColors.Patent} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Paper" fill={chartColors.Paper} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="News" fill={chartColors.News} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Stock" fill={chartColors.Stock} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Company" fill={chartColors.Company} radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -641,29 +645,29 @@ export default function Dashboard() {
             className="mt-10"
           >
             <h2 className="text-base font-semibold text-slate-700 mb-6">
-              데이터 상세 현황
+              Detailed Data Status
             </h2>
             <div className="chart-container-light overflow-x-auto">
               <table className="w-full" data-testid="data-table">
                 <thead>
                   <tr className="border-b border-slate-200">
                     <th className="text-left py-4 px-4 text-sm font-medium text-slate-500">
-                      데이터 유형
+                      Data Type
                     </th>
                     <th className="text-right py-4 px-4 text-sm font-medium text-slate-500">
-                      전체 데이터 수
+                      Total Records
                     </th>
                     <th className="text-right py-4 px-4 text-sm font-medium text-slate-500">
-                      오늘 업데이트
+                      Today's Updates
                     </th>
                     <th className="text-right py-4 px-4 text-sm font-medium text-slate-500">
-                      어제 업데이트
+                      Yesterday's Updates
                     </th>
                     <th className="text-right py-4 px-4 text-sm font-medium text-slate-500">
-                      전일 대비
+                      Change
                     </th>
                     <th className="text-right py-4 px-4 text-sm font-medium text-slate-500">
-                      상태
+                      Status
                     </th>
                   </tr>
                 </thead>
@@ -721,7 +725,7 @@ export default function Dashboard() {
                         <td className="text-right py-4 px-4">
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-600 border border-emerald-100">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            정상
+                            Active
                           </span>
                         </td>
                       </tr>

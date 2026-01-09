@@ -242,19 +242,28 @@ export default function CompanyData() {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [modalTab, setModalTab] = useState<"info" | "financial">("info");
   const [showColumnSelector, setShowColumnSelector] = useState(false);
-  const [visibleColumns, setVisibleColumns] = useState({
+  const [dataViewTab, setDataViewTab] = useState<"company" | "financial">("company");
+  
+  const companyInfoColumns = {
     ceo: true,
     address: true,
+    industry: true,
+    foundedDate: true,
+    employees: true,
+    status: true,
+    lastUpdate: true,
+  };
+  
+  const financialInfoColumns = {
     revenue: true,
     operatingProfit: true,
     debt: true,
+    netIncome: true,
     status: true,
     lastUpdate: true,
-    industry: false,
-    foundedDate: false,
-    employees: false,
-    netIncome: false,
-  });
+  };
+
+  const [visibleColumns, setVisibleColumns] = useState(companyInfoColumns);
 
   const columnLabels: Record<string, string> = {
     ceo: "CEO",
@@ -272,6 +281,15 @@ export default function CompanyData() {
 
   const toggleColumn = (col: string) => {
     setVisibleColumns(prev => ({ ...prev, [col]: !prev[col as keyof typeof prev] }));
+  };
+  
+  const switchDataView = (tab: "company" | "financial") => {
+    setDataViewTab(tab);
+    if (tab === "company") {
+      setVisibleColumns(companyInfoColumns);
+    } else {
+      setVisibleColumns(financialInfoColumns);
+    }
   };
 
   const totalCompanies = 34521;
@@ -427,6 +445,23 @@ export default function CompanyData() {
                     )}
                   </div>
                 </div>
+              </div>
+              
+              <div className="flex items-center gap-1 px-6 py-2 border-b border-slate-100 bg-slate-50/30">
+                <button
+                  onClick={() => switchDataView("company")}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "company" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"}`}
+                  data-testid="tab-company-info"
+                >
+                  Company Info
+                </button>
+                <button
+                  onClick={() => switchDataView("financial")}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "financial" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"}`}
+                  data-testid="tab-financial-info"
+                >
+                  Financial Info
+                </button>
               </div>
 
               <div className="overflow-x-auto">

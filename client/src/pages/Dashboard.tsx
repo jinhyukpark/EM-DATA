@@ -41,9 +41,9 @@ const dataTypes = [
     total: 2847562,
     todayUpdate: 1247,
     yesterdayUpdate: 1189,
-    color: "hsl(217, 91%, 60%)",
+    color: "hsl(221, 83%, 53%)",
     glowClass: "glow-blue",
-    bgGradient: "from-blue-500/10 to-blue-600/5",
+    bgGradient: "from-blue-500/15 to-blue-600/5",
   },
   {
     id: "paper",
@@ -52,9 +52,9 @@ const dataTypes = [
     total: 1523847,
     todayUpdate: 892,
     yesterdayUpdate: 923,
-    color: "hsl(160, 84%, 39%)",
+    color: "hsl(152, 69%, 40%)",
     glowClass: "glow-green",
-    bgGradient: "from-emerald-500/10 to-emerald-600/5",
+    bgGradient: "from-emerald-500/15 to-emerald-600/5",
   },
   {
     id: "news",
@@ -63,9 +63,9 @@ const dataTypes = [
     total: 5847123,
     todayUpdate: 4521,
     yesterdayUpdate: 4102,
-    color: "hsl(43, 96%, 56%)",
+    color: "hsl(25, 95%, 53%)",
     glowClass: "glow-yellow",
-    bgGradient: "from-yellow-500/10 to-yellow-600/5",
+    bgGradient: "from-orange-500/15 to-orange-600/5",
   },
   {
     id: "stock",
@@ -74,9 +74,9 @@ const dataTypes = [
     total: 892456,
     todayUpdate: 2847,
     yesterdayUpdate: 2901,
-    color: "hsl(291, 64%, 42%)",
+    color: "hsl(271, 76%, 53%)",
     glowClass: "glow-purple",
-    bgGradient: "from-purple-500/10 to-purple-600/5",
+    bgGradient: "from-purple-500/15 to-purple-600/5",
   },
   {
     id: "company",
@@ -85,9 +85,9 @@ const dataTypes = [
     total: 34521,
     todayUpdate: 127,
     yesterdayUpdate: 98,
-    color: "hsl(12, 76%, 61%)",
+    color: "hsl(346, 77%, 50%)",
     glowClass: "glow-orange",
-    bgGradient: "from-orange-500/10 to-orange-600/5",
+    bgGradient: "from-rose-500/15 to-rose-600/5",
   },
 ];
 
@@ -249,11 +249,11 @@ function StatCard({
 }
 
 const chartColors = {
-  Patent: "hsl(217, 91%, 60%)",
-  Paper: "hsl(160, 84%, 39%)",
-  News: "hsl(43, 96%, 56%)",
-  Stock: "hsl(291, 64%, 42%)",
-  Company: "hsl(12, 76%, 61%)",
+  Patent: "hsl(221, 83%, 53%)",
+  Paper: "hsl(152, 69%, 40%)",
+  News: "hsl(25, 95%, 53%)",
+  Stock: "hsl(271, 76%, 53%)",
+  Company: "hsl(346, 77%, 50%)",
 };
 
 const alertMessages = [

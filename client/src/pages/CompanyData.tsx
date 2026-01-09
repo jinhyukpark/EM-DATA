@@ -19,6 +19,12 @@ import {
   Clock,
   Activity,
   PieChart as PieChartIcon,
+  X,
+  MapPin,
+  User,
+  DollarSign,
+  Calendar,
+  Briefcase,
 } from "lucide-react";
 import {
   BarChart,
@@ -200,11 +206,25 @@ function CustomTooltip({ active, payload, label }: any) {
   return null;
 }
 
+type Company = {
+  id: number;
+  name: string;
+  ceo: string;
+  address: string;
+  industry: string;
+  revenue: string;
+  operatingProfit: string;
+  debt: string;
+  status: string;
+  lastUpdate: string;
+};
+
 export default function CompanyData() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState<"all" | "unlisted" | "listed" | "audited">("listed");
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
 
   const totalCompanies = 34521;
   
@@ -351,7 +371,7 @@ export default function CompanyData() {
                   </thead>
                   <tbody>
                     {filteredCompanies.map((company) => (
-                      <tr key={company.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer" data-testid={`company-row-${company.id}`}>
+                      <tr key={company.id} onClick={() => setSelectedCompany(company)} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer" data-testid={`company-row-${company.id}`}>
                         <td className="py-3 px-6">
                           <span className="font-medium text-slate-800">{company.name}</span>
                         </td>
@@ -393,6 +413,103 @@ export default function CompanyData() {
           </motion.section>
         </main>
       </div>
+
+      {selectedCompany && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedCompany(null)}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
+            data-testid="company-detail-modal"
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-800">{selectedCompany.name}</h2>
+                  <p className="text-sm text-slate-500">{selectedCompany.industry}</p>
+                </div>
+              </div>
+              <button onClick={() => setSelectedCompany(null)} className="p-2 hover:bg-slate-100 rounded-lg transition-colors" data-testid="close-modal">
+                <X className="w-5 h-5 text-slate-400" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto">
+              <div className="grid grid-cols-2 gap-6 mb-6">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+                    <User className="w-4 h-4 text-slate-500" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">CEO</p>
+                    <p className="text-sm font-medium text-slate-800">{selectedCompany.ceo}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+                    <Briefcase className="w-4 h-4 text-slate-500" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Industry</p>
+                    <p className="text-sm font-medium text-slate-800">{selectedCompany.industry}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-4 h-4 text-slate-500" />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-400 uppercase tracking-wide">Address</p>
+                  <p className="text-sm font-medium text-slate-800">{selectedCompany.address}</p>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-100 pt-6">
+                <h3 className="text-sm font-medium text-slate-800 mb-4">Financial Information</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="p-4 bg-slate-50 rounded-xl">
+                    <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Revenue</p>
+                    <p className="text-xl font-bold text-slate-800">{selectedCompany.revenue}</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 rounded-xl">
+                    <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Operating Profit</p>
+                    <p className={`text-xl font-bold ${selectedCompany.operatingProfit.startsWith("-") ? "text-red-500" : "text-emerald-600"}`}>
+                      {selectedCompany.operatingProfit}
+                    </p>
+                  </div>
+                  <div className="p-4 bg-slate-50 rounded-xl">
+                    <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Debt</p>
+                    <p className="text-xl font-bold text-slate-800">{selectedCompany.debt}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-100 pt-6 mt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-emerald-50 text-emerald-600">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                      {selectedCompany.status}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-slate-400">
+                    <Calendar className="w-4 h-4" />
+                    Last updated: {selectedCompany.lastUpdate}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

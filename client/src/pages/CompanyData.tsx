@@ -16,6 +16,7 @@ import {
   Server,
   Cloud,
   Download,
+  Clock,
 } from "lucide-react";
 import {
   BarChart,
@@ -222,41 +223,51 @@ export default function CompanyData() {
 
         <main className="flex-1 p-8 bg-white">
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <div className="chart-container-light flex flex-col justify-center items-center p-6">
-                <p className="text-sm text-slate-500 mb-2">Total Companies</p>
-                <p className="text-4xl font-bold text-slate-800" data-testid="total-companies">{totalCompanies.toLocaleString()}</p>
-                <p className="text-sm text-emerald-600 mt-2">+127 today</p>
-              </div>
-
-              <div className="chart-container-light lg:col-span-1">
-                <h3 className="text-sm font-medium text-slate-500 mb-4">By Industry</h3>
-                <div className="h-[180px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={industryData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value">
-                        {industryData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(value: number) => value.toLocaleString()} />
-                    </PieChart>
-                  </ResponsiveContainer>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="chart-container-light">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <Database className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <p className="text-sm font-medium text-slate-500">Total Data</p>
                 </div>
+                <p className="text-3xl font-bold text-slate-800" data-testid="total-companies">{totalCompanies.toLocaleString()}</p>
+                <p className="text-sm text-slate-400 mt-1">records</p>
               </div>
 
-              <div className="chart-container-light lg:col-span-2">
-                <h3 className="text-sm font-medium text-slate-500 mb-4">By Region</h3>
-                <div className="h-[180px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={regionData} layout="vertical">
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
-                      <XAxis type="number" stroke="rgba(0,0,0,0.3)" fontSize={12} tickFormatter={(v) => v.toLocaleString()} />
-                      <YAxis type="category" dataKey="name" stroke="rgba(0,0,0,0.3)" fontSize={12} width={70} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Bar dataKey="count" fill="hsl(221, 83%, 53%)" radius={[0, 4, 4, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
+              <div className="chart-container-light">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <p className="text-sm font-medium text-slate-500">Today's Updates</p>
+                </div>
+                <p className="text-3xl font-bold text-emerald-600" data-testid="today-updates">+127</p>
+                <p className="text-sm text-slate-400 mt-1">new records</p>
+              </div>
+
+              <div className="chart-container-light">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+                    <Clock className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <p className="text-sm font-medium text-slate-500">Batch Time</p>
+                </div>
+                <p className="text-3xl font-bold text-slate-800" data-testid="batch-time">06:00</p>
+                <p className="text-sm text-slate-400 mt-1">daily schedule (KST)</p>
+              </div>
+
+              <div className="chart-container-light">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center">
+                    <Server className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <p className="text-sm font-medium text-slate-500">Server Info</p>
+                </div>
+                <p className="text-lg font-bold text-slate-800" data-testid="server-info">AWS EC2</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <p className="text-sm text-emerald-600">ap-northeast-2</p>
                 </div>
               </div>
             </div>

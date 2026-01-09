@@ -91,7 +91,7 @@ const dataTypes = [
 const generateDailyData = () => {
   const data = [];
   const today = new Date();
-  for (let i = 29; i >= 0; i--) {
+  for (let i = 13; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
     data.push({

@@ -365,6 +365,14 @@ export default function CompanyData() {
                   <p className="text-xl font-bold text-slate-800">85%</p>
                 </div>
               </div>
+              <div className="w-px h-10 bg-slate-200" />
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 text-cyan-500" />
+                <div>
+                  <p className="text-xs text-slate-400 uppercase tracking-wide">Update Cycle</p>
+                  <p className="text-xl font-bold text-slate-800">Daily</p>
+                </div>
+              </div>
             </div>
           </motion.section>
 

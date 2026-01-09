@@ -55,19 +55,30 @@ const regionData = [
   { name: "Others", count: 4881 },
 ];
 
-const companies = [
+const listedCompanies = [
   { id: 1, name: "Samsung Electronics", ceo: "Jong-Hee Han", address: "129 Samsung-ro, Yeongtong-gu, Suwon", industry: "Manufacturing", revenue: "302.2T", operatingProfit: "43.4T", debt: "91.2T", status: "Active", lastUpdate: "2025-01-09" },
   { id: 2, name: "SK Hynix", ceo: "Kwak Noh-Jung", address: "2091 Gyeongchung-daero, Bubal-eup, Icheon", industry: "Manufacturing", revenue: "44.6T", operatingProfit: "6.8T", debt: "28.4T", status: "Active", lastUpdate: "2025-01-09" },
   { id: 3, name: "Hyundai Motor", ceo: "Jae-Hoon Chang", address: "12 Heolleung-ro, Seocho-gu, Seoul", industry: "Manufacturing", revenue: "142.5T", operatingProfit: "11.6T", debt: "45.8T", status: "Active", lastUpdate: "2025-01-08" },
   { id: 4, name: "NAVER", ceo: "Soo-Yeon Choi", address: "6 Buljeong-ro, Bundang-gu, Seongnam", industry: "IT/Software", revenue: "8.2T", operatingProfit: "1.4T", debt: "3.2T", status: "Active", lastUpdate: "2025-01-09" },
   { id: 5, name: "Kakao", ceo: "Sung-Soo Hong", address: "242 Cheomdan-ro, Jeju-si", industry: "IT/Software", revenue: "7.1T", operatingProfit: "0.8T", debt: "4.1T", status: "Active", lastUpdate: "2025-01-08" },
   { id: 6, name: "LG Electronics", ceo: "William Cho", address: "128 Yeoui-daero, Yeongdeungpo-gu, Seoul", industry: "Manufacturing", revenue: "83.5T", operatingProfit: "3.5T", debt: "22.1T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 7, name: "KB Financial", ceo: "Jong-Kyoo Yoon", address: "84 Namdaemun-ro, Jung-gu, Seoul", industry: "Finance", revenue: "14.2T", operatingProfit: "5.2T", debt: "412.5T", status: "Active", lastUpdate: "2025-01-07" },
-  { id: 8, name: "Shinhan Financial", ceo: "Jin-Won Jin", address: "20 Sejong-daero 9-gil, Jung-gu, Seoul", industry: "Finance", revenue: "12.8T", operatingProfit: "4.8T", debt: "398.2T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 9, name: "CJ CheilJedang", ceo: "Eun-Seok Choi", address: "330 Dongho-ro, Jung-gu, Seoul", industry: "Manufacturing", revenue: "28.4T", operatingProfit: "1.2T", debt: "9.8T", status: "Active", lastUpdate: "2025-01-08" },
-  { id: 10, name: "Coupang", ceo: "Bom Kim", address: "570 Songpa-daero, Songpa-gu, Seoul", industry: "Retail", revenue: "26.5T", operatingProfit: "-0.2T", debt: "8.4T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 11, name: "Posco Holdings", ceo: "Jeong-Woo Choi", address: "100 Songdo-dong, Yeonsu-gu, Incheon", industry: "Manufacturing", revenue: "84.8T", operatingProfit: "2.9T", debt: "31.2T", status: "Active", lastUpdate: "2025-01-08" },
-  { id: 12, name: "Samsung SDI", ceo: "Young-Hyun Choi", address: "150-20 Gongse-ro, Giheung-gu, Yongin", industry: "Manufacturing", revenue: "20.1T", operatingProfit: "1.8T", debt: "7.6T", status: "Active", lastUpdate: "2025-01-09" },
+];
+
+const unlistedCompanies = [
+  { id: 7, name: "Woowa Brothers", ceo: "Bom-Jun Kim", address: "38 Songpa-daero, Songpa-gu, Seoul", industry: "IT/Software", revenue: "2.8T", operatingProfit: "0.3T", debt: "1.2T", status: "Active", lastUpdate: "2025-01-09" },
+  { id: 8, name: "Kurly", ceo: "Sophie Kim", address: "552 Teheran-ro, Gangnam-gu, Seoul", industry: "Retail", revenue: "2.1T", operatingProfit: "-0.4T", debt: "0.8T", status: "Active", lastUpdate: "2025-01-08" },
+  { id: 9, name: "Yanolja", ceo: "Jong-Yoon Kim", address: "311 Gangnam-daero, Seocho-gu, Seoul", industry: "IT/Software", revenue: "0.9T", operatingProfit: "0.1T", debt: "0.5T", status: "Active", lastUpdate: "2025-01-07" },
+  { id: 10, name: "Viva Republica", ceo: "Seung-Gun Lee", address: "83 Uisadang-daero, Yeongdeungpo-gu, Seoul", industry: "Finance", revenue: "1.2T", operatingProfit: "-0.2T", debt: "0.6T", status: "Active", lastUpdate: "2025-01-09" },
+  { id: 11, name: "Musinsa", ceo: "Han-Seok Cho", address: "807 Seolleung-ro, Gangnam-gu, Seoul", industry: "Retail", revenue: "0.8T", operatingProfit: "0.08T", debt: "0.3T", status: "Active", lastUpdate: "2025-01-08" },
+];
+
+const auditedCompanies = [
+  { id: 12, name: "KB Financial", ceo: "Jong-Kyoo Yoon", address: "84 Namdaemun-ro, Jung-gu, Seoul", industry: "Finance", revenue: "14.2T", operatingProfit: "5.2T", debt: "412.5T", status: "Active", lastUpdate: "2025-01-07" },
+  { id: 13, name: "Shinhan Financial", ceo: "Jin-Won Jin", address: "20 Sejong-daero 9-gil, Jung-gu, Seoul", industry: "Finance", revenue: "12.8T", operatingProfit: "4.8T", debt: "398.2T", status: "Active", lastUpdate: "2025-01-09" },
+  { id: 14, name: "CJ CheilJedang", ceo: "Eun-Seok Choi", address: "330 Dongho-ro, Jung-gu, Seoul", industry: "Manufacturing", revenue: "28.4T", operatingProfit: "1.2T", debt: "9.8T", status: "Active", lastUpdate: "2025-01-08" },
+  { id: 15, name: "Posco Holdings", ceo: "Jeong-Woo Choi", address: "100 Songdo-dong, Yeonsu-gu, Incheon", industry: "Manufacturing", revenue: "84.8T", operatingProfit: "2.9T", debt: "31.2T", status: "Active", lastUpdate: "2025-01-08" },
+  { id: 16, name: "Samsung SDI", ceo: "Young-Hyun Choi", address: "150-20 Gongse-ro, Giheung-gu, Yongin", industry: "Manufacturing", revenue: "20.1T", operatingProfit: "1.8T", debt: "7.6T", status: "Active", lastUpdate: "2025-01-09" },
+  { id: 17, name: "Coupang", ceo: "Bom Kim", address: "570 Songpa-daero, Songpa-gu, Seoul", industry: "Retail", revenue: "26.5T", operatingProfit: "-0.2T", debt: "8.4T", status: "Active", lastUpdate: "2025-01-09" },
 ];
 
 const menuItems = [
@@ -192,15 +203,25 @@ function CustomTooltip({ active, payload, label }: any) {
 export default function CompanyData() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState("All");
-  const [selectedRegion, setSelectedRegion] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeTab, setActiveTab] = useState<"unlisted" | "listed" | "audited">("listed");
 
   const totalCompanies = 34521;
+  
+  const getCompaniesForTab = () => {
+    switch (activeTab) {
+      case "unlisted": return unlistedCompanies;
+      case "listed": return listedCompanies;
+      case "audited": return auditedCompanies;
+      default: return listedCompanies;
+    }
+  };
+
+  const companies = getCompaniesForTab();
   const filteredCompanies = companies.filter((company) => {
     const matchesSearch = company.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesIndustry = selectedIndustry === "All" || company.industry === selectedIndustry;
-    const matchesRegion = selectedRegion === "All" || company.region === selectedRegion;
-    return matchesSearch && matchesIndustry && matchesRegion;
+    return matchesSearch && matchesIndustry;
   });
 
   return (
@@ -292,6 +313,33 @@ export default function CompanyData() {
 
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }}>
             <div className="chart-container-light">
+              <div className="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                <button
+                  onClick={() => setActiveTab("unlisted")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "unlisted" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
+                  data-testid="tab-unlisted"
+                >
+                  Unlisted
+                  <span className="ml-2 px-1.5 py-0.5 rounded text-xs bg-white/20">{unlistedCompanies.length}</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("listed")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "listed" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
+                  data-testid="tab-listed"
+                >
+                  Listed
+                  <span className="ml-2 px-1.5 py-0.5 rounded text-xs bg-white/20">{listedCompanies.length}</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("audited")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "audited" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
+                  data-testid="tab-audited"
+                >
+                  Audited
+                  <span className="ml-2 px-1.5 py-0.5 rounded text-xs bg-white/20">{auditedCompanies.length}</span>
+                </button>
+              </div>
+
               <div className="flex flex-col lg:flex-row gap-4 mb-6">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -308,18 +356,6 @@ export default function CompanyData() {
                       <option value="Retail">Retail</option>
                       <option value="Healthcare">Healthcare</option>
                       <option value="Construction">Construction</option>
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                  </div>
-                  <div className="relative">
-                    <select value={selectedRegion} onChange={(e) => setSelectedRegion(e.target.value)} className="pl-4 pr-8 py-2 border border-slate-200 rounded-lg text-sm bg-white text-slate-700 appearance-none cursor-pointer" data-testid="region-filter">
-                      <option value="All">All Regions</option>
-                      <option value="Seoul">Seoul</option>
-                      <option value="Gyeonggi">Gyeonggi</option>
-                      <option value="Busan">Busan</option>
-                      <option value="Incheon">Incheon</option>
-                      <option value="Daegu">Daegu</option>
-                      <option value="Daejeon">Daejeon</option>
                     </select>
                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                   </div>

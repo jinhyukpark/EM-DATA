@@ -25,6 +25,11 @@ import {
   DollarSign,
   Calendar,
   Briefcase,
+  Globe,
+  Users,
+  Tag,
+  ExternalLink,
+  BarChart3,
 } from "lucide-react";
 import {
   BarChart,
@@ -62,29 +67,29 @@ const regionData = [
 ];
 
 const listedCompanies = [
-  { id: 1, name: "Samsung Electronics", ceo: "Jong-Hee Han", address: "129 Samsung-ro, Yeongtong-gu, Suwon", industry: "Manufacturing", revenue: "302.2T", operatingProfit: "43.4T", debt: "91.2T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 2, name: "SK Hynix", ceo: "Kwak Noh-Jung", address: "2091 Gyeongchung-daero, Bubal-eup, Icheon", industry: "Manufacturing", revenue: "44.6T", operatingProfit: "6.8T", debt: "28.4T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 3, name: "Hyundai Motor", ceo: "Jae-Hoon Chang", address: "12 Heolleung-ro, Seocho-gu, Seoul", industry: "Manufacturing", revenue: "142.5T", operatingProfit: "11.6T", debt: "45.8T", status: "Active", lastUpdate: "2025-01-08" },
-  { id: 4, name: "NAVER", ceo: "Soo-Yeon Choi", address: "6 Buljeong-ro, Bundang-gu, Seongnam", industry: "IT/Software", revenue: "8.2T", operatingProfit: "1.4T", debt: "3.2T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 5, name: "Kakao", ceo: "Sung-Soo Hong", address: "242 Cheomdan-ro, Jeju-si", industry: "IT/Software", revenue: "7.1T", operatingProfit: "0.8T", debt: "4.1T", status: "Active", lastUpdate: "2025-01-08" },
-  { id: 6, name: "LG Electronics", ceo: "William Cho", address: "128 Yeoui-daero, Yeongdeungpo-gu, Seoul", industry: "Manufacturing", revenue: "83.5T", operatingProfit: "3.5T", debt: "22.1T", status: "Active", lastUpdate: "2025-01-09" },
+  { id: 1, name: "Samsung Electronics", ceo: "Jong-Hee Han", address: "129 Samsung-ro, Yeongtong-gu, Suwon", industry: "Manufacturing", revenue: "302.2T", operatingProfit: "43.4T", debt: "91.2T", netIncome: "38.2T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "1969-01-13", employees: 267937, companyType: "Large Enterprise", country: "Korea", listingStatus: "KOSPI", website: "www.samsung.com", keywords: ["Electronics", "Semiconductor", "Display"] },
+  { id: 2, name: "SK Hynix", ceo: "Kwak Noh-Jung", address: "2091 Gyeongchung-daero, Bubal-eup, Icheon", industry: "Manufacturing", revenue: "44.6T", operatingProfit: "6.8T", debt: "28.4T", netIncome: "5.2T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "1983-02-01", employees: 29000, companyType: "Large Enterprise", country: "Korea", listingStatus: "KOSPI", website: "www.skhynix.com", keywords: ["Semiconductor", "Memory", "NAND"] },
+  { id: 3, name: "Hyundai Motor", ceo: "Jae-Hoon Chang", address: "12 Heolleung-ro, Seocho-gu, Seoul", industry: "Manufacturing", revenue: "142.5T", operatingProfit: "11.6T", debt: "45.8T", netIncome: "8.9T", status: "Active", lastUpdate: "2025-01-08", foundedDate: "1967-12-29", employees: 75000, companyType: "Large Enterprise", country: "Korea", listingStatus: "KOSPI", website: "www.hyundai.com", keywords: ["Automotive", "EV", "Mobility"] },
+  { id: 4, name: "NAVER", ceo: "Soo-Yeon Choi", address: "6 Buljeong-ro, Bundang-gu, Seongnam", industry: "IT/Software", revenue: "8.2T", operatingProfit: "1.4T", debt: "3.2T", netIncome: "1.1T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "1999-06-02", employees: 6200, companyType: "Large Enterprise", country: "Korea", listingStatus: "KOSPI", website: "www.navercorp.com", keywords: ["Search", "Portal", "AI"] },
+  { id: 5, name: "Kakao", ceo: "Sung-Soo Hong", address: "242 Cheomdan-ro, Jeju-si", industry: "IT/Software", revenue: "7.1T", operatingProfit: "0.8T", debt: "4.1T", netIncome: "0.5T", status: "Active", lastUpdate: "2025-01-08", foundedDate: "2010-03-18", employees: 5800, companyType: "Large Enterprise", country: "Korea", listingStatus: "KOSPI", website: "www.kakaocorp.com", keywords: ["Messenger", "Platform", "Fintech"] },
+  { id: 6, name: "LG Electronics", ceo: "William Cho", address: "128 Yeoui-daero, Yeongdeungpo-gu, Seoul", industry: "Manufacturing", revenue: "83.5T", operatingProfit: "3.5T", debt: "22.1T", netIncome: "2.8T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "1958-10-01", employees: 39000, companyType: "Large Enterprise", country: "Korea", listingStatus: "KOSPI", website: "www.lg.com", keywords: ["Electronics", "Home Appliance", "TV"] },
 ];
 
 const unlistedCompanies = [
-  { id: 7, name: "Woowa Brothers", ceo: "Bom-Jun Kim", address: "38 Songpa-daero, Songpa-gu, Seoul", industry: "IT/Software", revenue: "2.8T", operatingProfit: "0.3T", debt: "1.2T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 8, name: "Kurly", ceo: "Sophie Kim", address: "552 Teheran-ro, Gangnam-gu, Seoul", industry: "Retail", revenue: "2.1T", operatingProfit: "-0.4T", debt: "0.8T", status: "Active", lastUpdate: "2025-01-08" },
-  { id: 9, name: "Yanolja", ceo: "Jong-Yoon Kim", address: "311 Gangnam-daero, Seocho-gu, Seoul", industry: "IT/Software", revenue: "0.9T", operatingProfit: "0.1T", debt: "0.5T", status: "Active", lastUpdate: "2025-01-07" },
-  { id: 10, name: "Viva Republica", ceo: "Seung-Gun Lee", address: "83 Uisadang-daero, Yeongdeungpo-gu, Seoul", industry: "Finance", revenue: "1.2T", operatingProfit: "-0.2T", debt: "0.6T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 11, name: "Musinsa", ceo: "Han-Seok Cho", address: "807 Seolleung-ro, Gangnam-gu, Seoul", industry: "Retail", revenue: "0.8T", operatingProfit: "0.08T", debt: "0.3T", status: "Active", lastUpdate: "2025-01-08" },
+  { id: 7, name: "Woowa Brothers", ceo: "Bom-Jun Kim", address: "38 Songpa-daero, Songpa-gu, Seoul", industry: "IT/Software", revenue: "2.8T", operatingProfit: "0.3T", debt: "1.2T", netIncome: "0.2T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "2011-03-21", employees: 4200, companyType: "SME", country: "Korea", listingStatus: "Unlisted", website: "www.woowahan.com", keywords: ["Delivery", "Food", "Platform"] },
+  { id: 8, name: "Kurly", ceo: "Sophie Kim", address: "552 Teheran-ro, Gangnam-gu, Seoul", industry: "Retail", revenue: "2.1T", operatingProfit: "-0.4T", debt: "0.8T", netIncome: "-0.5T", status: "Active", lastUpdate: "2025-01-08", foundedDate: "2015-05-01", employees: 3800, companyType: "SME", country: "Korea", listingStatus: "Unlisted", website: "www.kurly.com", keywords: ["Grocery", "E-commerce", "Fresh"] },
+  { id: 9, name: "Yanolja", ceo: "Jong-Yoon Kim", address: "311 Gangnam-daero, Seocho-gu, Seoul", industry: "IT/Software", revenue: "0.9T", operatingProfit: "0.1T", debt: "0.5T", netIncome: "0.08T", status: "Active", lastUpdate: "2025-01-07", foundedDate: "2005-07-12", employees: 1200, companyType: "SME", country: "Korea", listingStatus: "Unlisted", website: "www.yanolja.com", keywords: ["Travel", "Accommodation", "Leisure"] },
+  { id: 10, name: "Viva Republica", ceo: "Seung-Gun Lee", address: "83 Uisadang-daero, Yeongdeungpo-gu, Seoul", industry: "Finance", revenue: "1.2T", operatingProfit: "-0.2T", debt: "0.6T", netIncome: "-0.3T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "2013-04-01", employees: 2100, companyType: "SME", country: "Korea", listingStatus: "Unlisted", website: "www.toss.im", keywords: ["Fintech", "Banking", "Payment"] },
+  { id: 11, name: "Musinsa", ceo: "Han-Seok Cho", address: "807 Seolleung-ro, Gangnam-gu, Seoul", industry: "Retail", revenue: "0.8T", operatingProfit: "0.08T", debt: "0.3T", netIncome: "0.05T", status: "Active", lastUpdate: "2025-01-08", foundedDate: "2001-08-01", employees: 1800, companyType: "SME", country: "Korea", listingStatus: "Unlisted", website: "www.musinsa.com", keywords: ["Fashion", "E-commerce", "Streetwear"] },
 ];
 
 const auditedCompanies = [
-  { id: 12, name: "KB Financial", ceo: "Jong-Kyoo Yoon", address: "84 Namdaemun-ro, Jung-gu, Seoul", industry: "Finance", revenue: "14.2T", operatingProfit: "5.2T", debt: "412.5T", status: "Active", lastUpdate: "2025-01-07" },
-  { id: 13, name: "Shinhan Financial", ceo: "Jin-Won Jin", address: "20 Sejong-daero 9-gil, Jung-gu, Seoul", industry: "Finance", revenue: "12.8T", operatingProfit: "4.8T", debt: "398.2T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 14, name: "CJ CheilJedang", ceo: "Eun-Seok Choi", address: "330 Dongho-ro, Jung-gu, Seoul", industry: "Manufacturing", revenue: "28.4T", operatingProfit: "1.2T", debt: "9.8T", status: "Active", lastUpdate: "2025-01-08" },
-  { id: 15, name: "Posco Holdings", ceo: "Jeong-Woo Choi", address: "100 Songdo-dong, Yeonsu-gu, Incheon", industry: "Manufacturing", revenue: "84.8T", operatingProfit: "2.9T", debt: "31.2T", status: "Active", lastUpdate: "2025-01-08" },
-  { id: 16, name: "Samsung SDI", ceo: "Young-Hyun Choi", address: "150-20 Gongse-ro, Giheung-gu, Yongin", industry: "Manufacturing", revenue: "20.1T", operatingProfit: "1.8T", debt: "7.6T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 17, name: "Coupang", ceo: "Bom Kim", address: "570 Songpa-daero, Songpa-gu, Seoul", industry: "Retail", revenue: "26.5T", operatingProfit: "-0.2T", debt: "8.4T", status: "Active", lastUpdate: "2025-01-09" },
+  { id: 12, name: "KB Financial", ceo: "Jong-Kyoo Yoon", address: "84 Namdaemun-ro, Jung-gu, Seoul", industry: "Finance", revenue: "14.2T", operatingProfit: "5.2T", debt: "412.5T", netIncome: "4.1T", status: "Active", lastUpdate: "2025-01-07", foundedDate: "2008-09-29", employees: 28000, companyType: "Large Enterprise", country: "Korea", listingStatus: "Audited", website: "www.kbfg.com", keywords: ["Banking", "Insurance", "Securities"] },
+  { id: 13, name: "Shinhan Financial", ceo: "Jin-Won Jin", address: "20 Sejong-daero 9-gil, Jung-gu, Seoul", industry: "Finance", revenue: "12.8T", operatingProfit: "4.8T", debt: "398.2T", netIncome: "3.8T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "2001-09-01", employees: 23000, companyType: "Large Enterprise", country: "Korea", listingStatus: "Audited", website: "www.shinhangroup.com", keywords: ["Banking", "Card", "Asset Management"] },
+  { id: 14, name: "CJ CheilJedang", ceo: "Eun-Seok Choi", address: "330 Dongho-ro, Jung-gu, Seoul", industry: "Manufacturing", revenue: "28.4T", operatingProfit: "1.2T", debt: "9.8T", netIncome: "0.8T", status: "Active", lastUpdate: "2025-01-08", foundedDate: "1953-08-01", employees: 9800, companyType: "Large Enterprise", country: "Korea", listingStatus: "Audited", website: "www.cj.co.kr", keywords: ["Food", "Bio", "Feed"] },
+  { id: 15, name: "Posco Holdings", ceo: "Jeong-Woo Choi", address: "100 Songdo-dong, Yeonsu-gu, Incheon", industry: "Manufacturing", revenue: "84.8T", operatingProfit: "2.9T", debt: "31.2T", netIncome: "2.1T", status: "Active", lastUpdate: "2025-01-08", foundedDate: "1968-04-01", employees: 19000, companyType: "Large Enterprise", country: "Korea", listingStatus: "Audited", website: "www.posco.co.kr", keywords: ["Steel", "Battery", "Hydrogen"] },
+  { id: 16, name: "Samsung SDI", ceo: "Young-Hyun Choi", address: "150-20 Gongse-ro, Giheung-gu, Yongin", industry: "Manufacturing", revenue: "20.1T", operatingProfit: "1.8T", debt: "7.6T", netIncome: "1.4T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "1970-01-01", employees: 11000, companyType: "Large Enterprise", country: "Korea", listingStatus: "Audited", website: "www.samsungsdi.com", keywords: ["Battery", "Energy", "Materials"] },
+  { id: 17, name: "Coupang", ceo: "Bom Kim", address: "570 Songpa-daero, Songpa-gu, Seoul", industry: "Retail", revenue: "26.5T", operatingProfit: "-0.2T", debt: "8.4T", netIncome: "-0.3T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "2010-08-10", employees: 68000, companyType: "Large Enterprise", country: "Korea", listingStatus: "NYSE", website: "www.coupang.com", keywords: ["E-commerce", "Logistics", "Delivery"] },
 ];
 
 const menuItems = [
@@ -217,6 +222,14 @@ type Company = {
   debt: string;
   status: string;
   lastUpdate: string;
+  foundedDate?: string;
+  employees?: number;
+  companyType?: string;
+  country?: string;
+  listingStatus?: string;
+  website?: string;
+  netIncome?: string;
+  keywords?: string[];
 };
 
 export default function CompanyData() {
@@ -225,6 +238,7 @@ export default function CompanyData() {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState<"all" | "unlisted" | "listed" | "audited">("listed");
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [modalTab, setModalTab] = useState<"info" | "financial">("info");
 
   const totalCompanies = 34521;
   
@@ -415,14 +429,14 @@ export default function CompanyData() {
       </div>
 
       {selectedCompany && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedCompany(null)}>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => { setSelectedCompany(null); setModalTab("info"); }}>
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
+            className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden"
             data-testid="company-detail-modal"
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
@@ -432,80 +446,188 @@ export default function CompanyData() {
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-slate-800">{selectedCompany.name}</h2>
-                  <p className="text-sm text-slate-500">{selectedCompany.industry}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-sm text-slate-500">{selectedCompany.industry}</span>
+                    {selectedCompany.listingStatus && (
+                      <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">{selectedCompany.listingStatus}</span>
+                    )}
+                  </div>
                 </div>
               </div>
-              <button onClick={() => setSelectedCompany(null)} className="p-2 hover:bg-slate-100 rounded-lg transition-colors" data-testid="close-modal">
+              <button onClick={() => { setSelectedCompany(null); setModalTab("info"); }} className="p-2 hover:bg-slate-100 rounded-lg transition-colors" data-testid="close-modal">
                 <X className="w-5 h-5 text-slate-400" />
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto">
-              <div className="grid grid-cols-2 gap-6 mb-6">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
-                    <User className="w-4 h-4 text-slate-500" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">CEO</p>
-                    <p className="text-sm font-medium text-slate-800">{selectedCompany.ceo}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
-                    <Briefcase className="w-4 h-4 text-slate-500" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Industry</p>
-                    <p className="text-sm font-medium text-slate-800">{selectedCompany.industry}</p>
-                  </div>
-                </div>
-              </div>
+            <div className="flex items-center gap-1 px-6 py-3 border-b border-slate-100 bg-slate-50/50">
+              <button onClick={() => setModalTab("info")} className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${modalTab === "info" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}>
+                Company Info
+              </button>
+              <button onClick={() => setModalTab("financial")} className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${modalTab === "financial" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}>
+                Financial Data
+              </button>
+            </div>
 
-              <div className="flex items-start gap-3 mb-6">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-4 h-4 text-slate-500" />
-                </div>
-                <div>
-                  <p className="text-xs text-slate-400 uppercase tracking-wide">Address</p>
-                  <p className="text-sm font-medium text-slate-800">{selectedCompany.address}</p>
-                </div>
-              </div>
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              {modalTab === "info" && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                      <User className="w-4 h-4 text-slate-400" />
+                      <div>
+                        <p className="text-xs text-slate-400">CEO</p>
+                        <p className="text-sm font-medium text-slate-800">{selectedCompany.ceo}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                      <Calendar className="w-4 h-4 text-slate-400" />
+                      <div>
+                        <p className="text-xs text-slate-400">Founded</p>
+                        <p className="text-sm font-medium text-slate-800">{selectedCompany.foundedDate || "-"}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                      <Users className="w-4 h-4 text-slate-400" />
+                      <div>
+                        <p className="text-xs text-slate-400">Employees</p>
+                        <p className="text-sm font-medium text-slate-800">{selectedCompany.employees?.toLocaleString() || "-"}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                      <Briefcase className="w-4 h-4 text-slate-400" />
+                      <div>
+                        <p className="text-xs text-slate-400">Company Type</p>
+                        <p className="text-sm font-medium text-slate-800">{selectedCompany.companyType || "-"}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                      <Globe className="w-4 h-4 text-slate-400" />
+                      <div>
+                        <p className="text-xs text-slate-400">Country</p>
+                        <p className="text-sm font-medium text-slate-800">{selectedCompany.country || "-"}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                      <ExternalLink className="w-4 h-4 text-slate-400" />
+                      <div>
+                        <p className="text-xs text-slate-400">Website</p>
+                        <p className="text-sm font-medium text-blue-600">{selectedCompany.website || "-"}</p>
+                      </div>
+                    </div>
+                  </div>
 
-              <div className="border-t border-slate-100 pt-6">
-                <h3 className="text-sm font-medium text-slate-800 mb-4">Financial Information</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="p-4 bg-slate-50 rounded-xl">
-                    <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Revenue</p>
-                    <p className="text-xl font-bold text-slate-800">{selectedCompany.revenue}</p>
+                  <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                    <MapPin className="w-4 h-4 text-slate-400 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-slate-400">Address</p>
+                      <p className="text-sm font-medium text-slate-800">{selectedCompany.address}</p>
+                    </div>
                   </div>
-                  <div className="p-4 bg-slate-50 rounded-xl">
-                    <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Operating Profit</p>
-                    <p className={`text-xl font-bold ${selectedCompany.operatingProfit.startsWith("-") ? "text-red-500" : "text-emerald-600"}`}>
-                      {selectedCompany.operatingProfit}
-                    </p>
-                  </div>
-                  <div className="p-4 bg-slate-50 rounded-xl">
-                    <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Debt</p>
-                    <p className="text-xl font-bold text-slate-800">{selectedCompany.debt}</p>
-                  </div>
-                </div>
-              </div>
 
-              <div className="border-t border-slate-100 pt-6 mt-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
+                  {selectedCompany.keywords && selectedCompany.keywords.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Tag className="w-4 h-4 text-slate-400" />
+                        <p className="text-xs text-slate-400">Keywords</p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedCompany.keywords.map((keyword, i) => (
+                          <span key={i} className="px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-600 border border-blue-100">{keyword}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-emerald-50 text-emerald-600">
                       <span className="w-2 h-2 rounded-full bg-emerald-500" />
                       {selectedCompany.status}
                     </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-400">
-                    <Calendar className="w-4 h-4" />
-                    Last updated: {selectedCompany.lastUpdate}
+                    <div className="flex items-center gap-2 text-sm text-slate-400">
+                      <Calendar className="w-4 h-4" />
+                      Last updated: {selectedCompany.lastUpdate}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {modalTab === "financial" && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="p-4 bg-slate-50 rounded-xl text-center">
+                      <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Revenue</p>
+                      <p className="text-2xl font-bold text-slate-800">{selectedCompany.revenue}</p>
+                    </div>
+                    <div className="p-4 bg-slate-50 rounded-xl text-center">
+                      <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Op. Profit</p>
+                      <p className={`text-2xl font-bold ${selectedCompany.operatingProfit.startsWith("-") ? "text-red-500" : "text-emerald-600"}`}>
+                        {selectedCompany.operatingProfit}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-slate-50 rounded-xl text-center">
+                      <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Debt</p>
+                      <p className="text-2xl font-bold text-slate-800">{selectedCompany.debt}</p>
+                    </div>
+                    <div className="p-4 bg-slate-50 rounded-xl text-center">
+                      <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Net Income</p>
+                      <p className={`text-2xl font-bold ${selectedCompany.netIncome?.startsWith("-") ? "text-red-500" : "text-blue-600"}`}>
+                        {selectedCompany.netIncome || "-"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-slate-100 pt-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium text-slate-800">Financial Trend (2018-2022)</h3>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-400">Unit: KRW Trillion</span>
+                      </div>
+                    </div>
+                    <div className="h-48 bg-slate-50 rounded-xl flex items-center justify-center">
+                      <div className="text-center">
+                        <BarChart3 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                        <p className="text-sm text-slate-400">Financial chart available in full report</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-slate-100 pt-6">
+                    <h3 className="text-sm font-medium text-slate-800 mb-4">Historical Data</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-slate-50">
+                            <th className="text-left py-2 px-3 text-xs font-medium text-slate-400">Year</th>
+                            <th className="text-right py-2 px-3 text-xs font-medium text-slate-400">Revenue</th>
+                            <th className="text-right py-2 px-3 text-xs font-medium text-slate-400">Op. Profit</th>
+                            <th className="text-right py-2 px-3 text-xs font-medium text-slate-400">Net Income</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-b border-slate-100">
+                            <td className="py-2 px-3 text-slate-600">2022</td>
+                            <td className="py-2 px-3 text-right font-mono text-slate-800">{selectedCompany.revenue}</td>
+                            <td className={`py-2 px-3 text-right font-mono ${selectedCompany.operatingProfit.startsWith("-") ? "text-red-500" : "text-emerald-600"}`}>{selectedCompany.operatingProfit}</td>
+                            <td className={`py-2 px-3 text-right font-mono ${selectedCompany.netIncome?.startsWith("-") ? "text-red-500" : "text-slate-800"}`}>{selectedCompany.netIncome || "-"}</td>
+                          </tr>
+                          <tr className="border-b border-slate-100">
+                            <td className="py-2 px-3 text-slate-600">2021</td>
+                            <td className="py-2 px-3 text-right font-mono text-slate-500">-</td>
+                            <td className="py-2 px-3 text-right font-mono text-slate-500">-</td>
+                            <td className="py-2 px-3 text-right font-mono text-slate-500">-</td>
+                          </tr>
+                          <tr className="border-b border-slate-100">
+                            <td className="py-2 px-3 text-slate-600">2020</td>
+                            <td className="py-2 px-3 text-right font-mono text-slate-500">-</td>
+                            <td className="py-2 px-3 text-right font-mono text-slate-500">-</td>
+                            <td className="py-2 px-3 text-right font-mono text-slate-500">-</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
         </div>

@@ -204,12 +204,15 @@ export default function CompanyData() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeTab, setActiveTab] = useState<"unlisted" | "listed" | "audited">("listed");
+  const [activeTab, setActiveTab] = useState<"all" | "unlisted" | "listed" | "audited">("listed");
 
   const totalCompanies = 34521;
   
+  const allCompanies = [...listedCompanies, ...unlistedCompanies, ...auditedCompanies];
+  
   const getCompaniesForTab = () => {
     switch (activeTab) {
+      case "all": return allCompanies;
       case "unlisted": return unlistedCompanies;
       case "listed": return listedCompanies;
       case "audited": return auditedCompanies;
@@ -285,6 +288,13 @@ export default function CompanyData() {
             <div className="bg-white rounded-xl border border-slate-100">
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
                 <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setActiveTab("all")}
+                    className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${activeTab === "all" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"}`}
+                    data-testid="tab-all"
+                  >
+                    Total <span className="ml-1 text-xs opacity-60">{allCompanies.length}</span>
+                  </button>
                   <button
                     onClick={() => setActiveTab("unlisted")}
                     className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${activeTab === "unlisted" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"}`}

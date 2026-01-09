@@ -12,6 +12,9 @@ import QAReport from "@/pages/QAReport";
 import AWSServers from "@/pages/AWSServers";
 import GCPServers from "@/pages/GCPServers";
 import NCloudServers from "@/pages/NCloudServers";
+import PatentData from "@/pages/PatentData";
+import StockData from "@/pages/StockData";
+import NewsData from "@/pages/NewsData";
 
 function Router() {
   return (
@@ -19,6 +22,9 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/" component={Dashboard} />
       <Route path="/data/company" component={CompanyData} />
+      <Route path="/data/patent" component={PatentData} />
+      <Route path="/data/stock" component={StockData} />
+      <Route path="/data/news" component={NewsData} />
       <Route path="/settings/profile" component={Settings} />
       <Route path="/settings/users" component={Settings} />
       <Route path="/settings/permissions" component={Settings} />

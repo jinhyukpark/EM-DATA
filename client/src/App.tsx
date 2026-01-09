@@ -9,6 +9,7 @@ import CompanyData from "@/pages/CompanyData";
 import Login from "@/pages/Login";
 import Settings from "@/pages/Settings";
 import QAReport from "@/pages/QAReport";
+import AWSServers from "@/pages/AWSServers";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/settings/users" component={Settings} />
       <Route path="/settings/permissions" component={Settings} />
       <Route path="/qa-report" component={QAReport} />
+      <Route path="/servers/aws" component={AWSServers} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -271,16 +271,11 @@ export default function CompanyData() {
                 </div>
               </div>
               <div className="w-px h-10 bg-slate-200" />
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <PieChartIcon className="w-5 h-5 text-amber-500" />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Data Coverage</p>
-                    <p className="text-sm font-bold text-slate-700">85%</p>
-                  </div>
-                  <div className="w-32 h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-amber-500 rounded-full" style={{ width: "85%" }} />
-                  </div>
+                <div>
+                  <p className="text-xs text-slate-400 uppercase tracking-wide">Coverage</p>
+                  <p className="text-xl font-bold text-slate-800">85%</p>
                 </div>
               </div>
             </div>

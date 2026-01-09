@@ -56,18 +56,18 @@ const regionData = [
 ];
 
 const companies = [
-  { id: 1, name: "Samsung Electronics", industry: "Manufacturing", region: "Gyeonggi", employees: 267937, revenue: "302.2T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 2, name: "SK Hynix", industry: "Manufacturing", region: "Gyeonggi", employees: 29000, revenue: "44.6T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 3, name: "Hyundai Motor", industry: "Manufacturing", region: "Seoul", employees: 75000, revenue: "142.5T", status: "Active", lastUpdate: "2025-01-08" },
-  { id: 4, name: "NAVER", industry: "IT/Software", region: "Gyeonggi", employees: 6200, revenue: "8.2T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 5, name: "Kakao", industry: "IT/Software", region: "Gyeonggi", employees: 5800, revenue: "7.1T", status: "Active", lastUpdate: "2025-01-08" },
-  { id: 6, name: "LG Electronics", industry: "Manufacturing", region: "Seoul", employees: 39000, revenue: "83.5T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 7, name: "KB Financial", industry: "Finance", region: "Seoul", employees: 28000, revenue: "14.2T", status: "Active", lastUpdate: "2025-01-07" },
-  { id: 8, name: "Shinhan Financial", industry: "Finance", region: "Seoul", employees: 23000, revenue: "12.8T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 9, name: "CJ CheilJedang", industry: "Manufacturing", region: "Seoul", employees: 9800, revenue: "28.4T", status: "Active", lastUpdate: "2025-01-08" },
-  { id: 10, name: "Coupang", industry: "Retail", region: "Seoul", employees: 68000, revenue: "26.5T", status: "Active", lastUpdate: "2025-01-09" },
-  { id: 11, name: "Posco Holdings", industry: "Manufacturing", region: "Gyeonggi", employees: 19000, revenue: "84.8T", status: "Active", lastUpdate: "2025-01-08" },
-  { id: 12, name: "Samsung SDI", industry: "Manufacturing", region: "Gyeonggi", employees: 11000, revenue: "20.1T", status: "Active", lastUpdate: "2025-01-09" },
+  { id: 1, name: "Samsung Electronics", ceo: "Jong-Hee Han", address: "129 Samsung-ro, Yeongtong-gu, Suwon", industry: "Manufacturing", revenue: "302.2T", operatingProfit: "43.4T", debt: "91.2T", status: "Active", lastUpdate: "2025-01-09" },
+  { id: 2, name: "SK Hynix", ceo: "Kwak Noh-Jung", address: "2091 Gyeongchung-daero, Bubal-eup, Icheon", industry: "Manufacturing", revenue: "44.6T", operatingProfit: "6.8T", debt: "28.4T", status: "Active", lastUpdate: "2025-01-09" },
+  { id: 3, name: "Hyundai Motor", ceo: "Jae-Hoon Chang", address: "12 Heolleung-ro, Seocho-gu, Seoul", industry: "Manufacturing", revenue: "142.5T", operatingProfit: "11.6T", debt: "45.8T", status: "Active", lastUpdate: "2025-01-08" },
+  { id: 4, name: "NAVER", ceo: "Soo-Yeon Choi", address: "6 Buljeong-ro, Bundang-gu, Seongnam", industry: "IT/Software", revenue: "8.2T", operatingProfit: "1.4T", debt: "3.2T", status: "Active", lastUpdate: "2025-01-09" },
+  { id: 5, name: "Kakao", ceo: "Sung-Soo Hong", address: "242 Cheomdan-ro, Jeju-si", industry: "IT/Software", revenue: "7.1T", operatingProfit: "0.8T", debt: "4.1T", status: "Active", lastUpdate: "2025-01-08" },
+  { id: 6, name: "LG Electronics", ceo: "William Cho", address: "128 Yeoui-daero, Yeongdeungpo-gu, Seoul", industry: "Manufacturing", revenue: "83.5T", operatingProfit: "3.5T", debt: "22.1T", status: "Active", lastUpdate: "2025-01-09" },
+  { id: 7, name: "KB Financial", ceo: "Jong-Kyoo Yoon", address: "84 Namdaemun-ro, Jung-gu, Seoul", industry: "Finance", revenue: "14.2T", operatingProfit: "5.2T", debt: "412.5T", status: "Active", lastUpdate: "2025-01-07" },
+  { id: 8, name: "Shinhan Financial", ceo: "Jin-Won Jin", address: "20 Sejong-daero 9-gil, Jung-gu, Seoul", industry: "Finance", revenue: "12.8T", operatingProfit: "4.8T", debt: "398.2T", status: "Active", lastUpdate: "2025-01-09" },
+  { id: 9, name: "CJ CheilJedang", ceo: "Eun-Seok Choi", address: "330 Dongho-ro, Jung-gu, Seoul", industry: "Manufacturing", revenue: "28.4T", operatingProfit: "1.2T", debt: "9.8T", status: "Active", lastUpdate: "2025-01-08" },
+  { id: 10, name: "Coupang", ceo: "Bom Kim", address: "570 Songpa-daero, Songpa-gu, Seoul", industry: "Retail", revenue: "26.5T", operatingProfit: "-0.2T", debt: "8.4T", status: "Active", lastUpdate: "2025-01-09" },
+  { id: 11, name: "Posco Holdings", ceo: "Jeong-Woo Choi", address: "100 Songdo-dong, Yeonsu-gu, Incheon", industry: "Manufacturing", revenue: "84.8T", operatingProfit: "2.9T", debt: "31.2T", status: "Active", lastUpdate: "2025-01-08" },
+  { id: 12, name: "Samsung SDI", ceo: "Young-Hyun Choi", address: "150-20 Gongse-ro, Giheung-gu, Yongin", industry: "Manufacturing", revenue: "20.1T", operatingProfit: "1.8T", debt: "7.6T", status: "Active", lastUpdate: "2025-01-09" },
 ];
 
 const menuItems = [
@@ -331,10 +331,11 @@ export default function CompanyData() {
                   <thead>
                     <tr className="border-b border-slate-200">
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Company Name</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Industry</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Region</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-500">Employees</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">CEO</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Address</th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-slate-500">Revenue</th>
+                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-500">Operating Profit</th>
+                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-500">Debt</th>
                       <th className="text-center py-3 px-4 text-sm font-medium text-slate-500">Status</th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-slate-500">Last Update</th>
                     </tr>
@@ -350,12 +351,15 @@ export default function CompanyData() {
                             <span className="font-medium text-slate-800">{company.name}</span>
                           </div>
                         </td>
-                        <td className="py-4 px-4">
-                          <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">{company.industry}</span>
-                        </td>
-                        <td className="py-4 px-4 text-slate-600">{company.region}</td>
-                        <td className="py-4 px-4 text-right font-mono text-slate-700">{company.employees.toLocaleString()}</td>
+                        <td className="py-4 px-4 text-slate-700">{company.ceo}</td>
+                        <td className="py-4 px-4 text-sm text-slate-600 max-w-[200px] truncate" title={company.address}>{company.address}</td>
                         <td className="py-4 px-4 text-right font-mono text-slate-700">{company.revenue}</td>
+                        <td className="py-4 px-4 text-right font-mono text-slate-700">
+                          <span className={company.operatingProfit.startsWith("-") ? "text-red-600" : "text-emerald-600"}>
+                            {company.operatingProfit}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 text-right font-mono text-slate-700">{company.debt}</td>
                         <td className="py-4 px-4 text-center">
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-600 border border-emerald-100">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />

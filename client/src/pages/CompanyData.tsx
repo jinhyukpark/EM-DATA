@@ -264,10 +264,26 @@ export default function CompanyData() {
                   </div>
                   <p className="text-sm font-medium text-slate-500">Server Info</p>
                 </div>
-                <p className="text-lg font-bold text-slate-800" data-testid="server-info">AWS EC2</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <p className="text-sm text-emerald-600">ap-northeast-2</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-bold text-slate-800" data-testid="server-info">AWS EC2</p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-xs text-emerald-600">Running</span>
+                  </div>
+                </div>
+                <div className="mt-3 pt-3 border-t border-slate-100 space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-400">IP Address</span>
+                    <span className="font-mono text-slate-700">10.0.2.145</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-400">Port</span>
+                    <span className="font-mono text-slate-700">8080, 443</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-400">Region</span>
+                    <span className="text-slate-700">ap-northeast-2</span>
+                  </div>
                 </div>
               </div>
             </div>

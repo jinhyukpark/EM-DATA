@@ -245,4 +245,21 @@
     background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
     border: 1px solid rgba(255,255,255,0.06);
   }
+
+  .stat-card-light {
+    @apply relative overflow-hidden rounded-xl p-6 transition-all duration-300 bg-white;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .stat-card-light:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .chart-container-light {
+    @apply rounded-xl p-6 bg-white;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
 }

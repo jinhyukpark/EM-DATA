@@ -273,6 +273,46 @@ const alertMessages = [
   },
 ];
 
+const cloudServers = [
+  {
+    provider: "AWS",
+    logo: "🔶",
+    color: "hsl(30, 100%, 50%)",
+    bgColor: "bg-orange-50",
+    borderColor: "border-orange-200",
+    servers: [
+      { name: "EC2 - Data Collector", status: "running", cpu: 45, memory: 62, region: "ap-northeast-2" },
+      { name: "EC2 - API Server", status: "running", cpu: 32, memory: 48, region: "ap-northeast-2" },
+      { name: "RDS - PostgreSQL", status: "running", cpu: 28, memory: 71, region: "ap-northeast-2" },
+      { name: "Lambda - Scheduler", status: "running", cpu: 12, memory: 24, region: "ap-northeast-2" },
+    ],
+  },
+  {
+    provider: "GCP",
+    logo: "🔵",
+    color: "hsl(217, 91%, 60%)",
+    bgColor: "bg-blue-50",
+    borderColor: "border-blue-200",
+    servers: [
+      { name: "GCE - ML Pipeline", status: "running", cpu: 78, memory: 85, region: "asia-northeast3" },
+      { name: "Cloud SQL", status: "running", cpu: 35, memory: 52, region: "asia-northeast3" },
+      { name: "Cloud Run - API", status: "warning", cpu: 92, memory: 88, region: "asia-northeast3" },
+    ],
+  },
+  {
+    provider: "NCloud",
+    logo: "🟢",
+    color: "hsl(145, 63%, 42%)",
+    bgColor: "bg-green-50",
+    borderColor: "border-green-200",
+    servers: [
+      { name: "Server - Backup", status: "running", cpu: 15, memory: 34, region: "KR-1" },
+      { name: "Server - Archive", status: "stopped", cpu: 0, memory: 0, region: "KR-1" },
+      { name: "Cloud DB", status: "running", cpu: 22, memory: 45, region: "KR-2" },
+    ],
+  },
+];
+
 function CustomTooltip({ active, payload, label }: any) {
   if (active && payload && payload.length) {
     return (
@@ -424,6 +464,123 @@ function Sidebar() {
         </div>
       </div>
     </aside>
+  );
+}
+
+function ServerStatusSection() {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.6, duration: 0.5 }}
+      className="mt-10"
+    >
+      <h2 className="text-base font-semibold text-slate-700 mb-6">
+        Cloud Infrastructure Status
+      </h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {cloudServers.map((provider) => (
+          <div
+            key={provider.provider}
+            className={`chart-container-light ${provider.borderColor} border`}
+            data-testid={`server-status-${provider.provider.toLowerCase()}`}
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xl">{provider.logo}</span>
+              <h3 className="text-lg font-semibold text-slate-800">
+                {provider.provider}
+              </h3>
+              <div className="ml-auto flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs text-slate-500">
+                  {provider.servers.filter(s => s.status === "running").length}/{provider.servers.length} Online
+                </span>
+              </div>
+            </div>
+            <div className="space-y-3">
+              {provider.servers.map((server, idx) => (
+                <div
+                  key={idx}
+                  className="p-3 rounded-lg bg-slate-50 border border-slate-100"
+                  data-testid={`server-${provider.provider.toLowerCase()}-${idx}`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-slate-700">
+                      {server.name}
+                    </span>
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                        server.status === "running"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : server.status === "warning"
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-slate-200 text-slate-500"
+                      }`}
+                    >
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          server.status === "running"
+                            ? "bg-emerald-500"
+                            : server.status === "warning"
+                            ? "bg-amber-500 animate-pulse"
+                            : "bg-slate-400"
+                        }`}
+                      />
+                      {server.status === "running" ? "Running" : server.status === "warning" ? "Warning" : "Stopped"}
+                    </span>
+                  </div>
+                  <div className="text-xs text-slate-400 mb-2">{server.region}</div>
+                  {server.status !== "stopped" && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="text-slate-500">CPU</span>
+                          <span className={`font-medium ${server.cpu > 80 ? "text-red-500" : "text-slate-700"}`}>
+                            {server.cpu}%
+                          </span>
+                        </div>
+                        <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all ${
+                              server.cpu > 80
+                                ? "bg-red-500"
+                                : server.cpu > 60
+                                ? "bg-amber-500"
+                                : "bg-emerald-500"
+                            }`}
+                            style={{ width: `${server.cpu}%` }}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="text-slate-500">Memory</span>
+                          <span className={`font-medium ${server.memory > 80 ? "text-red-500" : "text-slate-700"}`}>
+                            {server.memory}%
+                          </span>
+                        </div>
+                        <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all ${
+                              server.memory > 80
+                                ? "bg-red-500"
+                                : server.memory > 60
+                                ? "bg-amber-500"
+                                : "bg-emerald-500"
+                            }`}
+                            style={{ width: `${server.memory}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.section>
   );
 }
 
@@ -783,10 +940,12 @@ export default function Dashboard() {
             </div>
           </motion.section>
 
+          <ServerStatusSection />
+
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.5 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
             className="mt-10"
           >
             <h2 className="text-base font-semibold text-slate-700 mb-6">

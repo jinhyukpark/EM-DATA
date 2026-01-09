@@ -223,7 +223,10 @@ function StatCard({
           {formatNumber(data.total)}
         </p>
 
-        <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+        <div 
+          className="flex items-center justify-between pt-4 mt-4 -mx-6 -mb-6 px-6 py-4 rounded-b-xl"
+          style={{ backgroundColor: `${data.color}08` }}
+        >
           <div>
             <p className="text-xs text-slate-400 mb-0.5">Today's Updates</p>
             <p

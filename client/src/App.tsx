@@ -10,6 +10,8 @@ import Login from "@/pages/Login";
 import Settings from "@/pages/Settings";
 import QAReport from "@/pages/QAReport";
 import AWSServers from "@/pages/AWSServers";
+import GCPServers from "@/pages/GCPServers";
+import NCloudServers from "@/pages/NCloudServers";
 
 function Router() {
   return (
@@ -22,6 +24,8 @@ function Router() {
       <Route path="/settings/permissions" component={Settings} />
       <Route path="/qa-report" component={QAReport} />
       <Route path="/servers/aws" component={AWSServers} />
+      <Route path="/servers/gcp" component={GCPServers} />
+      <Route path="/servers/ncloud" component={NCloudServers} />
       <Route component={NotFound} />
     </Switch>
   );

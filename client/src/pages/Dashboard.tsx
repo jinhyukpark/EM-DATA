@@ -17,6 +17,8 @@ import {
   AlertTriangle,
   X,
   Bell,
+  Server,
+  Cloud,
 } from "lucide-react";
 import {
   AreaChart,
@@ -370,9 +372,34 @@ const dataMenuItems = [
   },
 ];
 
+const serverMenuItems = [
+  {
+    id: "aws",
+    name: "AWS",
+    icon: Cloud,
+    path: "/servers/aws",
+    color: "text-orange-400",
+  },
+  {
+    id: "gcp",
+    name: "GCP",
+    icon: Cloud,
+    path: "/servers/gcp",
+    color: "text-blue-400",
+  },
+  {
+    id: "ncloud",
+    name: "NCloud",
+    icon: Cloud,
+    path: "/servers/ncloud",
+    color: "text-green-400",
+  },
+];
+
 function Sidebar() {
   const [location] = useLocation();
   const [dataMenuOpen, setDataMenuOpen] = useState(true);
+  const [serverMenuOpen, setServerMenuOpen] = useState(true);
 
   return (
     <aside className="w-64 bg-slate-900 min-h-screen flex flex-col" data-testid="sidebar">
@@ -443,6 +470,50 @@ function Sidebar() {
                     data-testid={`menu-${item.id}`}
                   >
                     <Icon className="w-4 h-4" strokeWidth={1.5} />
+                    <span className="text-sm">{item.name}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </motion.ul>
+        </div>
+
+        <div className="mt-2">
+          <button
+            onClick={() => setServerMenuOpen(!serverMenuOpen)}
+            className="flex items-center justify-between w-full px-4 py-3 text-slate-400 hover:text-white transition-colors"
+            data-testid="menu-server-toggle"
+          >
+            <div className="flex items-center gap-3">
+              <Server className="w-5 h-5" strokeWidth={1.5} />
+              <span className="font-medium text-sm">Server Management</span>
+            </div>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform duration-200 ${serverMenuOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+
+          <motion.ul
+            initial={false}
+            animate={{ height: serverMenuOpen ? "auto" : 0, opacity: serverMenuOpen ? 1 : 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden ml-4 space-y-1"
+          >
+            {serverMenuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location === item.path;
+              return (
+                <li key={item.id}>
+                  <Link
+                    href={item.path}
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? "bg-blue-600/20 text-blue-400"
+                        : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                    }`}
+                    data-testid={`menu-${item.id}`}
+                  >
+                    <Icon className={`w-4 h-4 ${item.color}`} strokeWidth={1.5} />
                     <span className="text-sm">{item.name}</span>
                   </Link>
                 </li>

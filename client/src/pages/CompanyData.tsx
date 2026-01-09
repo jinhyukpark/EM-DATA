@@ -30,6 +30,8 @@ import {
   Tag,
   ExternalLink,
   BarChart3,
+  Columns,
+  Check,
 } from "lucide-react";
 import {
   BarChart,
@@ -239,6 +241,38 @@ export default function CompanyData() {
   const [activeTab, setActiveTab] = useState<"all" | "unlisted" | "listed" | "audited">("listed");
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [modalTab, setModalTab] = useState<"info" | "financial">("info");
+  const [showColumnSelector, setShowColumnSelector] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState({
+    ceo: true,
+    address: true,
+    revenue: true,
+    operatingProfit: true,
+    debt: true,
+    status: true,
+    lastUpdate: true,
+    industry: false,
+    foundedDate: false,
+    employees: false,
+    netIncome: false,
+  });
+
+  const columnLabels: Record<string, string> = {
+    ceo: "CEO",
+    address: "Address",
+    revenue: "Revenue",
+    operatingProfit: "Op. Profit",
+    debt: "Debt",
+    status: "Status",
+    lastUpdate: "Updated",
+    industry: "Industry",
+    foundedDate: "Founded",
+    employees: "Employees",
+    netIncome: "Net Income",
+  };
+
+  const toggleColumn = (col: string) => {
+    setVisibleColumns(prev => ({ ...prev, [col]: !prev[col as keyof typeof prev] }));
+  };
 
   const totalCompanies = 34521;
   
@@ -366,6 +400,32 @@ export default function CompanyData() {
                     </select>
                     <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                   </div>
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowColumnSelector(!showColumnSelector)}
+                      className="flex items-center gap-2 px-3 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 hover:bg-slate-50 transition-colors"
+                      data-testid="column-selector-button"
+                    >
+                      <Columns className="w-4 h-4" />
+                      Fields
+                    </button>
+                    {showColumnSelector && (
+                      <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-10" data-testid="column-selector-dropdown">
+                        {Object.entries(columnLabels).map(([key, label]) => (
+                          <button
+                            key={key}
+                            onClick={() => toggleColumn(key)}
+                            className="flex items-center justify-between w-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+                          >
+                            <span>{label}</span>
+                            {visibleColumns[key as keyof typeof visibleColumns] && (
+                              <Check className="w-4 h-4 text-blue-500" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -374,13 +434,17 @@ export default function CompanyData() {
                   <thead>
                     <tr className="bg-slate-50/50">
                       <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">Company Name</th>
-                      <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">CEO</th>
-                      <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Address</th>
-                      <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Revenue</th>
-                      <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Op. Profit</th>
-                      <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Debt</th>
-                      <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Status</th>
-                      <th className="text-right py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">Updated</th>
+                      {visibleColumns.ceo && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">CEO</th>}
+                      {visibleColumns.address && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Address</th>}
+                      {visibleColumns.industry && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Industry</th>}
+                      {visibleColumns.foundedDate && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Founded</th>}
+                      {visibleColumns.employees && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Employees</th>}
+                      {visibleColumns.revenue && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Revenue</th>}
+                      {visibleColumns.operatingProfit && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Op. Profit</th>}
+                      {visibleColumns.debt && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Debt</th>}
+                      {visibleColumns.netIncome && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Net Income</th>}
+                      {visibleColumns.status && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Status</th>}
+                      {visibleColumns.lastUpdate && <th className="text-right py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">Updated</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -389,22 +453,36 @@ export default function CompanyData() {
                         <td className="py-3 px-6">
                           <span className="font-medium text-slate-800">{company.name}</span>
                         </td>
-                        <td className="py-3 px-4 text-sm text-slate-600">{company.ceo}</td>
-                        <td className="py-3 px-4 text-sm text-slate-500 max-w-[180px] truncate" title={company.address}>{company.address}</td>
-                        <td className="py-3 px-4 text-right text-sm font-mono text-slate-700">{company.revenue}</td>
-                        <td className="py-3 px-4 text-right text-sm font-mono">
-                          <span className={company.operatingProfit.startsWith("-") ? "text-red-500" : "text-emerald-600"}>
-                            {company.operatingProfit}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-right text-sm font-mono text-slate-600">{company.debt}</td>
-                        <td className="py-3 px-4 text-center">
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium text-emerald-600">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            {company.status}
-                          </span>
-                        </td>
-                        <td className="py-3 px-6 text-right text-xs text-slate-400">{company.lastUpdate}</td>
+                        {visibleColumns.ceo && <td className="py-3 px-4 text-sm text-slate-600">{company.ceo}</td>}
+                        {visibleColumns.address && <td className="py-3 px-4 text-sm text-slate-500 max-w-[180px] truncate" title={company.address}>{company.address}</td>}
+                        {visibleColumns.industry && <td className="py-3 px-4 text-sm text-slate-600">{company.industry}</td>}
+                        {visibleColumns.foundedDate && <td className="py-3 px-4 text-sm text-slate-500">{company.foundedDate || "-"}</td>}
+                        {visibleColumns.employees && <td className="py-3 px-4 text-right text-sm text-slate-600">{company.employees?.toLocaleString() || "-"}</td>}
+                        {visibleColumns.revenue && <td className="py-3 px-4 text-right text-sm font-mono text-slate-700">{company.revenue}</td>}
+                        {visibleColumns.operatingProfit && (
+                          <td className="py-3 px-4 text-right text-sm font-mono">
+                            <span className={company.operatingProfit.startsWith("-") ? "text-red-500" : "text-emerald-600"}>
+                              {company.operatingProfit}
+                            </span>
+                          </td>
+                        )}
+                        {visibleColumns.debt && <td className="py-3 px-4 text-right text-sm font-mono text-slate-600">{company.debt}</td>}
+                        {visibleColumns.netIncome && (
+                          <td className="py-3 px-4 text-right text-sm font-mono">
+                            <span className={company.netIncome?.startsWith("-") ? "text-red-500" : "text-slate-700"}>
+                              {company.netIncome || "-"}
+                            </span>
+                          </td>
+                        )}
+                        {visibleColumns.status && (
+                          <td className="py-3 px-4 text-center">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium text-emerald-600">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                              {company.status}
+                            </span>
+                          </td>
+                        )}
+                        {visibleColumns.lastUpdate && <td className="py-3 px-6 text-right text-xs text-slate-400">{company.lastUpdate}</td>}
                       </tr>
                     ))}
                   </tbody>

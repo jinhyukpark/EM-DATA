@@ -332,7 +332,26 @@ export default function CompanyData() {
         </header>
 
         <main className="flex-1 p-6 bg-slate-50/50">
-          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-6">
+          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-4">
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => switchDataView("company")}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "company" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"}`}
+                data-testid="tab-company-info"
+              >
+                Company Info
+              </button>
+              <button
+                onClick={() => switchDataView("financial")}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "financial" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"}`}
+                data-testid="tab-financial-info"
+              >
+                Financial Info
+              </button>
+            </div>
+          </motion.section>
+
+          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.3 }} className="mb-6">
             <div className="flex items-center gap-8 py-4 px-6 bg-white rounded-xl border border-slate-100">
               <div className="flex items-center gap-3">
                 <Building2 className="w-5 h-5 text-blue-500" />
@@ -451,23 +470,6 @@ export default function CompanyData() {
                     )}
                   </div>
                 </div>
-              </div>
-              
-              <div className="flex items-center gap-1 px-6 py-2 border-b border-slate-100 bg-slate-50/30">
-                <button
-                  onClick={() => switchDataView("company")}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "company" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"}`}
-                  data-testid="tab-company-info"
-                >
-                  Company Info
-                </button>
-                <button
-                  onClick={() => switchDataView("financial")}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "financial" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"}`}
-                  data-testid="tab-financial-info"
-                >
-                  Financial Info
-                </button>
               </div>
 
               <div className="overflow-x-auto">

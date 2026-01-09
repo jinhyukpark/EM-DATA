@@ -244,105 +244,88 @@ export default function CompanyData() {
           </div>
         </header>
 
-        <main className="flex-1 p-8 bg-white">
-          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="chart-container-light">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                    <Building2 className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <p className="text-sm font-medium text-slate-500">Total Companies</p>
+        <main className="flex-1 p-6 bg-slate-50/50">
+          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-6">
+            <div className="flex items-center gap-8 py-4 px-6 bg-white rounded-xl border border-slate-100">
+              <div className="flex items-center gap-3">
+                <Building2 className="w-5 h-5 text-blue-500" />
+                <div>
+                  <p className="text-xs text-slate-400 uppercase tracking-wide">Total</p>
+                  <p className="text-xl font-bold text-slate-800" data-testid="total-companies">{totalCompanies.toLocaleString()}</p>
                 </div>
-                <p className="text-3xl font-bold text-slate-800" data-testid="total-companies">{totalCompanies.toLocaleString()}</p>
-                <p className="text-sm text-slate-400 mt-1">registered entities</p>
               </div>
-
-              <div className="chart-container-light">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
-                    <Activity className="w-5 h-5 text-emerald-600" />
-                  </div>
-                  <p className="text-sm font-medium text-slate-500">Active Companies</p>
+              <div className="w-px h-10 bg-slate-200" />
+              <div className="flex items-center gap-3">
+                <Activity className="w-5 h-5 text-emerald-500" />
+                <div>
+                  <p className="text-xs text-slate-400 uppercase tracking-wide">Active</p>
+                  <p className="text-xl font-bold text-emerald-600" data-testid="active-companies">32,104</p>
                 </div>
-                <p className="text-3xl font-bold text-emerald-600" data-testid="active-companies">32,104</p>
-                <p className="text-sm text-slate-400 mt-1">updated within 30 days</p>
               </div>
-
-              <div className="chart-container-light">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <p className="text-sm font-medium text-slate-500">New / Updated Today</p>
+              <div className="w-px h-10 bg-slate-200" />
+              <div className="flex items-center gap-3">
+                <TrendingUp className="w-5 h-5 text-purple-500" />
+                <div>
+                  <p className="text-xs text-slate-400 uppercase tracking-wide">Today</p>
+                  <p className="text-xl font-bold text-purple-600" data-testid="today-updates">+127</p>
                 </div>
-                <p className="text-3xl font-bold text-purple-600" data-testid="today-updates">+127</p>
-                <p className="text-sm text-slate-400 mt-1">new or modified</p>
               </div>
-
-              <div className="chart-container-light">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center">
-                    <PieChartIcon className="w-5 h-5 text-amber-600" />
+              <div className="w-px h-10 bg-slate-200" />
+              <div className="flex items-center gap-4">
+                <PieChartIcon className="w-5 h-5 text-amber-500" />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Data Coverage</p>
+                    <p className="text-sm font-bold text-slate-700">85%</p>
                   </div>
-                  <p className="text-sm font-medium text-slate-500">Data Coverage</p>
+                  <div className="w-32 h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-amber-500 rounded-full" style={{ width: "85%" }} />
+                  </div>
                 </div>
-                <p className="text-3xl font-bold text-slate-800 mb-3">85%</p>
-                <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full" style={{ width: "85%" }} />
-                </div>
-                <p className="text-sm text-slate-400 mt-2">of required fields filled</p>
               </div>
             </div>
           </motion.section>
 
-          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }}>
-            <div className="chart-container-light">
-              <div className="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
-                <button
-                  onClick={() => setActiveTab("unlisted")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "unlisted" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
-                  data-testid="tab-unlisted"
-                >
-                  Unlisted
-                  <span className="ml-2 px-1.5 py-0.5 rounded text-xs bg-white/20">{unlistedCompanies.length}</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab("listed")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "listed" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
-                  data-testid="tab-listed"
-                >
-                  Listed
-                  <span className="ml-2 px-1.5 py-0.5 rounded text-xs bg-white/20">{listedCompanies.length}</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab("audited")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "audited" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
-                  data-testid="tab-audited"
-                >
-                  Audited
-                  <span className="ml-2 px-1.5 py-0.5 rounded text-xs bg-white/20">{auditedCompanies.length}</span>
-                </button>
-              </div>
-
-              <div className="flex flex-col lg:flex-row gap-4 mb-6">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <Input placeholder="Search company name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 border-slate-200" data-testid="search-input" />
+          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.3 }}>
+            <div className="bg-white rounded-xl border border-slate-100">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setActiveTab("unlisted")}
+                    className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${activeTab === "unlisted" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"}`}
+                    data-testid="tab-unlisted"
+                  >
+                    Unlisted <span className="ml-1 text-xs opacity-60">{unlistedCompanies.length}</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("listed")}
+                    className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${activeTab === "listed" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"}`}
+                    data-testid="tab-listed"
+                  >
+                    Listed <span className="ml-1 text-xs opacity-60">{listedCompanies.length}</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("audited")}
+                    className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${activeTab === "audited" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"}`}
+                    data-testid="tab-audited"
+                  >
+                    Audited <span className="ml-1 text-xs opacity-60">{auditedCompanies.length}</span>
+                  </button>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex items-center gap-3">
                   <div className="relative">
-                    <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <select value={selectedIndustry} onChange={(e) => setSelectedIndustry(e.target.value)} className="pl-10 pr-8 py-2 border border-slate-200 rounded-lg text-sm bg-white text-slate-700 appearance-none cursor-pointer" data-testid="industry-filter">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Input placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9 w-48 h-9 border-slate-200 text-sm" data-testid="search-input" />
+                  </div>
+                  <div className="relative">
+                    <select value={selectedIndustry} onChange={(e) => setSelectedIndustry(e.target.value)} className="pl-3 pr-8 py-2 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 appearance-none cursor-pointer" data-testid="industry-filter">
                       <option value="All">All Industries</option>
                       <option value="Manufacturing">Manufacturing</option>
                       <option value="IT/Software">IT/Software</option>
                       <option value="Finance">Finance</option>
                       <option value="Retail">Retail</option>
-                      <option value="Healthcare">Healthcare</option>
-                      <option value="Construction">Construction</option>
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                   </div>
                 </div>
               </div>
@@ -350,58 +333,53 @@ export default function CompanyData() {
               <div className="overflow-x-auto">
                 <table className="w-full" data-testid="company-table">
                   <thead>
-                    <tr className="border-b border-slate-200">
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Company Name</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">CEO</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Address</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-500">Revenue</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-500">Operating Profit</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-500">Debt</th>
-                      <th className="text-center py-3 px-4 text-sm font-medium text-slate-500">Status</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-500">Last Update</th>
+                    <tr className="bg-slate-50/50">
+                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">Company Name</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">CEO</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Address</th>
+                      <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Revenue</th>
+                      <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Op. Profit</th>
+                      <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Debt</th>
+                      <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Status</th>
+                      <th className="text-right py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">Updated</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredCompanies.map((company) => (
-                      <tr key={company.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer" data-testid={`company-row-${company.id}`}>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                              <Building2 className="w-4 h-4 text-blue-600" />
-                            </div>
-                            <span className="font-medium text-slate-800">{company.name}</span>
-                          </div>
+                      <tr key={company.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer" data-testid={`company-row-${company.id}`}>
+                        <td className="py-3 px-6">
+                          <span className="font-medium text-slate-800">{company.name}</span>
                         </td>
-                        <td className="py-4 px-4 text-slate-700">{company.ceo}</td>
-                        <td className="py-4 px-4 text-sm text-slate-600 max-w-[200px] truncate" title={company.address}>{company.address}</td>
-                        <td className="py-4 px-4 text-right font-mono text-slate-700">{company.revenue}</td>
-                        <td className="py-4 px-4 text-right font-mono text-slate-700">
-                          <span className={company.operatingProfit.startsWith("-") ? "text-red-600" : "text-emerald-600"}>
+                        <td className="py-3 px-4 text-sm text-slate-600">{company.ceo}</td>
+                        <td className="py-3 px-4 text-sm text-slate-500 max-w-[180px] truncate" title={company.address}>{company.address}</td>
+                        <td className="py-3 px-4 text-right text-sm font-mono text-slate-700">{company.revenue}</td>
+                        <td className="py-3 px-4 text-right text-sm font-mono">
+                          <span className={company.operatingProfit.startsWith("-") ? "text-red-500" : "text-emerald-600"}>
                             {company.operatingProfit}
                           </span>
                         </td>
-                        <td className="py-4 px-4 text-right font-mono text-slate-700">{company.debt}</td>
-                        <td className="py-4 px-4 text-center">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-600 border border-emerald-100">
+                        <td className="py-3 px-4 text-right text-sm font-mono text-slate-600">{company.debt}</td>
+                        <td className="py-3 px-4 text-center">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium text-emerald-600">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                             {company.status}
                           </span>
                         </td>
-                        <td className="py-4 px-4 text-right text-sm text-slate-500">{company.lastUpdate}</td>
+                        <td className="py-3 px-6 text-right text-xs text-slate-400">{company.lastUpdate}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
 
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
-                <p className="text-sm text-slate-500">Showing {filteredCompanies.length} of {totalCompanies.toLocaleString()} companies</p>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="border-slate-200" data-testid="prev-page">
+              <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
+                <p className="text-xs text-slate-400">Showing {filteredCompanies.length} of {totalCompanies.toLocaleString()} companies</p>
+                <div className="flex items-center gap-1">
+                  <Button variant="ghost" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="h-8 w-8 p-0" data-testid="prev-page">
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
-                  <span className="text-sm text-slate-600 px-3">Page {currentPage}</span>
-                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(currentPage + 1)} className="border-slate-200" data-testid="next-page">
+                  <span className="text-xs text-slate-500 px-2">Page {currentPage}</span>
+                  <Button variant="ghost" size="sm" onClick={() => setCurrentPage(currentPage + 1)} className="h-8 w-8 p-0" data-testid="next-page">
                     <ChevronRight className="w-4 h-4" />
                   </Button>
                 </div>

@@ -54,16 +54,25 @@ const settingsMenuItems = [
 ];
 
 const awsServices = [
-  { id: 1, name: "Company Data API", type: "EC2", instanceId: "i-0a1b2c3d4e5f", region: "ap-northeast-2", cpu: 45, memory: 62, status: "running", ip: "10.0.1.101", port: "8080" },
-  { id: 2, name: "Patent Crawler", type: "EC2", instanceId: "i-1b2c3d4e5f6a", region: "ap-northeast-2", cpu: 78, memory: 81, status: "running", ip: "10.0.1.102", port: "8081" },
-  { id: 3, name: "News Aggregator", type: "EC2", instanceId: "i-2c3d4e5f6a7b", region: "ap-northeast-2", cpu: 23, memory: 45, status: "running", ip: "10.0.1.103", port: "8082" },
-  { id: 4, name: "Stock Data Collector", type: "Lambda", instanceId: "stock-collector-fn", region: "ap-northeast-2", cpu: 0, memory: 0, status: "idle", ip: "-", port: "-" },
-  { id: 5, name: "ML Prediction Engine", type: "EC2", instanceId: "i-3d4e5f6a7b8c", region: "ap-northeast-2", cpu: 92, memory: 88, status: "warning", ip: "10.0.1.105", port: "5000" },
-  { id: 6, name: "Data Warehouse", type: "RDS", instanceId: "db-main-prod", region: "ap-northeast-2", cpu: 35, memory: 72, status: "running", ip: "10.0.2.50", port: "5432" },
-  { id: 7, name: "Redis Cache", type: "ElastiCache", instanceId: "cache-prod-01", region: "ap-northeast-2", cpu: 12, memory: 45, status: "running", ip: "10.0.2.51", port: "6379" },
-  { id: 8, name: "File Storage", type: "S3", instanceId: "company-data-bucket", region: "ap-northeast-2", cpu: 0, memory: 0, status: "running", ip: "-", port: "-" },
-  { id: 9, name: "Backup Service", type: "EC2", instanceId: "i-4e5f6a7b8c9d", region: "ap-northeast-2", cpu: 5, memory: 28, status: "stopped", ip: "10.0.1.110", port: "9000" },
+  { id: 1, name: "Company Data API", type: "EC2", instanceId: "i-0a1b2c3d4e5f", region: "ap-northeast-2", cpu: 45, memory: 62, status: "running", ip: "10.0.1.101", port: "8080", service: "Company" },
+  { id: 2, name: "Patent Crawler", type: "EC2", instanceId: "i-1b2c3d4e5f6a", region: "ap-northeast-2", cpu: 78, memory: 81, status: "running", ip: "10.0.1.102", port: "8081", service: "Patent" },
+  { id: 3, name: "News Aggregator", type: "EC2", instanceId: "i-2c3d4e5f6a7b", region: "ap-northeast-2", cpu: 23, memory: 45, status: "running", ip: "10.0.1.103", port: "8082", service: "News" },
+  { id: 4, name: "Stock Data Collector", type: "Lambda", instanceId: "stock-collector-fn", region: "ap-northeast-2", cpu: 0, memory: 0, status: "idle", ip: "-", port: "-", service: "Stock" },
+  { id: 5, name: "ML Prediction Engine", type: "EC2", instanceId: "i-3d4e5f6a7b8c", region: "ap-northeast-2", cpu: 92, memory: 88, status: "warning", ip: "10.0.1.105", port: "5000", service: "ML" },
+  { id: 6, name: "Data Warehouse", type: "RDS", instanceId: "db-main-prod", region: "ap-northeast-2", cpu: 35, memory: 72, status: "running", ip: "10.0.2.50", port: "5432", service: "All" },
+  { id: 7, name: "Redis Cache", type: "ElastiCache", instanceId: "cache-prod-01", region: "ap-northeast-2", cpu: 12, memory: 45, status: "running", ip: "10.0.2.51", port: "6379", service: "All" },
+  { id: 8, name: "File Storage", type: "S3", instanceId: "company-data-bucket", region: "ap-northeast-2", cpu: 0, memory: 0, status: "running", ip: "-", port: "-", service: "Company" },
+  { id: 9, name: "Backup Service", type: "EC2", instanceId: "i-4e5f6a7b8c9d", region: "ap-northeast-2", cpu: 5, memory: 28, status: "stopped", ip: "10.0.1.110", port: "9000", service: "All" },
 ];
+
+const serviceColors: Record<string, { bg: string; text: string }> = {
+  Company: { bg: "bg-blue-50", text: "text-blue-600" },
+  Patent: { bg: "bg-purple-50", text: "text-purple-600" },
+  News: { bg: "bg-green-50", text: "text-green-600" },
+  Stock: { bg: "bg-amber-50", text: "text-amber-600" },
+  ML: { bg: "bg-pink-50", text: "text-pink-600" },
+  All: { bg: "bg-slate-100", text: "text-slate-600" },
+};
 
 function Sidebar() {
   const [location] = useLocation();
@@ -294,7 +303,12 @@ export default function AWSServers() {
                     {awsServices.map((service) => (
                       <tr key={service.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors" data-testid={`service-row-${service.id}`}>
                         <td className="py-3 px-6">
-                          <span className="font-medium text-slate-800">{service.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-slate-800">{service.name}</span>
+                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${serviceColors[service.service]?.bg} ${serviceColors[service.service]?.text}`}>
+                              {service.service}
+                            </span>
+                          </div>
                         </td>
                         <td className="py-3 px-4">
                           <span className="px-2 py-1 rounded text-xs font-medium bg-orange-50 text-orange-600">{service.type}</span>

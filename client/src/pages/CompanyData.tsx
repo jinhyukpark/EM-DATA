@@ -285,28 +285,13 @@ export default function CompanyData() {
                   <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center">
                     <PieChartIcon className="w-5 h-5 text-amber-600" />
                   </div>
-                  <p className="text-sm font-medium text-slate-500">Coverage Ratio</p>
+                  <p className="text-sm font-medium text-slate-500">Data Coverage</p>
                 </div>
-                <div className="space-y-3 mt-2">
-                  <div>
-                    <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-slate-500">Revenue</span>
-                      <span className="font-medium text-slate-700">78%</span>
-                    </div>
-                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-amber-500 rounded-full" style={{ width: "78%" }} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-slate-500">Employee Info</span>
-                      <span className="font-medium text-slate-700">91%</span>
-                    </div>
-                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-emerald-500 rounded-full" style={{ width: "91%" }} />
-                    </div>
-                  </div>
+                <p className="text-3xl font-bold text-slate-800 mb-3">85%</p>
+                <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full" style={{ width: "85%" }} />
                 </div>
+                <p className="text-sm text-slate-400 mt-2">of required fields filled</p>
               </div>
             </div>
           </motion.section>

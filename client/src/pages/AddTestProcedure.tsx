@@ -26,6 +26,9 @@ import {
   BookOpen,
   Lightbulb,
   UserCog,
+  Calendar,
+  Clock,
+  Repeat,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -200,6 +203,16 @@ function Sidebar() {
   );
 }
 
+const weekDays = [
+  { id: "mon", label: "Mon" },
+  { id: "tue", label: "Tue" },
+  { id: "wed", label: "Wed" },
+  { id: "thu", label: "Thu" },
+  { id: "fri", label: "Fri" },
+  { id: "sat", label: "Sat" },
+  { id: "sun", label: "Sun" },
+];
+
 export default function AddTestProcedure() {
   const [, setLocation] = useLocation();
   const [serviceName, setServiceName] = useState("");
@@ -207,6 +220,20 @@ export default function AddTestProcedure() {
   const [assignedInspector, setAssignedInspector] = useState("");
   const [testItems, setTestItems] = useState<TestItem[]>([]);
   const [nextId, setNextId] = useState(1);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [isRepeating, setIsRepeating] = useState(false);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [hasSpecificTime, setHasSpecificTime] = useState(false);
+  const [specificTime, setSpecificTime] = useState("");
+
+  const toggleDay = (dayId: string) => {
+    if (selectedDays.includes(dayId)) {
+      setSelectedDays(selectedDays.filter(d => d !== dayId));
+    } else {
+      setSelectedDays([...selectedDays, dayId]);
+    }
+  };
 
   const addTestItem = () => {
     setTestItems([
@@ -340,6 +367,104 @@ export default function AddTestProcedure() {
                       ))}
                     </select>
                   </div>
+                </div>
+
+                <div className="mt-6 p-5 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Calendar className="w-4 h-4 text-blue-600" />
+                    <h3 className="text-sm font-semibold text-slate-700">Schedule</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-500 mb-1.5">Start Date</label>
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full h-9 px-3 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        data-testid="input-start-date"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-500 mb-1.5">End Date</label>
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full h-9 px-3 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        data-testid="input-end-date"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 mb-4">
+                    <button
+                      onClick={() => setIsRepeating(!isRepeating)}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                        isRepeating
+                          ? "border-blue-500 bg-blue-50 text-blue-700"
+                          : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                      }`}
+                      data-testid="toggle-repeat"
+                    >
+                      <Repeat className="w-4 h-4" />
+                      <span className="text-sm font-medium">Repeating Task</span>
+                    </button>
+                  </div>
+
+                  {isRepeating && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="space-y-4"
+                    >
+                      <div>
+                        <label className="block text-xs font-medium text-slate-500 mb-2">Repeat on Days</label>
+                        <div className="flex gap-2">
+                          {weekDays.map((day) => (
+                            <button
+                              key={day.id}
+                              onClick={() => toggleDay(day.id)}
+                              className={`w-10 h-10 rounded-lg text-xs font-medium transition-all ${
+                                selectedDays.includes(day.id)
+                                  ? "bg-blue-600 text-white"
+                                  : "bg-white border border-slate-200 text-slate-600 hover:border-blue-300"
+                              }`}
+                              data-testid={`day-${day.id}`}
+                            >
+                              {day.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => setHasSpecificTime(!hasSpecificTime)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                            hasSpecificTime
+                              ? "border-blue-500 bg-blue-50 text-blue-700"
+                              : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                          }`}
+                          data-testid="toggle-specific-time"
+                        >
+                          <Clock className="w-4 h-4" />
+                          <span className="text-sm font-medium">Specific Time</span>
+                        </button>
+
+                        {hasSpecificTime && (
+                          <input
+                            type="time"
+                            value={specificTime}
+                            onChange={(e) => setSpecificTime(e.target.value)}
+                            className="h-9 px-3 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            data-testid="input-specific-time"
+                          />
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
                 </div>
               </div>
 

@@ -27,7 +27,19 @@ import {
   BookOpen,
   Lightbulb,
   UserCog,
+  X,
 } from "lucide-react";
+
+type Patent = {
+  id: number;
+  title: string;
+  applicant: string;
+  applicationNo: string;
+  applicationDate: string;
+  status: string;
+  ipcCode: string;
+  country: string;
+};
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -187,6 +199,7 @@ export default function PatentData() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedPatent, setSelectedPatent] = useState<Patent | null>(null);
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState({
     applicant: true,
@@ -338,7 +351,7 @@ export default function PatentData() {
                   </thead>
                   <tbody>
                     {filteredPatents.map((patent) => (
-                      <tr key={patent.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors" data-testid={`patent-row-${patent.id}`}>
+                      <tr key={patent.id} onClick={() => setSelectedPatent(patent)} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer" data-testid={`patent-row-${patent.id}`}>
                         <td className="py-3 px-6">
                           <span className="font-medium text-slate-800">{patent.title}</span>
                         </td>
@@ -385,6 +398,99 @@ export default function PatentData() {
           </motion.section>
         </main>
       </div>
+
+      {selectedPatent && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setSelectedPatent(null)}>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const currentIndex = filteredPatents.findIndex(p => p.id === selectedPatent.id);
+                if (currentIndex > 0) {
+                  setSelectedPatent(filteredPatents[currentIndex - 1]);
+                }
+              }}
+              disabled={filteredPatents.findIndex(p => p.id === selectedPatent.id) === 0}
+              className="p-3 bg-white rounded-full shadow-lg hover:bg-slate-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              data-testid="prev-patent"
+            >
+              <ChevronLeft className="w-6 h-6 text-slate-600" />
+            </button>
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()} style={{ width: '640px' }}>
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800">{selectedPatent.title}</h3>
+                  <p className="text-xs text-slate-400">{filteredPatents.findIndex(p => p.id === selectedPatent.id) + 1} / {filteredPatents.length}</p>
+                </div>
+                <button onClick={() => setSelectedPatent(null)} className="p-2 hover:bg-slate-200 rounded-lg transition-colors" data-testid="close-detail-modal">
+                  <X className="w-5 h-5 text-slate-500" />
+                </button>
+              </div>
+              <div className="overflow-y-auto max-h-[calc(80vh-60px)]">
+                <table className="w-full text-sm">
+                  <tbody>
+                    <tr className="border-b border-slate-100">
+                      <td className="py-2.5 px-6 text-slate-500 font-medium w-40 bg-slate-50">ID</td>
+                      <td className="py-2.5 px-6 text-slate-800 font-mono">{selectedPatent.id}</td>
+                    </tr>
+                    <tr className="border-b border-slate-100">
+                      <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Title</td>
+                      <td className="py-2.5 px-6 text-slate-800">{selectedPatent.title}</td>
+                    </tr>
+                    <tr className="border-b border-slate-100">
+                      <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Applicant</td>
+                      <td className="py-2.5 px-6 text-slate-800">{selectedPatent.applicant}</td>
+                    </tr>
+                    <tr className="border-b border-slate-100">
+                      <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Application No.</td>
+                      <td className="py-2.5 px-6 text-slate-800 font-mono">{selectedPatent.applicationNo}</td>
+                    </tr>
+                    <tr className="border-b border-slate-100">
+                      <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Application Date</td>
+                      <td className="py-2.5 px-6 text-slate-800">{selectedPatent.applicationDate}</td>
+                    </tr>
+                    <tr className="border-b border-slate-100">
+                      <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">IPC Code</td>
+                      <td className="py-2.5 px-6 text-slate-800 font-mono">{selectedPatent.ipcCode}</td>
+                    </tr>
+                    <tr className="border-b border-slate-100">
+                      <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Country</td>
+                      <td className="py-2.5 px-6 text-slate-800">{selectedPatent.country}</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Status</td>
+                      <td className="py-2.5 px-6">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${
+                          selectedPatent.status === "Registered" ? "text-emerald-600 bg-emerald-50" :
+                          selectedPatent.status === "Published" ? "text-blue-600 bg-blue-50" :
+                          selectedPatent.status === "Under Review" ? "text-amber-600 bg-amber-50" :
+                          "text-slate-600 bg-slate-100"
+                        }`}>
+                          {selectedPatent.status}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const currentIndex = filteredPatents.findIndex(p => p.id === selectedPatent.id);
+                if (currentIndex < filteredPatents.length - 1) {
+                  setSelectedPatent(filteredPatents[currentIndex + 1]);
+                }
+              }}
+              disabled={filteredPatents.findIndex(p => p.id === selectedPatent.id) === filteredPatents.length - 1}
+              className="p-3 bg-white rounded-full shadow-lg hover:bg-slate-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              data-testid="next-patent"
+            >
+              <ChevronRight className="w-6 h-6 text-slate-600" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

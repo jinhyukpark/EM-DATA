@@ -333,9 +333,6 @@ export default function QAReport() {
                 <button onClick={() => setActiveTab("services")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "services" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100"}`} data-testid="tab-services">
                   Services
                 </button>
-                <button onClick={() => setActiveTab("tests")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "tests" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100"}`} data-testid="tab-tests">
-                  Test Procedures
-                </button>
                 <button onClick={() => setActiveTab("inspectors")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "inspectors" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100"}`} data-testid="tab-inspectors">
                   Inspectors
                 </button>
@@ -435,75 +432,6 @@ export default function QAReport() {
                             <button className="p-2 hover:bg-slate-100 rounded-lg">
                               <MoreHorizontal className="w-4 h-4 text-slate-400" />
                             </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {activeTab === "tests" && (
-                <div className="overflow-x-auto">
-                  <table className="w-full" data-testid="tests-table">
-                    <thead>
-                      <tr className="border-b border-slate-200">
-                        <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Test Name</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Service</th>
-                        <th className="text-center py-3 px-4 text-sm font-medium text-slate-500">Steps</th>
-                        <th className="text-center py-3 px-4 text-sm font-medium text-slate-500">Status</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Completed By</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Completed At</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-slate-500">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {testProcedures.map((test) => (
-                        <tr key={test.id} className="border-b border-slate-100 hover:bg-slate-50" data-testid={`test-row-${test.id}`}>
-                          <td className="py-4 px-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
-                                <FileCheck className="w-4 h-4 text-purple-600" />
-                              </div>
-                              <span className="font-medium text-slate-800">{test.name}</span>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4 text-sm text-slate-600">{test.service}</td>
-                          <td className="py-4 px-4 text-center">
-                            <span className="px-2 py-0.5 rounded bg-slate-100 text-sm font-mono text-slate-600">{test.steps}</span>
-                          </td>
-                          <td className="py-4 px-4 text-center">
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                              test.status === "Completed" ? "bg-emerald-50 text-emerald-600" :
-                              test.status === "In Progress" ? "bg-blue-50 text-blue-600" :
-                              test.status === "Failed" ? "bg-red-50 text-red-600" :
-                              "bg-slate-100 text-slate-500"
-                            }`}>
-                              {test.status}
-                            </span>
-                          </td>
-                          <td className="py-4 px-4">
-                            {test.completedBy ? (
-                              <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium text-slate-600">
-                                  {test.completedBy.split(" ").map(n => n[0]).join("")}
-                                </div>
-                                <span className="text-sm text-slate-600">{test.completedBy}</span>
-                              </div>
-                            ) : (
-                              <span className="text-sm text-slate-400">-</span>
-                            )}
-                          </td>
-                          <td className="py-4 px-4 text-sm text-slate-500">{test.completedAt || "-"}</td>
-                          <td className="py-4 px-4 text-right">
-                            <div className="flex items-center justify-end gap-1">
-                              <button className="p-2 hover:bg-slate-100 rounded-lg">
-                                <Edit2 className="w-4 h-4 text-slate-400" />
-                              </button>
-                              <button className="p-2 hover:bg-red-50 rounded-lg">
-                                <Trash2 className="w-4 h-4 text-red-400" />
-                              </button>
-                            </div>
                           </td>
                         </tr>
                       ))}

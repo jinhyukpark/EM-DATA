@@ -25,6 +25,7 @@ import {
   Columns,
   Check,
   ExternalLink,
+  BookOpen,
   Lightbulb,
   UserCog,
 } from "lucide-react";
@@ -39,6 +40,7 @@ const menuItems = [
 const dataMenuItems = [
   { id: "company-data", name: "Company Data", icon: Building2, path: "/data/company" },
   { id: "patent-data", name: "Patent Data", icon: FileText, path: "/data/patent" },
+  { id: "paper-data", name: "Paper Data", icon: BookOpen, path: "/data/paper" },
   { id: "stock-data", name: "Stock Data", icon: TrendingUp, path: "/data/stock" },
   { id: "news-data", name: "News Data", icon: Newspaper, path: "/data/news" },
   { id: "rnd-data", name: "R&D Data", icon: Lightbulb, path: "/data/rnd" },

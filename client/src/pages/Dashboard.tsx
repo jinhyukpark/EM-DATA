@@ -24,6 +24,7 @@ import {
   Users,
   Shield,
   ClipboardCheck,
+  BookOpen,
   Lightbulb,
   UserCog,
 } from "lucide-react";

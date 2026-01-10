@@ -17,6 +17,7 @@ import StockData from "@/pages/StockData";
 import NewsData from "@/pages/NewsData";
 import RnDData from "@/pages/RnDData";
 import EmploymentData from "@/pages/EmploymentData";
+import PaperData from "@/pages/PaperData";
 
 function Router() {
   return (
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/" component={Dashboard} />
       <Route path="/data/company" component={CompanyData} />
       <Route path="/data/patent" component={PatentData} />
+      <Route path="/data/paper" component={PaperData} />
       <Route path="/data/stock" component={StockData} />
       <Route path="/data/news" component={NewsData} />
       <Route path="/data/rnd" component={RnDData} />

@@ -24,6 +24,8 @@ import {
   Users,
   Shield,
   ClipboardCheck,
+  Lightbulb,
+  UserCog,
 } from "lucide-react";
 import {
   AreaChart,
@@ -383,6 +385,18 @@ const dataMenuItems = [
     name: "News Data",
     icon: Newspaper,
     path: "/data/news",
+  },
+  {
+    id: "rnd-data",
+    name: "R&D Data",
+    icon: Lightbulb,
+    path: "/data/rnd",
+  },
+  {
+    id: "employment-data",
+    name: "Employment Data",
+    icon: UserCog,
+    path: "/data/employment",
   },
 ];
 

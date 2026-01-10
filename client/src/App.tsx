@@ -15,6 +15,8 @@ import NCloudServers from "@/pages/NCloudServers";
 import PatentData from "@/pages/PatentData";
 import StockData from "@/pages/StockData";
 import NewsData from "@/pages/NewsData";
+import RnDData from "@/pages/RnDData";
+import EmploymentData from "@/pages/EmploymentData";
 
 function Router() {
   return (
@@ -25,6 +27,8 @@ function Router() {
       <Route path="/data/patent" component={PatentData} />
       <Route path="/data/stock" component={StockData} />
       <Route path="/data/news" component={NewsData} />
+      <Route path="/data/rnd" component={RnDData} />
+      <Route path="/data/employment" component={EmploymentData} />
       <Route path="/settings/profile" component={Settings} />
       <Route path="/settings/users" component={Settings} />
       <Route path="/settings/permissions" component={Settings} />

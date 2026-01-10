@@ -76,7 +76,6 @@ function Sidebar() {
   const [location] = useLocation();
   const [dataMenuOpen, setDataMenuOpen] = useState(true);
   const [serverMenuOpen, setServerMenuOpen] = useState(false);
-  const [settingsMenuOpen, setSettingsMenuOpen] = useState(true);
 
   return (
     <aside className="w-64 bg-slate-900 min-h-screen flex flex-col" data-testid="sidebar">
@@ -150,27 +149,10 @@ function Sidebar() {
         </div>
 
         <div className="mt-2">
-          <button onClick={() => setSettingsMenuOpen(!settingsMenuOpen)} className="flex items-center justify-between w-full px-4 py-3 text-slate-400 hover:text-white transition-colors">
-            <div className="flex items-center gap-3">
-              <SettingsIcon className="w-5 h-5" strokeWidth={1.5} />
-              <span className="font-medium text-sm">Settings</span>
-            </div>
-            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${settingsMenuOpen ? "rotate-180" : ""}`} />
-          </button>
-          <motion.ul initial={false} animate={{ height: settingsMenuOpen ? "auto" : 0, opacity: settingsMenuOpen ? 1 : 0 }} transition={{ duration: 0.2 }} className="overflow-hidden ml-4 space-y-1">
-            {settingsMenuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location === item.path;
-              return (
-                <li key={item.id}>
-                  <Link href={item.path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:bg-slate-800 hover:text-white"}`}>
-                    <Icon className="w-4 h-4" strokeWidth={1.5} />
-                    <span className="text-sm">{item.name}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </motion.ul>
+          <Link href="/settings" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${location.startsWith("/settings") ? "bg-blue-600 text-white" : "text-slate-400 hover:bg-slate-800 hover:text-white"}`}>
+            <SettingsIcon className="w-5 h-5" strokeWidth={1.5} />
+            <span className="font-medium text-sm">Settings</span>
+          </Link>
         </div>
       </nav>
 
@@ -243,12 +225,89 @@ function ProfileTab() {
 }
 
 function UsersTab() {
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newUser, setNewUser] = useState({ name: "", email: "", role: "Viewer" });
+  const [userList, setUserList] = useState(users);
+
+  const handleAddUser = () => {
+    if (newUser.name && newUser.email) {
+      const newId = userList.length + 1;
+      setUserList([...userList, {
+        id: newId,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        status: "Active",
+        lastLogin: "-"
+      }]);
+      setNewUser({ name: "", email: "", role: "Viewer" });
+      setShowAddModal(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowAddModal(false)}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">Add New User</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Name</label>
+                <Input
+                  value={newUser.name}
+                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                  placeholder="Enter name"
+                  className="border-slate-200"
+                  data-testid="new-user-name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+                <Input
+                  type="email"
+                  value={newUser.email}
+                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                  placeholder="Enter email"
+                  className="border-slate-200"
+                  data-testid="new-user-email"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
+                <select
+                  value={newUser.role}
+                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                  className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  data-testid="new-user-role"
+                >
+                  <option value="Admin">Admin</option>
+                  <option value="Editor">Editor</option>
+                  <option value="Viewer">Viewer</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
+              <Button variant="outline" onClick={() => setShowAddModal(false)} data-testid="cancel-add-user">
+                Cancel
+              </Button>
+              <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleAddUser} data-testid="confirm-add-user">
+                Add User
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       <div className="chart-container-light">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-slate-800">User Management</h3>
-          <Button className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-user">
+          <Button className="gap-2 bg-blue-600 hover:bg-blue-700" onClick={() => setShowAddModal(true)} data-testid="add-user">
             <Plus className="w-4 h-4" />
             Add User
           </Button>
@@ -265,7 +324,7 @@ function UsersTab() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {userList.map((user) => (
                 <tr key={user.id} className="border-b border-slate-100 hover:bg-slate-50" data-testid={`user-row-${user.id}`}>
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-3">

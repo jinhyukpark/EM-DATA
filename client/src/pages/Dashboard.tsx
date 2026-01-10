@@ -465,7 +465,6 @@ function Sidebar() {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = location === item.path;
-              const statusColor = item.status === "normal" ? "bg-blue-500" : item.status === "error" ? "bg-red-500" : "bg-slate-500";
             return (
               <li key={item.id}>
                 <Link

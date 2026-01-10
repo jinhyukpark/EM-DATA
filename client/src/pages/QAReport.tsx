@@ -81,11 +81,11 @@ const testProcedures = [
 ];
 
 const inspectors = [
-  { id: 1, name: "John Kim", role: "Senior Engineer", avatar: "JK" },
-  { id: 2, name: "Sarah Lee", role: "QA Lead", avatar: "SL" },
-  { id: 3, name: "Mike Park", role: "DevOps Engineer", avatar: "MP" },
-  { id: 4, name: "Emily Choi", role: "Data Engineer", avatar: "EC" },
-  { id: 5, name: "David Jung", role: "Backend Developer", avatar: "DJ" },
+  { id: 1, name: "John Kim", role: "Senior Engineer", avatar: "JK", assignedTests: ["Data Integrity Check", "Data Accuracy Test"], schedule: "Mon, Wed, Fri 09:00-12:00" },
+  { id: 2, name: "Sarah Lee", role: "QA Lead", avatar: "SL", assignedTests: ["API Response Validation", "Data Integrity Check"], schedule: "Tue, Thu 10:00-15:00" },
+  { id: 3, name: "Mike Park", role: "DevOps Engineer", avatar: "MP", assignedTests: ["Performance Benchmark"], schedule: "Mon-Fri 14:00-18:00" },
+  { id: 4, name: "Emily Choi", role: "Data Engineer", avatar: "EC", assignedTests: ["Security Audit", "Performance Benchmark"], schedule: "Wed, Fri 09:00-17:00" },
+  { id: 5, name: "David Jung", role: "Backend Developer", avatar: "DJ", assignedTests: ["Data Accuracy Test", "Performance Benchmark"], schedule: "Mon, Tue 10:00-14:00" },
 ];
 
 function Sidebar() {
@@ -459,7 +459,27 @@ export default function QAReport() {
                           <p className="text-sm text-slate-500">{inspector.role}</p>
                         </div>
                       </div>
-                      <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <div className="mt-4 pt-3 border-t border-slate-100">
+                        <div className="flex items-start gap-2 mb-2">
+                          <ClipboardCheck className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="text-xs font-medium text-slate-600 mb-1">Assigned Tests</p>
+                            <div className="flex flex-wrap gap-1">
+                              {inspector.assignedTests.map((test, idx) => (
+                                <span key={idx} className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{test}</span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 mt-3">
+                          <Clock className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                          <div>
+                            <p className="text-xs font-medium text-slate-600">Schedule</p>
+                            <p className="text-xs text-slate-500">{inspector.schedule}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <UserCheck className="w-4 h-4 text-emerald-500" />
                           <span className="text-sm text-slate-600">Available</span>

@@ -79,7 +79,7 @@ function Sidebar() {
   return (
     <aside className="w-64 bg-slate-900 min-h-screen flex flex-col" data-testid="sidebar">
       <div className="p-6 border-b border-slate-800">
-        <h1 className="text-xl font-bold text-white tracking-tight">Data Quality Center</h1>
+        <h1 className="text-xl font-bold text-white tracking-tight">EM-Data</h1>
         <p className="text-xs text-slate-400 mt-1">Internal Monitoring</p>
       </div>
 

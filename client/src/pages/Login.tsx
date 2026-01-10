@@ -34,7 +34,7 @@ export default function Login() {
                 <BarChart3 className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Data Quality Center</h1>
+                <h1 className="text-2xl font-bold text-white">EM-Data</h1>
                 <p className="text-slate-400 text-sm">Internal Monitoring System</p>
               </div>
             </div>
@@ -74,7 +74,7 @@ export default function Login() {
             <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
               <BarChart3 className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-xl font-bold text-slate-800">Data Quality Center</h1>
+            <h1 className="text-xl font-bold text-slate-800">EM-Data</h1>
           </div>
 
           <h2 className="text-2xl font-bold text-slate-800 mb-2">Welcome back</h2>

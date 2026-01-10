@@ -65,11 +65,11 @@ const settingsMenuItems = [
 ];
 
 const services = [
-  { id: 1, name: "Company Data Pipeline", type: "Internal", status: "Active", workStatus: "Normal", lastInspection: "2025-01-09", inspector: "John Kim", nextInspection: "2025-01-16", normalCount: 12, abnormalCount: 0 },
-  { id: 2, name: "Patent Crawler Service", type: "Internal", status: "Active", workStatus: "Normal", lastInspection: "2025-01-08", inspector: "Sarah Lee", nextInspection: "2025-01-15", normalCount: 8, abnormalCount: 1 },
-  { id: 3, name: "News API Integration", type: "External", status: "Warning", workStatus: "Delayed", lastInspection: "2025-01-05", inspector: "Mike Park", nextInspection: "2025-01-12", normalCount: 5, abnormalCount: 3 },
-  { id: 4, name: "Stock Data Collector", type: "External", status: "Active", workStatus: "Normal", lastInspection: "2025-01-09", inspector: "Emily Choi", nextInspection: "2025-01-16", normalCount: 10, abnormalCount: 0 },
-  { id: 5, name: "ML Prediction Service", type: "Internal", status: "Inactive", workStatus: "Stopped", lastInspection: "2024-12-20", inspector: "David Jung", nextInspection: "2025-01-20", normalCount: 3, abnormalCount: 2 },
+  { id: 1, name: "Company Data Pipeline", type: "Internal", status: "Active", workStatus: "Normal", lastInspection: "2025-01-09", inspectors: ["John Kim", "Sarah Lee"], nextInspection: "2025-01-16", normalCount: 12, abnormalCount: 0 },
+  { id: 2, name: "Patent Crawler Service", type: "Internal", status: "Active", workStatus: "Normal", lastInspection: "2025-01-08", inspectors: ["Sarah Lee"], nextInspection: "2025-01-15", normalCount: 8, abnormalCount: 1 },
+  { id: 3, name: "News API Integration", type: "External", status: "Warning", workStatus: "Delayed", lastInspection: "2025-01-05", inspectors: ["Mike Park", "Emily Choi", "David Jung"], nextInspection: "2025-01-12", normalCount: 5, abnormalCount: 3 },
+  { id: 4, name: "Stock Data Collector", type: "External", status: "Active", workStatus: "Normal", lastInspection: "2025-01-09", inspectors: ["Emily Choi"], nextInspection: "2025-01-16", normalCount: 10, abnormalCount: 0 },
+  { id: 5, name: "ML Prediction Service", type: "Internal", status: "Inactive", workStatus: "Stopped", lastInspection: "2024-12-20", inspectors: ["David Jung", "John Kim"], nextInspection: "2025-01-20", normalCount: 3, abnormalCount: 2 },
 ];
 
 const testProcedures = [
@@ -400,11 +400,28 @@ export default function QAReport() {
                           </td>
                           <td className="py-4 px-4 text-sm text-slate-600">{service.lastInspection}</td>
                           <td className="py-4 px-4">
-                            <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium text-slate-600">
-                                {service.inspector.split(" ").map(n => n[0]).join("")}
+                            <div className="flex items-center gap-1">
+                              <div className="flex -space-x-2">
+                                {service.inspectors.slice(0, 3).map((inspector, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium text-slate-600 border-2 border-white"
+                                    title={inspector}
+                                  >
+                                    {inspector.split(" ").map(n => n[0]).join("")}
+                                  </div>
+                                ))}
+                                {service.inspectors.length > 3 && (
+                                  <div className="w-6 h-6 rounded-full bg-slate-300 flex items-center justify-center text-xs font-medium text-slate-600 border-2 border-white">
+                                    +{service.inspectors.length - 3}
+                                  </div>
+                                )}
                               </div>
-                              <span className="text-sm text-slate-600">{service.inspector}</span>
+                              <span className="text-sm text-slate-600 ml-2">
+                                {service.inspectors.length === 1 
+                                  ? service.inspectors[0] 
+                                  : `${service.inspectors[0]} +${service.inspectors.length - 1}`}
+                              </span>
                             </div>
                           </td>
                           <td className="py-4 px-4 text-sm text-slate-600">{service.nextInspection}</td>

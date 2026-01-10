@@ -361,7 +361,9 @@ export default function QAReport() {
                       {services.map((service) => (
                         <tr key={service.id} className="border-b border-slate-100 hover:bg-slate-50" data-testid={`service-row-${service.id}`}>
                           <td className="py-4 px-4">
-                            <span className="font-medium text-slate-800">{service.testName}</span>
+                            <Link href={`/qa-report/test/${service.id}`} className="font-medium text-slate-800 hover:text-blue-600 cursor-pointer">
+                              {service.testName}
+                            </Link>
                           </td>
                           <td className="py-4 px-4">
                             <div className="flex items-center gap-3">

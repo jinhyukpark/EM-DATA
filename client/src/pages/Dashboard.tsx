@@ -839,6 +839,45 @@ export default function Dashboard() {
   const [timeRange, setTimeRange] = useState("daily");
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<number>>(new Set());
   const [showAlerts, setShowAlerts] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
+  const [dashboardConfig, setDashboardConfig] = useState({
+    dataTypes: {
+      patent: true,
+      paper: true,
+      news: true,
+      stock: true,
+      company: true,
+    },
+    awsServices: {
+      ec2: true,
+      rds: true,
+      s3: true,
+      lambda: true,
+      cloudwatch: true,
+    },
+    showTrendCharts: true,
+    showCloudStatus: true,
+  });
+
+  const toggleDataType = (key: string) => {
+    setDashboardConfig(prev => ({
+      ...prev,
+      dataTypes: {
+        ...prev.dataTypes,
+        [key]: !prev.dataTypes[key as keyof typeof prev.dataTypes],
+      },
+    }));
+  };
+
+  const toggleAwsService = (key: string) => {
+    setDashboardConfig(prev => ({
+      ...prev,
+      awsServices: {
+        ...prev.awsServices,
+        [key]: !prev.awsServices[key as keyof typeof prev.awsServices],
+      },
+    }));
+  };
   
   const now = new Date();
   const formattedDate = now.toLocaleDateString("en-US", {
@@ -918,6 +957,16 @@ export default function Dashboard() {
                 >
                   <RefreshCw className="w-4 h-4" />
                   Refresh
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowSettings(true)}
+                  className="gap-2 border-slate-200 hover:bg-slate-50 text-slate-700"
+                  data-testid="dashboard-settings-button"
+                >
+                  <Settings className="w-4 h-4" />
+                  Settings
                 </Button>
               </div>
             </div>
@@ -1207,6 +1256,129 @@ export default function Dashboard() {
           </motion.section>
         </main>
       </div>
+
+      {showSettings && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSettings(false)}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl shadow-xl max-w-xl w-full mx-4 max-h-[85vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">Dashboard Settings</h3>
+                <p className="text-sm text-slate-500">Configure what data to display</p>
+              </div>
+              <button onClick={() => setShowSettings(false)} className="p-2 hover:bg-slate-200 rounded-lg transition-colors" data-testid="close-settings">
+                <X className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[calc(85vh-140px)]">
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                    <Database className="w-4 h-4 text-blue-500" />
+                    Data Types to Display
+                  </h4>
+                  <div className="space-y-3">
+                    {[
+                      { key: "patent", label: "Patent Data", icon: FileText },
+                      { key: "paper", label: "Paper Data", icon: BookOpen },
+                      { key: "news", label: "News Data", icon: Newspaper },
+                      { key: "stock", label: "Stock Data", icon: TrendingUp },
+                      { key: "company", label: "Audited Companies", icon: Building2 },
+                    ].map(item => {
+                      const Icon = item.icon;
+                      const isEnabled = dashboardConfig.dataTypes[item.key as keyof typeof dashboardConfig.dataTypes];
+                      return (
+                        <div key={item.key} className="flex items-center justify-between p-3 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <Icon className="w-4 h-4 text-slate-500" />
+                            <span className="text-sm font-medium text-slate-700">{item.label}</span>
+                          </div>
+                          <button
+                            onClick={() => toggleDataType(item.key)}
+                            className={`w-10 h-6 rounded-full transition-colors relative ${isEnabled ? 'bg-blue-600' : 'bg-slate-200'}`}
+                            data-testid={`toggle-${item.key}`}
+                          >
+                            <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${isEnabled ? 'left-5' : 'left-1'}`} />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-200 pt-6">
+                  <h4 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                    <Cloud className="w-4 h-4 text-orange-500" />
+                    AWS Services Analytics
+                  </h4>
+                  <div className="space-y-3">
+                    {[
+                      { key: "ec2", label: "EC2 Instances", description: "Virtual server metrics" },
+                      { key: "rds", label: "RDS Databases", description: "Database performance" },
+                      { key: "s3", label: "S3 Storage", description: "Object storage usage" },
+                      { key: "lambda", label: "Lambda Functions", description: "Serverless execution" },
+                      { key: "cloudwatch", label: "CloudWatch", description: "Monitoring & logs" },
+                    ].map(item => {
+                      const isEnabled = dashboardConfig.awsServices[item.key as keyof typeof dashboardConfig.awsServices];
+                      return (
+                        <div key={item.key} className="flex items-center justify-between p-3 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors">
+                          <div>
+                            <span className="text-sm font-medium text-slate-700">{item.label}</span>
+                            <p className="text-xs text-slate-400">{item.description}</p>
+                          </div>
+                          <button
+                            onClick={() => toggleAwsService(item.key)}
+                            className={`w-10 h-6 rounded-full transition-colors relative ${isEnabled ? 'bg-orange-500' : 'bg-slate-200'}`}
+                            data-testid={`toggle-aws-${item.key}`}
+                          >
+                            <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${isEnabled ? 'left-5' : 'left-1'}`} />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-200 pt-6">
+                  <h4 className="text-sm font-semibold text-slate-800 mb-4">Display Options</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200">
+                      <span className="text-sm font-medium text-slate-700">Show Trend Charts</span>
+                      <button
+                        onClick={() => setDashboardConfig(prev => ({ ...prev, showTrendCharts: !prev.showTrendCharts }))}
+                        className={`w-10 h-6 rounded-full transition-colors relative ${dashboardConfig.showTrendCharts ? 'bg-emerald-500' : 'bg-slate-200'}`}
+                        data-testid="toggle-trend-charts"
+                      >
+                        <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${dashboardConfig.showTrendCharts ? 'left-5' : 'left-1'}`} />
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200">
+                      <span className="text-sm font-medium text-slate-700">Show Cloud Status</span>
+                      <button
+                        onClick={() => setDashboardConfig(prev => ({ ...prev, showCloudStatus: !prev.showCloudStatus }))}
+                        className={`w-10 h-6 rounded-full transition-colors relative ${dashboardConfig.showCloudStatus ? 'bg-emerald-500' : 'bg-slate-200'}`}
+                        data-testid="toggle-cloud-status"
+                      >
+                        <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${dashboardConfig.showCloudStatus ? 'left-5' : 'left-1'}`} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+              <Button variant="outline" onClick={() => setShowSettings(false)}>Cancel</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setShowSettings(false)} data-testid="save-settings">
+                Save Settings
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

@@ -65,11 +65,11 @@ const settingsMenuItems = [
 ];
 
 const services = [
-  { id: 1, name: "Company Data Pipeline", type: "Internal", status: "Active", workStatus: "Normal", step: 5, lastInspection: "2025-01-09", inspectors: ["John Kim", "Sarah Lee"], nextInspection: "2025-01-16", normalCount: 12, abnormalCount: 0 },
-  { id: 2, name: "Patent Crawler Service", type: "Internal", status: "Active", workStatus: "Normal", step: 3, lastInspection: "2025-01-08", inspectors: ["Sarah Lee"], nextInspection: "2025-01-15", normalCount: 8, abnormalCount: 1 },
-  { id: 3, name: "News API Integration", type: "External", status: "Warning", workStatus: "Delayed", step: 8, lastInspection: "2025-01-05", inspectors: ["Mike Park", "Emily Choi", "David Jung"], nextInspection: "2025-01-12", normalCount: 5, abnormalCount: 3 },
-  { id: 4, name: "Stock Data Collector", type: "External", status: "Active", workStatus: "Normal", step: 4, lastInspection: "2025-01-09", inspectors: ["Emily Choi"], nextInspection: "2025-01-16", normalCount: 10, abnormalCount: 0 },
-  { id: 5, name: "ML Prediction Service", type: "Internal", status: "Inactive", workStatus: "Stopped", step: 6, lastInspection: "2024-12-20", inspectors: ["David Jung", "John Kim"], nextInspection: "2025-01-20", normalCount: 3, abnormalCount: 2 },
+  { id: 1, testName: "Data Integrity Check", name: "Company Data Pipeline", type: "Internal", status: "Active", workStatus: "Normal", step: 5, lastInspection: "2025-01-09", inspectors: ["John Kim", "Sarah Lee"], nextInspection: "2025-01-16", normalCount: 12, abnormalCount: 0 },
+  { id: 2, testName: "API Response Validation", name: "Patent Crawler Service", type: "Internal", status: "Active", workStatus: "Normal", step: 3, lastInspection: "2025-01-08", inspectors: ["Sarah Lee"], nextInspection: "2025-01-15", normalCount: 8, abnormalCount: 1 },
+  { id: 3, testName: "Performance Benchmark", name: "News API Integration", type: "External", status: "Warning", workStatus: "Delayed", step: 8, lastInspection: "2025-01-05", inspectors: ["Mike Park", "Emily Choi", "David Jung"], nextInspection: "2025-01-12", normalCount: 5, abnormalCount: 3 },
+  { id: 4, testName: "Security Audit", name: "Stock Data Collector", type: "External", status: "Active", workStatus: "Normal", step: 4, lastInspection: "2025-01-09", inspectors: ["Emily Choi"], nextInspection: "2025-01-16", normalCount: 10, abnormalCount: 0 },
+  { id: 5, testName: "Data Accuracy Test", name: "ML Prediction Service", type: "Internal", status: "Inactive", workStatus: "Stopped", step: 6, lastInspection: "2024-12-20", inspectors: ["David Jung", "John Kim"], nextInspection: "2025-01-20", normalCount: 3, abnormalCount: 2 },
 ];
 
 const testProcedures = [
@@ -343,6 +343,7 @@ export default function QAReport() {
                   <table className="w-full" data-testid="services-table">
                     <thead>
                       <tr className="border-b border-slate-200">
+                        <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Test Name</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Service Name</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Type</th>
                         <th className="text-center py-3 px-4 text-sm font-medium text-slate-500">Step</th>
@@ -357,6 +358,9 @@ export default function QAReport() {
                     <tbody>
                       {services.map((service) => (
                         <tr key={service.id} className="border-b border-slate-100 hover:bg-slate-50" data-testid={`service-row-${service.id}`}>
+                          <td className="py-4 px-4">
+                            <span className="font-medium text-slate-800">{service.testName}</span>
+                          </td>
                           <td className="py-4 px-4">
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">

@@ -241,6 +241,7 @@ export default function CompanyData() {
   const [activeTab, setActiveTab] = useState<"all" | "unlisted" | "listed" | "audited">("listed");
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [dataViewTab, setDataViewTab] = useState<"company" | "financial">("company");
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   
   const companyInfoColumns = {
     ceo: true,
@@ -494,7 +495,13 @@ export default function CompanyData() {
                     {filteredCompanies.map((company) => (
                       <tr key={company.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors" data-testid={`company-row-${company.id}`}>
                         <td className="py-3 px-6">
-                          <span className="font-medium text-slate-800">{company.name}</span>
+                          <button
+                            onClick={() => setSelectedCompany(company)}
+                            className="font-medium text-slate-800 hover:text-blue-600 hover:underline text-left"
+                            data-testid={`company-name-${company.id}`}
+                          >
+                            {company.name}
+                          </button>
                         </td>
                         {visibleColumns.ceo && <td className="py-3 px-4 text-sm text-slate-600">{company.ceo}</td>}
                         {visibleColumns.address && <td className="py-3 px-4 text-sm text-slate-500 max-w-[180px] truncate" title={company.address}>{company.address}</td>}
@@ -548,6 +555,97 @@ export default function CompanyData() {
           </motion.section>
         </main>
       </div>
+
+      {selectedCompany && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setSelectedCompany(null)}>
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+              <h3 className="text-lg font-semibold text-slate-800">{selectedCompany.name}</h3>
+              <button onClick={() => setSelectedCompany(null)} className="p-2 hover:bg-slate-200 rounded-lg transition-colors" data-testid="close-detail-modal">
+                <X className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+            <div className="overflow-y-auto max-h-[calc(80vh-60px)]">
+              <table className="w-full text-sm">
+                <tbody>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium w-40 bg-slate-50">ID</td>
+                    <td className="py-2.5 px-6 text-slate-800 font-mono">{selectedCompany.id}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Name</td>
+                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.name}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">CEO</td>
+                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.ceo}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Address</td>
+                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.address}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Industry</td>
+                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.industry}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Founded</td>
+                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.foundedDate || "-"}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Employees</td>
+                    <td className="py-2.5 px-6 text-slate-800 font-mono">{selectedCompany.employees?.toLocaleString() || "-"}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Company Type</td>
+                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.companyType || "-"}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Country</td>
+                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.country || "-"}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Listing Status</td>
+                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.listingStatus || "-"}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Website</td>
+                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.website || "-"}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Revenue</td>
+                    <td className="py-2.5 px-6 text-slate-800 font-mono">{selectedCompany.revenue}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Operating Profit</td>
+                    <td className={`py-2.5 px-6 font-mono ${selectedCompany.operatingProfit.startsWith("-") ? "text-red-500" : "text-slate-800"}`}>{selectedCompany.operatingProfit}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Debt</td>
+                    <td className="py-2.5 px-6 text-slate-800 font-mono">{selectedCompany.debt}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Net Income</td>
+                    <td className={`py-2.5 px-6 font-mono ${selectedCompany.netIncome?.startsWith("-") ? "text-red-500" : "text-slate-800"}`}>{selectedCompany.netIncome || "-"}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Status</td>
+                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.status}</td>
+                  </tr>
+                  <tr className="border-b border-slate-100">
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Last Update</td>
+                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.lastUpdate}</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Keywords</td>
+                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.keywords?.join(", ") || "-"}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

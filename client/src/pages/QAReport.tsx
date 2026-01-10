@@ -268,10 +268,12 @@ export default function QAReport() {
                 <h1 className="text-xl font-semibold tracking-tight text-slate-800">QA Report & Inspection</h1>
                 <p className="text-sm text-slate-500 mt-0.5">Service operation status and quality assurance management</p>
               </div>
-              <Button className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-button" onClick={() => setShowAddModal(true)}>
-                <Plus className="w-4 h-4" />
-                Add Test Procedure
-              </Button>
+              <Link href="/qa-report/add">
+                <Button className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-button">
+                  <Plus className="w-4 h-4" />
+                  Add Test Procedure
+                </Button>
+              </Link>
             </div>
           </div>
         </header>

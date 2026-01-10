@@ -112,7 +112,7 @@ function Sidebar() {
               const statusColor = item.status === "normal" ? "bg-blue-500" : item.status === "error" ? "bg-red-500" : "bg-slate-500";
               return (
                 <li key={item.id}>
-                  <Link href={item.path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:bg-slate-800 hover:text-white"}`}>
+                  <Link href={item.path} className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200">
                     <span className={`w-2 h-2 rounded-full ${statusColor} ${item.status === "error" ? "animate-pulse" : ""}`} />
                     <Icon className="w-4 h-4" strokeWidth={1.5} />
                     <span className="text-sm">{item.name}</span>
@@ -134,11 +134,9 @@ function Sidebar() {
           <motion.ul initial={false} animate={{ height: serverMenuOpen ? "auto" : 0, opacity: serverMenuOpen ? 1 : 0 }} transition={{ duration: 0.2 }} className="overflow-hidden ml-4 space-y-1">
             {serverMenuItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location === item.path;
-              const statusColor = item.status === "normal" ? "bg-blue-500" : item.status === "error" ? "bg-red-500" : "bg-slate-500";
               return (
                 <li key={item.id}>
-                  <Link href={item.path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:bg-slate-800 hover:text-white"}`}>
+                  <Link href={item.path} className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200">
                     <Icon className={`w-4 h-4 ${item.color}`} strokeWidth={1.5} />
                     <span className="text-sm">{item.name}</span>
                   </Link>
@@ -162,7 +160,6 @@ function Sidebar() {
               return (
                 <li key={item.id}>
                   <Link href={item.path} className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200">
-                    <span className={`w-2 h-2 rounded-full ${statusColor} ${item.status === "error" ? "animate-pulse" : ""}`} />
                     <Icon className="w-4 h-4" strokeWidth={1.5} />
                     <span className="text-sm">{item.name}</span>
                   </Link>

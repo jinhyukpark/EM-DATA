@@ -19,6 +19,7 @@ import RnDData from "@/pages/RnDData";
 import EmploymentData from "@/pages/EmploymentData";
 import PaperData from "@/pages/PaperData";
 import AddTestProcedure from "@/pages/AddTestProcedure";
+import TestDetail from "@/pages/TestDetail";
 
 function Router() {
   return (
@@ -37,6 +38,7 @@ function Router() {
       <Route path="/settings/permissions" component={Settings} />
       <Route path="/qa-report" component={QAReport} />
       <Route path="/qa-report/add" component={AddTestProcedure} />
+      <Route path="/qa-report/test/:id" component={TestDetail} />
       <Route path="/servers/aws" component={AWSServers} />
       <Route path="/servers/gcp" component={GCPServers} />
       <Route path="/servers/ncloud" component={NCloudServers} />

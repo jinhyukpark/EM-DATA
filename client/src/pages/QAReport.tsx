@@ -435,9 +435,11 @@ export default function QAReport() {
                           </td>
                           <td className="py-4 px-4 text-sm text-slate-600">{service.nextInspection}</td>
                           <td className="py-4 px-4 text-right">
-                            <button className="p-2 hover:bg-slate-100 rounded-lg">
-                              <MoreHorizontal className="w-4 h-4 text-slate-400" />
-                            </button>
+                            <Link href={`/qa-report/test/${service.id}`}>
+                              <button className="p-2 hover:bg-slate-100 rounded-lg">
+                                <MoreHorizontal className="w-4 h-4 text-slate-400" />
+                              </button>
+                            </Link>
                           </td>
                         </tr>
                       ))}

@@ -65,11 +65,11 @@ const settingsMenuItems = [
 ];
 
 const services = [
-  { id: 1, name: "Company Data Pipeline", type: "Internal", status: "Active", lastInspection: "2025-01-09", inspector: "John Kim", nextInspection: "2025-01-16" },
-  { id: 2, name: "Patent Crawler Service", type: "Internal", status: "Active", lastInspection: "2025-01-08", inspector: "Sarah Lee", nextInspection: "2025-01-15" },
-  { id: 3, name: "News API Integration", type: "External", status: "Warning", lastInspection: "2025-01-05", inspector: "Mike Park", nextInspection: "2025-01-12" },
-  { id: 4, name: "Stock Data Collector", type: "External", status: "Active", lastInspection: "2025-01-09", inspector: "Emily Choi", nextInspection: "2025-01-16" },
-  { id: 5, name: "ML Prediction Service", type: "Internal", status: "Inactive", lastInspection: "2024-12-20", inspector: "David Jung", nextInspection: "2025-01-20" },
+  { id: 1, name: "Company Data Pipeline", type: "Internal", status: "Active", workStatus: "Normal", lastInspection: "2025-01-09", inspector: "John Kim", nextInspection: "2025-01-16", normalCount: 12, abnormalCount: 0 },
+  { id: 2, name: "Patent Crawler Service", type: "Internal", status: "Active", workStatus: "Normal", lastInspection: "2025-01-08", inspector: "Sarah Lee", nextInspection: "2025-01-15", normalCount: 8, abnormalCount: 1 },
+  { id: 3, name: "News API Integration", type: "External", status: "Warning", workStatus: "Delayed", lastInspection: "2025-01-05", inspector: "Mike Park", nextInspection: "2025-01-12", normalCount: 5, abnormalCount: 3 },
+  { id: 4, name: "Stock Data Collector", type: "External", status: "Active", workStatus: "Normal", lastInspection: "2025-01-09", inspector: "Emily Choi", nextInspection: "2025-01-16", normalCount: 10, abnormalCount: 0 },
+  { id: 5, name: "ML Prediction Service", type: "Internal", status: "Inactive", workStatus: "Stopped", lastInspection: "2024-12-20", inspector: "David Jung", nextInspection: "2025-01-20", normalCount: 3, abnormalCount: 2 },
 ];
 
 const testProcedures = [
@@ -348,7 +348,8 @@ export default function QAReport() {
                       <tr className="border-b border-slate-200">
                         <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Service Name</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Type</th>
-                        <th className="text-center py-3 px-4 text-sm font-medium text-slate-500">Status</th>
+                        <th className="text-center py-3 px-4 text-sm font-medium text-slate-500">Work Status</th>
+                        <th className="text-center py-3 px-4 text-sm font-medium text-slate-500">Review Results</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Last Inspection</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Inspector</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Next Inspection</th>
@@ -373,17 +374,29 @@ export default function QAReport() {
                           </td>
                           <td className="py-4 px-4 text-center">
                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                              service.status === "Active" ? "bg-emerald-50 text-emerald-600" :
-                              service.status === "Warning" ? "bg-amber-50 text-amber-600" :
-                              "bg-slate-100 text-slate-500"
+                              service.workStatus === "Normal" ? "bg-emerald-50 text-emerald-600" :
+                              service.workStatus === "Delayed" ? "bg-amber-50 text-amber-600" :
+                              "bg-red-50 text-red-600"
                             }`}>
                               <span className={`w-1.5 h-1.5 rounded-full ${
-                                service.status === "Active" ? "bg-emerald-500" :
-                                service.status === "Warning" ? "bg-amber-500 animate-pulse" :
-                                "bg-slate-400"
+                                service.workStatus === "Normal" ? "bg-emerald-500" :
+                                service.workStatus === "Delayed" ? "bg-amber-500 animate-pulse" :
+                                "bg-red-500"
                               }`} />
-                              {service.status}
+                              {service.workStatus}
                             </span>
+                          </td>
+                          <td className="py-4 px-4 text-center">
+                            <div className="flex items-center justify-center gap-2">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 text-xs font-medium">
+                                <CheckCircle2 className="w-3 h-3" />
+                                {service.normalCount}
+                              </span>
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-50 text-red-600 text-xs font-medium">
+                                <AlertCircle className="w-3 h-3" />
+                                {service.abnormalCount}
+                              </span>
+                            </div>
                           </td>
                           <td className="py-4 px-4 text-sm text-slate-600">{service.lastInspection}</td>
                           <td className="py-4 px-4">

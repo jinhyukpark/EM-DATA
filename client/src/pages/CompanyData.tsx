@@ -558,9 +558,40 @@ export default function CompanyData() {
 
       {selectedCompany && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setSelectedCompany(null)}>
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              const currentIndex = filteredCompanies.findIndex(c => c.id === selectedCompany.id);
+              if (currentIndex > 0) {
+                setSelectedCompany(filteredCompanies[currentIndex - 1]);
+              }
+            }}
+            disabled={filteredCompanies.findIndex(c => c.id === selectedCompany.id) === 0}
+            className="absolute left-4 p-3 bg-white rounded-full shadow-lg hover:bg-slate-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            data-testid="prev-company"
+          >
+            <ChevronLeft className="w-6 h-6 text-slate-600" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              const currentIndex = filteredCompanies.findIndex(c => c.id === selectedCompany.id);
+              if (currentIndex < filteredCompanies.length - 1) {
+                setSelectedCompany(filteredCompanies[currentIndex + 1]);
+              }
+            }}
+            disabled={filteredCompanies.findIndex(c => c.id === selectedCompany.id) === filteredCompanies.length - 1}
+            className="absolute right-4 p-3 bg-white rounded-full shadow-lg hover:bg-slate-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            data-testid="next-company"
+          >
+            <ChevronRight className="w-6 h-6 text-slate-600" />
+          </button>
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-16 max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
-              <h3 className="text-lg font-semibold text-slate-800">{selectedCompany.name}</h3>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">{selectedCompany.name}</h3>
+                <p className="text-xs text-slate-400">{filteredCompanies.findIndex(c => c.id === selectedCompany.id) + 1} / {filteredCompanies.length}</p>
+              </div>
               <button onClick={() => setSelectedCompany(null)} className="p-2 hover:bg-slate-200 rounded-lg transition-colors" data-testid="close-detail-modal">
                 <X className="w-5 h-5 text-slate-500" />
               </button>

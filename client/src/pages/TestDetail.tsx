@@ -507,10 +507,21 @@ export default function TestDetail() {
                                   {item.answer}
                                 </span>
                               )}
-                              {item.answerType === "multiple_choice" && (
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 font-medium">
-                                  {item.answer}
-                                </span>
+                              {item.answerType === "multiple_choice" && item.options && (
+                                <div className="space-y-2">
+                                  {item.options.map((option, optIdx) => (
+                                    <div
+                                      key={optIdx}
+                                      className={`px-4 py-2 rounded-lg ${
+                                        item.answer === option 
+                                          ? "bg-blue-500 text-white font-medium" 
+                                          : "bg-slate-100 text-slate-500"
+                                      }`}
+                                    >
+                                      {option}
+                                    </div>
+                                  ))}
+                                </div>
                               )}
                               {item.answerType === "text" && (
                                 <p className="text-slate-600 bg-slate-50 rounded-lg p-3">{item.answer}</p>

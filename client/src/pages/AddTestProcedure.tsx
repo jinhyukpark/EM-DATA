@@ -246,6 +246,29 @@ export default function AddTestProcedure() {
     setTestItems(testItems.filter((item) => item.id !== id));
   };
 
+  const addOption = (itemId: number) => {
+    setTestItems(
+      testItems.map((item) => {
+        if (item.id === itemId) {
+          return { ...item, options: [...item.options, ""] };
+        }
+        return item;
+      })
+    );
+  };
+
+  const removeOption = (itemId: number, optionIndex: number) => {
+    setTestItems(
+      testItems.map((item) => {
+        if (item.id === itemId && item.options.length > 2) {
+          const newOptions = item.options.filter((_, idx) => idx !== optionIndex);
+          return { ...item, options: newOptions };
+        }
+        return item;
+      })
+    );
+  };
+
   const handleSave = () => {
     console.log({ serviceName, procedureName, testItems });
     setLocation("/qa-report");
@@ -411,7 +434,17 @@ export default function AddTestProcedure() {
 
                             {item.answerType === "multiple_choice" && (
                               <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Options</label>
+                                <div className="flex items-center justify-between mb-2">
+                                  <label className="block text-sm font-medium text-slate-700">Options</label>
+                                  <button
+                                    onClick={() => addOption(item.id)}
+                                    className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                                    data-testid={`add-option-${item.id}`}
+                                  >
+                                    <Plus className="w-3 h-3" />
+                                    Add Option
+                                  </button>
+                                </div>
                                 <div className="grid grid-cols-2 gap-3">
                                   {item.options.map((opt, optIndex) => (
                                     <div key={optIndex} className="flex items-center gap-2">
@@ -422,9 +455,18 @@ export default function AddTestProcedure() {
                                         value={opt}
                                         onChange={(e) => updateOption(item.id, optIndex, e.target.value)}
                                         placeholder={`Option ${optIndex + 1}`}
-                                        className="border-slate-200 bg-white text-sm"
+                                        className="border-slate-200 bg-white text-sm flex-1"
                                         data-testid={`option-${item.id}-${optIndex}`}
                                       />
+                                      {item.options.length > 2 && (
+                                        <button
+                                          onClick={() => removeOption(item.id, optIndex)}
+                                          className="p-1 hover:bg-red-50 rounded transition-colors"
+                                          data-testid={`remove-option-${item.id}-${optIndex}`}
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                                        </button>
+                                      )}
                                     </div>
                                   ))}
                                 </div>

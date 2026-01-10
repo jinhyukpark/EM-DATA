@@ -72,7 +72,7 @@ const testData: Record<string, {
   inspectors: string[];
   normalCount: number;
   abnormalCount: number;
-  items: { id: number; question: string; answerType: string; options?: string[]; answer?: string }[];
+  items: { id: number; question: string; answerType: string; options?: string[]; answer?: string; isResolved?: boolean; actionNote?: string }[];
 }> = {
   "1": {
     id: 1,
@@ -91,7 +91,7 @@ const testData: Record<string, {
       { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", answer: "O" },
       { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"], answer: "Excellent (95-100%)" },
-      { id: 4, question: "Are there any duplicate records?", answerType: "ox", answer: "X" },
+      { id: 4, question: "Are there any duplicate records?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Duplicate records identified and removed on 2025-01-09. Data cleanup completed." },
       { id: 5, question: "Additional notes on data quality:", answerType: "text", answer: "All data passed integrity checks. No issues found." },
     ]
   },
@@ -129,11 +129,11 @@ const testData: Record<string, {
     abnormalCount: 3,
     items: [
       { id: 1, question: "Average response time:", answerType: "multiple_choice", options: ["<100ms", "100-300ms", "300-500ms", ">500ms"], answer: "300-500ms" },
-      { id: 2, question: "Throughput meets requirements?", answerType: "ox", answer: "X" },
+      { id: 2, question: "Throughput meets requirements?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Performance optimization scheduled for next sprint." },
       { id: 3, question: "Memory usage within limits?", answerType: "ox", answer: "O" },
-      { id: 4, question: "CPU usage within limits?", answerType: "ox", answer: "X" },
-      { id: 5, question: "Are there any memory leaks detected?", answerType: "ox", answer: "X" },
-      { id: 6, question: "Load test passed successfully?", answerType: "ox", answer: "X" },
+      { id: 4, question: "CPU usage within limits?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Optimized query processing to reduce CPU usage." },
+      { id: 5, question: "Are there any memory leaks detected?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Memory leak investigation in progress." },
+      { id: 6, question: "Load test passed successfully?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Need to increase server capacity before re-testing." },
       { id: 7, question: "Stress test results:", answerType: "text", answer: "System shows degradation under heavy load. Needs optimization." },
       { id: 8, question: "Overall performance rating:", answerType: "multiple_choice", options: ["Excellent", "Good", "Needs Improvement", "Critical"], answer: "Needs Improvement" },
     ]
@@ -172,7 +172,7 @@ const testData: Record<string, {
     normalCount: 3,
     abnormalCount: 2,
     items: [
-      { id: 1, question: "Model accuracy meets threshold (>90%)?", answerType: "ox", answer: "X" },
+      { id: 1, question: "Model accuracy meets threshold (>90%)?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Model retraining scheduled with updated dataset." },
       { id: 2, question: "Current accuracy percentage:", answerType: "multiple_choice", options: [">95%", "90-95%", "85-90%", "<85%"], answer: "85-90%" },
       { id: 3, question: "Prediction confidence levels acceptable?", answerType: "ox", answer: "O" },
       { id: 4, question: "False positive rate:", answerType: "multiple_choice", options: ["<1%", "1-5%", "5-10%", ">10%"], answer: "5-10%" },
@@ -500,12 +500,31 @@ export default function TestDetail() {
                           ) : (
                             <div className="mt-2">
                               {item.answerType === "ox" && (
-                                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium ${
-                                  item.answer === "O" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
-                                }`}>
-                                  {item.answer === "O" ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-                                  {item.answer}
-                                </span>
+                                <div>
+                                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium ${
+                                    item.answer === "O" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+                                  }`}>
+                                    {item.answer === "O" ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+                                    {item.answer}
+                                  </span>
+                                  {item.answer === "X" && (
+                                    <div className="mt-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                                      <div className="flex items-center justify-between mb-3">
+                                        <span className="text-sm font-medium text-amber-800">Error Action Status</span>
+                                        <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
+                                          item.isResolved ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+                                        }`}>
+                                          {item.isResolved ? <CheckCircle className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
+                                          {item.isResolved ? "Resolved" : "Pending"}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <p className="text-xs text-amber-600 mb-1">Action Note</p>
+                                        <p className="text-sm text-amber-900">{item.actionNote || "No action note provided."}</p>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
                               )}
                               {item.answerType === "multiple_choice" && item.options && (
                                 <div className="space-y-2">

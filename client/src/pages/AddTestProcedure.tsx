@@ -38,6 +38,14 @@ const services = [
   { id: 5, name: "ML Prediction Service" },
 ];
 
+const inspectors = [
+  { id: 1, name: "John Kim", role: "Senior Engineer", avatar: "JK" },
+  { id: 2, name: "Sarah Lee", role: "QA Lead", avatar: "SL" },
+  { id: 3, name: "Mike Park", role: "DevOps Engineer", avatar: "MP" },
+  { id: 4, name: "Emily Choi", role: "Data Engineer", avatar: "EC" },
+  { id: 5, name: "David Jung", role: "Backend Developer", avatar: "DJ" },
+];
+
 const menuItems = [
   { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, path: "/" },
 ];
@@ -196,6 +204,7 @@ export default function AddTestProcedure() {
   const [, setLocation] = useLocation();
   const [serviceName, setServiceName] = useState("");
   const [procedureName, setProcedureName] = useState("");
+  const [assignedInspector, setAssignedInspector] = useState("");
   const [testItems, setTestItems] = useState<TestItem[]>([]);
   const [nextId, setNextId] = useState(1);
 
@@ -265,7 +274,7 @@ export default function AddTestProcedure() {
           <div className="max-w-4xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <div className="space-y-6 mb-8">
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-3 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Service Name</label>
                     <select
@@ -291,6 +300,22 @@ export default function AddTestProcedure() {
                       className="border-slate-200"
                       data-testid="input-procedure-name"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Assigned Inspector</label>
+                    <select
+                      value={assignedInspector}
+                      onChange={(e) => setAssignedInspector(e.target.value)}
+                      className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      data-testid="select-inspector"
+                    >
+                      <option value="">Select an inspector...</option>
+                      {inspectors.map((i) => (
+                        <option key={i.id} value={i.name}>
+                          {i.name} - {i.role}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </div>

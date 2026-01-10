@@ -382,7 +382,7 @@ export default function AddTestProcedure() {
                         type="date"
                         value={startDate}
                         onChange={(e) => setStartDate(e.target.value)}
-                        className="w-full h-9 px-3 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full h-9 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         data-testid="input-start-date"
                       />
                     </div>
@@ -392,7 +392,7 @@ export default function AddTestProcedure() {
                         type="date"
                         value={endDate}
                         onChange={(e) => setEndDate(e.target.value)}
-                        className="w-full h-9 px-3 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full h-9 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         data-testid="input-end-date"
                       />
                     </div>
@@ -458,7 +458,7 @@ export default function AddTestProcedure() {
                             type="time"
                             value={specificTime}
                             onChange={(e) => setSpecificTime(e.target.value)}
-                            className="h-9 px-3 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="h-9 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             data-testid="input-specific-time"
                           />
                         )}

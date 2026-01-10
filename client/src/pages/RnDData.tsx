@@ -52,13 +52,13 @@ const menuItems = [
 ];
 
 const dataMenuItems = [
-  { id: "company-data", name: "Company Data", icon: Building2, path: "/data/company" },
-  { id: "patent-data", name: "Patent Data", icon: FileText, path: "/data/patent" },
-  { id: "paper-data", name: "Paper Data", icon: BookOpen, path: "/data/paper" },
-  { id: "stock-data", name: "Stock Data", icon: TrendingUp, path: "/data/stock" },
-  { id: "news-data", name: "News Data", icon: Newspaper, path: "/data/news" },
-  { id: "rnd-data", name: "R&D Data", icon: Lightbulb, path: "/data/rnd" },
-  { id: "employment-data", name: "Employment Data", icon: UserCog, path: "/data/employment" },
+  { id: "company-data", name: "Company Data", icon: Building2, path: "/data/company", status: "normal" },
+  { id: "patent-data", name: "Patent Data", icon: FileText, path: "/data/patent", status: "normal" },
+  { id: "paper-data", name: "Paper Data", icon: BookOpen, path: "/data/paper", status: "stopped" },
+  { id: "stock-data", name: "Stock Data", icon: TrendingUp, path: "/data/stock", status: "normal" },
+  { id: "news-data", name: "News Data", icon: Newspaper, path: "/data/news", status: "error" },
+  { id: "rnd-data", name: "R&D Data", icon: Lightbulb, path: "/data/rnd", status: "normal" },
+  { id: "employment-data", name: "Employment Data", icon: UserCog, path: "/data/employment", status: "stopped" },
 ];
 
 const serverMenuItems = [
@@ -91,6 +91,7 @@ function Sidebar() {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = location === item.path;
+              const statusColor = item.status === "normal" ? "bg-blue-500" : item.status === "error" ? "bg-red-500" : "bg-slate-500";
             return (
               <li key={item.id}>
                 <Link href={item.path} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"}`}>
@@ -120,9 +121,11 @@ function Sidebar() {
             {dataMenuItems.map((item) => {
               const Icon = item.icon;
               const isActive = location === item.path;
+              const statusColor = item.status === "normal" ? "bg-blue-500" : item.status === "error" ? "bg-red-500" : "bg-slate-500";
               return (
                 <li key={item.id}>
                   <Link href={item.path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:bg-slate-800 hover:text-white"}`}>
+                    <span className={`w-2 h-2 rounded-full ${statusColor} ${item.status === "error" ? "animate-pulse" : ""}`} />
                     <Icon className="w-4 h-4" strokeWidth={1.5} />
                     <span className="text-sm">{item.name}</span>
                   </Link>
@@ -169,6 +172,7 @@ function Sidebar() {
               return (
                 <li key={item.id}>
                   <Link href={item.path} className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200">
+                    <span className={`w-2 h-2 rounded-full ${statusColor} ${item.status === "error" ? "animate-pulse" : ""}`} />
                     <Icon className="w-4 h-4" strokeWidth={1.5} />
                     <span className="text-sm">{item.name}</span>
                   </Link>

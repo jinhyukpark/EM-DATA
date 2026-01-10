@@ -465,6 +465,7 @@ function Sidebar() {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = location === item.path;
+              const statusColor = item.status === "normal" ? "bg-blue-500" : item.status === "error" ? "bg-red-500" : "bg-slate-500";
             return (
               <li key={item.id}>
                 <Link
@@ -508,6 +509,7 @@ function Sidebar() {
             {dataMenuItems.map((item) => {
               const Icon = item.icon;
               const isActive = location === item.path;
+              const statusColor = item.status === "normal" ? "bg-blue-500" : item.status === "error" ? "bg-red-500" : "bg-slate-500";
               return (
                 <li key={item.id}>
                   <Link
@@ -519,6 +521,7 @@ function Sidebar() {
                     }`}
                     data-testid={`menu-${item.id}`}
                   >
+                    <span className={`w-2 h-2 rounded-full ${statusColor} ${item.status === "error" ? "animate-pulse" : ""}`} />
                     <Icon className="w-4 h-4" strokeWidth={1.5} />
                     <span className="text-sm">{item.name}</span>
                   </Link>
@@ -552,6 +555,7 @@ function Sidebar() {
             {serverMenuItems.map((item) => {
               const Icon = item.icon;
               const isActive = location === item.path;
+              const statusColor = item.status === "normal" ? "bg-blue-500" : item.status === "error" ? "bg-red-500" : "bg-slate-500";
               return (
                 <li key={item.id}>
                   <Link
@@ -596,6 +600,7 @@ function Sidebar() {
             {settingsMenuItems.map((item) => {
               const Icon = item.icon;
               const isActive = location === item.path;
+              const statusColor = item.status === "normal" ? "bg-blue-500" : item.status === "error" ? "bg-red-500" : "bg-slate-500";
               return (
                 <li key={item.id}>
                   <Link
@@ -607,6 +612,7 @@ function Sidebar() {
                     }`}
                     data-testid={`menu-${item.id}`}
                   >
+                    <span className={`w-2 h-2 rounded-full ${statusColor} ${item.status === "error" ? "animate-pulse" : ""}`} />
                     <Icon className="w-4 h-4" strokeWidth={1.5} />
                     <span className="text-sm">{item.name}</span>
                   </Link>

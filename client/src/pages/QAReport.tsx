@@ -26,6 +26,11 @@ import {
   Trash2,
   UserCheck,
   FileCheck,
+  X,
+  List,
+  MessageSquare,
+  CheckSquare,
+  StickyNote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -196,9 +201,54 @@ function Sidebar() {
   );
 }
 
+type TestItemType = "multiple_choice" | "short_answer" | "ox" | "remarks";
+
+interface TestItem {
+  id: number;
+  type: TestItemType;
+  question: string;
+  options?: string[];
+}
+
 export default function QAReport() {
   const [activeTab, setActiveTab] = useState<"services" | "tests" | "inspectors">("services");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [newProcedure, setNewProcedure] = useState({
+    serviceName: "",
+    procedureName: "",
+  });
+  const [testItems, setTestItems] = useState<TestItem[]>([]);
+  const [nextItemId, setNextItemId] = useState(1);
+
+  const addTestItem = (type: TestItemType) => {
+    setTestItems([...testItems, { id: nextItemId, type, question: "", options: type === "multiple_choice" ? ["", "", "", ""] : undefined }]);
+    setNextItemId(nextItemId + 1);
+  };
+
+  const updateTestItem = (id: number, field: string, value: string) => {
+    setTestItems(testItems.map(item => item.id === id ? { ...item, [field]: value } : item));
+  };
+
+  const updateOption = (itemId: number, optionIndex: number, value: string) => {
+    setTestItems(testItems.map(item => {
+      if (item.id === itemId && item.options) {
+        const newOptions = [...item.options];
+        newOptions[optionIndex] = value;
+        return { ...item, options: newOptions };
+      }
+      return item;
+    }));
+  };
+
+  const removeTestItem = (id: number) => {
+    setTestItems(testItems.filter(item => item.id !== id));
+  };
+
+  const resetModal = () => {
+    setShowAddModal(false);
+    setNewProcedure({ serviceName: "", procedureName: "" });
+    setTestItems([]);
+  };
 
   return (
     <div className="min-h-screen flex bg-slate-50">
@@ -446,6 +496,146 @@ export default function QAReport() {
           </motion.section>
         </main>
       </div>
+
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={resetModal}>
+          <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full mx-4 max-h-[85vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+              <h3 className="text-lg font-semibold text-slate-800">Add Test Procedure</h3>
+              <button onClick={resetModal} className="p-2 hover:bg-slate-200 rounded-lg transition-colors" data-testid="close-add-modal">
+                <X className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+            <div className="overflow-y-auto max-h-[calc(85vh-130px)] p-6">
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Service Name</label>
+                  <select
+                    value={newProcedure.serviceName}
+                    onChange={(e) => setNewProcedure({ ...newProcedure, serviceName: e.target.value })}
+                    className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm"
+                    data-testid="select-service"
+                  >
+                    <option value="">Select a service...</option>
+                    {services.map(s => (
+                      <option key={s.id} value={s.name}>{s.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Procedure Name</label>
+                  <Input
+                    value={newProcedure.procedureName}
+                    onChange={(e) => setNewProcedure({ ...newProcedure, procedureName: e.target.value })}
+                    placeholder="e.g., Data Integrity Check"
+                    className="border-slate-200"
+                    data-testid="input-procedure-name"
+                  />
+                </div>
+              </div>
+
+              <div className="border-t border-slate-200 pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-sm font-semibold text-slate-800">Test Items</h4>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => addTestItem("multiple_choice")} data-testid="add-multiple-choice">
+                      <List className="w-3.5 h-3.5" />
+                      Multiple Choice
+                    </Button>
+                    <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => addTestItem("short_answer")} data-testid="add-short-answer">
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      Short Answer
+                    </Button>
+                    <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => addTestItem("ox")} data-testid="add-ox">
+                      <CheckSquare className="w-3.5 h-3.5" />
+                      O/X
+                    </Button>
+                    <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => addTestItem("remarks")} data-testid="add-remarks">
+                      <StickyNote className="w-3.5 h-3.5" />
+                      Remarks
+                    </Button>
+                  </div>
+                </div>
+
+                {testItems.length === 0 ? (
+                  <div className="text-center py-8 border border-dashed border-slate-200 rounded-lg">
+                    <p className="text-sm text-slate-400">No test items added yet. Click buttons above to add.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {testItems.map((item, index) => (
+                      <div key={item.id} className="border border-slate-200 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-slate-400">#{index + 1}</span>
+                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                              item.type === "multiple_choice" ? "bg-blue-50 text-blue-600" :
+                              item.type === "short_answer" ? "bg-green-50 text-green-600" :
+                              item.type === "ox" ? "bg-purple-50 text-purple-600" :
+                              "bg-amber-50 text-amber-600"
+                            }`}>
+                              {item.type === "multiple_choice" ? "Multiple Choice" :
+                               item.type === "short_answer" ? "Short Answer" :
+                               item.type === "ox" ? "O/X" : "Remarks"}
+                            </span>
+                          </div>
+                          <button onClick={() => removeTestItem(item.id)} className="p-1 hover:bg-red-50 rounded transition-colors">
+                            <Trash2 className="w-4 h-4 text-red-400" />
+                          </button>
+                        </div>
+
+                        <Input
+                          value={item.question}
+                          onChange={(e) => updateTestItem(item.id, "question", e.target.value)}
+                          placeholder={item.type === "remarks" ? "Enter remarks field label..." : "Enter question..."}
+                          className="border-slate-200 mb-3"
+                        />
+
+                        {item.type === "multiple_choice" && item.options && (
+                          <div className="grid grid-cols-2 gap-2">
+                            {item.options.map((opt, optIndex) => (
+                              <div key={optIndex} className="flex items-center gap-2">
+                                <span className="text-xs text-slate-400 w-4">{optIndex + 1}.</span>
+                                <Input
+                                  value={opt}
+                                  onChange={(e) => updateOption(item.id, optIndex, e.target.value)}
+                                  placeholder={`Option ${optIndex + 1}`}
+                                  className="border-slate-200 text-sm h-9"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {item.type === "ox" && (
+                          <div className="flex items-center gap-4 text-sm text-slate-500">
+                            <span className="flex items-center gap-1"><span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">O</span> Pass</span>
+                            <span className="flex items-center gap-1"><span className="w-5 h-5 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xs font-bold">X</span> Fail</span>
+                          </div>
+                        )}
+
+                        {item.type === "short_answer" && (
+                          <p className="text-xs text-slate-400">Inspector will provide a text response</p>
+                        )}
+
+                        {item.type === "remarks" && (
+                          <p className="text-xs text-slate-400">Inspector can add notes and comments here</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+              <Button variant="outline" onClick={resetModal}>Cancel</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700" data-testid="save-procedure">
+                Save Procedure
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

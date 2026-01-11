@@ -29,6 +29,7 @@ import {
   List,
   MessageSquare,
   CheckSquare,
+  Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -327,12 +328,33 @@ export default function TestDetail() {
     return <CheckSquare className="w-4 h-4" />;
   };
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="flex min-h-screen bg-slate-50" data-testid="test-detail-page">
-      <Sidebar />
+      <div className="hidden lg:block">
+        <Sidebar />
+      </div>
 
-      <main className="flex-1 overflow-auto">
-        <div className="p-8">
+      {sidebarOpen && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+          <div className="relative w-64">
+            <Sidebar />
+          </div>
+        </div>
+      )}
+
+      <main className="flex-1 overflow-auto min-w-0">
+        <div className="p-4 md:p-6 lg:p-8">
+          <div className="lg:hidden mb-4">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 text-slate-600 hover:text-slate-900"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          </div>
           <div className="mb-6">
             <Link href="/qa-report" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700 transition-colors mb-4">
               <ArrowLeft className="w-4 h-4" />

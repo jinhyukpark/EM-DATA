@@ -26,6 +26,7 @@ import {
   BookOpen,
   Lightbulb,
   UserCog,
+  Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -203,33 +204,51 @@ export default function GCPServers() {
   const runningCount = gcpServices.filter(s => s.status === "running").length;
   const warningCount = gcpServices.filter(s => s.status === "warning").length;
   const stoppedCount = gcpServices.filter(s => s.status === "stopped").length;
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen flex bg-slate-50">
-      <Sidebar />
+      <div className="hidden lg:block">
+        <Sidebar />
+      </div>
 
-      <div className="flex-1 flex flex-col">
-        <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-          <div className="px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center">
+      {sidebarOpen && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+          <div className="relative w-64">
+            <Sidebar />
+          </div>
+        </div>
+      )}
+
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+          <div className="px-4 md:px-8 py-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="lg:hidden p-2 -ml-2 text-slate-600 hover:text-slate-900"
+                >
+                  <Menu className="w-5 h-5" />
+                </button>
+                <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center flex-shrink-0">
                   <Cloud className="w-5 h-5 text-white" />
                 </div>
-                <div>
-                  <h1 className="text-xl font-semibold tracking-tight text-slate-800">GCP Services</h1>
-                  <p className="text-sm text-slate-500 mt-0.5">asia-northeast3 (Seoul)</p>
+                <div className="min-w-0">
+                  <h1 className="text-lg md:text-xl font-semibold tracking-tight text-slate-800 truncate">GCP Services</h1>
+                  <p className="text-xs md:text-sm text-slate-500 mt-0.5 hidden sm:block">asia-northeast3 (Seoul)</p>
                 </div>
               </div>
               <Button variant="outline" size="sm" className="gap-2 border-slate-200" data-testid="refresh-button">
                 <RefreshCw className="w-4 h-4" />
-                Refresh
+                <span className="hidden sm:inline">Refresh</span>
               </Button>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 p-6 bg-slate-50/50">
+        <main className="flex-1 p-4 md:p-6 bg-slate-50/50 overflow-x-hidden">
           <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-6">
             <div className="flex items-center gap-8 py-4 px-6 bg-white rounded-xl border border-slate-100">
               <div className="flex items-center gap-3">

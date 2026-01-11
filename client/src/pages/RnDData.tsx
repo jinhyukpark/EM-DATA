@@ -32,6 +32,7 @@ import {
   Settings,
   User,
   Shield,
+  Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -211,24 +212,43 @@ export default function RnDData() {
     currentPage * itemsPerPage
   );
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="min-h-screen flex bg-slate-50">
-      <Sidebar />
+      <div className="hidden lg:block">
+        <Sidebar />
+      </div>
 
-      <div className="flex-1 flex flex-col">
-        <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-          <div className="px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-xl font-semibold tracking-tight text-slate-800">R&D Data</h1>
-                <p className="text-sm text-slate-500 mt-0.5">Research and Development project tracking</p>
+      {sidebarOpen && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+          <div className="relative w-64">
+            <Sidebar />
+          </div>
+        </div>
+      )}
+
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+          <div className="px-4 md:px-8 py-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="lg:hidden p-2 -ml-2 text-slate-600 hover:text-slate-900"
+                >
+                  <Menu className="w-5 h-5" />
+                </button>
+                <div className="min-w-0">
+                  <h1 className="text-lg md:text-xl font-semibold tracking-tight text-slate-800 truncate">R&D Data</h1>
+                  <p className="text-xs md:text-sm text-slate-500 mt-0.5 hidden sm:block">Research and Development project tracking</p>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Button variant="outline" className="gap-2">
-                  <Download className="w-4 h-4" />
-                  Export
-                </Button>
-              </div>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Download className="w-4 h-4" />
+                <span className="hidden sm:inline">Export</span>
+              </Button>
             </div>
           </div>
         </header>

@@ -34,6 +34,7 @@ import {
   BookOpen,
   Lightbulb,
   UserCog,
+  Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -258,29 +259,51 @@ export default function QAReport() {
     setTestItems([]);
   };
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="min-h-screen flex bg-slate-50">
-      <Sidebar />
+      <div className="hidden lg:block">
+        <Sidebar />
+      </div>
 
-      <div className="flex-1 flex flex-col">
-        <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-          <div className="px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-xl font-semibold tracking-tight text-slate-800">QA Report & Inspection</h1>
-                <p className="text-sm text-slate-500 mt-0.5">Service operation status and quality assurance management</p>
+      {sidebarOpen && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+          <div className="relative w-64">
+            <Sidebar />
+          </div>
+        </div>
+      )}
+
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+          <div className="px-4 md:px-8 py-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="lg:hidden p-2 -ml-2 text-slate-600 hover:text-slate-900"
+                >
+                  <Menu className="w-5 h-5" />
+                </button>
+                <div className="min-w-0">
+                  <h1 className="text-lg md:text-xl font-semibold tracking-tight text-slate-800 truncate">QA Report & Inspection</h1>
+                  <p className="text-xs md:text-sm text-slate-500 mt-0.5 hidden sm:block">Service operation status and quality assurance management</p>
+                </div>
               </div>
               <Link href="/qa-report/add">
                 <Button className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-button">
                   <Plus className="w-4 h-4" />
-                  Add Test Procedure
+                  <span className="hidden sm:inline">Add Test Procedure</span>
+                  <span className="sm:hidden">Add</span>
                 </Button>
               </Link>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 p-8 bg-white">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-white overflow-x-hidden">
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="chart-container-light">

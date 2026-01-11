@@ -725,7 +725,7 @@ export default function TestDetail() {
                   </div>
                 </div>
                 
-                <div ref={scheduleScrollRef} className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} data-testid="schedule-dates">
+                <div ref={scheduleScrollRef} className="flex gap-2 overflow-x-auto pb-20 mb-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} data-testid="schedule-dates">
                   {test.schedule.filter(item => {
                     if (!scheduleFilterFrom && !scheduleFilterTo) return true;
                     const itemDate = new Date(item.date);
@@ -790,8 +790,8 @@ export default function TestDetail() {
                           </button>
                           {scheduleMenuOpen === item.id && (
                             <div 
-                              className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
-                              style={{ zIndex: 9999 }}
+                              className="absolute right-0 mt-1 bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
+                              style={{ zIndex: 9999, top: '2.5rem' }}
                             >
                               {item.status !== "completed" && (
                                 <button

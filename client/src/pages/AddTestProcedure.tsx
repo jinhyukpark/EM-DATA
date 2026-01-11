@@ -921,44 +921,44 @@ export default function AddTestProcedure() {
                     {templates.map((template) => (
                       <div
                         key={template.id}
-                        className={`relative p-4 bg-white rounded-lg border-2 transition-all cursor-pointer hover:shadow-md group ${
-                          template.isDefault ? "border-blue-500" : "border-slate-200 hover:border-blue-300"
+                        className={`relative p-4 pt-8 bg-white rounded-lg border-2 transition-all cursor-pointer hover:shadow-md group min-h-[100px] ${
+                          template.isDefault ? "border-blue-500 bg-blue-50/30" : "border-slate-200 hover:border-blue-300"
                         }`}
                         onClick={() => loadTemplate(template.id)}
                       >
                         {template.isDefault && (
-                          <div className="absolute -top-2 -right-2">
-                            <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
+                          <div className="absolute top-2 left-2">
+                            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
                           </div>
                         )}
-                        <div className="flex items-center gap-2 mb-2">
-                          <FileStack className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium text-sm text-slate-800 truncate">{template.name}</span>
-                        </div>
-                        <p className="text-xs text-slate-500">{template.items.length} test items</p>
-                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 rounded p-0.5">
                           <button
                             onClick={(e) => { e.stopPropagation(); setDefaultTemplate(template.id); }}
-                            className={`p-1 rounded hover:bg-slate-100 ${template.isDefault ? 'text-amber-500' : 'text-slate-400'}`}
+                            className={`p-1.5 rounded hover:bg-slate-100 ${template.isDefault ? 'text-amber-500' : 'text-slate-400'}`}
                             title="Set as default"
                           >
-                            <Star className={`w-3.5 h-3.5 ${template.isDefault ? 'fill-amber-500' : ''}`} />
+                            <Star className={`w-4 h-4 ${template.isDefault ? 'fill-amber-500' : ''}`} />
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); deleteTemplate(template.id); }}
-                            className="p-1 rounded hover:bg-red-50 text-slate-400 hover:text-red-500"
+                            className="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-500"
                             title="Delete"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <FileStack className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                          <span className="font-medium text-sm text-slate-800 truncate">{template.name}</span>
+                        </div>
+                        <p className="text-xs text-slate-500">{template.items.length} test items</p>
                       </div>
                     ))}
                     
                     {/* Add New Template Button */}
                     <button
                       onClick={() => setShowTemplateModal(true)}
-                      className="p-4 bg-white rounded-lg border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-2 min-h-[80px]"
+                      className="p-4 bg-white rounded-lg border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-2 min-h-[100px]"
                       data-testid="add-template-btn"
                     >
                       <Plus className="w-6 h-6 text-blue-500" />

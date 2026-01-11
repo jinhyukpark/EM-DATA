@@ -330,6 +330,7 @@ export default function AddTestProcedure() {
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState("");
   const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
   const [templateItems, setTemplateItems] = useState<TestItem[]>([]);
   const [templateNextId, setTemplateNextId] = useState(1);
 
@@ -381,6 +382,7 @@ export default function AddTestProcedure() {
     if (template) {
       setTestItems(template.items.map((item, idx) => ({ ...item, id: idx + 1 })));
       setNextId(template.items.length + 1);
+      setSelectedTemplateId(templateId);
     }
     setShowTemplateDropdown(false);
   };
@@ -922,7 +924,11 @@ export default function AddTestProcedure() {
                       <div
                         key={template.id}
                         className={`relative p-4 pt-8 bg-white rounded-lg border-2 transition-all cursor-pointer hover:shadow-md group min-h-[100px] ${
-                          template.isDefault ? "border-blue-500 bg-blue-50/30" : "border-slate-200 hover:border-blue-300"
+                          selectedTemplateId === template.id 
+                            ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200" 
+                            : template.isDefault 
+                              ? "border-blue-300 bg-blue-50/30" 
+                              : "border-slate-200 hover:border-blue-300"
                         }`}
                         onClick={() => loadTemplate(template.id)}
                       >

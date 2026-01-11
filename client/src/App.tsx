@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Router } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -21,31 +21,35 @@ import PaperData from "@/pages/PaperData";
 import AddTestProcedure from "@/pages/AddTestProcedure";
 import TestDetail from "@/pages/TestDetail";
 
-function Router() {
+const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
+
+function AppRouter() {
   return (
-    <Switch>
-      <Route path="/login" component={Login} />
-      <Route path="/" component={Dashboard} />
-      <Route path="/data/company" component={CompanyData} />
-      <Route path="/data/patent" component={PatentData} />
-      <Route path="/data/paper" component={PaperData} />
-      <Route path="/data/stock" component={StockData} />
-      <Route path="/data/news" component={NewsData} />
-      <Route path="/data/rnd" component={RnDData} />
-      <Route path="/data/employment" component={EmploymentData} />
-      <Route path="/settings" component={Settings} />
-      <Route path="/settings/profile" component={Settings} />
-      <Route path="/settings/users" component={Settings} />
-      <Route path="/settings/permissions" component={Settings} />
-      <Route path="/qa-report" component={QAReport} />
-      <Route path="/qa-report/add" component={AddTestProcedure} />
-      <Route path="/qa-report/edit/:id" component={AddTestProcedure} />
-      <Route path="/qa-report/test/:id" component={TestDetail} />
-      <Route path="/servers/aws" component={AWSServers} />
-      <Route path="/servers/gcp" component={GCPServers} />
-      <Route path="/servers/ncloud" component={NCloudServers} />
-      <Route component={NotFound} />
-    </Switch>
+    <Router base={BASE_PATH}>
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Route path="/" component={Dashboard} />
+        <Route path="/data/company" component={CompanyData} />
+        <Route path="/data/patent" component={PatentData} />
+        <Route path="/data/paper" component={PaperData} />
+        <Route path="/data/stock" component={StockData} />
+        <Route path="/data/news" component={NewsData} />
+        <Route path="/data/rnd" component={RnDData} />
+        <Route path="/data/employment" component={EmploymentData} />
+        <Route path="/settings" component={Settings} />
+        <Route path="/settings/profile" component={Settings} />
+        <Route path="/settings/users" component={Settings} />
+        <Route path="/settings/permissions" component={Settings} />
+        <Route path="/qa-report" component={QAReport} />
+        <Route path="/qa-report/add" component={AddTestProcedure} />
+        <Route path="/qa-report/edit/:id" component={AddTestProcedure} />
+        <Route path="/qa-report/test/:id" component={TestDetail} />
+        <Route path="/servers/aws" component={AWSServers} />
+        <Route path="/servers/gcp" component={GCPServers} />
+        <Route path="/servers/ncloud" component={NCloudServers} />
+        <Route component={NotFound} />
+      </Switch>
+    </Router>
   );
 }
 
@@ -54,7 +58,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        <Router />
+        <AppRouter />
       </TooltipProvider>
     </QueryClientProvider>
   );

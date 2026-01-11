@@ -456,8 +456,8 @@ export default function TestDetail() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-slate-50" data-testid="test-detail-page">
-      <div className="hidden lg:block">
+    <div className="flex h-screen bg-slate-50 overflow-hidden" data-testid="test-detail-page">
+      <div className="hidden lg:block flex-shrink-0">
         <Sidebar />
       </div>
 
@@ -470,7 +470,8 @@ export default function TestDetail() {
         </div>
       )}
 
-      <main className="flex-1 overflow-auto min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        <main className="flex-1 overflow-y-auto min-w-0">
         <div className="p-4 md:p-6 lg:p-8">
           <div className="lg:hidden mb-4">
             <button
@@ -854,7 +855,8 @@ export default function TestDetail() {
             </div>
           </motion.div>
         </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

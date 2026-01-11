@@ -304,6 +304,7 @@ export default function AddTestProcedure() {
   const [specificTime, setSpecificTime] = useState(existingData?.specificTime || "");
   const [timeOption, setTimeOption] = useState<"anytime" | "specific" | "preset">(existingData?.timeOption || "anytime");
   const [presetTime, setPresetTime] = useState(existingData?.presetTime || "");
+  const [activeTab, setActiveTab] = useState<"basic" | "items">("basic");
 
   const toggleDayInspector = (dayId: string, inspectorName: string) => {
     setDayInspectors(prev => {
@@ -452,6 +453,33 @@ export default function AddTestProcedure() {
         <main className="flex-1 p-8 bg-white">
           <div className="max-w-4xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              {/* Tabs */}
+              <div className="flex gap-1 mb-6 p-1 bg-slate-100 rounded-lg w-fit">
+                <button
+                  onClick={() => setActiveTab("basic")}
+                  className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
+                    activeTab === "basic"
+                      ? "bg-white text-slate-800 shadow-sm"
+                      : "text-slate-600 hover:text-slate-800"
+                  }`}
+                  data-testid="tab-basic"
+                >
+                  기본정보
+                </button>
+                <button
+                  onClick={() => setActiveTab("items")}
+                  className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
+                    activeTab === "items"
+                      ? "bg-white text-slate-800 shadow-sm"
+                      : "text-slate-600 hover:text-slate-800"
+                  }`}
+                  data-testid="tab-items"
+                >
+                  Item 셋팅
+                </button>
+              </div>
+
+              {activeTab === "basic" && (
               <div className="space-y-6 mb-8">
                 <div className="space-y-4">
                   <div>
@@ -791,8 +819,10 @@ export default function AddTestProcedure() {
                   )}
                 </div>
               </div>
+              )}
 
-              <div className="border-t border-slate-200 pt-6">
+              {activeTab === "items" && (
+              <div className="pt-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-semibold text-slate-800">Test Items</h2>
                   <Button onClick={addTestItem} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-item">
@@ -954,6 +984,7 @@ export default function AddTestProcedure() {
                   </div>
                 )}
               </div>
+              )}
 
               <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-slate-200">
                 <Link href="/qa-report">

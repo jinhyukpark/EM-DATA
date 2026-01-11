@@ -291,99 +291,92 @@ function StatCard({
 }
 
 function DataSummaryCarousel() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const cardWidth = 220;
-  const gap = 20;
-  const visibleCards = 5;
-  const totalCards = dataTypes.length;
+  const [currentPage, setCurrentPage] = useState(0);
+  const cardsPerPage = 5;
+  const totalPages = Math.ceil(dataTypes.length / cardsPerPage);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => {
-        const next = prev + 1;
-        if (next >= totalCards) {
-          return 0;
-        }
-        return next;
-      });
-    }, 3000);
+      setCurrentPage((prev) => (prev + 1) % totalPages);
+    }, 4000);
     return () => clearInterval(interval);
-  }, [totalCards]);
+  }, [totalPages]);
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      const scrollPosition = currentIndex * (cardWidth + gap);
-      scrollRef.current.scrollTo({
-        left: scrollPosition,
-        behavior: "smooth",
-      });
-    }
-  }, [currentIndex]);
+  const visibleCards = dataTypes.slice(
+    currentPage * cardsPerPage,
+    currentPage * cardsPerPage + cardsPerPage
+  );
+
+  const remainingSlots = cardsPerPage - visibleCards.length;
+  const fillerCards = remainingSlots > 0 ? dataTypes.slice(0, remainingSlots) : [];
+  const displayCards = [...visibleCards, ...fillerCards];
 
   return (
     <div className="relative">
-      <div
-        ref={scrollRef}
-        className="flex gap-5 overflow-hidden scroll-smooth"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-      >
-        {[...dataTypes, ...dataTypes].map((data, index) => {
-          const Icon = data.icon;
-          const diff = data.todayUpdate - data.yesterdayUpdate;
-          const diffPercent = ((diff / data.yesterdayUpdate) * 100).toFixed(1);
-          const isPositive = diff >= 0;
+      <div className="flex gap-4 overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPage}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.4 }}
+            className="flex gap-4 w-full"
+          >
+            {displayCards.map((data, index) => {
+              const Icon = data.icon;
+              const diff = data.todayUpdate - data.yesterdayUpdate;
+              const diffPercent = ((diff / data.yesterdayUpdate) * 100).toFixed(1);
+              const isPositive = diff >= 0;
 
-          return (
-            <motion.div
-              key={`${data.id}-${index}`}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.05, duration: 0.3 }}
-              className="stat-card-light group flex-shrink-0"
-              style={{ width: cardWidth }}
-              data-testid={`stat-card-${data.id}`}
-            >
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${data.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl`}
-              />
-              <div className="relative z-10">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="p-2.5 rounded-lg" style={{ backgroundColor: `${data.color}15` }}>
-                    <Icon className="w-5 h-5" style={{ color: data.color }} strokeWidth={1.5} />
-                  </div>
-                  <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? "text-emerald-600" : "text-red-500"}`}>
-                    {isPositive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-                    <span>{isPositive ? "+" : ""}{diffPercent}%</span>
-                  </div>
-                </div>
-                <h3 className="text-slate-500 text-xs font-medium mb-1">{data.name}</h3>
-                <p className="text-2xl font-semibold tracking-tight text-slate-800 mb-3">
-                  {formatNumber(data.total)}
-                </p>
-                <div className="flex items-center justify-between pt-3 mt-3 -mx-5 -mb-5 px-5 py-3 rounded-b-xl" style={{ backgroundColor: `${data.color}08` }}>
-                  <div>
-                    <p className="text-[10px] text-slate-400 mb-0.5">Today</p>
-                    <p className="text-sm font-semibold" style={{ color: data.color }}>+{formatNumber(data.todayUpdate)}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[10px] text-slate-400 mb-0.5">vs Yesterday</p>
-                    <p className={`text-sm font-semibold ${isPositive ? "text-emerald-600" : "text-red-500"}`}>
-                      {isPositive ? "+" : ""}{diff}
+              return (
+                <div
+                  key={`${data.id}-${currentPage}-${index}`}
+                  className="stat-card-light group flex-1 min-w-0"
+                  data-testid={`stat-card-${data.id}`}
+                >
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${data.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl`}
+                  />
+                  <div className="relative z-10">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="p-2.5 rounded-lg" style={{ backgroundColor: `${data.color}15` }}>
+                        <Icon className="w-5 h-5" style={{ color: data.color }} strokeWidth={1.5} />
+                      </div>
+                      <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? "text-emerald-600" : "text-red-500"}`}>
+                        {isPositive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                        <span>{isPositive ? "+" : ""}{diffPercent}%</span>
+                      </div>
+                    </div>
+                    <h3 className="text-slate-500 text-xs font-medium mb-1 truncate">{data.name}</h3>
+                    <p className="text-2xl font-semibold tracking-tight text-slate-800 mb-3">
+                      {formatNumber(data.total)}
                     </p>
+                    <div className="flex items-center justify-between pt-3 mt-3 -mx-5 -mb-5 px-5 py-3 rounded-b-xl" style={{ backgroundColor: `${data.color}08` }}>
+                      <div>
+                        <p className="text-[10px] text-slate-400 mb-0.5">Today</p>
+                        <p className="text-sm font-semibold" style={{ color: data.color }}>+{formatNumber(data.todayUpdate)}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] text-slate-400 mb-0.5">vs Yesterday</p>
+                        <p className={`text-sm font-semibold ${isPositive ? "text-emerald-600" : "text-red-500"}`}>
+                          {isPositive ? "+" : ""}{diff}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          );
-        })}
+              );
+            })}
+          </motion.div>
+        </AnimatePresence>
       </div>
-      <div className="flex justify-center mt-4 gap-1.5">
-        {dataTypes.map((_, idx) => (
+      <div className="flex justify-center mt-4 gap-2">
+        {Array.from({ length: totalPages }).map((_, idx) => (
           <button
             key={idx}
-            onClick={() => setCurrentIndex(idx)}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${currentIndex % totalCards === idx ? "bg-blue-500 w-6" : "bg-slate-300 hover:bg-slate-400"}`}
+            onClick={() => setCurrentPage(idx)}
+            className={`h-2 rounded-full transition-all duration-300 ${currentPage === idx ? "bg-blue-500 w-8" : "bg-slate-300 hover:bg-slate-400 w-2"}`}
             data-testid={`carousel-dot-${idx}`}
           />
         ))}

@@ -394,6 +394,7 @@ export default function TestDetail() {
   const [editedItems, setEditedItems] = useState(test?.items || []);
   const [selectedSchedule, setSelectedSchedule] = useState(test?.schedule[0]?.id || 1);
   const [scheduleSearch, setScheduleSearch] = useState("");
+  const [editedScheduleResults, setEditedScheduleResults] = useState<Record<number, typeof test.schedule[0]['testResults']>>({});
 
   if (!test) {
     return (
@@ -412,13 +413,38 @@ export default function TestDetail() {
   }
 
   const handleAnswerChange = (itemId: number, newAnswer: string) => {
-    setEditedItems(prev => prev.map(item => 
+    const currentSchedule = test.schedule.find(s => s.id === selectedSchedule);
+    if (!currentSchedule?.testResults) return;
+    
+    const currentResults = editedScheduleResults[selectedSchedule] || currentSchedule.testResults;
+    const updatedResults = currentResults.map(item => 
       item.id === itemId ? { ...item, answer: newAnswer } : item
-    ));
+    );
+    setEditedScheduleResults(prev => ({
+      ...prev,
+      [selectedSchedule]: updatedResults
+    }));
   };
 
   const handleSave = () => {
     setIsEditing(false);
+  };
+
+  const startEditing = () => {
+    const currentSchedule = test.schedule.find(s => s.id === selectedSchedule);
+    if (currentSchedule?.testResults && !editedScheduleResults[selectedSchedule]) {
+      setEditedScheduleResults(prev => ({
+        ...prev,
+        [selectedSchedule]: [...currentSchedule.testResults]
+      }));
+    }
+    setIsEditing(true);
+  };
+
+  const getCurrentTestResults = () => {
+    const currentSchedule = test.schedule.find(s => s.id === selectedSchedule);
+    if (!currentSchedule?.testResults) return editedItems;
+    return editedScheduleResults[selectedSchedule] || currentSchedule.testResults;
   };
 
   const getAnswerIcon = (answerType: string) => {
@@ -696,9 +722,24 @@ export default function TestDetail() {
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-slate-700 mb-4">Test Items ({test.step} steps)</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium text-slate-700">Test Items ({test.step} steps)</h3>
+                  <div className="flex gap-2">
+                    {isEditing ? (
+                      <Button size="sm" onClick={handleSave} className="bg-emerald-500 hover:bg-emerald-600" data-testid="save-test-results">
+                        <Save className="w-4 h-4 mr-1" />
+                        Save
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="outline" onClick={startEditing} data-testid="edit-test-results">
+                        <Edit3 className="w-4 h-4 mr-1" />
+                        Edit
+                      </Button>
+                    )}
+                  </div>
+                </div>
                 <div className="space-y-4">
-                  {(test.schedule.find(s => s.id === selectedSchedule)?.testResults || editedItems).map((item, index) => (
+                  {getCurrentTestResults().map((item, index) => (
                     <div key={item.id} className="border border-slate-200 rounded-lg p-4 hover:border-blue-200 transition-colors">
                       <div className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium text-sm flex-shrink-0">

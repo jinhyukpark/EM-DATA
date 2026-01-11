@@ -435,6 +435,7 @@ export default function TestDetail() {
   const [scheduleFilterFrom, setScheduleFilterFrom] = useState("");
   const [scheduleFilterTo, setScheduleFilterTo] = useState("");
   const [scheduleMenuOpen, setScheduleMenuOpen] = useState<number | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
   const [editScheduleModal, setEditScheduleModal] = useState<number | null>(null);
   const [editScheduleDate, setEditScheduleDate] = useState("");
   const [editScheduleAssignee, setEditScheduleAssignee] = useState("");
@@ -783,15 +784,25 @@ export default function TestDetail() {
                         </button>
                         <div className="absolute top-0 right-0">
                           <button
-                            onClick={(e) => { e.stopPropagation(); setScheduleMenuOpen(scheduleMenuOpen === item.id ? null : item.id); }}
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              if (scheduleMenuOpen === item.id) {
+                                setScheduleMenuOpen(null);
+                                setMenuPosition(null);
+                              } else {
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                setMenuPosition({ top: rect.bottom + 4, left: rect.right - 160 });
+                                setScheduleMenuOpen(item.id);
+                              }
+                            }}
                             className={`p-2 rounded hover:bg-black/10 ${selectedSchedule === item.id ? "text-white/70 hover:text-white" : "text-slate-400 hover:text-slate-600"}`}
                           >
                             <MoreVertical className="w-5 h-5" />
                           </button>
-                          {scheduleMenuOpen === item.id && (
+                          {scheduleMenuOpen === item.id && menuPosition && (
                             <div 
                               className="fixed bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
-                              style={{ zIndex: 9999, marginTop: '36px', marginLeft: '-120px' }}
+                              style={{ zIndex: 9999, top: menuPosition.top, left: menuPosition.left }}
                             >
                               {item.status !== "completed" && (
                                 <button

@@ -7,6 +7,7 @@ import {
   RefreshCw,
   MoreHorizontal,
   Menu,
+  Cloud,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Sidebar from "@/components/Sidebar";

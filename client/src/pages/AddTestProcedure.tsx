@@ -330,6 +330,37 @@ export default function AddTestProcedure() {
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState("");
   const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
+  const [templateItems, setTemplateItems] = useState<TestItem[]>([]);
+  const [templateNextId, setTemplateNextId] = useState(1);
+
+  const addTemplateItem = () => {
+    setTemplateItems([...templateItems, { id: templateNextId, question: "", answerType: "text", options: ["", "", "", ""] }]);
+    setTemplateNextId(templateNextId + 1);
+  };
+
+  const updateTemplateItem = (id: number, field: string, value: string) => {
+    setTemplateItems(templateItems.map(item => item.id === id ? { ...item, [field]: value } : item));
+  };
+
+  const removeTemplateItem = (id: number) => {
+    setTemplateItems(templateItems.filter(item => item.id !== id));
+  };
+
+  const saveNewTemplate = () => {
+    if (newTemplateName.trim() && templateItems.length > 0) {
+      const newTemplate = {
+        id: templates.length + 1,
+        name: newTemplateName.trim(),
+        isDefault: false,
+        items: templateItems.map(item => ({ ...item })),
+      };
+      setTemplates([...templates, newTemplate]);
+      setNewTemplateName("");
+      setTemplateItems([]);
+      setTemplateNextId(1);
+      setShowTemplateModal(false);
+    }
+  };
 
   const saveAsTemplate = () => {
     if (newTemplateName.trim() && testItems.length > 0) {
@@ -881,111 +912,153 @@ export default function AddTestProcedure() {
               <div className="pt-6">
                 {/* Template Section */}
                 <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <FileStack className="w-5 h-5 text-blue-600" />
-                      <h3 className="font-medium text-slate-800">Templates</h3>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="relative">
-                        <button
-                          onClick={() => setShowTemplateDropdown(!showTemplateDropdown)}
-                          className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm hover:border-blue-300 transition-colors"
-                          data-testid="load-template-btn"
-                        >
-                          <FileStack className="w-4 h-4 text-slate-500" />
-                          Load Template
-                          <ChevronDown className="w-4 h-4 text-slate-400" />
-                        </button>
-                        {showTemplateDropdown && (
-                          <div className="absolute z-50 right-0 mt-1 w-72 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden">
-                            <div className="p-2 border-b border-slate-100 bg-slate-50">
-                              <span className="text-xs font-medium text-slate-500">Available Templates</span>
-                            </div>
-                            {templates.map((template) => (
-                              <div
-                                key={template.id}
-                                className="flex items-center justify-between px-3 py-2 hover:bg-slate-50 group"
-                              >
-                                <button
-                                  onClick={() => loadTemplate(template.id)}
-                                  className="flex-1 text-left flex items-center gap-2"
-                                >
-                                  {template.isDefault && (
-                                    <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                                  )}
-                                  <span className="text-sm text-slate-700">{template.name}</span>
-                                  <span className="text-xs text-slate-400">({template.items.length} items)</span>
-                                </button>
-                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <button
-                                    onClick={(e) => { e.stopPropagation(); setDefaultTemplate(template.id); }}
-                                    className={`p-1 rounded hover:bg-slate-100 ${template.isDefault ? 'text-amber-500' : 'text-slate-400'}`}
-                                    title="Set as default"
-                                  >
-                                    <Star className={`w-4 h-4 ${template.isDefault ? 'fill-amber-500' : ''}`} />
-                                  </button>
-                                  <button
-                                    onClick={(e) => { e.stopPropagation(); deleteTemplate(template.id); }}
-                                    className="p-1 rounded hover:bg-red-50 text-slate-400 hover:text-red-500"
-                                    title="Delete template"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                </div>
-                              </div>
-                            ))}
-                            {templates.length === 0 && (
-                              <div className="px-3 py-4 text-center text-sm text-slate-400">
-                                No templates saved yet
-                              </div>
-                            )}
+                  <div className="flex items-center gap-2 mb-4">
+                    <FileStack className="w-5 h-5 text-blue-600" />
+                    <h3 className="font-medium text-slate-800">Templates</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {templates.map((template) => (
+                      <div
+                        key={template.id}
+                        className={`relative p-4 bg-white rounded-lg border-2 transition-all cursor-pointer hover:shadow-md group ${
+                          template.isDefault ? "border-blue-500" : "border-slate-200 hover:border-blue-300"
+                        }`}
+                        onClick={() => loadTemplate(template.id)}
+                      >
+                        {template.isDefault && (
+                          <div className="absolute -top-2 -right-2">
+                            <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
                           </div>
                         )}
+                        <div className="flex items-center gap-2 mb-2">
+                          <FileStack className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium text-sm text-slate-800 truncate">{template.name}</span>
+                        </div>
+                        <p className="text-xs text-slate-500">{template.items.length} test items</p>
+                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setDefaultTemplate(template.id); }}
+                            className={`p-1 rounded hover:bg-slate-100 ${template.isDefault ? 'text-amber-500' : 'text-slate-400'}`}
+                            title="Set as default"
+                          >
+                            <Star className={`w-3.5 h-3.5 ${template.isDefault ? 'fill-amber-500' : ''}`} />
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); deleteTemplate(template.id); }}
+                            className="p-1 rounded hover:bg-red-50 text-slate-400 hover:text-red-500"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
-                      <button
-                        onClick={() => setShowTemplateModal(true)}
-                        disabled={testItems.length === 0}
-                        className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm hover:border-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        data-testid="save-template-btn"
-                      >
-                        <Save className="w-4 h-4 text-slate-500" />
-                        Save as Template
-                      </button>
-                    </div>
+                    ))}
+                    
+                    {/* Add New Template Button */}
+                    <button
+                      onClick={() => setShowTemplateModal(true)}
+                      className="p-4 bg-white rounded-lg border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-2 min-h-[80px]"
+                      data-testid="add-template-btn"
+                    >
+                      <Plus className="w-6 h-6 text-blue-500" />
+                      <span className="text-xs font-medium text-slate-600">New Template</span>
+                    </button>
                   </div>
-                  {templates.filter(t => t.isDefault).length > 0 && (
-                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                      <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                      <span>Default: <span className="font-medium text-slate-700">{templates.find(t => t.isDefault)?.name}</span></span>
-                    </div>
-                  )}
                 </div>
 
-                {/* Save Template Modal */}
+                {/* Create Template Modal */}
                 {showTemplateModal && (
-                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl"
+                      className="bg-white rounded-xl w-full max-w-2xl shadow-xl max-h-[90vh] overflow-hidden flex flex-col"
                     >
-                      <h3 className="text-lg font-semibold text-slate-800 mb-4">Save as Template</h3>
-                      <p className="text-sm text-slate-500 mb-4">
-                        Save the current {testItems.length} test item(s) as a reusable template.
-                      </p>
-                      <Input
-                        value={newTemplateName}
-                        onChange={(e) => setNewTemplateName(e.target.value)}
-                        placeholder="Enter template name..."
-                        className="mb-4"
-                        data-testid="template-name-input"
-                      />
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => { setShowTemplateModal(false); setNewTemplateName(""); }}>
+                      <div className="p-6 border-b border-slate-200">
+                        <h3 className="text-lg font-semibold text-slate-800">Create New Template</h3>
+                        <p className="text-sm text-slate-500 mt-1">Define a reusable set of test items</p>
+                      </div>
+                      
+                      <div className="p-6 overflow-y-auto flex-1">
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-slate-700 mb-2">Template Name</label>
+                          <Input
+                            value={newTemplateName}
+                            onChange={(e) => setNewTemplateName(e.target.value)}
+                            placeholder="e.g., Basic QA Checklist"
+                            data-testid="template-name-input"
+                          />
+                        </div>
+                        
+                        <div className="mb-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <label className="text-sm font-medium text-slate-700">Test Items</label>
+                            <Button onClick={addTemplateItem} size="sm" className="gap-1 bg-blue-600 hover:bg-blue-700">
+                              <Plus className="w-4 h-4" />
+                              Add Item
+                            </Button>
+                          </div>
+                          
+                          {templateItems.length === 0 ? (
+                            <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-lg">
+                              <ClipboardCheck className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                              <p className="text-sm text-slate-400">No items yet. Click "Add Item" to start.</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-3">
+                              {templateItems.map((item, idx) => (
+                                <div key={item.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                                  <div className="flex items-start gap-3">
+                                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-medium flex-shrink-0 mt-1">
+                                      {idx + 1}
+                                    </span>
+                                    <div className="flex-1 space-y-2">
+                                      <Input
+                                        value={item.question}
+                                        onChange={(e) => updateTemplateItem(item.id, "question", e.target.value)}
+                                        placeholder="Enter question..."
+                                        className="text-sm"
+                                      />
+                                      <div className="flex gap-2">
+                                        {["ox", "text", "multiple_choice"].map((type) => (
+                                          <button
+                                            key={type}
+                                            onClick={() => updateTemplateItem(item.id, "answerType", type)}
+                                            className={`px-3 py-1 rounded text-xs font-medium transition-all ${
+                                              item.answerType === type
+                                                ? "bg-blue-600 text-white"
+                                                : "bg-white border border-slate-200 text-slate-600 hover:border-blue-300"
+                                            }`}
+                                          >
+                                            {type === "ox" ? "O/X" : type === "text" ? "Text" : "Multiple Choice"}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    </div>
+                                    <button
+                                      onClick={() => removeTemplateItem(item.id)}
+                                      className="p-1 hover:bg-red-50 rounded text-slate-400 hover:text-red-500"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50">
+                        <Button variant="outline" onClick={() => { setShowTemplateModal(false); setNewTemplateName(""); setTemplateItems([]); }}>
                           Cancel
                         </Button>
-                        <Button onClick={saveAsTemplate} className="bg-blue-600 hover:bg-blue-700" disabled={!newTemplateName.trim()}>
+                        <Button 
+                          onClick={saveNewTemplate} 
+                          className="bg-blue-600 hover:bg-blue-700" 
+                          disabled={!newTemplateName.trim() || templateItems.length === 0}
+                        >
                           Save Template
                         </Button>
                       </div>

@@ -440,7 +440,20 @@ export default function TestDetail() {
   const [editScheduleAssignee, setEditScheduleAssignee] = useState("");
   const [cancelScheduleMode, setCancelScheduleMode] = useState(false);
   const [cancelScheduleReason, setCancelScheduleReason] = useState("");
+  const [editModalTab, setEditModalTab] = useState<'info' | 'history'>('info');
   const scheduleScrollRef = useRef<HTMLDivElement>(null);
+  
+  // Mock history data for schedule changes
+  const scheduleHistory: Record<number, { id: number; type: 'date_change' | 'assignee_change' | 'cancelled'; date: string; by: string; from?: string; to?: string; reason?: string }[]> = {
+    1: [
+      { id: 1, type: 'assignee_change', date: '2025-01-10 14:30', by: 'Admin', from: 'Sarah Lee', to: 'John Kim' },
+      { id: 2, type: 'date_change', date: '2025-01-08 09:15', by: 'Admin', from: '2025-01-15', to: '2025-01-16' },
+    ],
+    2: [
+      { id: 1, type: 'date_change', date: '2025-01-05 10:00', by: 'Admin', from: '2025-01-10', to: '2025-01-09' },
+    ],
+    3: [],
+  };
 
   const scrollSchedule = (direction: 'left' | 'right') => {
     if (scheduleScrollRef.current) {
@@ -1017,79 +1030,159 @@ export default function TestDetail() {
               className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4"
               onClick={e => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-slate-200">
+              <div className="p-4 border-b border-slate-200">
                 <h3 className="text-lg font-semibold text-slate-800">Edit Schedule</h3>
-                <p className="text-sm text-slate-500 mt-1">Change date or assignee for this inspection</p>
+                <p className="text-sm text-slate-500 mt-1">Manage schedule settings and view change history</p>
+                
+                <div className="flex gap-1 mt-4">
+                  <button
+                    onClick={() => { setEditModalTab('info'); setCancelScheduleMode(false); }}
+                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      editModalTab === 'info' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'text-slate-600 hover:bg-slate-100'
+                    }`}
+                  >
+                    Info
+                  </button>
+                  <button
+                    onClick={() => { setEditModalTab('history'); setCancelScheduleMode(false); }}
+                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      editModalTab === 'history' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'text-slate-600 hover:bg-slate-100'
+                    }`}
+                  >
+                    History
+                  </button>
+                </div>
               </div>
               
-              <div className="p-6 space-y-4">
-                {!cancelScheduleMode ? (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
-                      <Input
-                        type="date"
-                        value={editScheduleDate}
-                        onChange={(e) => setEditScheduleDate(e.target.value)}
-                        data-testid="edit-schedule-date"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Assignee</label>
-                      <select
-                        value={editScheduleAssignee}
-                        onChange={(e) => setEditScheduleAssignee(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        data-testid="edit-schedule-assignee"
+              <div className="p-6 space-y-4 min-h-[280px]">
+                {editModalTab === 'info' ? (
+                  !cancelScheduleMode ? (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
+                        <Input
+                          type="date"
+                          value={editScheduleDate}
+                          onChange={(e) => setEditScheduleDate(e.target.value)}
+                          data-testid="edit-schedule-date"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Assignee</label>
+                        <select
+                          value={editScheduleAssignee}
+                          onChange={(e) => setEditScheduleAssignee(e.target.value)}
+                          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          data-testid="edit-schedule-assignee"
+                        >
+                          {test.inspectors.map((inspector) => (
+                            <option key={inspector} value={inspector}>{inspector}</option>
+                          ))}
+                          <option value="John Kim">John Kim</option>
+                          <option value="Sarah Lee">Sarah Lee</option>
+                          <option value="Mike Park">Mike Park</option>
+                          <option value="Emily Choi">Emily Choi</option>
+                          <option value="David Jung">David Jung</option>
+                        </select>
+                      </div>
+                      
+                      <button
+                        onClick={() => setCancelScheduleMode(true)}
+                        className="w-full mt-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 border border-red-200 rounded-lg flex items-center justify-center gap-2 transition-colors"
                       >
-                        {test.inspectors.map((inspector) => (
-                          <option key={inspector} value={inspector}>{inspector}</option>
-                        ))}
-                        <option value="John Kim">John Kim</option>
-                        <option value="Sarah Lee">Sarah Lee</option>
-                        <option value="Mike Park">Mike Park</option>
-                        <option value="Emily Choi">Emily Choi</option>
-                        <option value="David Jung">David Jung</option>
-                      </select>
-                    </div>
-                    
-                    <button
-                      onClick={() => setCancelScheduleMode(true)}
-                      className="w-full mt-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 border border-red-200 rounded-lg flex items-center justify-center gap-2 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Cancel this Schedule
-                    </button>
-                  </>
+                        <Trash2 className="w-4 h-4" />
+                        Cancel this Schedule
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-sm font-medium text-red-700 flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4" />
+                          Cancel Schedule
+                        </p>
+                        <p className="text-xs text-red-600 mt-1">This action will cancel the scheduled inspection.</p>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Reason for Cancellation</label>
+                        <Textarea
+                          value={cancelScheduleReason}
+                          onChange={(e) => setCancelScheduleReason(e.target.value)}
+                          placeholder="Please provide a reason for cancelling this schedule..."
+                          rows={3}
+                          data-testid="cancel-schedule-reason"
+                        />
+                      </div>
+                      
+                      <button
+                        onClick={() => { setCancelScheduleMode(false); setCancelScheduleReason(""); }}
+                        className="w-full px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                      >
+                        Back to Edit
+                      </button>
+                    </>
+                  )
                 ) : (
-                  <>
-                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                      <p className="text-sm font-medium text-red-700 flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4" />
-                        Cancel Schedule
-                      </p>
-                      <p className="text-xs text-red-600 mt-1">This action will cancel the scheduled inspection.</p>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Reason for Cancellation</label>
-                      <Textarea
-                        value={cancelScheduleReason}
-                        onChange={(e) => setCancelScheduleReason(e.target.value)}
-                        placeholder="Please provide a reason for cancelling this schedule..."
-                        rows={3}
-                        data-testid="cancel-schedule-reason"
-                      />
-                    </div>
-                    
-                    <button
-                      onClick={() => { setCancelScheduleMode(false); setCancelScheduleReason(""); }}
-                      className="w-full px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center gap-2 transition-colors"
-                    >
-                      Back to Edit
-                    </button>
-                  </>
+                  <div className="space-y-3">
+                    <p className="text-sm text-slate-500 mb-3">Change history for this schedule</p>
+                    {(scheduleHistory[editScheduleModal!] || []).length === 0 ? (
+                      <div className="text-center py-8 text-slate-400">
+                        <Clock className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">No changes recorded</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 max-h-[220px] overflow-y-auto">
+                        {(scheduleHistory[editScheduleModal!] || []).map((entry) => (
+                          <div key={entry.id} className="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-center gap-2">
+                                {entry.type === 'date_change' && (
+                                  <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                                  </div>
+                                )}
+                                {entry.type === 'assignee_change' && (
+                                  <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center">
+                                    <User className="w-3.5 h-3.5 text-purple-600" />
+                                  </div>
+                                )}
+                                {entry.type === 'cancelled' && (
+                                  <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center">
+                                    <Trash2 className="w-3.5 h-3.5 text-red-600" />
+                                  </div>
+                                )}
+                                <div>
+                                  <p className="text-sm font-medium text-slate-700">
+                                    {entry.type === 'date_change' && 'Date Changed'}
+                                    {entry.type === 'assignee_change' && 'Assignee Changed'}
+                                    {entry.type === 'cancelled' && 'Schedule Cancelled'}
+                                  </p>
+                                  <p className="text-xs text-slate-500">
+                                    {entry.from} → {entry.to}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-xs text-slate-400">{entry.date}</p>
+                                <p className="text-xs text-slate-500">by {entry.by}</p>
+                              </div>
+                            </div>
+                            {entry.reason && (
+                              <p className="mt-2 text-xs text-slate-500 bg-white p-2 rounded border border-slate-100">
+                                Reason: {entry.reason}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
               

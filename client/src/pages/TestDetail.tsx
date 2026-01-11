@@ -61,6 +61,16 @@ const settingsMenuItems = [
   { id: "permissions", name: "Permission Management", icon: Shield, path: "/settings/permissions" },
 ];
 
+type TestItemResult = {
+  id: number;
+  question: string;
+  answerType: string;
+  options?: string[];
+  answer?: string;
+  isResolved?: boolean;
+  actionNote?: string;
+};
+
 type ScheduleItem = {
   id: number;
   date: string;
@@ -70,6 +80,7 @@ type ScheduleItem = {
   endTime?: string;
   duration?: string;
   notes?: string;
+  testResults?: TestItemResult[];
 };
 
 const testData: Record<string, {
@@ -102,11 +113,41 @@ const testData: Record<string, {
     normalCount: 12,
     abnormalCount: 0,
     schedule: [
-      { id: 1, date: "2025-01-16", assignee: "John Kim", status: "pending" },
-      { id: 2, date: "2025-01-09", assignee: "Sarah Lee", status: "completed", startTime: "14:00", endTime: "14:32", duration: "32 min", notes: "All checks passed successfully." },
-      { id: 3, date: "2025-01-02", assignee: "John Kim", status: "completed", startTime: "09:45", endTime: "10:15", duration: "30 min", notes: "Minor issues resolved." },
-      { id: 4, date: "2024-12-26", assignee: "Sarah Lee", status: "completed", startTime: "16:20", endTime: "16:48", duration: "28 min", notes: "Holiday check completed." },
-      { id: 5, date: "2024-12-19", assignee: "John Kim", status: "completed", startTime: "11:00", endTime: "11:22", duration: "22 min", notes: "Routine inspection." },
+      { id: 1, date: "2025-01-16", assignee: "John Kim", status: "pending", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox" },
+        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox" },
+        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"] },
+        { id: 4, question: "Are there any duplicate records?", answerType: "ox" },
+        { id: 5, question: "Additional notes on data quality:", answerType: "text" },
+      ]},
+      { id: 2, date: "2025-01-09", assignee: "Sarah Lee", status: "completed", startTime: "14:00", endTime: "14:32", duration: "32 min", notes: "All checks passed successfully.", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", answer: "O" },
+        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"], answer: "Excellent (95-100%)" },
+        { id: 4, question: "Are there any duplicate records?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Duplicate records identified and removed on 2025-01-09. Data cleanup completed." },
+        { id: 5, question: "Additional notes on data quality:", answerType: "text", answer: "All data passed integrity checks. No issues found." },
+      ]},
+      { id: 3, date: "2025-01-02", assignee: "John Kim", status: "completed", startTime: "09:45", endTime: "10:15", duration: "30 min", notes: "Minor issues resolved.", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Format inconsistency fixed." },
+        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"], answer: "Good (80-94%)" },
+        { id: 4, question: "Are there any duplicate records?", answerType: "ox", answer: "O" },
+        { id: 5, question: "Additional notes on data quality:", answerType: "text", answer: "Minor formatting issues found and resolved." },
+      ]},
+      { id: 4, date: "2024-12-26", assignee: "Sarah Lee", status: "completed", startTime: "16:20", endTime: "16:48", duration: "28 min", notes: "Holiday check completed.", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", answer: "O" },
+        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"], answer: "Excellent (95-100%)" },
+        { id: 4, question: "Are there any duplicate records?", answerType: "ox", answer: "O" },
+        { id: 5, question: "Additional notes on data quality:", answerType: "text", answer: "Holiday check - all systems normal." },
+      ]},
+      { id: 5, date: "2024-12-19", assignee: "John Kim", status: "completed", startTime: "11:00", endTime: "11:22", duration: "22 min", notes: "Routine inspection.", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", answer: "O" },
+        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"], answer: "Good (80-94%)" },
+        { id: 4, question: "Are there any duplicate records?", answerType: "ox", answer: "O" },
+        { id: 5, question: "Additional notes on data quality:", answerType: "text", answer: "Routine weekly inspection completed." },
+      ]},
     ],
     items: [
       { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
@@ -603,7 +644,7 @@ export default function TestDetail() {
               <div>
                 <h3 className="text-sm font-medium text-slate-700 mb-4">Test Items ({test.step} steps)</h3>
                 <div className="space-y-4">
-                  {editedItems.map((item, index) => (
+                  {(test.schedule.find(s => s.id === selectedSchedule)?.testResults || editedItems).map((item, index) => (
                     <div key={item.id} className="border border-slate-200 rounded-lg p-4 hover:border-blue-200 transition-colors">
                       <div className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium text-sm flex-shrink-0">

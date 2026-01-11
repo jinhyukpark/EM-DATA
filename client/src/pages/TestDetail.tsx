@@ -94,6 +94,8 @@ const testData: Record<string, {
   step: number;
   lastInspection: string;
   nextInspection: string;
+  startDate: string;
+  endDate: string;
   inspectors: string[];
   normalCount: number;
   abnormalCount: number;
@@ -110,6 +112,8 @@ const testData: Record<string, {
     step: 5,
     lastInspection: "2025-01-09",
     nextInspection: "2025-01-16",
+    startDate: "2025-01-01",
+    endDate: "2025-03-31",
     inspectors: ["John Kim", "Sarah Lee"],
     normalCount: 12,
     abnormalCount: 0,
@@ -189,6 +193,8 @@ const testData: Record<string, {
     step: 3,
     lastInspection: "2025-01-08",
     nextInspection: "2025-01-15",
+    startDate: "2025-01-01",
+    endDate: "2025-06-30",
     inspectors: ["Sarah Lee"],
     normalCount: 8,
     abnormalCount: 1,
@@ -213,6 +219,8 @@ const testData: Record<string, {
     step: 8,
     lastInspection: "2025-01-05",
     nextInspection: "2025-01-12",
+    startDate: "2024-12-01",
+    endDate: "2025-02-28",
     inspectors: ["Mike Park", "Emily Choi", "David Jung"],
     normalCount: 5,
     abnormalCount: 3,
@@ -243,6 +251,8 @@ const testData: Record<string, {
     step: 4,
     lastInspection: "2025-01-09",
     nextInspection: "2025-01-16",
+    startDate: "2025-01-01",
+    endDate: "2025-12-31",
     inspectors: ["Emily Choi"],
     normalCount: 10,
     abnormalCount: 0,
@@ -268,6 +278,8 @@ const testData: Record<string, {
     step: 6,
     lastInspection: "2024-12-20",
     nextInspection: "2025-01-20",
+    startDate: "2025-01-06",
+    endDate: "2025-04-30",
     inspectors: ["David Jung", "John Kim"],
     normalCount: 3,
     abnormalCount: 2,
@@ -511,7 +523,7 @@ export default function TestDetail() {
             </div>
 
             <div className="p-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                 <div className="bg-slate-50 rounded-lg p-4">
                   <p className="text-xs text-slate-500 mb-1">Type</p>
                   <p className="font-medium text-slate-800">{test.type}</p>
@@ -528,6 +540,13 @@ export default function TestDetail() {
                     }`} />
                     {test.workStatus}
                   </span>
+                </div>
+                <div className="bg-slate-50 rounded-lg p-4">
+                  <p className="text-xs text-slate-500 mb-1">Schedule Period</p>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-blue-400" />
+                    <p className="font-medium text-slate-800 text-sm">{test.startDate} ~ {test.endDate}</p>
+                  </div>
                 </div>
                 <div className="bg-slate-50 rounded-lg p-4">
                   <p className="text-xs text-slate-500 mb-1">Last Inspection</p>

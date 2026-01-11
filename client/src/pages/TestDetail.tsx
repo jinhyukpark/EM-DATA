@@ -61,6 +61,14 @@ const settingsMenuItems = [
   { id: "permissions", name: "Permission Management", icon: Shield, path: "/settings/permissions" },
 ];
 
+type ScheduleItem = {
+  id: number;
+  date: string;
+  assignee: string;
+  status: "completed" | "pending" | "in_progress";
+  completedAt?: string;
+};
+
 const testData: Record<string, {
   id: number;
   testName: string;
@@ -74,6 +82,7 @@ const testData: Record<string, {
   inspectors: string[];
   normalCount: number;
   abnormalCount: number;
+  schedule: ScheduleItem[];
   items: { id: number; question: string; answerType: string; options?: string[]; answer?: string; isResolved?: boolean; actionNote?: string }[];
 }> = {
   "1": {
@@ -89,6 +98,13 @@ const testData: Record<string, {
     inspectors: ["John Kim", "Sarah Lee"],
     normalCount: 12,
     abnormalCount: 0,
+    schedule: [
+      { id: 1, date: "2025-01-16", assignee: "John Kim", status: "pending" },
+      { id: 2, date: "2025-01-09", assignee: "Sarah Lee", status: "completed", completedAt: "2025-01-09 14:32" },
+      { id: 3, date: "2025-01-02", assignee: "John Kim", status: "completed", completedAt: "2025-01-02 10:15" },
+      { id: 4, date: "2024-12-26", assignee: "Sarah Lee", status: "completed", completedAt: "2024-12-26 16:48" },
+      { id: 5, date: "2024-12-19", assignee: "John Kim", status: "completed", completedAt: "2024-12-19 11:22" },
+    ],
     items: [
       { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", answer: "O" },
@@ -110,6 +126,11 @@ const testData: Record<string, {
     inspectors: ["Sarah Lee"],
     normalCount: 8,
     abnormalCount: 1,
+    schedule: [
+      { id: 1, date: "2025-01-15", assignee: "Sarah Lee", status: "pending" },
+      { id: 2, date: "2025-01-08", assignee: "Sarah Lee", status: "completed", completedAt: "2025-01-08 09:45" },
+      { id: 3, date: "2025-01-01", assignee: "Sarah Lee", status: "completed", completedAt: "2025-01-01 13:20" },
+    ],
     items: [
       { id: 1, question: "Is the API response time within acceptable limits (<500ms)?", answerType: "ox", answer: "O" },
       { id: 2, question: "Are all required fields present in the response?", answerType: "ox", answer: "O" },
@@ -129,6 +150,12 @@ const testData: Record<string, {
     inspectors: ["Mike Park", "Emily Choi", "David Jung"],
     normalCount: 5,
     abnormalCount: 3,
+    schedule: [
+      { id: 1, date: "2025-01-12", assignee: "Mike Park", status: "in_progress" },
+      { id: 2, date: "2025-01-05", assignee: "Emily Choi", status: "completed", completedAt: "2025-01-05 17:30" },
+      { id: 3, date: "2024-12-29", assignee: "David Jung", status: "completed", completedAt: "2024-12-29 15:12" },
+      { id: 4, date: "2024-12-22", assignee: "Mike Park", status: "completed", completedAt: "2024-12-22 10:45" },
+    ],
     items: [
       { id: 1, question: "Average response time:", answerType: "multiple_choice", options: ["<100ms", "100-300ms", "300-500ms", ">500ms"], answer: "300-500ms" },
       { id: 2, question: "Throughput meets requirements?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Performance optimization scheduled for next sprint." },
@@ -153,6 +180,11 @@ const testData: Record<string, {
     inspectors: ["Emily Choi"],
     normalCount: 10,
     abnormalCount: 0,
+    schedule: [
+      { id: 1, date: "2025-01-16", assignee: "Emily Choi", status: "pending" },
+      { id: 2, date: "2025-01-09", assignee: "Emily Choi", status: "completed", completedAt: "2025-01-09 11:00" },
+      { id: 3, date: "2025-01-02", assignee: "Emily Choi", status: "completed", completedAt: "2025-01-02 14:30" },
+    ],
     items: [
       { id: 1, question: "All API endpoints secured?", answerType: "ox", answer: "O" },
       { id: 2, question: "Authentication mechanism working correctly?", answerType: "ox", answer: "O" },
@@ -173,6 +205,11 @@ const testData: Record<string, {
     inspectors: ["David Jung", "John Kim"],
     normalCount: 3,
     abnormalCount: 2,
+    schedule: [
+      { id: 1, date: "2025-01-20", assignee: "David Jung", status: "pending" },
+      { id: 2, date: "2024-12-20", assignee: "John Kim", status: "completed", completedAt: "2024-12-20 16:15" },
+      { id: 3, date: "2024-12-13", assignee: "David Jung", status: "completed", completedAt: "2024-12-13 09:30" },
+    ],
     items: [
       { id: 1, question: "Model accuracy meets threshold (>90%)?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Model retraining scheduled with updated dataset." },
       { id: 2, question: "Current accuracy percentage:", answerType: "multiple_choice", options: [">95%", "90-95%", "85-90%", "<85%"], answer: "85-90%" },
@@ -453,6 +490,69 @@ export default function TestDetail() {
                     ))}
                   </div>
                   <span className="text-sm text-slate-600">{test.inspectors.join(", ")}</span>
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <h3 className="text-sm font-medium text-slate-700 mb-4 flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-slate-400" />
+                  Inspection Schedule / History
+                </h3>
+                <div className="border border-slate-200 rounded-lg overflow-hidden">
+                  <table className="w-full" data-testid="schedule-table">
+                    <thead className="bg-slate-50 border-b border-slate-200">
+                      <tr>
+                        <th className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider px-4 py-3">Scheduled Date</th>
+                        <th className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider px-4 py-3">Assignee</th>
+                        <th className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider px-4 py-3">Status</th>
+                        <th className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider px-4 py-3">Completed At</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {test.schedule.map((item) => (
+                        <tr key={item.id} className="hover:bg-slate-50 transition-colors" data-testid={`schedule-row-${item.id}`}>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="w-4 h-4 text-slate-400" />
+                              <span className="text-sm font-medium text-slate-700">{item.date}</span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-medium text-white">
+                                {item.assignee.split(" ").map(n => n[0]).join("")}
+                              </div>
+                              <span className="text-sm text-slate-600">{item.assignee}</span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                              item.status === "completed" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                              item.status === "in_progress" ? "bg-blue-50 text-blue-700 border border-blue-200" :
+                              "bg-slate-100 text-slate-600 border border-slate-200"
+                            }`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${
+                                item.status === "completed" ? "bg-emerald-500" :
+                                item.status === "in_progress" ? "bg-blue-500 animate-pulse" :
+                                "bg-slate-400"
+                              }`} />
+                              {item.status === "completed" ? "Completed" : item.status === "in_progress" ? "In Progress" : "Pending"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            {item.completedAt ? (
+                              <div className="flex items-center gap-2 text-sm text-slate-600">
+                                <Clock className="w-4 h-4 text-slate-400" />
+                                {item.completedAt}
+                              </div>
+                            ) : (
+                              <span className="text-sm text-slate-400">—</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
 

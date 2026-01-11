@@ -393,6 +393,19 @@ export default function AddTestProcedure() {
 
   const deleteTemplate = (templateId: number) => {
     setTemplates(templates.filter(t => t.id !== templateId));
+    if (selectedTemplateId === templateId) {
+      setSelectedTemplateId(null);
+    }
+  };
+
+  const saveToSelectedTemplate = () => {
+    if (selectedTemplateId && testItems.length > 0) {
+      setTemplates(templates.map(t => 
+        t.id === selectedTemplateId 
+          ? { ...t, items: testItems.map(item => ({ ...item })) }
+          : t
+      ));
+    }
   };
 
   const toggleDayInspector = (dayId: string, inspectorName: string) => {
@@ -1019,10 +1032,23 @@ export default function AddTestProcedure() {
 
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-semibold text-slate-800">Test Items</h2>
-                  <Button onClick={addTestItem} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-item">
-                    <Plus className="w-4 h-4" />
-                    Add Test Item
-                  </Button>
+                  <div className="flex gap-2">
+                    {selectedTemplateId && testItems.length > 0 && (
+                      <Button 
+                        onClick={saveToSelectedTemplate} 
+                        variant="outline" 
+                        className="gap-2 border-blue-300 text-blue-600 hover:bg-blue-50"
+                        data-testid="save-to-template"
+                      >
+                        <Save className="w-4 h-4" />
+                        Save to Template
+                      </Button>
+                    )}
+                    <Button onClick={addTestItem} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-item">
+                      <Plus className="w-4 h-4" />
+                      Add Test Item
+                    </Button>
+                  </div>
                 </div>
 
                 {testItems.length === 0 ? (

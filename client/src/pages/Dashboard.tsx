@@ -331,7 +331,7 @@ function DataSummaryCarousel() {
 
   return (
     <div className="relative">
-      <div className="flex gap-4 overflow-hidden">
+      <div className="overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentPage}
@@ -339,18 +339,20 @@ function DataSummaryCarousel() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.4 }}
-            className="flex gap-4 w-full"
+            className="flex gap-4"
           >
             {displayCards.map((data, index) => {
               const Icon = data.icon;
               const diff = data.todayUpdate - data.yesterdayUpdate;
               const diffPercent = ((diff / data.yesterdayUpdate) * 100).toFixed(1);
               const isPositive = diff >= 0;
+              const cardWidth = `calc((100% - ${(cardsPerPage - 1) * 16}px) / ${cardsPerPage})`;
 
               return (
                 <div
                   key={`${data.id}-${currentPage}-${index}`}
-                  className="stat-card-light group flex-1 min-w-0"
+                  className="stat-card-light group min-w-0 flex-shrink-0"
+                  style={{ width: cardWidth }}
                   data-testid={`stat-card-${data.id}`}
                 >
                   <div

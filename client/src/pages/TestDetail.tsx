@@ -688,7 +688,7 @@ export default function TestDetail() {
                               </div>
                             ) : (
                               <div className={`mt-2 text-xs ${selectedSchedule === item.id ? "text-blue-200" : "text-slate-400"}`}>
-                                {item.status === "in_progress" ? "진행중" : "대기중"}
+                                {item.status === "in_progress" ? "In Progress" : "Pending"}
                               </div>
                             )}
                           </div>

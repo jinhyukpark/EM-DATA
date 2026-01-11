@@ -365,14 +365,19 @@ export default function AddTestProcedure() {
   };
 
   const saveAsTemplate = () => {
-    if (newTemplateName.trim() && testItems.length > 0) {
+    if (newTemplateName.trim()) {
+      const newId = templates.length + 1;
       const newTemplate = {
-        id: templates.length + 1,
+        id: newId,
         name: newTemplateName.trim(),
         isDefault: false,
-        items: testItems.map(item => ({ ...item })),
+        items: [],
       };
       setTemplates([...templates, newTemplate]);
+      setSelectedTemplateId(newId);
+      setTestItems([]);
+      setNextId(1);
+      setTemplateModified(false);
       setNewTemplateName("");
       setShowTemplateModal(false);
     }
@@ -1030,7 +1035,7 @@ export default function AddTestProcedure() {
                         <Button 
                           onClick={saveAsTemplate} 
                           className="bg-blue-600 hover:bg-blue-700" 
-                          disabled={!newTemplateName.trim() || testItems.length === 0}
+                          disabled={!newTemplateName.trim()}
                         >
                           Save Template
                         </Button>
@@ -1062,10 +1067,16 @@ export default function AddTestProcedure() {
                 </div>
 
                 {testItems.length === 0 ? (
-                  <div className="text-center py-16 border-2 border-dashed border-slate-200 rounded-xl">
+                  <div className="text-center py-16 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
                     <ClipboardCheck className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                    <p className="text-slate-500 mb-4">No test items added yet</p>
-                    <Button onClick={addTestItem} variant="outline" className="gap-2" data-testid="add-first-item">
+                    <p className="text-slate-600 font-medium mb-1">No test items added yet</p>
+                    <p className="text-slate-400 text-sm mb-6">
+                      {selectedTemplateId 
+                        ? "This template is empty. Add test items to build your checklist."
+                        : "Start building your test procedure by adding test items."
+                      }
+                    </p>
+                    <Button onClick={addTestItem} variant="outline" className="gap-2 border-blue-300 text-blue-600 hover:bg-blue-50" data-testid="add-first-item">
                       <Plus className="w-4 h-4" />
                       Add First Test Item
                     </Button>

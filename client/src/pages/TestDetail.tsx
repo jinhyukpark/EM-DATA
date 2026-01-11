@@ -631,14 +631,14 @@ export default function TestDetail() {
                       <div key={item.id} className="relative flex-shrink-0">
                         <button
                           onClick={() => setSelectedSchedule(item.id)}
-                          className={`px-4 py-3 rounded-lg border transition-all min-w-[120px] ${
+                          className={`px-4 py-3 rounded-lg border transition-all min-w-[120px] h-[90px] flex flex-col justify-center ${
                             selectedSchedule === item.id 
                               ? "bg-blue-600 text-white border-blue-600 shadow-lg" 
                               : "bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50"
                           }`}
                           data-testid={`schedule-date-${item.id}`}
                         >
-                          <div className="text-center">
+                          <div className="text-center w-full">
                             <div className={`text-sm font-semibold ${selectedSchedule === item.id ? "text-white" : "text-slate-800"}`}>
                               {item.date}
                             </div>
@@ -652,7 +652,7 @@ export default function TestDetail() {
                                 {item.assignee.split(" ")[0]}
                               </span>
                             </div>
-                            {item.status === "completed" && (
+                            {item.status === "completed" ? (
                               <div className={`flex items-center gap-2 mt-2 text-xs justify-center ${selectedSchedule === item.id ? "text-blue-100" : ""}`}>
                                 <span className={`flex items-center gap-1 ${selectedSchedule === item.id ? "text-emerald-200" : "text-emerald-600"}`}>
                                   <CheckCircle className="w-3 h-3" />
@@ -663,6 +663,10 @@ export default function TestDetail() {
                                   {abnormalCount}
                                 </span>
                               </div>
+                            ) : (
+                              <div className={`mt-2 text-xs ${selectedSchedule === item.id ? "text-blue-200" : "text-slate-400"}`}>
+                                {item.status === "in_progress" ? "진행중" : "대기중"}
+                              </div>
                             )}
                           </div>
                         </button>
@@ -670,7 +674,7 @@ export default function TestDetail() {
                           <div className="absolute top-1 right-1">
                             <button
                               onClick={(e) => { e.stopPropagation(); setScheduleMenuOpen(scheduleMenuOpen === item.id ? null : item.id); }}
-                              className={`p-1 rounded hover:bg-black/10 ${selectedSchedule === item.id ? "text-white/70 hover:text-white" : "text-slate-400 hover:text-slate-600"}`}
+                              className={`p-1.5 rounded hover:bg-black/10 ${selectedSchedule === item.id ? "text-white/70 hover:text-white" : "text-slate-400 hover:text-slate-600"}`}
                             >
                               <MoreVertical className="w-4 h-4" />
                             </button>

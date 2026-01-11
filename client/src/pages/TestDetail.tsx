@@ -672,6 +672,65 @@ export default function TestDetail() {
                   <span className="text-sm text-slate-600">{test.inspectors.join(", ")}</span>
                 </div>
               </div>
+
+              <div className="border-t border-slate-100 pt-4 mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <p className="text-xs text-slate-500 mb-2">Repeat on Days</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => {
+                        const isActive = ["Mon", "Wed", "Fri"].includes(day);
+                        return (
+                          <span
+                            key={day}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
+                              isActive
+                                ? "bg-blue-600 text-white"
+                                : "bg-slate-100 text-slate-500"
+                            }`}
+                          >
+                            {day}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-500 mb-2">Assign Inspectors per Day</p>
+                    <div className="flex items-center gap-2">
+                      <div className="w-10 h-5 bg-slate-200 rounded-full relative">
+                        <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow" />
+                      </div>
+                      <span className="text-sm text-slate-600">Off</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-500 mb-2">Inspection Time</p>
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-600">Anytime</span>
+                      <span className="px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-600 text-white">Preset Time</span>
+                      <span className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        Custom Time
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {["09:00 AM", "10:00 AM", "11:00 AM", "02:00 PM", "03:00 PM", "04:00 PM"].map((time, idx) => (
+                        <span
+                          key={time}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
+                            idx === 1 ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"
+                          }`}
+                        >
+                          {time}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </motion.div>
 

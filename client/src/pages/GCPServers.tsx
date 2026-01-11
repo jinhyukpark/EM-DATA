@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Activity,
   CheckCircle2,
@@ -8,6 +9,7 @@ import {
   MoreHorizontal,
   Menu,
   Cloud,
+  Server,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Sidebar from "@/components/Sidebar";

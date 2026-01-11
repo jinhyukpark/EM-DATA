@@ -656,10 +656,28 @@ export default function TestDetail() {
 
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium text-slate-700 flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-slate-400" />
-                    Inspection Schedule / History
-                  </h3>
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-slate-400" />
+                      Inspection Schedule / History
+                    </h3>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => scrollSchedule('left')}
+                        className="w-7 h-7 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-800 transition-colors"
+                        data-testid="schedule-scroll-left"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => scrollSchedule('right')}
+                        className="w-7 h-7 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-800 transition-colors"
+                        data-testid="schedule-scroll-right"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-slate-500">Filter:</span>
                     <input
@@ -692,22 +710,7 @@ export default function TestDetail() {
                   </div>
                 </div>
                 
-                <div className="relative">
-                  <button
-                    onClick={() => scrollSchedule('left')}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white/90 hover:bg-white border border-slate-200 rounded-full shadow-md flex items-center justify-center text-slate-600 hover:text-slate-800 transition-colors"
-                    data-testid="schedule-scroll-left"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => scrollSchedule('right')}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white/90 hover:bg-white border border-slate-200 rounded-full shadow-md flex items-center justify-center text-slate-600 hover:text-slate-800 transition-colors"
-                    data-testid="schedule-scroll-right"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                <div ref={scheduleScrollRef} className="flex gap-2 overflow-x-auto pb-3 mb-4 mx-10 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} data-testid="schedule-dates">
+                <div ref={scheduleScrollRef} className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} data-testid="schedule-dates">
                   {test.schedule.filter(item => {
                     if (!scheduleFilterFrom && !scheduleFilterTo) return true;
                     const itemDate = new Date(item.date);
@@ -803,7 +806,6 @@ export default function TestDetail() {
                       </div>
                     );
                   })}
-                </div>
                 </div>
 
                 {(() => {

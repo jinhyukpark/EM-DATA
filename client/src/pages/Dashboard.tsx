@@ -27,6 +27,7 @@ import {
   Lightbulb,
   UserCog,
   Maximize2,
+  Menu,
 } from "lucide-react";
 import {
   AreaChart,
@@ -1092,7 +1093,7 @@ export default function Dashboard() {
                   className="lg:hidden p-2 -ml-2 text-slate-600 hover:text-slate-900"
                   data-testid="mobile-menu-button"
                 >
-                  <Database className="w-5 h-5" />
+                  <Menu className="w-5 h-5" />
                 </button>
                 <div className="min-w-0">
                   <h1 className="text-lg md:text-xl font-semibold tracking-tight text-slate-800 truncate">

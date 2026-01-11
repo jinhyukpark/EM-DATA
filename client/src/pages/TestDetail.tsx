@@ -407,7 +407,8 @@ export default function TestDetail() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedItems, setEditedItems] = useState(test?.items || []);
   const [selectedSchedule, setSelectedSchedule] = useState(test?.schedule[0]?.id || 1);
-  const [scheduleSearch, setScheduleSearch] = useState("");
+  const [scheduleFilterFrom, setScheduleFilterFrom] = useState("");
+  const [scheduleFilterTo, setScheduleFilterTo] = useState("");
   const [scheduleMenuOpen, setScheduleMenuOpen] = useState<number | null>(null);
   const [editScheduleModal, setEditScheduleModal] = useState<number | null>(null);
   const [editScheduleDate, setEditScheduleDate] = useState("");
@@ -608,23 +609,45 @@ export default function TestDetail() {
                     <Calendar className="w-4 h-4 text-slate-400" />
                     Inspection Schedule / History
                   </h3>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500">Filter:</span>
                     <input
-                      type="text"
-                      placeholder="Search date (YYYY-MM-DD)"
-                      value={scheduleSearch}
-                      onChange={(e) => setScheduleSearch(e.target.value)}
-                      className="pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-48"
-                      data-testid="schedule-search-input"
+                      type="date"
+                      value={scheduleFilterFrom}
+                      onChange={(e) => setScheduleFilterFrom(e.target.value)}
+                      className="px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-700 bg-white"
+                      data-testid="schedule-filter-from"
                     />
+                    <span className="text-slate-400">~</span>
+                    <input
+                      type="date"
+                      value={scheduleFilterTo}
+                      onChange={(e) => setScheduleFilterTo(e.target.value)}
+                      className="px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-700 bg-white"
+                      data-testid="schedule-filter-to"
+                    />
+                    {(scheduleFilterFrom || scheduleFilterTo) && (
+                      <button
+                        onClick={() => { setScheduleFilterFrom(""); setScheduleFilterTo(""); }}
+                        className="text-xs text-slate-500 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-100"
+                      >
+                        Reset
+                      </button>
+                    )}
                   </div>
                 </div>
                 
                 <div className="flex gap-2 overflow-x-auto pb-3 mb-4" data-testid="schedule-dates">
-                  {test.schedule.filter(item => 
-                    scheduleSearch === "" || item.date.includes(scheduleSearch)
-                  ).map((item) => {
+                  {test.schedule.filter(item => {
+                    if (!scheduleFilterFrom && !scheduleFilterTo) return true;
+                    const itemDate = new Date(item.date);
+                    const fromDate = scheduleFilterFrom ? new Date(scheduleFilterFrom) : null;
+                    const toDate = scheduleFilterTo ? new Date(scheduleFilterTo) : null;
+                    if (fromDate && toDate) return itemDate >= fromDate && itemDate <= toDate;
+                    if (fromDate) return itemDate >= fromDate;
+                    if (toDate) return itemDate <= toDate;
+                    return true;
+                  }).map((item) => {
                     const normalCount = item.testResults?.filter(r => r.answer === "O").length || 0;
                     const abnormalCount = item.testResults?.filter(r => r.answer === "X").length || 0;
                     return (

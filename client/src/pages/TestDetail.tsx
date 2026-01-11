@@ -637,7 +637,7 @@ export default function TestDetail() {
                   </div>
                 </div>
                 
-                <div className="flex gap-2 overflow-x-auto pb-3 mb-4" data-testid="schedule-dates">
+                <div className="flex gap-2 overflow-x-auto pb-16 mb-4" data-testid="schedule-dates">
                   {test.schedule.filter(item => {
                     if (!scheduleFilterFrom && !scheduleFilterTo) return true;
                     const itemDate = new Date(item.date);
@@ -694,15 +694,15 @@ export default function TestDetail() {
                           </div>
                         </button>
                         {item.status !== "completed" && (
-                          <div className="absolute top-1 right-1">
+                          <div className="absolute top-0 right-0">
                             <button
                               onClick={(e) => { e.stopPropagation(); setScheduleMenuOpen(scheduleMenuOpen === item.id ? null : item.id); }}
-                              className={`p-1.5 rounded hover:bg-black/10 ${selectedSchedule === item.id ? "text-white/70 hover:text-white" : "text-slate-400 hover:text-slate-600"}`}
+                              className={`p-2 rounded hover:bg-black/10 ${selectedSchedule === item.id ? "text-white/70 hover:text-white" : "text-slate-400 hover:text-slate-600"}`}
                             >
-                              <MoreVertical className="w-4 h-4" />
+                              <MoreVertical className="w-5 h-5" />
                             </button>
                             {scheduleMenuOpen === item.id && (
-                              <div className="absolute right-0 top-6 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10 min-w-[140px]">
+                              <div className="absolute right-0 top-8 bg-white rounded-lg shadow-xl border border-slate-200 py-1 z-50 min-w-[160px]">
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();

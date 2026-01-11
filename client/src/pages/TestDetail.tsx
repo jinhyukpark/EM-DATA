@@ -641,7 +641,7 @@ export default function TestDetail() {
                   </div>
                 </div>
                 
-                <div className="flex gap-2 overflow-x-auto pb-16 mb-4" data-testid="schedule-dates">
+                <div className="flex gap-2 overflow-x-auto pb-12 mb-2" data-testid="schedule-dates">
                   {test.schedule.filter(item => {
                     if (!scheduleFilterFrom && !scheduleFilterTo) return true;
                     const itemDate = new Date(item.date);
@@ -658,7 +658,7 @@ export default function TestDetail() {
                       <div key={item.id} className="relative flex-shrink-0">
                         <button
                           onClick={() => setSelectedSchedule(item.id)}
-                          className={`px-4 py-3 rounded-lg border transition-all min-w-[120px] h-[90px] flex flex-col justify-center ${
+                          className={`px-5 py-3 rounded-lg border transition-all min-w-[140px] h-[90px] flex flex-col justify-center ${
                             selectedSchedule === item.id 
                               ? "bg-blue-600 text-white border-blue-600 shadow-lg" 
                               : "bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50"

@@ -548,6 +548,7 @@ export default function TestDetail() {
   };
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeDetailTab, setActiveDetailTab] = useState<"info" | "schedule">("info");
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden" data-testid="test-detail-page">
@@ -589,7 +590,33 @@ export default function TestDetail() {
           >
             <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
               <div className="flex items-center justify-between">
-                <h1 className="text-lg font-semibold text-slate-800">{test.testName}</h1>
+                <div className="flex items-center gap-4">
+                  <h1 className="text-lg font-semibold text-slate-800">{test.testName}</h1>
+                  <div className="flex bg-slate-100 rounded-lg p-1">
+                    <button
+                      onClick={() => setActiveDetailTab("info")}
+                      className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                        activeDetailTab === "info"
+                          ? "bg-white text-slate-800 shadow-sm"
+                          : "text-slate-500 hover:text-slate-700"
+                      }`}
+                      data-testid="tab-test-info"
+                    >
+                      Test Info
+                    </button>
+                    <button
+                      onClick={() => setActiveDetailTab("schedule")}
+                      className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                        activeDetailTab === "schedule"
+                          ? "bg-white text-slate-800 shadow-sm"
+                          : "text-slate-500 hover:text-slate-700"
+                      }`}
+                      data-testid="tab-schedule"
+                    >
+                      Schedule / History
+                    </button>
+                  </div>
+                </div>
                 <Link href={`/qa-report/edit/${testId}`}>
                   <Button variant="outline" className="gap-2 border-blue-300 text-blue-600 hover:bg-blue-50">
                     <Edit3 className="w-4 h-4" />
@@ -599,6 +626,7 @@ export default function TestDetail() {
               </div>
             </div>
 
+            {activeDetailTab === "info" && (
             <div className="px-6 py-4">
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
                 <div className="bg-slate-50 rounded-lg p-4">
@@ -732,14 +760,9 @@ export default function TestDetail() {
                 </div>
               </div>
             </div>
-          </motion.div>
+            )}
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mt-6"
-          >
+            {activeDetailTab === "schedule" && (
             <div className="p-6">
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
@@ -1149,6 +1172,7 @@ export default function TestDetail() {
                 </div>
               </div>
             </div>
+            )}
           </motion.div>
         </div>
         </main>

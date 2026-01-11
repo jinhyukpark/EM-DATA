@@ -499,17 +499,12 @@ export default function TestDetail() {
                   <p className="text-sm text-slate-500 mt-1">{test.serviceName}</p>
                 </div>
                 <div className="flex items-center gap-3 flex-shrink-0">
-                  {isEditing ? (
-                    <Button onClick={handleSave} className="gap-2 bg-emerald-500 hover:bg-emerald-600">
-                      <Save className="w-4 h-4" />
-                      Save Changes
-                    </Button>
-                  ) : (
-                    <Button variant="outline" onClick={startEditing} className="gap-2 border-blue-300 text-blue-600 hover:bg-blue-50">
+                  <Link href={`/qa-report/edit/${testId}`}>
+                    <Button variant="outline" className="gap-2 border-blue-300 text-blue-600 hover:bg-blue-50">
                       <Edit3 className="w-4 h-4" />
                       Edit Test
                     </Button>
-                  )}
+                  </Link>
                 </div>
               </div>
             </div>

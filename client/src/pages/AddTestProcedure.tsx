@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useParams } from "wouter";
 import {
   Building2,
   FileText,
@@ -213,22 +213,94 @@ const weekDays = [
   { id: "sun", label: "Sun" },
 ];
 
+const existingTests: Record<string, {
+  serviceName: string;
+  procedureName: string;
+  inspectors: string[];
+  startDate: string;
+  endDate: string;
+  isRepeating: boolean;
+  selectedDays: string[];
+  timeOption: "anytime" | "specific" | "preset";
+  specificTime: string;
+  presetTime: string;
+  testItems: TestItem[];
+}> = {
+  "1": {
+    serviceName: "Company Data Pipeline",
+    procedureName: "Data Integrity Check",
+    inspectors: ["John Kim", "Sarah Lee"],
+    startDate: "2024-12-01",
+    endDate: "2025-06-30",
+    isRepeating: true,
+    selectedDays: ["mon", "wed", "fri"],
+    timeOption: "preset",
+    specificTime: "",
+    presetTime: "10:00",
+    testItems: [
+      { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", options: [] },
+      { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", options: [] },
+      { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"] },
+      { id: 4, question: "Are there any duplicate records?", answerType: "ox", options: [] },
+      { id: 5, question: "Additional notes on data quality:", answerType: "text", options: [] },
+    ]
+  },
+  "2": {
+    serviceName: "Patent Crawler Service",
+    procedureName: "API Response Validation",
+    inspectors: ["Sarah Lee"],
+    startDate: "2024-11-01",
+    endDate: "2025-05-31",
+    isRepeating: true,
+    selectedDays: ["tue", "thu"],
+    timeOption: "anytime",
+    specificTime: "",
+    presetTime: "",
+    testItems: [
+      { id: 1, question: "Is the API response time within acceptable limits (<500ms)?", answerType: "ox", options: [] },
+      { id: 2, question: "Are all required fields present in the response?", answerType: "ox", options: [] },
+      { id: 3, question: "Error handling status:", answerType: "multiple_choice", options: ["All errors handled", "Some errors unhandled", "Major issues found"] },
+    ]
+  },
+  "3": {
+    serviceName: "News API Integration",
+    procedureName: "Performance Benchmark",
+    inspectors: ["Mike Park", "Emily Choi"],
+    startDate: "2024-10-15",
+    endDate: "2025-04-15",
+    isRepeating: true,
+    selectedDays: ["mon", "wed", "fri"],
+    timeOption: "specific",
+    specificTime: "09:30",
+    presetTime: "",
+    testItems: [
+      { id: 1, question: "Average response time meets SLA?", answerType: "ox", options: [] },
+      { id: 2, question: "Peak load performance:", answerType: "multiple_choice", options: ["Excellent", "Good", "Needs Improvement", "Critical"] },
+    ]
+  }
+};
+
 export default function AddTestProcedure() {
+  const params = useParams();
+  const editId = params.id;
+  const isEditMode = !!editId;
+  const existingData = editId ? existingTests[editId] : null;
+  
   const [, setLocation] = useLocation();
-  const [serviceName, setServiceName] = useState("");
-  const [procedureName, setProcedureName] = useState("");
-  const [assignedInspectors, setAssignedInspectors] = useState<string[]>([]);
+  const [serviceName, setServiceName] = useState(existingData?.serviceName || "");
+  const [procedureName, setProcedureName] = useState(existingData?.procedureName || "");
+  const [assignedInspectors, setAssignedInspectors] = useState<string[]>(existingData?.inspectors || []);
   const [showInspectorDropdown, setShowInspectorDropdown] = useState(false);
-  const [testItems, setTestItems] = useState<TestItem[]>([]);
-  const [nextId, setNextId] = useState(1);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [isRepeating, setIsRepeating] = useState(false);
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [hasSpecificTime, setHasSpecificTime] = useState(false);
-  const [specificTime, setSpecificTime] = useState("");
-  const [timeOption, setTimeOption] = useState<"anytime" | "specific" | "preset">("anytime");
-  const [presetTime, setPresetTime] = useState("");
+  const [testItems, setTestItems] = useState<TestItem[]>(existingData?.testItems || []);
+  const [nextId, setNextId] = useState(existingData?.testItems?.length ? existingData.testItems.length + 1 : 1);
+  const [startDate, setStartDate] = useState(existingData?.startDate || "");
+  const [endDate, setEndDate] = useState(existingData?.endDate || "");
+  const [isRepeating, setIsRepeating] = useState(existingData?.isRepeating || false);
+  const [selectedDays, setSelectedDays] = useState<string[]>(existingData?.selectedDays || []);
+  const [hasSpecificTime, setHasSpecificTime] = useState(existingData?.timeOption !== "anytime");
+  const [specificTime, setSpecificTime] = useState(existingData?.specificTime || "");
+  const [timeOption, setTimeOption] = useState<"anytime" | "specific" | "preset">(existingData?.timeOption || "anytime");
+  const [presetTime, setPresetTime] = useState(existingData?.presetTime || "");
 
   const presetTimes = [
     { id: "09:00", label: "09:00 AM" },
@@ -348,12 +420,16 @@ export default function AddTestProcedure() {
               >
                 <Menu className="w-5 h-5" />
               </button>
-              <Link href="/qa-report" className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+              <Link href={isEditMode ? `/qa-report/test/${editId}` : "/qa-report"} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
                 <ArrowLeft className="w-5 h-5 text-slate-600" />
               </Link>
               <div>
-                <h1 className="text-xl font-semibold tracking-tight text-slate-800">Add Test Procedure</h1>
-                <p className="text-sm text-slate-500 mt-0.5">Create a new test procedure with test items</p>
+                <h1 className="text-xl font-semibold tracking-tight text-slate-800">
+                  {isEditMode ? "Edit Test Procedure" : "Add Test Procedure"}
+                </h1>
+                <p className="text-sm text-slate-500 mt-0.5">
+                  {isEditMode ? "Modify the test procedure settings and test items" : "Create a new test procedure with test items"}
+                </p>
               </div>
             </div>
           </div>
@@ -775,7 +851,7 @@ export default function AddTestProcedure() {
                   <Button variant="outline">Cancel</Button>
                 </Link>
                 <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 px-8" data-testid="save-procedure">
-                  Save Procedure
+                  {isEditMode ? "Update Procedure" : "Save Procedure"}
                 </Button>
               </div>
             </motion.div>

@@ -38,6 +38,7 @@ function Router() {
       <Route path="/settings/permissions" component={Settings} />
       <Route path="/qa-report" component={QAReport} />
       <Route path="/qa-report/add" component={AddTestProcedure} />
+      <Route path="/qa-report/edit/:id" component={AddTestProcedure} />
       <Route path="/qa-report/test/:id" component={TestDetail} />
       <Route path="/servers/aws" component={AWSServers} />
       <Route path="/servers/gcp" component={GCPServers} />

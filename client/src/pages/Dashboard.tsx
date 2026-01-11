@@ -559,10 +559,53 @@ function Sidebar() {
   return (
     <aside className="w-64 bg-slate-900 min-h-screen flex flex-col" data-testid="sidebar">
       <div className="p-6 border-b border-slate-800">
-        <h1 className="text-xl font-bold text-white tracking-tight">
-          EM-Data
-        </h1>
-        <p className="text-xs text-slate-400 mt-1">Internal Monitoring</p>
+        <div className="flex items-center gap-3">
+          <div className="relative w-10 h-10">
+            <svg viewBox="0 0 40 40" className="w-full h-full">
+              <defs>
+                <linearGradient id="logoGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#3B82F6" />
+                  <stop offset="50%" stopColor="#8B5CF6" />
+                  <stop offset="100%" stopColor="#06B6D4" />
+                </linearGradient>
+                <linearGradient id="logoGradient2" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#06B6D4" />
+                  <stop offset="100%" stopColor="#3B82F6" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M8 28 Q14 20 20 24 Q26 28 32 20"
+                stroke="url(#logoGradient1)"
+                strokeWidth="3"
+                strokeLinecap="round"
+                fill="none"
+                opacity="0.9"
+              />
+              <path
+                d="M8 20 Q14 12 20 16 Q26 20 32 12"
+                stroke="url(#logoGradient2)"
+                strokeWidth="3"
+                strokeLinecap="round"
+                fill="none"
+                opacity="0.7"
+              />
+              <path
+                d="M8 12 Q14 4 20 8 Q26 12 32 4"
+                stroke="url(#logoGradient1)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                fill="none"
+                opacity="0.5"
+              />
+              <circle cx="8" cy="28" r="2" fill="#3B82F6" />
+              <circle cx="32" cy="4" r="2" fill="#06B6D4" />
+            </svg>
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-white tracking-tight">EM-Data</h1>
+            <p className="text-xs text-slate-400">Internal Monitoring</p>
+          </div>
+        </div>
       </div>
 
       <nav className="flex-1 p-4">

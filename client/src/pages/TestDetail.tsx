@@ -763,23 +763,23 @@ export default function TestDetail() {
                             )}
                           </div>
                         </button>
-                        {item.status !== "completed" && (
-                          <div className="absolute top-0 right-0">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); setScheduleMenuOpen(scheduleMenuOpen === item.id ? null : item.id); }}
-                              className={`p-2 rounded hover:bg-black/10 ${selectedSchedule === item.id ? "text-white/70 hover:text-white" : "text-slate-400 hover:text-slate-600"}`}
+                        <div className="absolute top-0 right-0">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setScheduleMenuOpen(scheduleMenuOpen === item.id ? null : item.id); }}
+                            className={`p-2 rounded hover:bg-black/10 ${selectedSchedule === item.id ? "text-white/70 hover:text-white" : "text-slate-400 hover:text-slate-600"}`}
+                          >
+                            <MoreVertical className="w-5 h-5" />
+                          </button>
+                          {scheduleMenuOpen === item.id && (
+                            <div 
+                              className="fixed bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
+                              style={{ 
+                                zIndex: 9999,
+                                transform: 'translateX(-70%)',
+                                marginTop: '4px'
+                              }}
                             >
-                              <MoreVertical className="w-5 h-5" />
-                            </button>
-                            {scheduleMenuOpen === item.id && (
-                              <div 
-                                className="fixed bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
-                                style={{ 
-                                  zIndex: 9999,
-                                  transform: 'translateX(-70%)',
-                                  marginTop: '4px'
-                                }}
-                              >
+                              {item.status !== "completed" && (
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -793,17 +793,17 @@ export default function TestDetail() {
                                   <Edit3 className="w-3.5 h-3.5" />
                                   Edit Schedule
                                 </button>
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); setHistoryModal(item.id); setScheduleMenuOpen(null); }}
-                                  className="w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2"
-                                >
-                                  <Clock className="w-3.5 h-3.5" />
-                                  View History
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                              )}
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setHistoryModal(item.id); setScheduleMenuOpen(null); }}
+                                className="w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2"
+                              >
+                                <Clock className="w-3.5 h-3.5" />
+                                View History
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     );
                   })}

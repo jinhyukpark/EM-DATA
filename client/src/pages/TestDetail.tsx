@@ -82,12 +82,15 @@ type ScheduleItem = {
   id: number;
   date: string;
   assignee: string;
-  status: "completed" | "pending" | "in_progress";
+  status: "completed" | "pending" | "in_progress" | "cancelled";
   startTime?: string;
   endTime?: string;
   duration?: string;
   notes?: string;
   testResults?: TestItemResult[];
+  cancelReason?: string;
+  cancelledAt?: string;
+  cancelledBy?: string;
 };
 
 const testData: Record<string, {
@@ -124,6 +127,7 @@ const testData: Record<string, {
     normalCount: 12,
     abnormalCount: 0,
     schedule: [
+      { id: -11, date: "2025-04-03", assignee: "Sarah Lee", status: "cancelled", cancelReason: "Inspector on vacation during this period. Rescheduled to next week.", cancelledAt: "2025-03-25 14:30", cancelledBy: "Admin" },
       { id: -10, date: "2025-03-27", assignee: "John Kim", status: "pending" },
       { id: -9, date: "2025-03-20", assignee: "Sarah Lee", status: "pending" },
       { id: -8, date: "2025-03-13", assignee: "John Kim", status: "pending" },
@@ -446,6 +450,9 @@ export default function TestDetail() {
   
   // Mock history data for schedule changes
   const scheduleHistory: Record<number, { id: number; type: 'date_change' | 'assignee_change' | 'cancelled'; date: string; by: string; from?: string; to?: string; reason?: string }[]> = {
+    "-11": [
+      { id: 1, type: 'cancelled', date: '2025-03-25 14:30', by: 'Admin', from: 'Scheduled', to: 'Cancelled', reason: 'Inspector on vacation during this period. Rescheduled to next week.' },
+    ],
     1: [
       { id: 1, type: 'assignee_change', date: '2025-01-10 14:30', by: 'Admin', from: 'Sarah Lee', to: 'John Kim' },
       { id: 2, type: 'date_change', date: '2025-01-08 09:15', by: 'Admin', from: '2025-01-15', to: '2025-01-16' },
@@ -745,8 +752,12 @@ export default function TestDetail() {
                           onClick={() => setSelectedSchedule(item.id)}
                           className={`px-5 py-3 rounded-lg border transition-all min-w-[140px] h-[90px] flex flex-col justify-center ${
                             selectedSchedule === item.id 
-                              ? "bg-blue-600 text-white border-blue-600 shadow-lg" 
-                              : "bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50"
+                              ? item.status === "cancelled" 
+                                ? "bg-red-500 text-white border-red-500 shadow-lg"
+                                : "bg-blue-600 text-white border-blue-600 shadow-lg" 
+                              : item.status === "cancelled"
+                                ? "bg-red-50 text-slate-700 border-red-200 hover:border-red-300 hover:bg-red-100"
+                                : "bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50"
                           }`}
                           data-testid={`schedule-date-${item.id}`}
                         >
@@ -758,6 +769,7 @@ export default function TestDetail() {
                               <span className={`w-1.5 h-1.5 rounded-full ${
                                 item.status === "completed" ? "bg-emerald-400" :
                                 item.status === "in_progress" ? "bg-blue-400 animate-pulse" :
+                                item.status === "cancelled" ? "bg-red-400" :
                                 "bg-slate-400"
                               }`} />
                               <span className={`text-xs ${selectedSchedule === item.id ? "text-blue-100" : "text-slate-500"}`}>
@@ -776,8 +788,12 @@ export default function TestDetail() {
                                 </span>
                               </div>
                             ) : (
-                              <div className={`mt-2 text-xs ${selectedSchedule === item.id ? "text-blue-200" : "text-slate-400"}`}>
-                                {item.status === "in_progress" ? "In Progress" : "Pending"}
+                              <div className={`mt-2 text-xs ${
+                                item.status === "cancelled" 
+                                  ? (selectedSchedule === item.id ? "text-red-200" : "text-red-400")
+                                  : (selectedSchedule === item.id ? "text-blue-200" : "text-slate-400")
+                              }`}>
+                                {item.status === "in_progress" ? "In Progress" : item.status === "cancelled" ? "Cancelled" : "Pending"}
                               </div>
                             )}
                           </div>
@@ -860,14 +876,16 @@ export default function TestDetail() {
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
                             selected.status === "completed" ? "bg-emerald-100 text-emerald-700" :
                             selected.status === "in_progress" ? "bg-blue-100 text-blue-700" :
+                            selected.status === "cancelled" ? "bg-red-100 text-red-700" :
                             "bg-slate-200 text-slate-600"
                           }`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${
                               selected.status === "completed" ? "bg-emerald-500" :
                               selected.status === "in_progress" ? "bg-blue-500 animate-pulse" :
+                              selected.status === "cancelled" ? "bg-red-500" :
                               "bg-slate-400"
                             }`} />
-                            {selected.status === "completed" ? "Completed" : selected.status === "in_progress" ? "In Progress" : "Pending"}
+                            {selected.status === "completed" ? "Completed" : selected.status === "in_progress" ? "In Progress" : selected.status === "cancelled" ? "Cancelled" : "Pending"}
                           </span>
                         </div>
                         <div>
@@ -885,6 +903,24 @@ export default function TestDetail() {
                           </div>
                         </div>
                       </div>
+                      {selected.status === "cancelled" && selected.cancelReason && (
+                        <div className="mt-4 pt-4 border-t border-red-200 bg-red-50 -mx-5 px-5 -mb-5 pb-5 rounded-b-xl">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                              <XCircle className="w-4 h-4 text-red-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-red-800">Cancellation Reason</p>
+                              <p className="text-sm text-red-700 mt-1">{selected.cancelReason}</p>
+                              {selected.cancelledAt && (
+                                <p className="text-xs text-red-500 mt-2">
+                                  Cancelled by {selected.cancelledBy || "System"} on {selected.cancelledAt}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
                       {(selected.duration || selected.notes) && (
                         <div className="mt-4 pt-4 border-t border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-4">
                           {selected.duration && (

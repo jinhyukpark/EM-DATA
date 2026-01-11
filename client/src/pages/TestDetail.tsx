@@ -529,7 +529,7 @@ export default function TestDetail() {
             </div>
 
             <div className="p-6">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                 <div className="bg-slate-50 rounded-lg p-4">
                   <p className="text-xs text-slate-500 mb-1">Type</p>
                   <p className="font-medium text-slate-800">{test.type}</p>
@@ -550,21 +550,21 @@ export default function TestDetail() {
                 <div className="bg-slate-50 rounded-lg p-4">
                   <p className="text-xs text-slate-500 mb-1">Schedule Period</p>
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-blue-400" />
+                    <Calendar className="w-4 h-4 text-blue-400 flex-shrink-0" />
                     <p className="font-medium text-slate-800 text-sm">{test.startDate} ~ {test.endDate}</p>
                   </div>
                 </div>
                 <div className="bg-slate-50 rounded-lg p-4">
                   <p className="text-xs text-slate-500 mb-1">Last Inspection</p>
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-slate-400" />
+                    <Calendar className="w-4 h-4 text-slate-400 flex-shrink-0" />
                     <p className="font-medium text-slate-800">{test.lastInspection}</p>
                   </div>
                 </div>
                 <div className="bg-slate-50 rounded-lg p-4">
                   <p className="text-xs text-slate-500 mb-1">Next Inspection</p>
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-slate-400" />
+                    <Clock className="w-4 h-4 text-slate-400 flex-shrink-0" />
                     <p className="font-medium text-slate-800">{test.nextInspection}</p>
                   </div>
                 </div>

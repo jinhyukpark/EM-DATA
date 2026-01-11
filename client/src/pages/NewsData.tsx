@@ -190,6 +190,7 @@ export default function NewsData() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState({
     source: true,
@@ -405,7 +406,24 @@ export default function NewsData() {
               </div>
 
               <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-                <p className="text-xs text-slate-400">Showing {filteredNews.length} of {totalArticles.toLocaleString()} articles</p>
+                <div className="flex items-center gap-4">
+                  <p className="text-xs text-slate-400">Showing {filteredNews.length} of {totalArticles.toLocaleString()} articles</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500">Show</span>
+                    <select
+                      value={itemsPerPage}
+                      onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                      className="border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-700 bg-white"
+                      data-testid="items-per-page"
+                    >
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                    <span className="text-xs text-slate-500">per page</span>
+                  </div>
+                </div>
                 <div className="flex items-center gap-1">
                   <Button variant="ghost" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="h-8 w-8 p-0">
                     <ChevronLeft className="w-4 h-4" />

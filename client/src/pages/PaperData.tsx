@@ -190,7 +190,7 @@ function Sidebar() {
 export default function PaperData() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const filteredPapers = papers.filter(paper =>
     paper.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -346,9 +346,26 @@ export default function PaperData() {
             </div>
 
             <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
-              <p className="text-sm text-slate-500">
-                Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredPapers.length)} of {filteredPapers.length} papers
-              </p>
+              <div className="flex items-center gap-4">
+                <p className="text-sm text-slate-500">
+                  Showing {filteredPapers.length > 0 ? ((currentPage - 1) * itemsPerPage) + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredPapers.length)} of {filteredPapers.length} papers
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-slate-500">Show</span>
+                  <select
+                    value={itemsPerPage}
+                    onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                    className="border border-slate-200 rounded-md px-2 py-1 text-sm text-slate-700 bg-white"
+                    data-testid="items-per-page"
+                  >
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <span className="text-sm text-slate-500">per page</span>
+                </div>
+              </div>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"

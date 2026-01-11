@@ -178,7 +178,7 @@ export default function RnDData() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [filterType, setFilterType] = useState<"All" | "Entry" | "Exit">("All");
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const filteredData = employmentData.filter(record => {
     const matchesSearch = record.employee.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -340,9 +340,26 @@ export default function RnDData() {
             </div>
 
             <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
-              <p className="text-sm text-slate-500">
-                Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} records
-              </p>
+              <div className="flex items-center gap-4">
+                <p className="text-sm text-slate-500">
+                  Showing {filteredData.length > 0 ? ((currentPage - 1) * itemsPerPage) + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} records
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-slate-500">Show</span>
+                  <select
+                    value={itemsPerPage}
+                    onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                    className="border border-slate-200 rounded-md px-2 py-1 text-sm text-slate-700 bg-white"
+                    data-testid="items-per-page"
+                  >
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <span className="text-sm text-slate-500">per page</span>
+                </div>
+              </div>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"

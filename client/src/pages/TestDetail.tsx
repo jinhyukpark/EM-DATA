@@ -539,34 +539,50 @@ export default function TestDetail() {
                 </h3>
                 
                 <div className="flex gap-2 overflow-x-auto pb-3 mb-4" data-testid="schedule-dates">
-                  {test.schedule.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => setSelectedSchedule(item.id)}
-                      className={`flex-shrink-0 px-4 py-3 rounded-lg border transition-all ${
-                        selectedSchedule === item.id 
-                          ? "bg-blue-600 text-white border-blue-600 shadow-lg" 
-                          : "bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50"
-                      }`}
-                      data-testid={`schedule-date-${item.id}`}
-                    >
-                      <div className="text-center">
-                        <div className={`text-sm font-semibold ${selectedSchedule === item.id ? "text-white" : "text-slate-800"}`}>
-                          {item.date}
+                  {test.schedule.map((item) => {
+                    const normalCount = item.testResults?.filter(r => r.answer === "O").length || 0;
+                    const abnormalCount = item.testResults?.filter(r => r.answer === "X").length || 0;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => setSelectedSchedule(item.id)}
+                        className={`flex-shrink-0 px-4 py-3 rounded-lg border transition-all ${
+                          selectedSchedule === item.id 
+                            ? "bg-blue-600 text-white border-blue-600 shadow-lg" 
+                            : "bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50"
+                        }`}
+                        data-testid={`schedule-date-${item.id}`}
+                      >
+                        <div className="text-center">
+                          <div className={`text-sm font-semibold ${selectedSchedule === item.id ? "text-white" : "text-slate-800"}`}>
+                            {item.date}
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-1 justify-center">
+                            <span className={`w-1.5 h-1.5 rounded-full ${
+                              item.status === "completed" ? "bg-emerald-400" :
+                              item.status === "in_progress" ? "bg-blue-400 animate-pulse" :
+                              "bg-slate-400"
+                            }`} />
+                            <span className={`text-xs ${selectedSchedule === item.id ? "text-blue-100" : "text-slate-500"}`}>
+                              {item.assignee.split(" ")[0]}
+                            </span>
+                          </div>
+                          {item.status === "completed" && (
+                            <div className={`flex items-center gap-2 mt-2 text-xs justify-center ${selectedSchedule === item.id ? "text-blue-100" : ""}`}>
+                              <span className={`flex items-center gap-1 ${selectedSchedule === item.id ? "text-emerald-200" : "text-emerald-600"}`}>
+                                <CheckCircle className="w-3 h-3" />
+                                {normalCount}
+                              </span>
+                              <span className={`flex items-center gap-1 ${selectedSchedule === item.id ? "text-red-200" : "text-red-500"}`}>
+                                <XCircle className="w-3 h-3" />
+                                {abnormalCount}
+                              </span>
+                            </div>
+                          )}
                         </div>
-                        <div className="flex items-center gap-1.5 mt-1 justify-center">
-                          <span className={`w-1.5 h-1.5 rounded-full ${
-                            item.status === "completed" ? "bg-emerald-400" :
-                            item.status === "in_progress" ? "bg-blue-400 animate-pulse" :
-                            "bg-slate-400"
-                          }`} />
-                          <span className={`text-xs ${selectedSchedule === item.id ? "text-blue-100" : "text-slate-500"}`}>
-                            {item.assignee.split(" ")[0]}
-                          </span>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
 
                 {(() => {

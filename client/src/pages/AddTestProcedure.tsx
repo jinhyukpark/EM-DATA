@@ -331,6 +331,7 @@ export default function AddTestProcedure() {
   const [newTemplateName, setNewTemplateName] = useState("");
   const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
+  const [templateModified, setTemplateModified] = useState(false);
   const [templateItems, setTemplateItems] = useState<TestItem[]>([]);
   const [templateNextId, setTemplateNextId] = useState(1);
 
@@ -383,6 +384,7 @@ export default function AddTestProcedure() {
       setTestItems(template.items.map((item, idx) => ({ ...item, id: idx + 1 })));
       setNextId(template.items.length + 1);
       setSelectedTemplateId(templateId);
+      setTemplateModified(false);
     }
     setShowTemplateDropdown(false);
   };
@@ -405,6 +407,7 @@ export default function AddTestProcedure() {
           ? { ...t, items: testItems.map(item => ({ ...item })) }
           : t
       ));
+      setTemplateModified(false);
     }
   };
 
@@ -455,6 +458,7 @@ export default function AddTestProcedure() {
       },
     ]);
     setNextId(nextId + 1);
+    if (selectedTemplateId) setTemplateModified(true);
   };
 
   const updateTestItem = (id: number, field: keyof TestItem, value: string | AnswerType | string[]) => {
@@ -463,6 +467,7 @@ export default function AddTestProcedure() {
         item.id === id ? { ...item, [field]: value } : item
       )
     );
+    if (selectedTemplateId) setTemplateModified(true);
   };
 
   const updateOption = (itemId: number, optionIndex: number, value: string) => {
@@ -476,10 +481,12 @@ export default function AddTestProcedure() {
         return item;
       })
     );
+    if (selectedTemplateId) setTemplateModified(true);
   };
 
   const removeTestItem = (id: number) => {
     setTestItems(testItems.filter((item) => item.id !== id));
+    if (selectedTemplateId) setTemplateModified(true);
   };
 
   const addOption = (itemId: number) => {
@@ -491,6 +498,7 @@ export default function AddTestProcedure() {
         return item;
       })
     );
+    if (selectedTemplateId) setTemplateModified(true);
   };
 
   const removeOption = (itemId: number, optionIndex: number) => {
@@ -503,6 +511,7 @@ export default function AddTestProcedure() {
         return item;
       })
     );
+    if (selectedTemplateId) setTemplateModified(true);
   };
 
   const handleSave = () => {
@@ -1033,11 +1042,12 @@ export default function AddTestProcedure() {
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-semibold text-slate-800">Test Items</h2>
                   <div className="flex gap-2">
-                    {selectedTemplateId && testItems.length > 0 && (
+                    {selectedTemplateId && (
                       <Button 
                         onClick={saveToSelectedTemplate} 
                         variant="outline" 
-                        className="gap-2 border-blue-300 text-blue-600 hover:bg-blue-50"
+                        className={`gap-2 ${templateModified && testItems.length > 0 ? 'border-blue-300 text-blue-600 hover:bg-blue-50' : 'border-slate-200 text-slate-400'}`}
+                        disabled={!templateModified || testItems.length === 0}
                         data-testid="save-to-template"
                       >
                         <Save className="w-4 h-4" />

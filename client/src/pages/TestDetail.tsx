@@ -587,20 +587,15 @@ export default function TestDetail() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
           >
-            <div className="px-6 py-5 border-b border-slate-200 bg-slate-50">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <h1 className="text-xl font-semibold text-slate-800">{test.testName}</h1>
-                  <p className="text-sm text-slate-500 mt-1">{test.serviceName}</p>
-                </div>
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  <Link href={`/qa-report/edit/${testId}`}>
-                    <Button variant="outline" className="gap-2 border-blue-300 text-blue-600 hover:bg-blue-50">
-                      <Edit3 className="w-4 h-4" />
-                      Edit Test
-                    </Button>
-                  </Link>
-                </div>
+            <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
+              <div className="flex items-center justify-between">
+                <h1 className="text-lg font-semibold text-slate-800">{test.testName}</h1>
+                <Link href={`/qa-report/edit/${testId}`}>
+                  <Button variant="outline" className="gap-2 border-blue-300 text-blue-600 hover:bg-blue-50">
+                    <Edit3 className="w-4 h-4" />
+                    Edit Test
+                  </Button>
+                </Link>
               </div>
             </div>
 

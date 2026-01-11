@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "wouter";
 import {
@@ -287,6 +287,108 @@ function StatCard({
         </div>
       </div>
     </motion.div>
+  );
+}
+
+function DataSummaryCarousel() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const cardWidth = 220;
+  const gap = 20;
+  const visibleCards = 5;
+  const totalCards = dataTypes.length;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const next = prev + 1;
+        if (next >= totalCards) {
+          return 0;
+        }
+        return next;
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [totalCards]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      const scrollPosition = currentIndex * (cardWidth + gap);
+      scrollRef.current.scrollTo({
+        left: scrollPosition,
+        behavior: "smooth",
+      });
+    }
+  }, [currentIndex]);
+
+  return (
+    <div className="relative">
+      <div
+        ref={scrollRef}
+        className="flex gap-5 overflow-hidden scroll-smooth"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {[...dataTypes, ...dataTypes].map((data, index) => {
+          const Icon = data.icon;
+          const diff = data.todayUpdate - data.yesterdayUpdate;
+          const diffPercent = ((diff / data.yesterdayUpdate) * 100).toFixed(1);
+          const isPositive = diff >= 0;
+
+          return (
+            <motion.div
+              key={`${data.id}-${index}`}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.05, duration: 0.3 }}
+              className="stat-card-light group flex-shrink-0"
+              style={{ width: cardWidth }}
+              data-testid={`stat-card-${data.id}`}
+            >
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${data.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl`}
+              />
+              <div className="relative z-10">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="p-2.5 rounded-lg" style={{ backgroundColor: `${data.color}15` }}>
+                    <Icon className="w-5 h-5" style={{ color: data.color }} strokeWidth={1.5} />
+                  </div>
+                  <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? "text-emerald-600" : "text-red-500"}`}>
+                    {isPositive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                    <span>{isPositive ? "+" : ""}{diffPercent}%</span>
+                  </div>
+                </div>
+                <h3 className="text-slate-500 text-xs font-medium mb-1">{data.name}</h3>
+                <p className="text-2xl font-semibold tracking-tight text-slate-800 mb-3">
+                  {formatNumber(data.total)}
+                </p>
+                <div className="flex items-center justify-between pt-3 mt-3 -mx-5 -mb-5 px-5 py-3 rounded-b-xl" style={{ backgroundColor: `${data.color}08` }}>
+                  <div>
+                    <p className="text-[10px] text-slate-400 mb-0.5">Today</p>
+                    <p className="text-sm font-semibold" style={{ color: data.color }}>+{formatNumber(data.todayUpdate)}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] text-slate-400 mb-0.5">vs Yesterday</p>
+                    <p className={`text-sm font-semibold ${isPositive ? "text-emerald-600" : "text-red-500"}`}>
+                      {isPositive ? "+" : ""}{diff}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+      <div className="flex justify-center mt-4 gap-1.5">
+        {dataTypes.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => setCurrentIndex(idx)}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${currentIndex % totalCards === idx ? "bg-blue-500 w-6" : "bg-slate-300 hover:bg-slate-400"}`}
+            data-testid={`carousel-dot-${idx}`}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -987,11 +1089,7 @@ export default function Dashboard() {
             <h2 className="text-base font-semibold mb-6 text-slate-700">
               Data Summary
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-              {dataTypes.map((data, index) => (
-                <StatCard key={data.id} data={data} index={index} />
-              ))}
-            </div>
+            <DataSummaryCarousel />
           </motion.section>
 
           <motion.section

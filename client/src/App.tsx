@@ -33,6 +33,7 @@ function Router() {
       <Route path="/data/news" component={NewsData} />
       <Route path="/data/rnd" component={RnDData} />
       <Route path="/data/employment" component={EmploymentData} />
+      <Route path="/settings" component={Settings} />
       <Route path="/settings/profile" component={Settings} />
       <Route path="/settings/users" component={Settings} />
       <Route path="/settings/permissions" component={Settings} />

@@ -27,6 +27,7 @@ import {
   BookOpen,
   Lightbulb,
   UserCog,
+  ClipboardCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const menuItems = [
   { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { id: "qa-report", name: "QA Report", icon: ClipboardCheck, path: "/qa-report" },
 ];
 
 const dataMenuItems = [

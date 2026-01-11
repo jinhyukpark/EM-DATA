@@ -35,6 +35,7 @@ import { Input } from "@/components/ui/input";
 
 const menuItems = [
   { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { id: "qa-report", name: "QA Report", icon: ClipboardCheck, path: "/qa-report" },
 ];
 
 const dataMenuItems = [

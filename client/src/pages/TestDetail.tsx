@@ -726,11 +726,26 @@ export default function TestDetail() {
 
                   <div>
                     <p className="text-xs text-slate-500 mb-2">Assign Inspectors per Day</p>
-                    <div className="flex items-center gap-2">
-                      <div className="w-10 h-5 bg-slate-200 rounded-full relative">
-                        <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow" />
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-10 h-5 bg-blue-500 rounded-full relative">
+                        <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow" />
                       </div>
-                      <span className="text-sm text-slate-600">Off</span>
+                      <span className="text-sm text-slate-600">On</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { day: "Mon", inspector: "John Kim" },
+                        { day: "Wed", inspector: "Sarah Lee" },
+                        { day: "Fri", inspector: "John Kim" },
+                      ].map((item) => (
+                        <div key={item.day} className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-1.5">
+                          <span className="text-xs font-medium text-blue-600">{item.day}</span>
+                          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-medium">
+                            {item.inspector.split(" ").map(n => n[0]).join("")}
+                          </div>
+                          <span className="text-xs text-slate-600">{item.inspector}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
 

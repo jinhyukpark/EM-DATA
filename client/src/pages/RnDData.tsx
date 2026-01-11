@@ -275,19 +275,41 @@ export default function RnDData() {
             </div>
 
             <div className="flex items-center gap-3 mb-6">
-              <div className="relative flex-1 max-w-md">
+              <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <Input
-                  placeholder="Search projects, companies, or field areas..."
+                  placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 border-slate-200"
                   data-testid="search-rnd"
                 />
               </div>
+              <div className="relative">
+                <select
+                  className="appearance-none bg-white border border-slate-200 rounded-lg px-4 py-2 pr-10 text-sm text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                  data-testid="category-filter"
+                >
+                  <option>All Categories</option>
+                  <option>Biotechnology</option>
+                  <option>Energy Storage</option>
+                  <option>Automotive</option>
+                  <option>Telecommunications</option>
+                  <option>Computing</option>
+                  <option>Materials Science</option>
+                  <option>Extended Reality</option>
+                  <option>Industrial IoT</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              </div>
               <Button variant="outline" className="gap-2">
-                <Filter className="w-4 h-4" />
-                Filters
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" />
+                  <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
+                Fields
               </Button>
             </div>
 

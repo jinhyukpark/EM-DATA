@@ -216,6 +216,9 @@ interface TestItem {
 
 export default function QAReport() {
   const [activeTab, setActiveTab] = useState<"services" | "tests" | "inspectors">("services");
+  const [filterTestName, setFilterTestName] = useState("");
+  const [filterDateFrom, setFilterDateFrom] = useState("");
+  const [filterDateTo, setFilterDateTo] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [newProcedure, setNewProcedure] = useState({
     serviceName: "",
@@ -359,7 +362,50 @@ export default function QAReport() {
               </div>
 
               {activeTab === "services" && (
-                <div className="overflow-x-auto">
+                <>
+                  <div className="flex items-center gap-4 mb-4 pb-4 border-b border-slate-100">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-500">Test Name:</span>
+                      <select
+                        value={filterTestName}
+                        onChange={(e) => setFilterTestName(e.target.value)}
+                        className="px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 bg-white min-w-[180px]"
+                        data-testid="filter-test-name"
+                      >
+                        <option value="">All Tests</option>
+                        {services.map(s => (
+                          <option key={s.id} value={s.testName}>{s.testName}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-500">Date Range:</span>
+                      <input
+                        type="date"
+                        value={filterDateFrom}
+                        onChange={(e) => setFilterDateFrom(e.target.value)}
+                        className="px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 bg-white"
+                        data-testid="filter-date-from"
+                      />
+                      <span className="text-slate-400">~</span>
+                      <input
+                        type="date"
+                        value={filterDateTo}
+                        onChange={(e) => setFilterDateTo(e.target.value)}
+                        className="px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 bg-white"
+                        data-testid="filter-date-to"
+                      />
+                    </div>
+                    {(filterTestName || filterDateFrom || filterDateTo) && (
+                      <button
+                        onClick={() => { setFilterTestName(""); setFilterDateFrom(""); setFilterDateTo(""); }}
+                        className="text-xs text-slate-500 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-100"
+                      >
+                        Reset Filters
+                      </button>
+                    )}
+                  </div>
+                  <div className="overflow-x-auto">
                   <table className="w-full" data-testid="services-table">
                     <thead>
                       <tr className="border-b border-slate-200">
@@ -376,7 +422,15 @@ export default function QAReport() {
                       </tr>
                     </thead>
                     <tbody>
-                      {services.map((service) => (
+                      {services.filter(service => {
+                          if (filterTestName && service.testName !== filterTestName) return false;
+                          if (filterDateFrom || filterDateTo) {
+                            const lastDate = new Date(service.lastInspection);
+                            if (filterDateFrom && lastDate < new Date(filterDateFrom)) return false;
+                            if (filterDateTo && lastDate > new Date(filterDateTo)) return false;
+                          }
+                          return true;
+                        }).map((service) => (
                         <tr key={service.id} className="border-b border-slate-100 hover:bg-slate-50" data-testid={`service-row-${service.id}`}>
                           <td className="py-4 px-4">
                             <Link href={`/qa-report/test/${service.id}`} className="font-medium text-slate-800 hover:text-blue-600 cursor-pointer">
@@ -466,6 +520,7 @@ export default function QAReport() {
                     </tbody>
                   </table>
                 </div>
+                </>
               )}
 
               {activeTab === "inspectors" && (

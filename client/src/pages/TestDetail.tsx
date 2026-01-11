@@ -641,7 +641,7 @@ export default function TestDetail() {
                   </div>
                 </div>
                 
-                <div className="flex gap-2 overflow-x-auto pb-12 mb-2" data-testid="schedule-dates">
+                <div className="flex gap-2 overflow-x-auto pb-3 mb-4" data-testid="schedule-dates">
                   {test.schedule.filter(item => {
                     if (!scheduleFilterFrom && !scheduleFilterTo) return true;
                     const itemDate = new Date(item.date);

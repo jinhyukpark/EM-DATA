@@ -1,39 +1,24 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link, useLocation } from "wouter";
 import {
-  Building2,
   Search,
   Filter,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  LayoutDashboard,
-  Database,
-  FileText,
-  TrendingUp,
-  Newspaper,
-  Server,
-  Cloud,
   Download,
   Clock,
   Activity,
-  BookOpen,
   Lightbulb,
   UserCog,
-  Beaker,
   Target,
   DollarSign,
   Calendar,
   Users,
   Tag,
   ExternalLink,
-  ClipboardCheck,
-  Settings,
-  User,
-  Shield,
   Menu,
 } from "lucide-react";
+import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 

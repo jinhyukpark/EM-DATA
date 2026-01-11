@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link, useLocation } from "wouter";
 import {
   Building2,
   Search,
@@ -8,13 +7,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  LayoutDashboard,
-  Database,
-  FileText,
-  TrendingUp,
-  Newspaper,
-  Server,
-  Cloud,
   Download,
   Clock,
   Activity,
@@ -32,14 +24,9 @@ import {
   BarChart3,
   Columns,
   Check,
-  BookOpen,
-  Lightbulb,
-  UserCog,
   Menu,
-  ClipboardCheck,
-  Settings,
-  Shield,
 } from "lucide-react";
+import Sidebar from "@/components/Sidebar";
 import {
   BarChart,
   Bar,
@@ -100,150 +87,6 @@ const auditedCompanies = [
   { id: 16, name: "Samsung SDI", ceo: "Young-Hyun Choi", address: "150-20 Gongse-ro, Giheung-gu, Yongin", industry: "Manufacturing", revenue: "20.1T", operatingProfit: "1.8T", debt: "7.6T", netIncome: "1.4T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "1970-01-01", employees: 11000, companyType: "Large Enterprise", country: "Korea", listingStatus: "Audited", website: "www.samsungsdi.com", keywords: ["Battery", "Energy", "Materials"] },
   { id: 17, name: "Coupang", ceo: "Bom Kim", address: "570 Songpa-daero, Songpa-gu, Seoul", industry: "Retail", revenue: "26.5T", operatingProfit: "-0.2T", debt: "8.4T", netIncome: "-0.3T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "2010-08-10", employees: 68000, companyType: "Large Enterprise", country: "Korea", listingStatus: "NYSE", website: "www.coupang.com", keywords: ["E-commerce", "Logistics", "Delivery"] },
 ];
-
-const menuItems = [
-  { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, path: "/" },
-  { id: "qa-report", name: "QA Report", icon: ClipboardCheck, path: "/qa-report" },
-];
-
-const dataMenuItems = [
-  { id: "company-data", name: "Company Data", icon: Building2, path: "/data/company", status: "normal" },
-  { id: "patent-data", name: "Patent Data", icon: FileText, path: "/data/patent", status: "normal" },
-  { id: "paper-data", name: "Paper Data", icon: BookOpen, path: "/data/paper", status: "stopped" },
-  { id: "stock-data", name: "Stock Data", icon: TrendingUp, path: "/data/stock", status: "normal" },
-  { id: "news-data", name: "News Data", icon: Newspaper, path: "/data/news", status: "error" },
-  { id: "rnd-data", name: "R&D Data", icon: Lightbulb, path: "/data/rnd", status: "normal" },
-  { id: "employment-data", name: "Employment Data", icon: UserCog, path: "/data/employment", status: "stopped" },
-];
-
-const serverMenuItems = [
-  { id: "aws", name: "AWS", icon: Cloud, path: "/servers/aws", color: "text-orange-400" },
-  { id: "gcp", name: "GCP", icon: Cloud, path: "/servers/gcp", color: "text-blue-400" },
-  { id: "ncloud", name: "NCloud", icon: Cloud, path: "/servers/ncloud", color: "text-green-400" },
-];
-
-const settingsMenuItems = [
-  { id: "profile", name: "Profile", icon: User, path: "/settings/profile" },
-  { id: "users", name: "User Management", icon: Users, path: "/settings/users" },
-  { id: "permissions", name: "Permission Management", icon: Shield, path: "/settings/permissions" },
-];
-
-function Sidebar() {
-  const [location] = useLocation();
-  const [dataMenuOpen, setDataMenuOpen] = useState(true);
-  const [serverMenuOpen, setServerMenuOpen] = useState(false);
-  const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
-
-  return (
-    <aside className="w-64 bg-slate-900 min-h-screen flex flex-col" data-testid="sidebar">
-      <div className="p-6 border-b border-slate-800">
-        <h1 className="text-xl font-bold text-white tracking-tight">EM-Data</h1>
-        <p className="text-xs text-slate-400 mt-1">Internal Monitoring</p>
-      </div>
-
-      <nav className="flex-1 p-4">
-        <ul className="space-y-1">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location === item.path;
-            return (
-              <li key={item.id}>
-                <Link href={item.path} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"}`} data-testid={`menu-${item.id}`}>
-                  <Icon className="w-5 h-5" strokeWidth={1.5} />
-                  <span className="font-medium">{item.name}</span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-
-        <div className="mt-6">
-          <button onClick={() => setDataMenuOpen(!dataMenuOpen)} className="flex items-center justify-between w-full px-4 py-3 text-slate-400 hover:text-white transition-colors" data-testid="menu-data-toggle">
-            <div className="flex items-center gap-3">
-              <Database className="w-5 h-5" strokeWidth={1.5} />
-              <span className="font-medium text-sm">Internal Data</span>
-            </div>
-            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${dataMenuOpen ? "rotate-180" : ""}`} />
-          </button>
-          <motion.ul initial={false} animate={{ height: dataMenuOpen ? "auto" : 0, opacity: dataMenuOpen ? 1 : 0 }} transition={{ duration: 0.2 }} className="overflow-hidden ml-4 space-y-1">
-            {dataMenuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location === item.path;
-              const statusColor = item.status === "normal" ? "bg-blue-500" : item.status === "error" ? "bg-red-500" : "bg-slate-500";
-              return (
-                <li key={item.id}>
-                  <Link href={item.path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:bg-slate-800 hover:text-white"}`} data-testid={`menu-${item.id}`}>
-                    <span className={`w-2 h-2 rounded-full ${statusColor} ${item.status === "error" ? "animate-pulse" : ""}`} />
-                    <Icon className="w-4 h-4" strokeWidth={1.5} />
-                    <span className="text-sm">{item.name}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </motion.ul>
-        </div>
-
-        <div className="mt-2">
-          <button onClick={() => setServerMenuOpen(!serverMenuOpen)} className="flex items-center justify-between w-full px-4 py-3 text-slate-400 hover:text-white transition-colors" data-testid="menu-server-toggle">
-            <div className="flex items-center gap-3">
-              <Server className="w-5 h-5" strokeWidth={1.5} />
-              <span className="font-medium text-sm">Server Management</span>
-            </div>
-            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${serverMenuOpen ? "rotate-180" : ""}`} />
-          </button>
-          <motion.ul initial={false} animate={{ height: serverMenuOpen ? "auto" : 0, opacity: serverMenuOpen ? 1 : 0 }} transition={{ duration: 0.2 }} className="overflow-hidden ml-4 space-y-1">
-            {serverMenuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location === item.path;
-              return (
-                <li key={item.id}>
-                  <Link href={item.path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:bg-slate-800 hover:text-white"}`} data-testid={`menu-${item.id}`}>
-                    <Icon className={`w-4 h-4 ${item.color}`} strokeWidth={1.5} />
-                    <span className="text-sm">{item.name}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </motion.ul>
-        </div>
-
-        <div className="mt-2">
-          <button onClick={() => setSettingsMenuOpen(!settingsMenuOpen)} className="flex items-center justify-between w-full px-4 py-3 text-slate-400 hover:text-white transition-colors" data-testid="menu-settings-toggle">
-            <div className="flex items-center gap-3">
-              <Settings className="w-5 h-5" strokeWidth={1.5} />
-              <span className="font-medium text-sm">Settings</span>
-            </div>
-            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${settingsMenuOpen ? "rotate-180" : ""}`} />
-          </button>
-          <motion.ul initial={false} animate={{ height: settingsMenuOpen ? "auto" : 0, opacity: settingsMenuOpen ? 1 : 0 }} transition={{ duration: 0.2 }} className="overflow-hidden ml-4 space-y-1">
-            {settingsMenuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location === item.path;
-              return (
-                <li key={item.id}>
-                  <Link href={item.path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:bg-slate-800 hover:text-white"}`} data-testid={`menu-${item.id}`}>
-                    <Icon className="w-4 h-4" strokeWidth={1.5} />
-                    <span className="text-sm">{item.name}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </motion.ul>
-        </div>
-      </nav>
-
-      <div className="p-4 border-t border-slate-800">
-        <div className="flex items-center gap-3 px-4 py-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-medium">A</div>
-          <div>
-            <p className="text-sm font-medium text-white">Admin</p>
-            <p className="text-xs text-slate-400">Administrator</p>
-          </div>
-        </div>
-      </div>
-    </aside>
-  );
-}
 
 function CustomTooltip({ active, payload, label }: any) {
   if (active && payload && payload.length) {

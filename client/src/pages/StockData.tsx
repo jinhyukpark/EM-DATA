@@ -1,24 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link, useLocation } from "wouter";
 import {
-  Building2,
-  FileText,
   TrendingUp,
   TrendingDown,
-  Newspaper,
-  LayoutDashboard,
-  Database,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Server,
-  Cloud,
-  Settings,
-  User,
-  Users,
-  Shield,
-  ClipboardCheck,
   Search,
   Download,
   Clock,
@@ -26,11 +12,9 @@ import {
   Columns,
   Check,
   BarChart3,
-  BookOpen,
-  Lightbulb,
-  UserCog,
   Menu,
 } from "lucide-react";
+import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 

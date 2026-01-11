@@ -37,6 +37,8 @@ import {
   UserCog,
   Menu,
   ClipboardCheck,
+  Settings,
+  Shield,
 } from "lucide-react";
 import {
   BarChart,
@@ -120,10 +122,17 @@ const serverMenuItems = [
   { id: "ncloud", name: "NCloud", icon: Cloud, path: "/servers/ncloud", color: "text-green-400" },
 ];
 
+const settingsMenuItems = [
+  { id: "profile", name: "Profile", icon: User, path: "/settings/profile" },
+  { id: "users", name: "User Management", icon: Users, path: "/settings/users" },
+  { id: "permissions", name: "Permission Management", icon: Shield, path: "/settings/permissions" },
+];
+
 function Sidebar() {
   const [location] = useLocation();
   const [dataMenuOpen, setDataMenuOpen] = useState(true);
-  const [serverMenuOpen, setServerMenuOpen] = useState(true);
+  const [serverMenuOpen, setServerMenuOpen] = useState(false);
+  const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
 
   return (
     <aside className="w-64 bg-slate-900 min-h-screen flex flex-col" data-testid="sidebar">
@@ -164,6 +173,7 @@ function Sidebar() {
               return (
                 <li key={item.id}>
                   <Link href={item.path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:bg-slate-800 hover:text-white"}`} data-testid={`menu-${item.id}`}>
+                    <span className={`w-2 h-2 rounded-full ${statusColor} ${item.status === "error" ? "animate-pulse" : ""}`} />
                     <Icon className="w-4 h-4" strokeWidth={1.5} />
                     <span className="text-sm">{item.name}</span>
                   </Link>
@@ -184,10 +194,35 @@ function Sidebar() {
           <motion.ul initial={false} animate={{ height: serverMenuOpen ? "auto" : 0, opacity: serverMenuOpen ? 1 : 0 }} transition={{ duration: 0.2 }} className="overflow-hidden ml-4 space-y-1">
             {serverMenuItems.map((item) => {
               const Icon = item.icon;
+              const isActive = location === item.path;
               return (
                 <li key={item.id}>
-                  <Link href={item.path} className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200" data-testid={`menu-${item.id}`}>
+                  <Link href={item.path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:bg-slate-800 hover:text-white"}`} data-testid={`menu-${item.id}`}>
                     <Icon className={`w-4 h-4 ${item.color}`} strokeWidth={1.5} />
+                    <span className="text-sm">{item.name}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </motion.ul>
+        </div>
+
+        <div className="mt-2">
+          <button onClick={() => setSettingsMenuOpen(!settingsMenuOpen)} className="flex items-center justify-between w-full px-4 py-3 text-slate-400 hover:text-white transition-colors" data-testid="menu-settings-toggle">
+            <div className="flex items-center gap-3">
+              <Settings className="w-5 h-5" strokeWidth={1.5} />
+              <span className="font-medium text-sm">Settings</span>
+            </div>
+            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${settingsMenuOpen ? "rotate-180" : ""}`} />
+          </button>
+          <motion.ul initial={false} animate={{ height: settingsMenuOpen ? "auto" : 0, opacity: settingsMenuOpen ? 1 : 0 }} transition={{ duration: 0.2 }} className="overflow-hidden ml-4 space-y-1">
+            {settingsMenuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location === item.path;
+              return (
+                <li key={item.id}>
+                  <Link href={item.path} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:bg-slate-800 hover:text-white"}`} data-testid={`menu-${item.id}`}>
+                    <Icon className="w-4 h-4" strokeWidth={1.5} />
                     <span className="text-sm">{item.name}</span>
                   </Link>
                 </li>

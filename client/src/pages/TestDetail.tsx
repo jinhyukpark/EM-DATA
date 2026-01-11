@@ -706,7 +706,7 @@ export default function TestDetail() {
                               <MoreVertical className="w-5 h-5" />
                             </button>
                             {scheduleMenuOpen === item.id && (
-                              <div className="absolute right-0 top-8 bg-white rounded-lg shadow-xl border border-slate-200 py-1 z-50 min-w-[160px]">
+                              <div className="absolute right-0 bottom-full mb-1 bg-white rounded-lg shadow-xl border border-slate-200 py-1 z-50 min-w-[160px]">
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();

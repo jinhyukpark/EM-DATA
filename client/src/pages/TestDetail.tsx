@@ -772,12 +772,8 @@ export default function TestDetail() {
                           </button>
                           {scheduleMenuOpen === item.id && (
                             <div 
-                              className="fixed bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
-                              style={{ 
-                                zIndex: 9999,
-                                transform: 'translateX(-70%)',
-                                marginTop: '4px'
-                              }}
+                              className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
+                              style={{ zIndex: 9999 }}
                             >
                               {item.status !== "completed" && (
                                 <button

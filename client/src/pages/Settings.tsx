@@ -29,6 +29,9 @@ import {
   UserCog,
   ClipboardCheck,
   Menu,
+  Bell,
+  Check,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,6 +76,18 @@ const permissions = [
   { id: 1, role: "Admin", description: "Full access to all features", users: 2, permissions: ["View", "Create", "Edit", "Delete", "Export", "Settings"] },
   { id: 2, role: "Editor", description: "Can view and edit data", users: 5, permissions: ["View", "Create", "Edit", "Export"] },
   { id: 3, role: "Viewer", description: "Read-only access", users: 12, permissions: ["View"] },
+];
+
+const notificationCategories = [
+  { id: "company", name: "Company Data", icon: Building2, description: "Alerts for company data updates and errors" },
+  { id: "patent", name: "Patent Data", icon: FileText, description: "Alerts for new patents and crawling issues" },
+  { id: "paper", name: "Paper Data", icon: BookOpen, description: "Alerts for paper database changes" },
+  { id: "stock", name: "Stock Data", icon: TrendingUp, description: "Alerts for stock data anomalies" },
+  { id: "news", name: "News Data", icon: Newspaper, description: "Alerts for news API errors" },
+  { id: "rnd", name: "R&D Data", icon: Lightbulb, description: "Alerts for R&D data updates" },
+  { id: "employment", name: "Employment Data", icon: UserCog, description: "Alerts for employment entry/exit data" },
+  { id: "server", name: "Server Status", icon: Server, description: "Alerts for server health and outages" },
+  { id: "qa", name: "QA Reports", icon: ClipboardCheck, description: "Alerts for QA test results and failures" },
 ];
 
 function Sidebar() {
@@ -421,6 +436,146 @@ function PermissionsTab() {
   );
 }
 
+function NotificationsTab() {
+  const [notificationSettings, setNotificationSettings] = useState<Record<string, number[]>>({
+    company: [1, 2],
+    patent: [1, 2, 3],
+    paper: [2],
+    stock: [1, 4],
+    news: [1, 2, 3],
+    rnd: [1],
+    employment: [2, 5],
+    server: [1, 2],
+    qa: [1, 2, 3, 4],
+  });
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
+  const toggleUser = (categoryId: string, userId: number) => {
+    setNotificationSettings(prev => {
+      const current = prev[categoryId] || [];
+      if (current.includes(userId)) {
+        return { ...prev, [categoryId]: current.filter(id => id !== userId) };
+      } else {
+        return { ...prev, [categoryId]: [...current, userId] };
+      }
+    });
+  };
+
+  const getAssignedUsers = (categoryId: string) => {
+    const userIds = notificationSettings[categoryId] || [];
+    return users.filter(u => userIds.includes(u.id));
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="chart-container-light">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-800">Email Notifications</h3>
+            <p className="text-sm text-slate-500 mt-1">Configure which users receive email alerts for each category</p>
+          </div>
+          <Button className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="save-notifications">
+            <Save className="w-4 h-4" />
+            Save Settings
+          </Button>
+        </div>
+
+        <div className="space-y-3">
+          {notificationCategories.map((category) => {
+            const Icon = category.icon;
+            const assignedUsers = getAssignedUsers(category.id);
+            const isExpanded = expandedCategory === category.id;
+
+            return (
+              <div key={category.id} className="border border-slate-200 rounded-xl overflow-hidden" data-testid={`notification-category-${category.id}`}>
+                <div
+                  className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors"
+                  onClick={() => setExpandedCategory(isExpanded ? null : category.id)}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-slate-800">{category.name}</h4>
+                      <p className="text-xs text-slate-500">{category.description}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex -space-x-2">
+                      {assignedUsers.slice(0, 4).map((user) => (
+                        <div
+                          key={user.id}
+                          className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-medium border-2 border-white"
+                          title={user.name}
+                        >
+                          {user.name.split(" ").map(n => n[0]).join("")}
+                        </div>
+                      ))}
+                      {assignedUsers.length > 4 && (
+                        <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium text-slate-600 border-2 border-white">
+                          +{assignedUsers.length - 4}
+                        </div>
+                      )}
+                      {assignedUsers.length === 0 && (
+                        <span className="text-xs text-slate-400">No recipients</span>
+                      )}
+                    </div>
+                    <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                  </div>
+                </div>
+
+                {isExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="border-t border-slate-100 bg-slate-50 p-4"
+                  >
+                    <p className="text-xs text-slate-500 mb-3">Select users to receive notifications:</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                      {users.map((user) => {
+                        const isAssigned = (notificationSettings[category.id] || []).includes(user.id);
+                        return (
+                          <button
+                            key={user.id}
+                            onClick={() => toggleUser(category.id, user.id)}
+                            className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
+                              isAssigned
+                                ? "bg-blue-50 border-blue-200 text-blue-700"
+                                : "bg-white border-slate-200 text-slate-600 hover:border-slate-300"
+                            }`}
+                            data-testid={`notification-user-${category.id}-${user.id}`}
+                          >
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium ${
+                              isAssigned ? "bg-blue-500 text-white" : "bg-slate-200 text-slate-600"
+                            }`}>
+                              {user.name.split(" ").map(n => n[0]).join("")}
+                            </div>
+                            <div className="flex-1 text-left">
+                              <p className="text-sm font-medium">{user.name}</p>
+                              <p className="text-xs opacity-70">{user.email}</p>
+                            </div>
+                            <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                              isAssigned ? "bg-blue-500" : "border border-slate-300"
+                            }`}>
+                              {isAssigned && <Check className="w-3 h-3 text-white" />}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("profile");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -474,6 +629,10 @@ export default function Settings() {
                   <Shield className="w-4 h-4" />
                   Permission Management
                 </TabsTrigger>
+                <TabsTrigger value="notifications" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm" data-testid="tab-notifications">
+                  <Bell className="w-4 h-4" />
+                  Email Notifications
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="profile">
@@ -484,6 +643,9 @@ export default function Settings() {
               </TabsContent>
               <TabsContent value="permissions">
                 <PermissionsTab />
+              </TabsContent>
+              <TabsContent value="notifications">
+                <NotificationsTab />
               </TabsContent>
             </Tabs>
           </motion.div>

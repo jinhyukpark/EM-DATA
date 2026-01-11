@@ -98,6 +98,28 @@ const dataTypes = [
     glowClass: "glow-orange",
     bgGradient: "from-rose-500/15 to-rose-600/5",
   },
+  {
+    id: "rnd",
+    name: "R&D Data",
+    icon: Lightbulb,
+    total: 156789,
+    todayUpdate: 234,
+    yesterdayUpdate: 198,
+    color: "hsl(45, 93%, 47%)",
+    glowClass: "glow-yellow",
+    bgGradient: "from-amber-500/15 to-amber-600/5",
+  },
+  {
+    id: "employment",
+    name: "Employment",
+    icon: UserCog,
+    total: 87234,
+    todayUpdate: 156,
+    yesterdayUpdate: 142,
+    color: "hsl(199, 89%, 48%)",
+    glowClass: "glow-cyan",
+    bgGradient: "from-cyan-500/15 to-cyan-600/5",
+  },
 ];
 
 const generateDailyData = () => {
@@ -113,6 +135,8 @@ const generateDailyData = () => {
       News: Math.floor(Math.random() * 2000) + 3500,
       Stock: Math.floor(Math.random() * 1000) + 2500,
       Company: Math.floor(Math.random() * 50) + 80,
+      RnD: Math.floor(Math.random() * 100) + 150,
+      Employment: Math.floor(Math.random() * 80) + 100,
     });
   }
   return data;
@@ -128,6 +152,8 @@ const generateWeeklyData = () => {
       News: Math.floor(Math.random() * 15000) + 25000,
       Stock: Math.floor(Math.random() * 8000) + 18000,
       Company: Math.floor(Math.random() * 300) + 500,
+      RnD: Math.floor(Math.random() * 600) + 1000,
+      Employment: Math.floor(Math.random() * 400) + 700,
     });
   }
   return data;
@@ -142,6 +168,8 @@ const generateMonthlyData = () => {
     News: Math.floor(Math.random() * 60000) + 100000,
     Stock: Math.floor(Math.random() * 30000) + 70000,
     Company: Math.floor(Math.random() * 1500) + 2500,
+    RnD: Math.floor(Math.random() * 3000) + 5000,
+    Employment: Math.floor(Math.random() * 2000) + 3000,
   }));
 };
 
@@ -154,6 +182,8 @@ const generateYearlyData = () => {
     News: Math.floor(Math.random() * 800000) + 1200000,
     Stock: Math.floor(Math.random() * 400000) + 800000,
     Company: Math.floor(Math.random() * 5000) + 30000,
+    RnD: Math.floor(Math.random() * 30000) + 50000,
+    Employment: Math.floor(Math.random() * 20000) + 30000,
   }));
 };
 
@@ -266,6 +296,8 @@ const chartColors = {
   News: "hsl(25, 95%, 53%)",
   Stock: "hsl(271, 76%, 53%)",
   Company: "hsl(346, 77%, 50%)",
+  RnD: "hsl(45, 93%, 47%)",
+  Employment: "hsl(199, 89%, 48%)",
 };
 
 const alertMessages = [
@@ -1030,6 +1062,14 @@ export default function Dashboard() {
                           <stop offset="5%" stopColor={chartColors.Stock} stopOpacity={0.2} />
                           <stop offset="95%" stopColor={chartColors.Stock} stopOpacity={0} />
                         </linearGradient>
+                        <linearGradient id="colorRnD" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={chartColors.RnD} stopOpacity={0.2} />
+                          <stop offset="95%" stopColor={chartColors.RnD} stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="colorEmployment" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={chartColors.Employment} stopOpacity={0.2} />
+                          <stop offset="95%" stopColor={chartColors.Employment} stopOpacity={0} />
+                        </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
                       <XAxis
@@ -1071,6 +1111,22 @@ export default function Dashboard() {
                         fillOpacity={1}
                         fill="url(#colorStock)"
                       />
+                      <Area
+                        type="monotone"
+                        dataKey="RnD"
+                        stroke={chartColors.RnD}
+                        strokeWidth={2}
+                        fillOpacity={1}
+                        fill="url(#colorRnD)"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="Employment"
+                        stroke={chartColors.Employment}
+                        strokeWidth={2}
+                        fillOpacity={1}
+                        fill="url(#colorEmployment)"
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -1110,6 +1166,8 @@ export default function Dashboard() {
                       <Bar dataKey="News" fill={chartColors.News} radius={[4, 4, 0, 0]} />
                       <Bar dataKey="Stock" fill={chartColors.Stock} radius={[4, 4, 0, 0]} />
                       <Bar dataKey="Company" fill={chartColors.Company} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="RnD" fill={chartColors.RnD} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Employment" fill={chartColors.Employment} radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

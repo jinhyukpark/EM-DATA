@@ -943,6 +943,8 @@ export default function Dashboard() {
       news: true,
       stock: true,
       company: true,
+      rnd: true,
+      employment: true,
     },
     awsServices: {
       ec2: true,
@@ -1406,6 +1408,8 @@ export default function Dashboard() {
                       { key: "news", label: "News Data", icon: Newspaper },
                       { key: "stock", label: "Stock Data", icon: TrendingUp },
                       { key: "company", label: "Audited Companies", icon: Building2 },
+                      { key: "rnd", label: "R&D Data", icon: Lightbulb },
+                      { key: "employment", label: "Employment Data", icon: UserCog },
                     ].map(item => {
                       const Icon = item.icon;
                       const isEnabled = dashboardConfig.dataTypes[item.key as keyof typeof dashboardConfig.dataTypes];

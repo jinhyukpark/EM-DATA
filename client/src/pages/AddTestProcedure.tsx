@@ -1208,7 +1208,7 @@ export default function AddTestProcedure() {
 
               <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-slate-200">
                 <Link href="/qa-report">
-                  <Button variant="outline">Cancel</Button>
+                  <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100">Cancel</Button>
                 </Link>
                 <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 px-8" data-testid="save-procedure">
                   {isEditMode ? "Update Procedure" : "Save Procedure"}

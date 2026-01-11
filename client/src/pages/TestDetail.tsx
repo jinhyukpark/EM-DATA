@@ -66,7 +66,10 @@ type ScheduleItem = {
   date: string;
   assignee: string;
   status: "completed" | "pending" | "in_progress";
-  completedAt?: string;
+  startTime?: string;
+  endTime?: string;
+  duration?: string;
+  notes?: string;
 };
 
 const testData: Record<string, {
@@ -100,10 +103,10 @@ const testData: Record<string, {
     abnormalCount: 0,
     schedule: [
       { id: 1, date: "2025-01-16", assignee: "John Kim", status: "pending" },
-      { id: 2, date: "2025-01-09", assignee: "Sarah Lee", status: "completed", completedAt: "2025-01-09 14:32" },
-      { id: 3, date: "2025-01-02", assignee: "John Kim", status: "completed", completedAt: "2025-01-02 10:15" },
-      { id: 4, date: "2024-12-26", assignee: "Sarah Lee", status: "completed", completedAt: "2024-12-26 16:48" },
-      { id: 5, date: "2024-12-19", assignee: "John Kim", status: "completed", completedAt: "2024-12-19 11:22" },
+      { id: 2, date: "2025-01-09", assignee: "Sarah Lee", status: "completed", startTime: "14:00", endTime: "14:32", duration: "32 min", notes: "All checks passed successfully." },
+      { id: 3, date: "2025-01-02", assignee: "John Kim", status: "completed", startTime: "09:45", endTime: "10:15", duration: "30 min", notes: "Minor issues resolved." },
+      { id: 4, date: "2024-12-26", assignee: "Sarah Lee", status: "completed", startTime: "16:20", endTime: "16:48", duration: "28 min", notes: "Holiday check completed." },
+      { id: 5, date: "2024-12-19", assignee: "John Kim", status: "completed", startTime: "11:00", endTime: "11:22", duration: "22 min", notes: "Routine inspection." },
     ],
     items: [
       { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
@@ -128,8 +131,8 @@ const testData: Record<string, {
     abnormalCount: 1,
     schedule: [
       { id: 1, date: "2025-01-15", assignee: "Sarah Lee", status: "pending" },
-      { id: 2, date: "2025-01-08", assignee: "Sarah Lee", status: "completed", completedAt: "2025-01-08 09:45" },
-      { id: 3, date: "2025-01-01", assignee: "Sarah Lee", status: "completed", completedAt: "2025-01-01 13:20" },
+      { id: 2, date: "2025-01-08", assignee: "Sarah Lee", status: "completed", startTime: "09:20", endTime: "09:45", duration: "25 min", notes: "API validation complete." },
+      { id: 3, date: "2025-01-01", assignee: "Sarah Lee", status: "completed", startTime: "13:00", endTime: "13:20", duration: "20 min", notes: "New year check." },
     ],
     items: [
       { id: 1, question: "Is the API response time within acceptable limits (<500ms)?", answerType: "ox", answer: "O" },
@@ -151,10 +154,10 @@ const testData: Record<string, {
     normalCount: 5,
     abnormalCount: 3,
     schedule: [
-      { id: 1, date: "2025-01-12", assignee: "Mike Park", status: "in_progress" },
-      { id: 2, date: "2025-01-05", assignee: "Emily Choi", status: "completed", completedAt: "2025-01-05 17:30" },
-      { id: 3, date: "2024-12-29", assignee: "David Jung", status: "completed", completedAt: "2024-12-29 15:12" },
-      { id: 4, date: "2024-12-22", assignee: "Mike Park", status: "completed", completedAt: "2024-12-22 10:45" },
+      { id: 1, date: "2025-01-12", assignee: "Mike Park", status: "in_progress", startTime: "10:00" },
+      { id: 2, date: "2025-01-05", assignee: "Emily Choi", status: "completed", startTime: "17:00", endTime: "17:30", duration: "30 min", notes: "Performance issues noted." },
+      { id: 3, date: "2024-12-29", assignee: "David Jung", status: "completed", startTime: "14:45", endTime: "15:12", duration: "27 min", notes: "Year-end benchmark." },
+      { id: 4, date: "2024-12-22", assignee: "Mike Park", status: "completed", startTime: "10:15", endTime: "10:45", duration: "30 min", notes: "Pre-holiday check." },
     ],
     items: [
       { id: 1, question: "Average response time:", answerType: "multiple_choice", options: ["<100ms", "100-300ms", "300-500ms", ">500ms"], answer: "300-500ms" },
@@ -182,8 +185,8 @@ const testData: Record<string, {
     abnormalCount: 0,
     schedule: [
       { id: 1, date: "2025-01-16", assignee: "Emily Choi", status: "pending" },
-      { id: 2, date: "2025-01-09", assignee: "Emily Choi", status: "completed", completedAt: "2025-01-09 11:00" },
-      { id: 3, date: "2025-01-02", assignee: "Emily Choi", status: "completed", completedAt: "2025-01-02 14:30" },
+      { id: 2, date: "2025-01-09", assignee: "Emily Choi", status: "completed", startTime: "10:30", endTime: "11:00", duration: "30 min", notes: "Security audit passed." },
+      { id: 3, date: "2025-01-02", assignee: "Emily Choi", status: "completed", startTime: "14:00", endTime: "14:30", duration: "30 min", notes: "Full security review." },
     ],
     items: [
       { id: 1, question: "All API endpoints secured?", answerType: "ox", answer: "O" },
@@ -207,8 +210,8 @@ const testData: Record<string, {
     abnormalCount: 2,
     schedule: [
       { id: 1, date: "2025-01-20", assignee: "David Jung", status: "pending" },
-      { id: 2, date: "2024-12-20", assignee: "John Kim", status: "completed", completedAt: "2024-12-20 16:15" },
-      { id: 3, date: "2024-12-13", assignee: "David Jung", status: "completed", completedAt: "2024-12-13 09:30" },
+      { id: 2, date: "2024-12-20", assignee: "John Kim", status: "completed", startTime: "15:45", endTime: "16:15", duration: "30 min", notes: "Accuracy issues identified." },
+      { id: 3, date: "2024-12-13", assignee: "David Jung", status: "completed", startTime: "09:00", endTime: "09:30", duration: "30 min", notes: "Initial accuracy test." },
     ],
     items: [
       { id: 1, question: "Model accuracy meets threshold (>90%)?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Model retraining scheduled with updated dataset." },
@@ -326,6 +329,7 @@ export default function TestDetail() {
   const test = testData[testId];
   const [isEditing, setIsEditing] = useState(false);
   const [editedItems, setEditedItems] = useState(test?.items || []);
+  const [selectedSchedule, setSelectedSchedule] = useState(test?.schedule[0]?.id || 1);
 
   if (!test) {
     return (
@@ -492,62 +496,108 @@ export default function TestDetail() {
                   <Calendar className="w-4 h-4 text-slate-400" />
                   Inspection Schedule / History
                 </h3>
-                <div className="border border-slate-200 rounded-lg overflow-hidden">
-                  <table className="w-full" data-testid="schedule-table">
-                    <thead className="bg-slate-50 border-b border-slate-200">
-                      <tr>
-                        <th className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider px-4 py-3">Scheduled Date</th>
-                        <th className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider px-4 py-3">Assignee</th>
-                        <th className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider px-4 py-3">Status</th>
-                        <th className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider px-4 py-3">Completed At</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {test.schedule.map((item) => (
-                        <tr key={item.id} className="hover:bg-slate-50 transition-colors" data-testid={`schedule-row-${item.id}`}>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <Calendar className="w-4 h-4 text-slate-400" />
-                              <span className="text-sm font-medium text-slate-700">{item.date}</span>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-medium text-white">
-                                {item.assignee.split(" ").map(n => n[0]).join("")}
-                              </div>
-                              <span className="text-sm text-slate-600">{item.assignee}</span>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                              item.status === "completed" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                              item.status === "in_progress" ? "bg-blue-50 text-blue-700 border border-blue-200" :
-                              "bg-slate-100 text-slate-600 border border-slate-200"
-                            }`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${
-                                item.status === "completed" ? "bg-emerald-500" :
-                                item.status === "in_progress" ? "bg-blue-500 animate-pulse" :
-                                "bg-slate-400"
-                              }`} />
-                              {item.status === "completed" ? "Completed" : item.status === "in_progress" ? "In Progress" : "Pending"}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            {item.completedAt ? (
-                              <div className="flex items-center gap-2 text-sm text-slate-600">
-                                <Clock className="w-4 h-4 text-slate-400" />
-                                {item.completedAt}
-                              </div>
-                            ) : (
-                              <span className="text-sm text-slate-400">—</span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                
+                <div className="flex gap-2 overflow-x-auto pb-3 mb-4" data-testid="schedule-dates">
+                  {test.schedule.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setSelectedSchedule(item.id)}
+                      className={`flex-shrink-0 px-4 py-3 rounded-lg border transition-all ${
+                        selectedSchedule === item.id 
+                          ? "bg-blue-600 text-white border-blue-600 shadow-lg" 
+                          : "bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50"
+                      }`}
+                      data-testid={`schedule-date-${item.id}`}
+                    >
+                      <div className="text-center">
+                        <div className={`text-sm font-semibold ${selectedSchedule === item.id ? "text-white" : "text-slate-800"}`}>
+                          {item.date}
+                        </div>
+                        <div className="flex items-center gap-1.5 mt-1 justify-center">
+                          <span className={`w-1.5 h-1.5 rounded-full ${
+                            item.status === "completed" ? "bg-emerald-400" :
+                            item.status === "in_progress" ? "bg-blue-400 animate-pulse" :
+                            "bg-slate-400"
+                          }`} />
+                          <span className={`text-xs ${selectedSchedule === item.id ? "text-blue-100" : "text-slate-500"}`}>
+                            {item.assignee.split(" ")[0]}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
                 </div>
+
+                {(() => {
+                  const selected = test.schedule.find(s => s.id === selectedSchedule);
+                  if (!selected) return null;
+                  return (
+                    <motion.div
+                      key={selectedSchedule}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-slate-50 rounded-xl p-5 border border-slate-200"
+                      data-testid="schedule-detail"
+                    >
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">Assignee</p>
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-medium text-white">
+                              {selected.assignee.split(" ").map(n => n[0]).join("")}
+                            </div>
+                            <span className="font-medium text-slate-800">{selected.assignee}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">Status</p>
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                            selected.status === "completed" ? "bg-emerald-100 text-emerald-700" :
+                            selected.status === "in_progress" ? "bg-blue-100 text-blue-700" :
+                            "bg-slate-200 text-slate-600"
+                          }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${
+                              selected.status === "completed" ? "bg-emerald-500" :
+                              selected.status === "in_progress" ? "bg-blue-500 animate-pulse" :
+                              "bg-slate-400"
+                            }`} />
+                            {selected.status === "completed" ? "Completed" : selected.status === "in_progress" ? "In Progress" : "Pending"}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">Start Time</p>
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-slate-400" />
+                            <span className="font-medium text-slate-800">{selected.startTime || "—"}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">End Time</p>
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-slate-400" />
+                            <span className="font-medium text-slate-800">{selected.endTime || "—"}</span>
+                          </div>
+                        </div>
+                      </div>
+                      {(selected.duration || selected.notes) && (
+                        <div className="mt-4 pt-4 border-t border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {selected.duration && (
+                            <div>
+                              <p className="text-xs text-slate-500 mb-1">Duration</p>
+                              <span className="font-medium text-slate-800">{selected.duration}</span>
+                            </div>
+                          )}
+                          {selected.notes && (
+                            <div>
+                              <p className="text-xs text-slate-500 mb-1">Notes</p>
+                              <span className="text-slate-700">{selected.notes}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                })()}
               </div>
 
               <div>

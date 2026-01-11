@@ -297,10 +297,23 @@ export default function AddTestProcedure() {
   const [endDate, setEndDate] = useState(existingData?.endDate || "");
   const [isRepeating, setIsRepeating] = useState(existingData?.isRepeating || false);
   const [selectedDays, setSelectedDays] = useState<string[]>(existingData?.selectedDays || []);
+  const [dayInspectors, setDayInspectors] = useState<Record<string, string[]>>({});
+  const [activeDayDropdown, setActiveDayDropdown] = useState<string | null>(null);
   const [hasSpecificTime, setHasSpecificTime] = useState(existingData?.timeOption !== "anytime");
   const [specificTime, setSpecificTime] = useState(existingData?.specificTime || "");
   const [timeOption, setTimeOption] = useState<"anytime" | "specific" | "preset">(existingData?.timeOption || "anytime");
   const [presetTime, setPresetTime] = useState(existingData?.presetTime || "");
+
+  const toggleDayInspector = (dayId: string, inspectorName: string) => {
+    setDayInspectors(prev => {
+      const current = prev[dayId] || [];
+      if (current.includes(inspectorName)) {
+        return { ...prev, [dayId]: current.filter(i => i !== inspectorName) };
+      } else {
+        return { ...prev, [dayId]: [...current, inspectorName] };
+      }
+    });
+  };
 
   const presetTimes = [
     { id: "09:00", label: "09:00 AM" },
@@ -592,7 +605,7 @@ export default function AddTestProcedure() {
                     >
                       <div>
                         <label className="block text-xs font-medium text-slate-500 mb-2">Repeat on Days</label>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 mb-3">
                           {weekDays.map((day) => (
                             <button
                               key={day.id}
@@ -608,6 +621,85 @@ export default function AddTestProcedure() {
                             </button>
                           ))}
                         </div>
+                        
+                        {selectedDays.length > 0 && (
+                          <div className="mt-4 space-y-2">
+                            <label className="block text-xs font-medium text-slate-500 mb-2">Assign Inspectors per Day</label>
+                            <div className="grid gap-2">
+                              {selectedDays.map((dayId) => {
+                                const day = weekDays.find(d => d.id === dayId);
+                                const assignedForDay = dayInspectors[dayId] || [];
+                                return (
+                                  <div key={dayId} className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg">
+                                    <span className="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-medium">
+                                      {day?.label}
+                                    </span>
+                                    <div className="flex-1 relative">
+                                      <button
+                                        onClick={() => setActiveDayDropdown(activeDayDropdown === dayId ? null : dayId)}
+                                        className="w-full h-9 px-3 border border-slate-200 rounded-lg text-sm bg-white text-left flex items-center justify-between hover:border-blue-300"
+                                      >
+                                        <span className={assignedForDay.length > 0 ? "text-slate-800" : "text-slate-400"}>
+                                          {assignedForDay.length > 0 
+                                            ? `${assignedForDay.length} inspector(s)` 
+                                            : "Select inspectors..."
+                                          }
+                                        </span>
+                                        <ChevronDown className="w-4 h-4 text-slate-400" />
+                                      </button>
+                                      {activeDayDropdown === dayId && (
+                                        <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                                          {inspectors.map((i) => (
+                                            <button
+                                              key={i.id}
+                                              onClick={() => toggleDayInspector(dayId, i.name)}
+                                              className="w-full px-3 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2"
+                                            >
+                                              <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                                                assignedForDay.includes(i.name)
+                                                  ? "bg-blue-600 border-blue-600"
+                                                  : "border-slate-300"
+                                              }`}>
+                                                {assignedForDay.includes(i.name) && (
+                                                  <Check className="w-3 h-3 text-white" />
+                                                )}
+                                              </div>
+                                              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-medium text-white flex-shrink-0">
+                                                {i.avatar}
+                                              </div>
+                                              <span>{i.name}</span>
+                                            </button>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                    {assignedForDay.length > 0 && (
+                                      <div className="flex -space-x-1">
+                                        {assignedForDay.slice(0, 3).map((name) => {
+                                          const inspector = inspectors.find(i => i.name === name);
+                                          return (
+                                            <div
+                                              key={name}
+                                              className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-medium text-white border-2 border-white"
+                                              title={name}
+                                            >
+                                              {inspector?.avatar}
+                                            </div>
+                                          );
+                                        })}
+                                        {assignedForDay.length > 3 && (
+                                          <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium text-slate-600 border-2 border-white">
+                                            +{assignedForDay.length - 3}
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div>

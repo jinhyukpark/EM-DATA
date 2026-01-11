@@ -599,8 +599,8 @@ export default function TestDetail() {
               </div>
             </div>
 
-            <div className="p-6">
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <div className="px-6 py-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
                 <div className="bg-slate-50 rounded-lg p-4">
                   <p className="text-xs text-slate-500 mb-1">Type</p>
                   <p className="font-medium text-slate-800">{test.type}</p>
@@ -641,8 +641,8 @@ export default function TestDetail() {
                 </div>
               </div>
 
-              <div className="mb-8">
-                <div className="flex items-center gap-4 mb-4">
+              <div className="mb-3">
+                <div className="flex items-center gap-4 mb-2">
                   <h3 className="text-sm font-medium text-slate-700">Review Results</h3>
                   <div className="flex items-center gap-3">
                     <span className="flex items-center gap-1.5 text-sm">

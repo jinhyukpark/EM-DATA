@@ -15,6 +15,7 @@ import {
   Calendar,
   ExternalLink,
   Menu,
+  TrendingUp,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
@@ -92,31 +93,51 @@ export default function PaperData() {
           </div>
         </header>
 
-        <main className="flex-1 p-8 bg-white">
+        <main className="flex-1 p-4 md:p-6 bg-slate-50/50 overflow-x-hidden">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <div className="flex items-center gap-3 px-1 py-3 mb-6 border-b border-slate-100">
-              <div className="flex items-center gap-4 text-sm">
-                <span className="flex items-center gap-2 text-slate-600">
-                  <BookOpen className="w-4 h-4 text-emerald-500" />
-                  Total Papers: <strong className="text-slate-800">{papers.length}</strong>
-                </span>
-                <span className="w-px h-4 bg-slate-200" />
-                <span className="flex items-center gap-2 text-slate-600">
-                  <Quote className="w-4 h-4 text-blue-500" />
-                  Total Citations: <strong className="text-slate-800">{totalCitations.toLocaleString()}</strong>
-                </span>
-                <span className="w-px h-4 bg-slate-200" />
-                <span className="flex items-center gap-2 text-slate-600">
-                  <Award className="w-4 h-4 text-purple-500" />
-                  Published: <strong className="text-slate-800">{papers.filter(p => p.status === "Published").length}</strong>
-                </span>
-                <span className="w-px h-4 bg-slate-200" />
-                <span className="flex items-center gap-2 text-slate-600">
-                  <Clock className="w-4 h-4 text-slate-400" />
-                  Update Cycle: <strong className="text-slate-800">Weekly</strong>
-                </span>
+            <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.3 }} className="mb-6">
+              <div className="flex items-center gap-8 py-4 px-6 bg-white rounded-xl border border-slate-100">
+                <div className="flex items-center gap-3">
+                  <BookOpen className="w-5 h-5 text-emerald-500" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Total</p>
+                    <p className="text-xl font-bold text-slate-800">{papers.length}</p>
+                  </div>
+                </div>
+                <div className="w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3">
+                  <Quote className="w-5 h-5 text-blue-500" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Citations</p>
+                    <p className="text-xl font-bold text-blue-600">{totalCitations.toLocaleString()}</p>
+                  </div>
+                </div>
+                <div className="w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3">
+                  <Award className="w-5 h-5 text-purple-500" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Published</p>
+                    <p className="text-xl font-bold text-purple-600">{papers.filter(p => p.status === "Published").length}</p>
+                  </div>
+                </div>
+                <div className="w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3">
+                  <TrendingUp className="w-5 h-5 text-amber-500" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">This Month</p>
+                    <p className="text-xl font-bold text-amber-600">+3</p>
+                  </div>
+                </div>
+                <div className="w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3">
+                  <Clock className="w-5 h-5 text-slate-400" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Update Cycle</p>
+                    <p className="text-xl font-bold text-slate-800">Weekly</p>
+                  </div>
+                </div>
               </div>
-            </div>
+            </motion.section>
 
             <div className="flex items-center gap-3 mb-6">
               <div className="relative flex-1 max-w-md">

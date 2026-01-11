@@ -4,6 +4,7 @@ import {
   Newspaper,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Search,
   Download,
   Clock,
@@ -12,6 +13,8 @@ import {
   Check,
   ExternalLink,
   Menu,
+  TrendingUp,
+  TrendingDown,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";

@@ -464,7 +464,7 @@ export default function AddTestProcedure() {
                   }`}
                   data-testid="tab-basic"
                 >
-                  기본정보
+                  Basic Info
                 </button>
                 <button
                   onClick={() => setActiveTab("items")}
@@ -475,7 +475,7 @@ export default function AddTestProcedure() {
                   }`}
                   data-testid="tab-items"
                 >
-                  Item 셋팅
+                  Item Settings
                 </button>
               </div>
 

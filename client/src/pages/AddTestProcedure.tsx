@@ -30,6 +30,8 @@ import {
   Clock,
   Repeat,
   Menu,
+  Check,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -215,7 +217,8 @@ export default function AddTestProcedure() {
   const [, setLocation] = useLocation();
   const [serviceName, setServiceName] = useState("");
   const [procedureName, setProcedureName] = useState("");
-  const [assignedInspector, setAssignedInspector] = useState("");
+  const [assignedInspectors, setAssignedInspectors] = useState<string[]>([]);
+  const [showInspectorDropdown, setShowInspectorDropdown] = useState(false);
   const [testItems, setTestItems] = useState<TestItem[]>([]);
   const [nextId, setNextId] = useState(1);
   const [startDate, setStartDate] = useState("");
@@ -224,6 +227,25 @@ export default function AddTestProcedure() {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [hasSpecificTime, setHasSpecificTime] = useState(false);
   const [specificTime, setSpecificTime] = useState("");
+  const [timeOption, setTimeOption] = useState<"anytime" | "specific" | "preset">("anytime");
+  const [presetTime, setPresetTime] = useState("");
+
+  const presetTimes = [
+    { id: "09:00", label: "09:00 AM" },
+    { id: "10:00", label: "10:00 AM" },
+    { id: "11:00", label: "11:00 AM" },
+    { id: "14:00", label: "02:00 PM" },
+    { id: "15:00", label: "03:00 PM" },
+    { id: "16:00", label: "04:00 PM" },
+  ];
+
+  const toggleInspector = (inspectorName: string) => {
+    if (assignedInspectors.includes(inspectorName)) {
+      setAssignedInspectors(assignedInspectors.filter(i => i !== inspectorName));
+    } else {
+      setAssignedInspectors([...assignedInspectors, inspectorName]);
+    }
+  };
 
   const toggleDay = (dayId: string) => {
     if (selectedDays.includes(dayId)) {
@@ -368,21 +390,58 @@ export default function AddTestProcedure() {
                       data-testid="input-procedure-name"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Assigned Inspector</label>
-                    <select
-                      value={assignedInspector}
-                      onChange={(e) => setAssignedInspector(e.target.value)}
-                      className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Assigned Inspector(s)</label>
+                    <button
+                      onClick={() => setShowInspectorDropdown(!showInspectorDropdown)}
+                      className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-left flex items-center justify-between"
                       data-testid="select-inspector"
                     >
-                      <option value="">Select an inspector...</option>
-                      {inspectors.map((i) => (
-                        <option key={i.id} value={i.name}>
-                          {i.name} - {i.role}
-                        </option>
-                      ))}
-                    </select>
+                      <span className={assignedInspectors.length > 0 ? "text-slate-800" : "text-slate-400"}>
+                        {assignedInspectors.length > 0 
+                          ? assignedInspectors.length === 1 
+                            ? assignedInspectors[0]
+                            : `${assignedInspectors.length} inspectors selected`
+                          : "Select inspectors..."
+                        }
+                      </span>
+                      <ChevronDown className="w-4 h-4 text-slate-400" />
+                    </button>
+                    {showInspectorDropdown && (
+                      <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                        {inspectors.map((i) => (
+                          <button
+                            key={i.id}
+                            onClick={() => toggleInspector(i.name)}
+                            className="w-full px-3 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2"
+                          >
+                            <div className={`w-4 h-4 rounded border flex items-center justify-center ${
+                              assignedInspectors.includes(i.name)
+                                ? "bg-blue-600 border-blue-600"
+                                : "border-slate-300"
+                            }`}>
+                              {assignedInspectors.includes(i.name) && (
+                                <Check className="w-3 h-3 text-white" />
+                              )}
+                            </div>
+                            <span>{i.name}</span>
+                            <span className="text-slate-400 text-xs">- {i.role}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {assignedInspectors.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {assignedInspectors.map((name) => (
+                          <span key={name} className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">
+                            {name}
+                            <button onClick={() => toggleInspector(name)} className="hover:text-blue-900">
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -456,21 +515,65 @@ export default function AddTestProcedure() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => setHasSpecificTime(!hasSpecificTime)}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
-                            hasSpecificTime
-                              ? "border-blue-500 bg-blue-50 text-blue-700"
-                              : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
-                          }`}
-                          data-testid="toggle-specific-time"
-                        >
-                          <Clock className="w-4 h-4" />
-                          <span className="text-sm font-medium">Specific Time</span>
-                        </button>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-500 mb-2">Inspection Time</label>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          <button
+                            onClick={() => { setTimeOption("anytime"); setHasSpecificTime(false); }}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                              timeOption === "anytime"
+                                ? "border-blue-500 bg-blue-50 text-blue-700"
+                                : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                            }`}
+                            data-testid="time-anytime"
+                          >
+                            <span className="text-sm font-medium">Anytime</span>
+                          </button>
+                          <button
+                            onClick={() => { setTimeOption("preset"); setHasSpecificTime(true); }}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                              timeOption === "preset"
+                                ? "border-blue-500 bg-blue-50 text-blue-700"
+                                : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                            }`}
+                            data-testid="time-preset"
+                          >
+                            <span className="text-sm font-medium">Preset Time</span>
+                          </button>
+                          <button
+                            onClick={() => { setTimeOption("specific"); setHasSpecificTime(true); }}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                              timeOption === "specific"
+                                ? "border-blue-500 bg-blue-50 text-blue-700"
+                                : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                            }`}
+                            data-testid="time-specific"
+                          >
+                            <Clock className="w-4 h-4" />
+                            <span className="text-sm font-medium">Custom Time</span>
+                          </button>
+                        </div>
 
-                        {hasSpecificTime && (
+                        {timeOption === "preset" && (
+                          <div className="flex flex-wrap gap-2">
+                            {presetTimes.map((time) => (
+                              <button
+                                key={time.id}
+                                onClick={() => setPresetTime(time.id)}
+                                className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
+                                  presetTime === time.id
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-white border border-slate-200 text-slate-600 hover:border-blue-300"
+                                }`}
+                                data-testid={`preset-time-${time.id}`}
+                              >
+                                {time.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                        {timeOption === "specific" && (
                           <input
                             type="time"
                             value={specificTime}

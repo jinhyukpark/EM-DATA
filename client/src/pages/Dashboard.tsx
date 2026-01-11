@@ -323,14 +323,10 @@ function DataSummaryCarousel() {
     return () => clearInterval(interval);
   }, [totalPages]);
 
-  const visibleCards = dataTypes.slice(
+  const displayCards = dataTypes.slice(
     currentPage * cardsPerPage,
     currentPage * cardsPerPage + cardsPerPage
   );
-
-  const remainingSlots = cardsPerPage - visibleCards.length;
-  const fillerCards = remainingSlots > 0 ? dataTypes.slice(0, remainingSlots) : [];
-  const displayCards = [...visibleCards, ...fillerCards];
 
   return (
     <div className="relative">

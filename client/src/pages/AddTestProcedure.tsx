@@ -32,6 +32,10 @@ import {
   Menu,
   Check,
   X,
+  Star,
+  Save,
+  FileStack,
+  MoreVertical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -305,6 +309,58 @@ export default function AddTestProcedure() {
   const [timeOption, setTimeOption] = useState<"anytime" | "specific" | "preset">(existingData?.timeOption || "anytime");
   const [presetTime, setPresetTime] = useState(existingData?.presetTime || "");
   const [activeTab, setActiveTab] = useState<"basic" | "items">("basic");
+  
+  // Template state
+  const [templates, setTemplates] = useState([
+    { id: 1, name: "Basic QA Check", isDefault: true, items: [
+      { id: 1, question: "Is the service responding correctly?", answerType: "ox" as const, options: [] },
+      { id: 2, question: "Are all endpoints accessible?", answerType: "ox" as const, options: [] },
+    ]},
+    { id: 2, name: "Performance Review", isDefault: false, items: [
+      { id: 1, question: "Response time within SLA?", answerType: "ox" as const, options: [] },
+      { id: 2, question: "Performance rating:", answerType: "multiple_choice" as const, options: ["Excellent", "Good", "Fair", "Poor"] },
+      { id: 3, question: "Additional notes:", answerType: "text" as const, options: [] },
+    ]},
+    { id: 3, name: "Data Validation", isDefault: false, items: [
+      { id: 1, question: "Data format is correct?", answerType: "ox" as const, options: [] },
+      { id: 2, question: "All required fields present?", answerType: "ox" as const, options: [] },
+      { id: 3, question: "Data quality score:", answerType: "multiple_choice" as const, options: ["100%", "90-99%", "80-89%", "Below 80%"] },
+    ]},
+  ]);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [newTemplateName, setNewTemplateName] = useState("");
+  const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
+
+  const saveAsTemplate = () => {
+    if (newTemplateName.trim() && testItems.length > 0) {
+      const newTemplate = {
+        id: templates.length + 1,
+        name: newTemplateName.trim(),
+        isDefault: false,
+        items: testItems.map(item => ({ ...item })),
+      };
+      setTemplates([...templates, newTemplate]);
+      setNewTemplateName("");
+      setShowTemplateModal(false);
+    }
+  };
+
+  const loadTemplate = (templateId: number) => {
+    const template = templates.find(t => t.id === templateId);
+    if (template) {
+      setTestItems(template.items.map((item, idx) => ({ ...item, id: idx + 1 })));
+      setNextId(template.items.length + 1);
+    }
+    setShowTemplateDropdown(false);
+  };
+
+  const setDefaultTemplate = (templateId: number) => {
+    setTemplates(templates.map(t => ({ ...t, isDefault: t.id === templateId })));
+  };
+
+  const deleteTemplate = (templateId: number) => {
+    setTemplates(templates.filter(t => t.id !== templateId));
+  };
 
   const toggleDayInspector = (dayId: string, inspectorName: string) => {
     setDayInspectors(prev => {
@@ -823,6 +879,120 @@ export default function AddTestProcedure() {
 
               {activeTab === "items" && (
               <div className="pt-6">
+                {/* Template Section */}
+                <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <FileStack className="w-5 h-5 text-blue-600" />
+                      <h3 className="font-medium text-slate-800">Templates</h3>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="relative">
+                        <button
+                          onClick={() => setShowTemplateDropdown(!showTemplateDropdown)}
+                          className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm hover:border-blue-300 transition-colors"
+                          data-testid="load-template-btn"
+                        >
+                          <FileStack className="w-4 h-4 text-slate-500" />
+                          Load Template
+                          <ChevronDown className="w-4 h-4 text-slate-400" />
+                        </button>
+                        {showTemplateDropdown && (
+                          <div className="absolute z-50 right-0 mt-1 w-72 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden">
+                            <div className="p-2 border-b border-slate-100 bg-slate-50">
+                              <span className="text-xs font-medium text-slate-500">Available Templates</span>
+                            </div>
+                            {templates.map((template) => (
+                              <div
+                                key={template.id}
+                                className="flex items-center justify-between px-3 py-2 hover:bg-slate-50 group"
+                              >
+                                <button
+                                  onClick={() => loadTemplate(template.id)}
+                                  className="flex-1 text-left flex items-center gap-2"
+                                >
+                                  {template.isDefault && (
+                                    <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                                  )}
+                                  <span className="text-sm text-slate-700">{template.name}</span>
+                                  <span className="text-xs text-slate-400">({template.items.length} items)</span>
+                                </button>
+                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); setDefaultTemplate(template.id); }}
+                                    className={`p-1 rounded hover:bg-slate-100 ${template.isDefault ? 'text-amber-500' : 'text-slate-400'}`}
+                                    title="Set as default"
+                                  >
+                                    <Star className={`w-4 h-4 ${template.isDefault ? 'fill-amber-500' : ''}`} />
+                                  </button>
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); deleteTemplate(template.id); }}
+                                    className="p-1 rounded hover:bg-red-50 text-slate-400 hover:text-red-500"
+                                    title="Delete template"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                            {templates.length === 0 && (
+                              <div className="px-3 py-4 text-center text-sm text-slate-400">
+                                No templates saved yet
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => setShowTemplateModal(true)}
+                        disabled={testItems.length === 0}
+                        className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm hover:border-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        data-testid="save-template-btn"
+                      >
+                        <Save className="w-4 h-4 text-slate-500" />
+                        Save as Template
+                      </button>
+                    </div>
+                  </div>
+                  {templates.filter(t => t.isDefault).length > 0 && (
+                    <div className="flex items-center gap-2 text-sm text-slate-500">
+                      <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                      <span>Default: <span className="font-medium text-slate-700">{templates.find(t => t.isDefault)?.name}</span></span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Save Template Modal */}
+                {showTemplateModal && (
+                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl"
+                    >
+                      <h3 className="text-lg font-semibold text-slate-800 mb-4">Save as Template</h3>
+                      <p className="text-sm text-slate-500 mb-4">
+                        Save the current {testItems.length} test item(s) as a reusable template.
+                      </p>
+                      <Input
+                        value={newTemplateName}
+                        onChange={(e) => setNewTemplateName(e.target.value)}
+                        placeholder="Enter template name..."
+                        className="mb-4"
+                        data-testid="template-name-input"
+                      />
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => { setShowTemplateModal(false); setNewTemplateName(""); }}>
+                          Cancel
+                        </Button>
+                        <Button onClick={saveAsTemplate} className="bg-blue-600 hover:bg-blue-700" disabled={!newTemplateName.trim()}>
+                          Save Template
+                        </Button>
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-semibold text-slate-800">Test Items</h2>
                   <Button onClick={addTestItem} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-item">

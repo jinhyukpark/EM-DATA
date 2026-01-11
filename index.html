@@ -24,6 +24,15 @@
     <link rel="stylesheet" crossorigin href="/assets/index-BGT7ruku.css">
   </head>
   <body>
+    <script>
+      (function() {
+        var redirect = sessionStorage.getItem('redirect');
+        if (redirect) {
+          sessionStorage.removeItem('redirect');
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
     <div id="root"></div>
   </body>
 </html>

@@ -369,7 +369,7 @@ export default function AddTestProcedure() {
                     <select
                       value={serviceName}
                       onChange={(e) => setServiceName(e.target.value)}
-                      className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       data-testid="select-service"
                     >
                       <option value="">Select a service...</option>

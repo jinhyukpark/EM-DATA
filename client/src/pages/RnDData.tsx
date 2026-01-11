@@ -92,7 +92,7 @@ function Sidebar() {
         <ul className="space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location === item.path;
+            const isActive = location === item.path || (item.path === "/qa-report" && location.startsWith("/qa"));
             return (
               <li key={item.id}>
                 <Link href={item.path} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"}`}>
@@ -102,12 +102,6 @@ function Sidebar() {
               </li>
             );
           })}
-          <li>
-            <Link href="/qa-report" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${location === "/qa-report" ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"}`}>
-              <ClipboardCheck className="w-5 h-5" strokeWidth={1.5} />
-              <span className="font-medium">QA Report</span>
-            </Link>
-          </li>
         </ul>
 
         <div className="mt-6">

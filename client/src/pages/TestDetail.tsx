@@ -444,6 +444,7 @@ export default function TestDetail() {
   const [editScheduleDate, setEditScheduleDate] = useState("");
   const [editScheduleAssignee, setEditScheduleAssignee] = useState("");
   const [cancelScheduleMode, setCancelScheduleMode] = useState(false);
+  const [editScheduleType, setEditScheduleType] = useState<'date' | 'assignee' | 'cancel'>('date');
   const [cancelScheduleReason, setCancelScheduleReason] = useState("");
   const [historyModal, setHistoryModal] = useState<number | null>(null);
   const scheduleScrollRef = useRef<HTMLDivElement>(null);
@@ -1092,51 +1093,88 @@ export default function TestDetail() {
             >
               <div className="p-6 border-b border-slate-200">
                 <h3 className="text-lg font-semibold text-slate-800">Edit Schedule</h3>
-                <p className="text-sm text-slate-500 mt-1">Change date or assignee for this inspection</p>
+                <p className="text-sm text-slate-500 mt-1">Select what you want to change</p>
               </div>
               
               <div className="p-6 space-y-4">
-                {!cancelScheduleMode ? (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
-                      <Input
-                        type="date"
-                        value={editScheduleDate}
-                        onChange={(e) => setEditScheduleDate(e.target.value)}
-                        data-testid="edit-schedule-date"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Assignee</label>
-                      <select
-                        value={editScheduleAssignee}
-                        onChange={(e) => setEditScheduleAssignee(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        data-testid="edit-schedule-assignee"
-                      >
-                        {test.inspectors.map((inspector) => (
-                          <option key={inspector} value={inspector}>{inspector}</option>
-                        ))}
-                        <option value="John Kim">John Kim</option>
-                        <option value="Sarah Lee">Sarah Lee</option>
-                        <option value="Mike Park">Mike Park</option>
-                        <option value="Emily Choi">Emily Choi</option>
-                        <option value="David Jung">David Jung</option>
-                      </select>
-                    </div>
-                    
+                {/* Radio options */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-3">Edit Type</label>
+                  <div className="grid grid-cols-3 gap-2">
                     <button
-                      onClick={() => setCancelScheduleMode(true)}
-                      className="w-full mt-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 border border-red-200 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                      onClick={() => setEditScheduleType('date')}
+                      className={`px-3 py-2.5 rounded-lg border text-sm font-medium transition-all flex flex-col items-center gap-1 ${
+                        editScheduleType === 'date' 
+                          ? 'bg-blue-50 border-blue-500 text-blue-700' 
+                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <Calendar className="w-4 h-4" />
+                      Change Date
+                    </button>
+                    <button
+                      onClick={() => setEditScheduleType('assignee')}
+                      className={`px-3 py-2.5 rounded-lg border text-sm font-medium transition-all flex flex-col items-center gap-1 ${
+                        editScheduleType === 'assignee' 
+                          ? 'bg-blue-50 border-blue-500 text-blue-700' 
+                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <User className="w-4 h-4" />
+                      Change Assignee
+                    </button>
+                    <button
+                      onClick={() => setEditScheduleType('cancel')}
+                      className={`px-3 py-2.5 rounded-lg border text-sm font-medium transition-all flex flex-col items-center gap-1 ${
+                        editScheduleType === 'cancel' 
+                          ? 'bg-red-50 border-red-500 text-red-700' 
+                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
                     >
                       <Trash2 className="w-4 h-4" />
-                      Cancel this Schedule
+                      Cancel
                     </button>
-                  </>
-                ) : (
-                  <>
+                  </div>
+                </div>
+
+                {/* Date change section */}
+                {editScheduleType === 'date' && (
+                  <div className="pt-4 border-t border-slate-100">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">New Date</label>
+                    <Input
+                      type="date"
+                      value={editScheduleDate}
+                      onChange={(e) => setEditScheduleDate(e.target.value)}
+                      data-testid="edit-schedule-date"
+                    />
+                  </div>
+                )}
+
+                {/* Assignee change section */}
+                {editScheduleType === 'assignee' && (
+                  <div className="pt-4 border-t border-slate-100">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">New Assignee</label>
+                    <select
+                      value={editScheduleAssignee}
+                      onChange={(e) => setEditScheduleAssignee(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      data-testid="edit-schedule-assignee"
+                    >
+                      {test.inspectors.map((inspector) => (
+                        <option key={inspector} value={inspector}>{inspector}</option>
+                      ))}
+                      <option value="John Kim">John Kim</option>
+                      <option value="Sarah Lee">Sarah Lee</option>
+                      <option value="Mike Park">Mike Park</option>
+                      <option value="Emily Choi">Emily Choi</option>
+                      <option value="David Jung">David Jung</option>
+                    </select>
+                  </div>
+                )}
+
+                {/* Cancel schedule section */}
+                {editScheduleType === 'cancel' && (
+                  <div className="pt-4 border-t border-slate-100 space-y-4">
                     <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                       <p className="text-sm font-medium text-red-700 flex items-center gap-2">
                         <AlertCircle className="w-4 h-4" />
@@ -1146,7 +1184,7 @@ export default function TestDetail() {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Reason for Cancellation</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Reason for Cancellation <span className="text-red-500">*</span></label>
                       <Textarea
                         value={cancelScheduleReason}
                         onChange={(e) => setCancelScheduleReason(e.target.value)}
@@ -1155,31 +1193,24 @@ export default function TestDetail() {
                         data-testid="cancel-schedule-reason"
                       />
                     </div>
-                    
-                    <button
-                      onClick={() => { setCancelScheduleMode(false); setCancelScheduleReason(""); }}
-                      className="w-full px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center gap-2 transition-colors"
-                    >
-                      Back to Edit
-                    </button>
-                  </>
+                  </div>
                 )}
               </div>
               
               <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50 rounded-b-xl">
-                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" onClick={() => { setEditScheduleModal(null); setCancelScheduleMode(false); setCancelScheduleReason(""); }}>
+                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" onClick={() => { setEditScheduleModal(null); setEditScheduleType('date'); setCancelScheduleReason(""); }}>
                   Close
                 </Button>
-                {cancelScheduleMode ? (
+                {editScheduleType === 'cancel' ? (
                   <Button 
                     className="bg-red-600 hover:bg-red-700" 
-                    onClick={() => { setEditScheduleModal(null); setCancelScheduleMode(false); setCancelScheduleReason(""); }}
+                    onClick={() => { setEditScheduleModal(null); setEditScheduleType('date'); setCancelScheduleReason(""); }}
                     disabled={!cancelScheduleReason.trim()}
                   >
                     Confirm Cancel
                   </Button>
                 ) : (
-                  <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => { setEditScheduleModal(null); setCancelScheduleMode(false); }}>
+                  <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => { setEditScheduleModal(null); setEditScheduleType('date'); }}>
                     Save Changes
                   </Button>
                 )}

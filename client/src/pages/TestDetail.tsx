@@ -40,6 +40,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
+
+const efficiencyData = [
+  { date: "2024-11-01", efficiency: 92, completionRate: 88, errorRate: 5 },
+  { date: "2024-11-08", efficiency: 88, completionRate: 85, errorRate: 8 },
+  { date: "2024-11-15", efficiency: 95, completionRate: 92, errorRate: 3 },
+  { date: "2024-11-22", efficiency: 91, completionRate: 89, errorRate: 6 },
+  { date: "2024-11-29", efficiency: 87, completionRate: 84, errorRate: 9 },
+  { date: "2024-12-06", efficiency: 93, completionRate: 90, errorRate: 4 },
+  { date: "2024-12-13", efficiency: 96, completionRate: 94, errorRate: 2 },
+  { date: "2024-12-20", efficiency: 89, completionRate: 86, errorRate: 7 },
+  { date: "2024-12-27", efficiency: 94, completionRate: 91, errorRate: 4 },
+  { date: "2025-01-03", efficiency: 97, completionRate: 95, errorRate: 2 },
+  { date: "2025-01-10", efficiency: 98, completionRate: 96, errorRate: 1 },
+];
 
 const menuItems = [
   { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, path: "/" },
@@ -771,6 +786,111 @@ export default function TestDetail() {
                         </span>
                       ))}
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-100 pt-6 mt-4">
+                <h3 className="text-sm font-medium text-slate-700 mb-4">System Operation Efficiency</h3>
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                  <div className="bg-blue-50 rounded-lg p-3">
+                    <p className="text-xs text-blue-600 mb-1">Avg Efficiency</p>
+                    <p className="text-xl font-semibold text-blue-700">93.6%</p>
+                  </div>
+                  <div className="bg-emerald-50 rounded-lg p-3">
+                    <p className="text-xs text-emerald-600 mb-1">Completion Rate</p>
+                    <p className="text-xl font-semibold text-emerald-700">90.9%</p>
+                  </div>
+                  <div className="bg-red-50 rounded-lg p-3">
+                    <p className="text-xs text-red-600 mb-1">Avg Error Rate</p>
+                    <p className="text-xl font-semibold text-red-700">4.6%</p>
+                  </div>
+                </div>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={efficiencyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorEfficiency" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                        </linearGradient>
+                        <linearGradient id="colorCompletion" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis 
+                        dataKey="date" 
+                        tick={{ fontSize: 11, fill: '#64748b' }}
+                        tickFormatter={(value) => {
+                          const date = new Date(value);
+                          return `${date.getMonth() + 1}/${date.getDate()}`;
+                        }}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 11, fill: '#64748b' }}
+                        domain={[0, 100]}
+                        tickFormatter={(value) => `${value}%`}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'white', 
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '8px',
+                          fontSize: '12px'
+                        }}
+                        formatter={(value: number, name: string) => {
+                          const labels: Record<string, string> = {
+                            efficiency: 'Efficiency',
+                            completionRate: 'Completion Rate',
+                            errorRate: 'Error Rate'
+                          };
+                          return [`${value}%`, labels[name] || name];
+                        }}
+                        labelFormatter={(label) => {
+                          const date = new Date(label);
+                          return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                        }}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="efficiency" 
+                        stroke="#3b82f6" 
+                        strokeWidth={2}
+                        fillOpacity={1} 
+                        fill="url(#colorEfficiency)" 
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="completionRate" 
+                        stroke="#10b981" 
+                        strokeWidth={2}
+                        fillOpacity={1} 
+                        fill="url(#colorCompletion)" 
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="errorRate" 
+                        stroke="#ef4444" 
+                        strokeWidth={2}
+                        dot={{ fill: '#ef4444', strokeWidth: 0, r: 3 }}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex items-center justify-center gap-6 mt-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-blue-500" />
+                    <span className="text-xs text-slate-600">Efficiency</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                    <span className="text-xs text-slate-600">Completion Rate</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500" />
+                    <span className="text-xs text-slate-600">Error Rate</span>
                   </div>
                 </div>
               </div>

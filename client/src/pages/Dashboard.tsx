@@ -26,6 +26,7 @@ import {
   ClipboardCheck,
   Lightbulb,
   UserCog,
+  Maximize2,
 } from "lucide-react";
 import {
   AreaChart,
@@ -992,6 +993,7 @@ export default function Dashboard() {
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<number>>(new Set());
   const [showAlerts, setShowAlerts] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
+  const [expandedChart, setExpandedChart] = useState<"area" | "bar" | null>(null);
   const [dashboardConfig, setDashboardConfig] = useState({
     dataTypes: {
       patent: true,
@@ -1221,9 +1223,18 @@ export default function Dashboard() {
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               <div className="chart-container-light" data-testid="area-chart">
-                <h3 className="text-sm font-medium text-slate-500 mb-6">
-                  Cumulative Data Trends (Excluding News)
-                </h3>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-sm font-medium text-slate-500">
+                    Cumulative Data Trends (Excluding News)
+                  </h3>
+                  <button
+                    onClick={() => setExpandedChart("area")}
+                    className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                    data-testid="expand-area-chart"
+                  >
+                    <Maximize2 className="w-4 h-4" />
+                  </button>
+                </div>
                 <div className="h-[350px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={getChartData()}>
@@ -1311,9 +1322,18 @@ export default function Dashboard() {
               </div>
 
               <div className="chart-container-light" data-testid="bar-chart">
-                <h3 className="text-sm font-medium text-slate-500 mb-6">
-                  Collection Volume by Data Type
-                </h3>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-sm font-medium text-slate-500">
+                    Collection Volume by Data Type
+                  </h3>
+                  <button
+                    onClick={() => setExpandedChart("bar")}
+                    className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                    data-testid="expand-bar-chart"
+                  >
+                    <Maximize2 className="w-4 h-4" />
+                  </button>
+                </div>
                 <div className="h-[350px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={getChartData()}>
@@ -1454,6 +1474,88 @@ export default function Dashboard() {
           </motion.section>
         </main>
       </div>
+
+      {expandedChart && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setExpandedChart(null)}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+              <h3 className="text-lg font-semibold text-slate-800">
+                {expandedChart === "area" ? "Cumulative Data Trends (Excluding News)" : "Collection Volume by Data Type"}
+              </h3>
+              <button
+                onClick={() => setExpandedChart(null)}
+                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                data-testid="close-expanded-chart"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="h-[70vh]">
+                <ResponsiveContainer width="100%" height="100%">
+                  {expandedChart === "area" ? (
+                    <AreaChart data={getChartData()}>
+                      <defs>
+                        <linearGradient id="colorPatentExpanded" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={chartColors.Patent} stopOpacity={0.3} />
+                          <stop offset="95%" stopColor={chartColors.Patent} stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="colorPaperExpanded" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={chartColors.Paper} stopOpacity={0.3} />
+                          <stop offset="95%" stopColor={chartColors.Paper} stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="colorStockExpanded" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={chartColors.Stock} stopOpacity={0.3} />
+                          <stop offset="95%" stopColor={chartColors.Stock} stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="colorRnDExpanded" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={chartColors.RnD} stopOpacity={0.3} />
+                          <stop offset="95%" stopColor={chartColors.RnD} stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="colorEmploymentExpanded" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={chartColors.Employment} stopOpacity={0.3} />
+                          <stop offset="95%" stopColor={chartColors.Employment} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.08)" />
+                      <XAxis dataKey="date" stroke="rgba(0,0,0,0.4)" fontSize={13} tickLine={false} axisLine={false} />
+                      <YAxis stroke="rgba(0,0,0,0.4)" fontSize={13} tickLine={false} axisLine={false} tickFormatter={(value) => formatNumber(value)} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend verticalAlign="top" height={36} />
+                      <Area type="monotone" dataKey="Patent" stroke={chartColors.Patent} strokeWidth={2.5} fillOpacity={1} fill="url(#colorPatentExpanded)" />
+                      <Area type="monotone" dataKey="Paper" stroke={chartColors.Paper} strokeWidth={2.5} fillOpacity={1} fill="url(#colorPaperExpanded)" />
+                      <Area type="monotone" dataKey="Stock" stroke={chartColors.Stock} strokeWidth={2.5} fillOpacity={1} fill="url(#colorStockExpanded)" />
+                      <Area type="monotone" dataKey="RnD" stroke={chartColors.RnD} strokeWidth={2.5} fillOpacity={1} fill="url(#colorRnDExpanded)" />
+                      <Area type="monotone" dataKey="Employment" stroke={chartColors.Employment} strokeWidth={2.5} fillOpacity={1} fill="url(#colorEmploymentExpanded)" />
+                    </AreaChart>
+                  ) : (
+                    <BarChart data={getChartData()}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.08)" />
+                      <XAxis dataKey="date" stroke="rgba(0,0,0,0.4)" fontSize={13} tickLine={false} axisLine={false} />
+                      <YAxis stroke="rgba(0,0,0,0.4)" fontSize={13} tickLine={false} axisLine={false} tickFormatter={(value) => formatNumber(value)} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend verticalAlign="top" height={36} />
+                      <Bar dataKey="Patent" fill={chartColors.Patent} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Paper" fill={chartColors.Paper} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="News" fill={chartColors.News} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Stock" fill={chartColors.Stock} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Company" fill={chartColors.Company} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="RnD" fill={chartColors.RnD} radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Employment" fill={chartColors.Employment} radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  )}
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {showSettings && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSettings(false)}>

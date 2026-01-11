@@ -1015,7 +1015,7 @@ export default function AddTestProcedure() {
                       </div>
                       
                       <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50 rounded-b-xl">
-                        <Button variant="outline" onClick={() => { setShowTemplateModal(false); setNewTemplateName(""); }}>
+                        <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" onClick={() => { setShowTemplateModal(false); setNewTemplateName(""); }}>
                           Cancel
                         </Button>
                         <Button 

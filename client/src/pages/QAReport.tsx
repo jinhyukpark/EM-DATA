@@ -288,7 +288,7 @@ export default function QAReport() {
                 </div>
               </div>
               <Link href="/qa-report/add">
-                <Button className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-button">
+                <Button variant="outline" className="gap-2 border-blue-600 text-blue-600 hover:bg-blue-50" data-testid="add-test-button">
                   <Plus className="w-4 h-4" />
                   <span className="hidden sm:inline">Add Test Procedure</span>
                   <span className="sm:hidden">Add</span>

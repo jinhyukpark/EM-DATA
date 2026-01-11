@@ -299,6 +299,7 @@ export default function AddTestProcedure() {
   const [selectedDays, setSelectedDays] = useState<string[]>(existingData?.selectedDays || []);
   const [dayInspectors, setDayInspectors] = useState<Record<string, string[]>>({});
   const [activeDayDropdown, setActiveDayDropdown] = useState<string | null>(null);
+  const [assignPerDay, setAssignPerDay] = useState(false);
   const [hasSpecificTime, setHasSpecificTime] = useState(existingData?.timeOption !== "anytime");
   const [specificTime, setSpecificTime] = useState(existingData?.specificTime || "");
   const [timeOption, setTimeOption] = useState<"anytime" | "specific" | "preset">(existingData?.timeOption || "anytime");
@@ -623,8 +624,23 @@ export default function AddTestProcedure() {
                         </div>
                         
                         {selectedDays.length > 0 && (
-                          <div className="mt-4 space-y-2">
-                            <label className="block text-xs font-medium text-slate-500 mb-2">Assign Inspectors per Day</label>
+                          <div className="mt-4 space-y-3">
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => setAssignPerDay(!assignPerDay)}
+                                className={`relative w-11 h-6 rounded-full transition-colors ${
+                                  assignPerDay ? "bg-blue-600" : "bg-slate-200"
+                                }`}
+                                data-testid="toggle-assign-per-day"
+                              >
+                                <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                                  assignPerDay ? "translate-x-5" : ""
+                                }`} />
+                              </button>
+                              <span className="text-sm font-medium text-slate-600">Assign Inspectors per Day</span>
+                            </div>
+                            
+                            {assignPerDay && (
                             <div className="grid gap-2">
                               {selectedDays.map((dayId) => {
                                 const day = weekDays.find(d => d.id === dayId);
@@ -698,6 +714,7 @@ export default function AddTestProcedure() {
                                 );
                               })}
                             </div>
+                            )}
                           </div>
                         )}
                       </div>

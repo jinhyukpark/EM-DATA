@@ -973,91 +973,36 @@ export default function AddTestProcedure() {
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="bg-white rounded-xl w-full max-w-2xl shadow-xl max-h-[90vh] overflow-hidden flex flex-col"
+                      className="bg-white rounded-xl w-full max-w-md shadow-xl"
                     >
                       <div className="p-6 border-b border-slate-200">
                         <h3 className="text-lg font-semibold text-slate-800">Create New Template</h3>
-                        <p className="text-sm text-slate-500 mt-1">Define a reusable set of test items</p>
+                        <p className="text-sm text-slate-500 mt-1">Save current test items as a reusable template</p>
                       </div>
                       
-                      <div className="p-6 overflow-y-auto flex-1">
-                        <div className="mb-4">
-                          <label className="block text-sm font-medium text-slate-700 mb-2">Template Name</label>
-                          <Input
-                            value={newTemplateName}
-                            onChange={(e) => setNewTemplateName(e.target.value)}
-                            placeholder="e.g., Basic QA Checklist"
-                            data-testid="template-name-input"
-                          />
-                        </div>
-                        
-                        <div className="mb-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <label className="text-sm font-medium text-slate-700">Test Items</label>
-                            <Button onClick={addTemplateItem} size="sm" className="gap-1 bg-blue-600 hover:bg-blue-700">
-                              <Plus className="w-4 h-4" />
-                              Add Item
-                            </Button>
-                          </div>
-                          
-                          {templateItems.length === 0 ? (
-                            <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-lg">
-                              <ClipboardCheck className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                              <p className="text-sm text-slate-400">No items yet. Click "Add Item" to start.</p>
-                            </div>
-                          ) : (
-                            <div className="space-y-3">
-                              {templateItems.map((item, idx) => (
-                                <div key={item.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                                  <div className="flex items-start gap-3">
-                                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-medium flex-shrink-0 mt-1">
-                                      {idx + 1}
-                                    </span>
-                                    <div className="flex-1 space-y-2">
-                                      <Input
-                                        value={item.question}
-                                        onChange={(e) => updateTemplateItem(item.id, "question", e.target.value)}
-                                        placeholder="Enter question..."
-                                        className="text-sm"
-                                      />
-                                      <div className="flex gap-2">
-                                        {["ox", "text", "multiple_choice"].map((type) => (
-                                          <button
-                                            key={type}
-                                            onClick={() => updateTemplateItem(item.id, "answerType", type)}
-                                            className={`px-3 py-1 rounded text-xs font-medium transition-all ${
-                                              item.answerType === type
-                                                ? "bg-blue-600 text-white"
-                                                : "bg-white border border-slate-200 text-slate-600 hover:border-blue-300"
-                                            }`}
-                                          >
-                                            {type === "ox" ? "O/X" : type === "text" ? "Text" : "Multiple Choice"}
-                                          </button>
-                                        ))}
-                                      </div>
-                                    </div>
-                                    <button
-                                      onClick={() => removeTemplateItem(item.id)}
-                                      className="p-1 hover:bg-red-50 rounded text-slate-400 hover:text-red-500"
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                    </button>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                      <div className="p-6">
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Template Name</label>
+                        <Input
+                          value={newTemplateName}
+                          onChange={(e) => setNewTemplateName(e.target.value)}
+                          placeholder="e.g., Basic QA Checklist"
+                          data-testid="template-name-input"
+                        />
+                        {testItems.length > 0 && (
+                          <p className="text-xs text-slate-500 mt-2">
+                            This will save {testItems.length} test item(s) from below as a template.
+                          </p>
+                        )}
                       </div>
                       
-                      <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50">
-                        <Button variant="outline" onClick={() => { setShowTemplateModal(false); setNewTemplateName(""); setTemplateItems([]); }}>
+                      <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50 rounded-b-xl">
+                        <Button variant="outline" onClick={() => { setShowTemplateModal(false); setNewTemplateName(""); }}>
                           Cancel
                         </Button>
                         <Button 
-                          onClick={saveNewTemplate} 
+                          onClick={saveAsTemplate} 
                           className="bg-blue-600 hover:bg-blue-700" 
-                          disabled={!newTemplateName.trim() || templateItems.length === 0}
+                          disabled={!newTemplateName.trim() || testItems.length === 0}
                         >
                           Save Template
                         </Button>

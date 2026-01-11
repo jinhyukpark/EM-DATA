@@ -493,19 +493,19 @@ export default function TestDetail() {
             className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
           >
             <div className="px-6 py-5 border-b border-slate-200 bg-slate-50">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                   <h1 className="text-xl font-semibold text-slate-800">{test.testName}</h1>
                   <p className="text-sm text-slate-500 mt-1">{test.serviceName}</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-shrink-0">
                   {isEditing ? (
-                    <Button onClick={handleSave} className="gap-2">
+                    <Button onClick={handleSave} className="gap-2 bg-emerald-500 hover:bg-emerald-600">
                       <Save className="w-4 h-4" />
                       Save Changes
                     </Button>
                   ) : (
-                    <Button variant="outline" onClick={() => setIsEditing(true)} className="gap-2">
+                    <Button variant="outline" onClick={startEditing} className="gap-2 border-blue-300 text-blue-600 hover:bg-blue-50">
                       <Edit3 className="w-4 h-4" />
                       Edit Test
                     </Button>
@@ -722,18 +722,18 @@ export default function TestDetail() {
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                   <h3 className="text-sm font-medium text-slate-700">Test Items ({test.step} steps)</h3>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-shrink-0">
                     {isEditing ? (
-                      <Button size="sm" onClick={handleSave} className="bg-emerald-500 hover:bg-emerald-600" data-testid="save-test-results">
+                      <Button size="sm" onClick={handleSave} className="bg-emerald-500 hover:bg-emerald-600 text-white" data-testid="save-test-results">
                         <Save className="w-4 h-4 mr-1" />
                         Save
                       </Button>
                     ) : (
-                      <Button size="sm" variant="outline" onClick={startEditing} data-testid="edit-test-results">
+                      <Button size="sm" variant="outline" onClick={startEditing} className="border-blue-300 text-blue-600 hover:bg-blue-50" data-testid="edit-test-results">
                         <Edit3 className="w-4 h-4 mr-1" />
-                        Edit
+                        Edit Results
                       </Button>
                     )}
                   </div>

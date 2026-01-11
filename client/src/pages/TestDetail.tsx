@@ -448,11 +448,26 @@ export default function TestDetail() {
     1: [
       { id: 1, type: 'assignee_change', date: '2025-01-10 14:30', by: 'Admin', from: 'Sarah Lee', to: 'John Kim' },
       { id: 2, type: 'date_change', date: '2025-01-08 09:15', by: 'Admin', from: '2025-01-15', to: '2025-01-16' },
+      { id: 3, type: 'date_change', date: '2025-01-05 11:00', by: 'John Kim', from: '2025-01-14', to: '2025-01-15' },
     ],
     2: [
       { id: 1, type: 'date_change', date: '2025-01-05 10:00', by: 'Admin', from: '2025-01-10', to: '2025-01-09' },
+      { id: 2, type: 'assignee_change', date: '2025-01-03 15:20', by: 'Admin', from: 'John Kim', to: 'Sarah Lee' },
     ],
-    3: [],
+    3: [
+      { id: 1, type: 'cancelled', date: '2024-12-28 09:00', by: 'Sarah Lee', from: 'Scheduled', to: 'Cancelled', reason: 'Holiday schedule conflict' },
+      { id: 2, type: 'date_change', date: '2024-12-20 14:30', by: 'Admin', from: '2024-12-25', to: '2025-01-02' },
+      { id: 3, type: 'assignee_change', date: '2024-12-18 10:15', by: 'Admin', from: 'Mike Park', to: 'John Kim' },
+    ],
+    4: [
+      { id: 1, type: 'assignee_change', date: '2024-12-22 16:45', by: 'Admin', from: 'John Kim', to: 'Sarah Lee' },
+    ],
+    5: [
+      { id: 1, type: 'date_change', date: '2024-12-15 11:30', by: 'Sarah Lee', from: '2024-12-18', to: '2024-12-19' },
+      { id: 2, type: 'cancelled', date: '2024-12-14 09:00', by: 'Admin', from: 'Scheduled', to: 'Rescheduled', reason: 'Inspector unavailable' },
+      { id: 3, type: 'assignee_change', date: '2024-12-10 14:00', by: 'Admin', from: 'Emily Choi', to: 'John Kim' },
+    ],
+    6: [],
   };
 
   const scrollSchedule = (direction: 'left' | 'right') => {
@@ -1136,7 +1151,9 @@ export default function TestDetail() {
             >
               <div className="p-6 border-b border-slate-200">
                 <h3 className="text-lg font-semibold text-slate-800">Schedule History</h3>
-                <p className="text-sm text-slate-500 mt-1">View all changes made to this schedule</p>
+                <p className="text-sm text-slate-500 mt-1">
+                  {test.schedule.find(s => s.id === historyModal)?.date || ''} - View all changes made to this schedule
+                </p>
               </div>
               
               <div className="p-6">

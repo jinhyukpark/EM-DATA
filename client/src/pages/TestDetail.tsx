@@ -615,6 +615,8 @@ export default function TestDetail() {
                       type="date"
                       value={scheduleFilterFrom}
                       onChange={(e) => setScheduleFilterFrom(e.target.value)}
+                      placeholder="YYYY-MM-DD"
+                      lang="en"
                       className="px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-700 bg-white"
                       data-testid="schedule-filter-from"
                     />
@@ -623,6 +625,8 @@ export default function TestDetail() {
                       type="date"
                       value={scheduleFilterTo}
                       onChange={(e) => setScheduleFilterTo(e.target.value)}
+                      placeholder="YYYY-MM-DD"
+                      lang="en"
                       className="px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-700 bg-white"
                       data-testid="schedule-filter-to"
                     />

@@ -544,7 +544,7 @@ const serverMenuItems = [
 
 function Sidebar() {
   const [location] = useLocation();
-  const [dataMenuOpen, setDataMenuOpen] = useState(location.startsWith("/data") || location === "/");
+  const [dataMenuOpen, setDataMenuOpen] = useState(location.startsWith("/data"));
   const [serverMenuOpen, setServerMenuOpen] = useState(location.startsWith("/servers"));
 
   return (

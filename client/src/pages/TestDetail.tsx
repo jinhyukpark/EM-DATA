@@ -817,10 +817,16 @@ export default function TestDetail() {
                             <MoreVertical className="w-5 h-5" />
                           </button>
                           {scheduleMenuOpen === item.id && menuPosition && (
-                            <div 
-                              className="fixed bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
-                              style={{ zIndex: 9999, top: menuPosition.top, left: menuPosition.left }}
-                            >
+                            <>
+                              <div 
+                                className="fixed inset-0"
+                                style={{ zIndex: 9998 }}
+                                onClick={(e) => { e.stopPropagation(); setScheduleMenuOpen(null); setMenuPosition(null); }}
+                              />
+                              <div 
+                                className="fixed bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
+                                style={{ zIndex: 9999, top: menuPosition.top, left: menuPosition.left }}
+                              >
                               {item.status !== "completed" && (
                                 <button
                                   onClick={(e) => {
@@ -844,6 +850,7 @@ export default function TestDetail() {
                                 View History
                               </button>
                             </div>
+                            </>
                           )}
                         </div>
                       </div>

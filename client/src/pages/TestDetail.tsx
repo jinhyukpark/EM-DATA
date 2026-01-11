@@ -30,6 +30,7 @@ import {
   MessageSquare,
   CheckSquare,
   Menu,
+  Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -113,6 +114,27 @@ const testData: Record<string, {
     normalCount: 12,
     abnormalCount: 0,
     schedule: [
+      { id: 0, date: "2025-02-06", assignee: "Sarah Lee", status: "pending", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox" },
+        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox" },
+        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"] },
+        { id: 4, question: "Are there any duplicate records?", answerType: "ox" },
+        { id: 5, question: "Additional notes on data quality:", answerType: "text" },
+      ]},
+      { id: -1, date: "2025-01-30", assignee: "John Kim", status: "pending", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox" },
+        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox" },
+        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"] },
+        { id: 4, question: "Are there any duplicate records?", answerType: "ox" },
+        { id: 5, question: "Additional notes on data quality:", answerType: "text" },
+      ]},
+      { id: -2, date: "2025-01-23", assignee: "Sarah Lee", status: "pending", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox" },
+        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox" },
+        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"] },
+        { id: 4, question: "Are there any duplicate records?", answerType: "ox" },
+        { id: 5, question: "Additional notes on data quality:", answerType: "text" },
+      ]},
       { id: 1, date: "2025-01-16", assignee: "John Kim", status: "pending", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox" },
         { id: 2, question: "Is the data format consistent across all records?", answerType: "ox" },
@@ -371,6 +393,7 @@ export default function TestDetail() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedItems, setEditedItems] = useState(test?.items || []);
   const [selectedSchedule, setSelectedSchedule] = useState(test?.schedule[0]?.id || 1);
+  const [scheduleSearch, setScheduleSearch] = useState("");
 
   if (!test) {
     return (
@@ -533,13 +556,28 @@ export default function TestDetail() {
               </div>
 
               <div className="mb-8">
-                <h3 className="text-sm font-medium text-slate-700 mb-4 flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-slate-400" />
-                  Inspection Schedule / History
-                </h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-slate-400" />
+                    Inspection Schedule / History
+                  </h3>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Search date (YYYY-MM-DD)"
+                      value={scheduleSearch}
+                      onChange={(e) => setScheduleSearch(e.target.value)}
+                      className="pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-48"
+                      data-testid="schedule-search-input"
+                    />
+                  </div>
+                </div>
                 
                 <div className="flex gap-2 overflow-x-auto pb-3 mb-4" data-testid="schedule-dates">
-                  {test.schedule.map((item) => {
+                  {test.schedule.filter(item => 
+                    scheduleSearch === "" || item.date.includes(scheduleSearch)
+                  ).map((item) => {
                     const normalCount = item.testResults?.filter(r => r.answer === "O").length || 0;
                     const abnormalCount = item.testResults?.filter(r => r.answer === "X").length || 0;
                     return (

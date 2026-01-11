@@ -725,7 +725,7 @@ export default function TestDetail() {
                   </div>
                 </div>
                 
-                <div ref={scheduleScrollRef} className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} data-testid="schedule-dates">
+                <div ref={scheduleScrollRef} className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide relative z-20" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} data-testid="schedule-dates">
                   {test.schedule.filter(item => {
                     if (!scheduleFilterFrom && !scheduleFilterTo) return true;
                     const itemDate = new Date(item.date);

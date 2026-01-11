@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation, useParams } from "wouter";
 import {
@@ -34,6 +34,8 @@ import {
   MoreVertical,
   Trash2,
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -122,61 +124,82 @@ const testData: Record<string, {
     normalCount: 12,
     abnormalCount: 0,
     schedule: [
-      { id: 0, date: "2025-02-06", assignee: "Sarah Lee", status: "pending", testResults: [
-        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox" },
-        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox" },
-        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"] },
-        { id: 4, question: "Are there any duplicate records?", answerType: "ox" },
-        { id: 5, question: "Additional notes on data quality:", answerType: "text" },
-      ]},
-      { id: -1, date: "2025-01-30", assignee: "John Kim", status: "pending", testResults: [
-        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox" },
-        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox" },
-        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"] },
-        { id: 4, question: "Are there any duplicate records?", answerType: "ox" },
-        { id: 5, question: "Additional notes on data quality:", answerType: "text" },
-      ]},
-      { id: -2, date: "2025-01-23", assignee: "Sarah Lee", status: "pending", testResults: [
-        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox" },
-        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox" },
-        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"] },
-        { id: 4, question: "Are there any duplicate records?", answerType: "ox" },
-        { id: 5, question: "Additional notes on data quality:", answerType: "text" },
-      ]},
-      { id: 1, date: "2025-01-16", assignee: "John Kim", status: "pending", testResults: [
-        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox" },
-        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox" },
-        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"] },
-        { id: 4, question: "Are there any duplicate records?", answerType: "ox" },
-        { id: 5, question: "Additional notes on data quality:", answerType: "text" },
-      ]},
-      { id: 2, date: "2025-01-09", assignee: "Sarah Lee", status: "completed", startTime: "14:00", endTime: "14:32", duration: "32 min", notes: "All checks passed successfully.", testResults: [
+      { id: -10, date: "2025-03-27", assignee: "John Kim", status: "pending" },
+      { id: -9, date: "2025-03-20", assignee: "Sarah Lee", status: "pending" },
+      { id: -8, date: "2025-03-13", assignee: "John Kim", status: "pending" },
+      { id: -7, date: "2025-03-06", assignee: "Sarah Lee", status: "pending" },
+      { id: -6, date: "2025-02-27", assignee: "John Kim", status: "pending" },
+      { id: -5, date: "2025-02-20", assignee: "Sarah Lee", status: "pending" },
+      { id: -4, date: "2025-02-13", assignee: "John Kim", status: "pending" },
+      { id: 0, date: "2025-02-06", assignee: "Sarah Lee", status: "pending" },
+      { id: -1, date: "2025-01-30", assignee: "John Kim", status: "pending" },
+      { id: -2, date: "2025-01-23", assignee: "Sarah Lee", status: "pending" },
+      { id: 1, date: "2025-01-16", assignee: "John Kim", status: "in_progress" },
+      { id: 2, date: "2025-01-09", assignee: "Sarah Lee", status: "completed", startTime: "14:00", endTime: "14:32", duration: "32 min", notes: "All checks passed.", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
-        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", answer: "O" },
-        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"], answer: "Excellent (95-100%)" },
-        { id: 4, question: "Are there any duplicate records?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Duplicate records identified and removed on 2025-01-09. Data cleanup completed." },
-        { id: 5, question: "Additional notes on data quality:", answerType: "text", answer: "All data passed integrity checks. No issues found." },
+        { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "O" },
+        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: ["Excellent", "Good", "Fair", "Poor"], answer: "Excellent" },
+        { id: 4, question: "Duplicate records?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Duplicates removed." },
+        { id: 5, question: "Additional notes:", answerType: "text", answer: "All checks passed." },
       ]},
-      { id: 3, date: "2025-01-02", assignee: "John Kim", status: "completed", startTime: "09:45", endTime: "10:15", duration: "30 min", notes: "Minor issues resolved.", testResults: [
+      { id: 3, date: "2025-01-02", assignee: "John Kim", status: "completed", startTime: "09:45", endTime: "10:15", duration: "30 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
-        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Format inconsistency fixed." },
-        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"], answer: "Good (80-94%)" },
-        { id: 4, question: "Are there any duplicate records?", answerType: "ox", answer: "O" },
-        { id: 5, question: "Additional notes on data quality:", answerType: "text", answer: "Minor formatting issues found and resolved." },
+        { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Fixed." },
+        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: ["Excellent", "Good", "Fair", "Poor"], answer: "Good" },
       ]},
-      { id: 4, date: "2024-12-26", assignee: "Sarah Lee", status: "completed", startTime: "16:20", endTime: "16:48", duration: "28 min", notes: "Holiday check completed.", testResults: [
+      { id: 4, date: "2024-12-26", assignee: "Sarah Lee", status: "completed", startTime: "16:20", endTime: "16:48", duration: "28 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
-        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", answer: "O" },
-        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"], answer: "Excellent (95-100%)" },
-        { id: 4, question: "Are there any duplicate records?", answerType: "ox", answer: "O" },
-        { id: 5, question: "Additional notes on data quality:", answerType: "text", answer: "Holiday check - all systems normal." },
+        { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "O" },
+        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: ["Excellent", "Good", "Fair", "Poor"], answer: "Excellent" },
       ]},
-      { id: 5, date: "2024-12-19", assignee: "John Kim", status: "completed", startTime: "11:00", endTime: "11:22", duration: "22 min", notes: "Routine inspection.", testResults: [
+      { id: 5, date: "2024-12-19", assignee: "John Kim", status: "completed", startTime: "11:00", endTime: "11:22", duration: "22 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
-        { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", answer: "O" },
-        { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"], answer: "Good (80-94%)" },
-        { id: 4, question: "Are there any duplicate records?", answerType: "ox", answer: "O" },
-        { id: 5, question: "Additional notes on data quality:", answerType: "text", answer: "Routine weekly inspection completed." },
+        { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 6, date: "2024-12-12", assignee: "Sarah Lee", status: "completed", startTime: "10:00", endTime: "10:25", duration: "25 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 7, date: "2024-12-05", assignee: "John Kim", status: "completed", startTime: "14:30", endTime: "15:00", duration: "30 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 8, date: "2024-11-28", assignee: "Sarah Lee", status: "completed", startTime: "09:00", endTime: "09:20", duration: "20 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 9, date: "2024-11-21", assignee: "John Kim", status: "completed", startTime: "11:30", endTime: "11:55", duration: "25 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 10, date: "2024-11-14", assignee: "Sarah Lee", status: "completed", startTime: "15:00", endTime: "15:30", duration: "30 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Fixed missing fields." },
+      ]},
+      { id: 11, date: "2024-11-07", assignee: "John Kim", status: "completed", startTime: "10:15", endTime: "10:40", duration: "25 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 12, date: "2024-10-31", assignee: "Sarah Lee", status: "completed", startTime: "13:00", endTime: "13:25", duration: "25 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 13, date: "2024-10-24", assignee: "John Kim", status: "completed", startTime: "16:00", endTime: "16:20", duration: "20 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 14, date: "2024-10-17", assignee: "Sarah Lee", status: "completed", startTime: "09:30", endTime: "09:55", duration: "25 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 15, date: "2024-10-10", assignee: "John Kim", status: "completed", startTime: "14:00", endTime: "14:30", duration: "30 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 16, date: "2024-10-03", assignee: "Sarah Lee", status: "completed", startTime: "11:00", endTime: "11:25", duration: "25 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 17, date: "2024-09-26", assignee: "John Kim", status: "completed", startTime: "10:00", endTime: "10:20", duration: "20 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 18, date: "2024-09-19", assignee: "Sarah Lee", status: "completed", startTime: "15:30", endTime: "16:00", duration: "30 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 19, date: "2024-09-12", assignee: "John Kim", status: "completed", startTime: "09:00", endTime: "09:25", duration: "25 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
+      ]},
+      { id: 20, date: "2024-09-05", assignee: "Sarah Lee", status: "completed", startTime: "13:30", endTime: "13:55", duration: "25 min", testResults: [
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
     ],
     items: [
@@ -417,6 +440,17 @@ export default function TestDetail() {
   const [editScheduleAssignee, setEditScheduleAssignee] = useState("");
   const [cancelScheduleMode, setCancelScheduleMode] = useState(false);
   const [cancelScheduleReason, setCancelScheduleReason] = useState("");
+  const scheduleScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollSchedule = (direction: 'left' | 'right') => {
+    if (scheduleScrollRef.current) {
+      const scrollAmount = 300;
+      scheduleScrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
   const [editedScheduleResults, setEditedScheduleResults] = useState<Record<number, typeof test.schedule[0]['testResults']>>({});
 
   if (!test) {
@@ -645,7 +679,22 @@ export default function TestDetail() {
                   </div>
                 </div>
                 
-                <div className="flex gap-2 overflow-x-auto pb-3 mb-4" data-testid="schedule-dates">
+                <div className="relative">
+                  <button
+                    onClick={() => scrollSchedule('left')}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white/90 hover:bg-white border border-slate-200 rounded-full shadow-md flex items-center justify-center text-slate-600 hover:text-slate-800 transition-colors"
+                    data-testid="schedule-scroll-left"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => scrollSchedule('right')}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white/90 hover:bg-white border border-slate-200 rounded-full shadow-md flex items-center justify-center text-slate-600 hover:text-slate-800 transition-colors"
+                    data-testid="schedule-scroll-right"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                <div ref={scheduleScrollRef} className="flex gap-2 overflow-x-auto pb-3 mb-4 mx-10 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} data-testid="schedule-dates">
                   {test.schedule.filter(item => {
                     if (!scheduleFilterFrom && !scheduleFilterTo) return true;
                     const itemDate = new Date(item.date);
@@ -745,6 +794,7 @@ export default function TestDetail() {
                       </div>
                     );
                   })}
+                </div>
                 </div>
 
                 {(() => {

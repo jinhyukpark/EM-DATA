@@ -661,7 +661,7 @@ export default function TestDetail() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 mb-4">
+                <div className="flex items-center gap-2">
                   <p className="text-sm text-slate-500">Inspectors:</p>
                   <div className="flex -space-x-2">
                     {test.inspectors.map((inspector, idx) => (
@@ -677,7 +677,16 @@ export default function TestDetail() {
                   <span className="text-sm text-slate-600">{test.inspectors.join(", ")}</span>
                 </div>
               </div>
+            </div>
+          </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mt-6"
+          >
+            <div className="p-6">
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">

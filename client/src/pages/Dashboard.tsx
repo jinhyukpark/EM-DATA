@@ -292,7 +292,27 @@ function StatCard({
 
 function DataSummaryCarousel() {
   const [currentPage, setCurrentPage] = useState(0);
-  const cardsPerPage = 5;
+  const [cardsPerPage, setCardsPerPage] = useState(5);
+
+  useEffect(() => {
+    const updateCardsPerPage = () => {
+      if (window.innerWidth < 640) {
+        setCardsPerPage(1);
+      } else if (window.innerWidth < 768) {
+        setCardsPerPage(2);
+      } else if (window.innerWidth < 1024) {
+        setCardsPerPage(3);
+      } else if (window.innerWidth < 1280) {
+        setCardsPerPage(4);
+      } else {
+        setCardsPerPage(5);
+      }
+    };
+    updateCardsPerPage();
+    window.addEventListener("resize", updateCardsPerPage);
+    return () => window.removeEventListener("resize", updateCardsPerPage);
+  }, []);
+
   const totalPages = Math.ceil(dataTypes.length / cardsPerPage);
 
   useEffect(() => {
@@ -1047,24 +1067,46 @@ export default function Dashboard() {
   const hiddenAlertCount = dismissedAlerts.size;
   const hasActiveAlerts = alertMessages.length > 0;
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="min-h-screen flex bg-slate-50">
-      <Sidebar />
+      <div className="hidden lg:block">
+        <Sidebar />
+      </div>
 
-      <div className="flex-1 flex flex-col">
-        <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-          <div className="px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-xl font-semibold tracking-tight text-slate-800">
-                  Dashboard
-                </h1>
-                <p className="text-sm text-slate-500 mt-0.5">
-                  Monitor your data collection status at a glance
-                </p>
+      {sidebarOpen && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+          <div className="relative w-64">
+            <Sidebar />
+          </div>
+        </div>
+      )}
+
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+          <div className="px-4 md:px-8 py-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="lg:hidden p-2 -ml-2 text-slate-600 hover:text-slate-900"
+                  data-testid="mobile-menu-button"
+                >
+                  <Database className="w-5 h-5" />
+                </button>
+                <div className="min-w-0">
+                  <h1 className="text-lg md:text-xl font-semibold tracking-tight text-slate-800 truncate">
+                    Dashboard
+                  </h1>
+                  <p className="text-xs md:text-sm text-slate-500 mt-0.5 hidden sm:block">
+                    Monitor your data collection status at a glance
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 text-sm text-slate-500">
+              <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
+                <div className="hidden md:flex items-center gap-2 text-sm text-slate-500">
                   <Calendar className="w-4 h-4" />
                   <span data-testid="current-date">{formattedDate}</span>
                 </div>
@@ -1107,7 +1149,7 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <main className="flex-1 p-8 bg-white">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-white overflow-x-hidden">
           {showAlerts && (
             <div className="mb-6">
               <AlertBanner

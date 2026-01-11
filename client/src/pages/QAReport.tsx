@@ -92,9 +92,9 @@ const inspectors = [
 
 function Sidebar() {
   const [location] = useLocation();
-  const [dataMenuOpen, setDataMenuOpen] = useState(false);
-  const [serverMenuOpen, setServerMenuOpen] = useState(false);
-  const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
+  const [dataMenuOpen, setDataMenuOpen] = useState(true);
+  const [serverMenuOpen, setServerMenuOpen] = useState(true);
+  const [settingsMenuOpen, setSettingsMenuOpen] = useState(true);
 
   return (
     <aside className="w-64 bg-slate-900 min-h-screen flex flex-col" data-testid="sidebar">

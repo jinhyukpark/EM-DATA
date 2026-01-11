@@ -257,8 +257,8 @@ export default function QAReport() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-slate-50">
-      <div className="hidden lg:block">
+    <div className="h-screen flex bg-slate-50 overflow-hidden">
+      <div className="hidden lg:block flex-shrink-0">
         <Sidebar />
       </div>
 
@@ -271,8 +271,8 @@ export default function QAReport() {
         </div>
       )}
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        <header className="bg-white border-b border-slate-200 flex-shrink-0 z-40">
           <div className="px-4 md:px-8 py-4">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
@@ -298,7 +298,7 @@ export default function QAReport() {
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-white overflow-x-hidden">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-white overflow-y-auto overflow-x-hidden">
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="chart-container-light">

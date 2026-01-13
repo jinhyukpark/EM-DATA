@@ -63,6 +63,7 @@ export default function PatentData() {
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [dataViewTab, setDataViewTab] = useState<"basic" | "fulltext" | "drawing">("basic");
   const [selectedPatent, setSelectedPatent] = useState<Patent | null>(null);
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState({
@@ -137,7 +138,30 @@ export default function PatentData() {
         </header>
 
         <main className="flex-1 p-4 md:p-6 bg-slate-50/50 overflow-x-hidden">
-          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-6">
+          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-4">
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setDataViewTab("basic")}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "basic" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"}`}
+              >
+                Patent Basic
+              </button>
+              <button
+                onClick={() => setDataViewTab("fulltext")}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "fulltext" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"}`}
+              >
+                Full Text Info
+              </button>
+              <button
+                onClick={() => setDataViewTab("drawing")}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "drawing" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"}`}
+              >
+                Drawing Info
+              </button>
+            </div>
+          </motion.section>
+
+          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.05 }} className="mb-6">
             <div className="flex items-center gap-8 py-4 px-6 bg-white rounded-xl border border-slate-100">
               <div className="flex items-center gap-3">
                 <FileText className="w-5 h-5 text-purple-500" />

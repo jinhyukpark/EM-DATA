@@ -679,7 +679,7 @@ export default function CompanyData() {
                     <span className="text-xs text-slate-500">per page</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                   {(() => {
                     const totalPages = Math.ceil(filteredCompanies.length / itemsPerPage);
                     const pages: (number | string)[] = [];
@@ -696,32 +696,38 @@ export default function CompanyData() {
                     }
                     return (
                       <>
-                        <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="h-8 w-8 p-0 border-slate-300" data-testid="first-page">
-                          <ChevronLeft className="w-3 h-3 text-slate-600" /><ChevronLeft className="w-3 h-3 -ml-2 text-slate-600" />
-                        </Button>
-                        <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="h-8 w-8 p-0 border-slate-300" data-testid="prev-page">
-                          <ChevronLeft className="w-4 h-4 text-slate-600" />
-                        </Button>
-                        {pages.map((page, idx) => (
-                          typeof page === 'number' ? (
-                            <button
-                              key={idx}
-                              onClick={() => setCurrentPage(page)}
-                              className={`h-8 w-8 text-xs rounded-md transition-colors ${currentPage === page ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'}`}
-                              data-testid={`page-${page}`}
-                            >
-                              {page}
-                            </button>
-                          ) : (
-                            <span key={idx} className="px-1 text-slate-400">...</span>
-                          )
-                        ))}
-                        <Button variant="outline" size="sm" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="h-8 w-8 p-0 border-slate-300" data-testid="next-page">
-                          <ChevronRight className="w-4 h-4 text-slate-600" />
-                        </Button>
-                        <Button variant="outline" size="sm" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(totalPages)} className="h-8 w-8 p-0 border-slate-300" data-testid="last-page">
-                          <ChevronRight className="w-3 h-3 text-slate-600" /><ChevronRight className="w-3 h-3 -ml-2 text-slate-600" />
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="h-8 px-2 border-slate-200 text-slate-500 hover:text-slate-700" data-testid="first-page">
+                            <ChevronLeft className="w-4 h-4" /><ChevronLeft className="w-4 h-4 -ml-3" />
+                          </Button>
+                          <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="h-8 px-2 border-slate-200 text-slate-500 hover:text-slate-700" data-testid="prev-page">
+                            <ChevronLeft className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <div className="flex items-center gap-1 mx-2">
+                          {pages.map((page, idx) => (
+                            typeof page === 'number' ? (
+                              <button
+                                key={idx}
+                                onClick={() => setCurrentPage(page)}
+                                className={`h-8 min-w-[32px] px-2 text-sm rounded-lg transition-all ${currentPage === page ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}
+                                data-testid={`page-${page}`}
+                              >
+                                {page}
+                              </button>
+                            ) : (
+                              <span key={idx} className="px-2 text-slate-300">•••</span>
+                            )
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button variant="outline" size="sm" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="h-8 px-2 border-slate-200 text-slate-500 hover:text-slate-700" data-testid="next-page">
+                            <ChevronRight className="w-4 h-4" />
+                          </Button>
+                          <Button variant="outline" size="sm" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(totalPages)} className="h-8 px-2 border-slate-200 text-slate-500 hover:text-slate-700" data-testid="last-page">
+                            <ChevronRight className="w-4 h-4" /><ChevronRight className="w-4 h-4 -ml-3" />
+                          </Button>
+                        </div>
                       </>
                     );
                   })()}

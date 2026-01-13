@@ -14,6 +14,26 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Sidebar from "@/components/Sidebar";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+
+const dailyStatusData = [
+  { date: "01/06", success: 6, warning: 1, error: 1 },
+  { date: "01/07", success: 7, warning: 1, error: 0 },
+  { date: "01/08", success: 6, warning: 1, error: 1 },
+  { date: "01/09", success: 7, warning: 0, error: 1 },
+  { date: "01/10", success: 6, warning: 2, error: 0 },
+  { date: "01/11", success: 7, warning: 1, error: 0 },
+  { date: "01/12", success: 6, warning: 1, error: 1 },
+  { date: "01/13", success: 7, warning: 1, error: 0 },
+];
 
 const gcpServices = [
   { id: 1, name: "BigQuery Analytics", type: "BigQuery", instanceId: "bq-analytics-prod", region: "asia-northeast3", cpu: 0, memory: 0, status: "running", ip: "-", port: "-" },
@@ -136,7 +156,45 @@ export default function GCPServers() {
             </div>
           </motion.section>
 
-          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.3 }}>
+          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.3 }} className="mb-6">
+            <div className="bg-white rounded-xl border border-slate-100 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-medium text-slate-800">Daily Status Overview</h2>
+                <div className="flex items-center gap-4 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-sm bg-emerald-500" />
+                    <span className="text-slate-500">Success</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-sm bg-amber-500" />
+                    <span className="text-slate-500">Warning</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-sm bg-red-500" />
+                    <span className="text-slate-500">Error</span>
+                  </div>
+                </div>
+              </div>
+              <div className="h-[200px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={dailyStatusData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                      labelStyle={{ color: '#334155', fontWeight: 600, marginBottom: 4 }}
+                    />
+                    <Line type="monotone" dataKey="success" name="Success" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="warning" name="Warning" stroke="#f59e0b" strokeWidth={2} dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="error" name="Error" stroke="#ef4444" strokeWidth={2} dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </motion.section>
+
+          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.3 }}>
             <div className="bg-white rounded-xl border border-slate-100">
               <div className="px-6 py-4 border-b border-slate-100">
                 <h2 className="text-sm font-medium text-slate-800">Managed Services</h2>

@@ -360,16 +360,18 @@ function DataSummaryCarousel() {
                     className={`absolute inset-0 bg-gradient-to-br ${data.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl`}
                   />
                   <div className="relative z-10">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="p-2 rounded-lg" style={{ backgroundColor: `${data.color}15` }}>
-                        <Icon className="w-4 h-4" style={{ color: data.color }} strokeWidth={1.5} />
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg" style={{ backgroundColor: `${data.color}15` }}>
+                          <Icon className="w-4 h-4" style={{ color: data.color }} strokeWidth={1.5} />
+                        </div>
+                        <h3 className="text-slate-700 text-sm font-semibold truncate">{data.name}</h3>
                       </div>
                       <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? "text-emerald-600" : "text-red-500"}`}>
                         {isPositive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                         <span>{isPositive ? "+" : ""}{diffPercent}%</span>
                       </div>
                     </div>
-                    <h3 className="text-slate-500 text-xs font-medium mb-0.5 truncate">{data.name}</h3>
                     <p className="text-xl font-semibold tracking-tight text-slate-800 mb-2">
                       {formatNumber(data.total)}
                     </p>

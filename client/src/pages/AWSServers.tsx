@@ -25,14 +25,14 @@ import {
 } from "recharts";
 
 const dailyStatusData = [
-  { date: "01/06", success: 142, warning: 3, error: 1 },
-  { date: "01/07", success: 156, warning: 5, error: 2 },
-  { date: "01/08", success: 148, warning: 2, error: 0 },
-  { date: "01/09", success: 162, warning: 4, error: 1 },
-  { date: "01/10", success: 151, warning: 6, error: 3 },
-  { date: "01/11", success: 145, warning: 3, error: 1 },
-  { date: "01/12", success: 158, warning: 4, error: 2 },
-  { date: "01/13", success: 138, warning: 5, error: 2 },
+  { date: "01/06", success: 7, warning: 1, error: 1 },
+  { date: "01/07", success: 8, warning: 1, error: 0 },
+  { date: "01/08", success: 6, warning: 2, error: 1 },
+  { date: "01/09", success: 7, warning: 1, error: 1 },
+  { date: "01/10", success: 8, warning: 0, error: 1 },
+  { date: "01/11", success: 7, warning: 2, error: 0 },
+  { date: "01/12", success: 6, warning: 1, error: 2 },
+  { date: "01/13", success: 6, warning: 2, error: 1 },
 ];
 
 const awsServices = [

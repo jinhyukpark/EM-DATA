@@ -14,6 +14,7 @@ import {
   X,
   Menu,
   TrendingUp,
+  Palette,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 
@@ -42,6 +43,22 @@ const patents = [
 ];
 
 export default function PatentData() {
+  const [columnColors, setColumnColors] = useState<Record<string, string>>({});
+  const [activeColorPicker, setActiveColorPicker] = useState<string | null>(null);
+
+  const colorOptions = [
+    { name: 'Default', value: '' },
+    { name: 'Red', value: '#ef4444' },
+    { name: 'Orange', value: '#f97316' },
+    { name: 'Amber', value: '#f59e0b' },
+    { name: 'Green', value: '#84cc16' },
+    { name: 'Emerald', value: '#10b981' },
+    { name: 'Cyan', value: '#06b6d4' },
+    { name: 'Blue', value: '#3b82f6' },
+    { name: 'Indigo', value: '#6366f1' },
+    { name: 'Purple', value: '#a855f7' },
+    { name: 'Pink', value: '#ec4899' },
+  ];
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
@@ -208,38 +225,164 @@ export default function PatentData() {
                 <table className="w-full" data-testid="patent-table">
                   <thead>
                     <tr className="bg-slate-50/50">
-                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">Patent Title</th>
-                      {visibleColumns.applicant && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Applicant</th>}
-                      {visibleColumns.applicationNo && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Application No.</th>}
-                      {visibleColumns.applicationDate && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">App. Date</th>}
-                      {visibleColumns.ipcCode && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">IPC Code</th>}
-                      {visibleColumns.country && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Country</th>}
-                      {visibleColumns.status && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Status</th>}
+                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1.5">
+                          {columnColors.title && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.title }} />}
+                          <span>Patent Title</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'title' ? null : 'title'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'title' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, title: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>
+                      {visibleColumns.applicant && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1.5">
+                          {columnColors.applicant && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.applicant }} />}
+                          <span>Applicant</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'applicant' ? null : 'applicant'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'applicant' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, applicant: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.applicationNo && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1.5">
+                          {columnColors.applicationNo && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.applicationNo }} />}
+                          <span>Application No.</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'applicationNo' ? null : 'applicationNo'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'applicationNo' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, applicationNo: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.applicationDate && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1.5">
+                          {columnColors.applicationDate && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.applicationDate }} />}
+                          <span>App. Date</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'applicationDate' ? null : 'applicationDate'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'applicationDate' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, applicationDate: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.ipcCode && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1.5">
+                          {columnColors.ipcCode && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.ipcCode }} />}
+                          <span>IPC Code</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'ipcCode' ? null : 'ipcCode'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'ipcCode' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, ipcCode: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.country && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center justify-center gap-1.5">
+                          {columnColors.country && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.country }} />}
+                          <span>Country</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'country' ? null : 'country'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'country' && (
+                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, country: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.status && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center justify-center gap-1.5">
+                          {columnColors.status && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.status }} />}
+                          <span>Status</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'status' ? null : 'status'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'status' && (
+                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, status: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
                     </tr>
                   </thead>
                   <tbody>
                     {filteredPatents.map((patent) => (
                       <tr key={patent.id} onClick={() => setSelectedPatent(patent)} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer" data-testid={`patent-row-${patent.id}`}>
                         <td className="py-3 px-6">
-                          <span className="font-medium text-slate-800">{patent.title}</span>
+                          <span className="font-medium text-slate-800" style={{ color: columnColors.title || undefined }}>{patent.title}</span>
                         </td>
-                        {visibleColumns.applicant && <td className="py-3 px-4 text-sm text-slate-600">{patent.applicant}</td>}
-                        {visibleColumns.applicationNo && <td className="py-3 px-4 text-sm font-mono text-slate-500">{patent.applicationNo}</td>}
-                        {visibleColumns.applicationDate && <td className="py-3 px-4 text-sm text-slate-500">{patent.applicationDate}</td>}
-                        {visibleColumns.ipcCode && <td className="py-3 px-4 text-sm font-mono text-slate-500">{patent.ipcCode}</td>}
+                        {visibleColumns.applicant && <td className="py-3 px-4 text-sm text-slate-600" style={{ color: columnColors.applicant || undefined }}>{patent.applicant}</td>}
+                        {visibleColumns.applicationNo && <td className="py-3 px-4 text-sm font-mono text-slate-600" style={{ color: columnColors.applicationNo || undefined }}>{patent.applicationNo}</td>}
+                        {visibleColumns.applicationDate && <td className="py-3 px-4 text-sm text-slate-500" style={{ color: columnColors.applicationDate || undefined }}>{patent.applicationDate}</td>}
+                        {visibleColumns.ipcCode && <td className="py-3 px-4 text-sm font-mono text-blue-600 bg-blue-50/50 rounded" style={{ color: columnColors.ipcCode || undefined }}>{patent.ipcCode}</td>}
                         {visibleColumns.country && (
                           <td className="py-3 px-4 text-center">
-                            <span className="px-2 py-1 rounded text-xs font-medium bg-blue-50 text-blue-600">{patent.country}</span>
+                            <span className="px-2 py-1 rounded text-xs font-medium bg-blue-50 text-blue-600" style={{ color: columnColors.country || undefined, backgroundColor: columnColors.country ? undefined : undefined }}>{patent.country}</span>
                           </td>
                         )}
                         {visibleColumns.status && (
                           <td className="py-3 px-4 text-center">
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${
-                              patent.status === "Registered" ? "text-emerald-600 bg-emerald-50" :
-                              patent.status === "Published" ? "text-blue-600 bg-blue-50" :
-                              patent.status === "Under Review" ? "text-amber-600 bg-amber-50" :
-                              "text-slate-600 bg-slate-100"
-                            }`}>
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${
+                              patent.status === "Registered" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                              patent.status === "Published" ? "bg-blue-50 text-blue-600 border-blue-100" :
+                              patent.status === "Under Review" ? "bg-amber-50 text-amber-600 border-amber-100" :
+                              "bg-slate-50 text-slate-600 border-slate-100"
+                            }`} style={{ color: columnColors.status || undefined, backgroundColor: columnColors.status ? undefined : undefined, borderColor: columnColors.status ? columnColors.status : undefined }}>
+                              {columnColors.status && <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: columnColors.status }} />}
+                              {!columnColors.status && <span className={`w-1.5 h-1.5 rounded-full ${
+                                patent.status === "Registered" ? "bg-emerald-500" :
+                                patent.status === "Published" ? "bg-blue-500" :
+                                patent.status === "Under Review" ? "bg-amber-500" :
+                                "bg-slate-500"
+                              }`} />}
                               {patent.status}
                             </span>
                           </td>

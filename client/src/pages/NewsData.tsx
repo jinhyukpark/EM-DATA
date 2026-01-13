@@ -15,6 +15,7 @@ import {
   Menu,
   TrendingUp,
   TrendingDown,
+  Palette,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,22 @@ const newsArticles = [
 ];
 
 export default function NewsData() {
+  const [columnColors, setColumnColors] = useState<Record<string, string>>({});
+  const [activeColorPicker, setActiveColorPicker] = useState<string | null>(null);
+
+  const colorOptions = [
+    { name: 'Default', value: '' },
+    { name: 'Red', value: '#ef4444' },
+    { name: 'Orange', value: '#f97316' },
+    { name: 'Amber', value: '#f59e0b' },
+    { name: 'Green', value: '#84cc16' },
+    { name: 'Emerald', value: '#10b981' },
+    { name: 'Cyan', value: '#06b6d4' },
+    { name: 'Blue', value: '#3b82f6' },
+    { name: 'Indigo', value: '#6366f1' },
+    { name: 'Purple', value: '#a855f7' },
+    { name: 'Pink', value: '#ec4899' },
+  ];
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
@@ -205,42 +222,161 @@ export default function NewsData() {
                 <table className="w-full" data-testid="news-table">
                   <thead>
                     <tr className="bg-slate-50/50">
-                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">Article Title</th>
-                      {visibleColumns.source && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Source</th>}
-                      {visibleColumns.category && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Category</th>}
-                      {visibleColumns.company && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Company</th>}
-                      {visibleColumns.publishDate && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Published</th>}
-                      {visibleColumns.sentiment && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Sentiment</th>}
-                      <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Link</th>
+                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1.5">
+                          {columnColors.title && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.title }} />}
+                          <span>Article Title</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'title' ? null : 'title'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'title' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, title: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>
+                      {visibleColumns.source && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1.5">
+                          {columnColors.source && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.source }} />}
+                          <span>Source</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'source' ? null : 'source'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'source' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, source: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.category && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center justify-center gap-1.5">
+                          {columnColors.category && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.category }} />}
+                          <span>Category</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'category' ? null : 'category'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'category' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, category: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.company && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1.5">
+                          {columnColors.company && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.company }} />}
+                          <span>Company</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'company' ? null : 'company'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'company' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, company: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.publishDate && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1.5">
+                          {columnColors.publishDate && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.publishDate }} />}
+                          <span>Published</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'publishDate' ? null : 'publishDate'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'publishDate' && (
+                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, publishDate: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.sentiment && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center justify-center gap-1.5">
+                          {columnColors.sentiment && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.sentiment }} />}
+                          <span>Sentiment</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'sentiment' ? null : 'sentiment'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'sentiment' && (
+                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, sentiment: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center justify-center gap-1.5">
+                          {columnColors.link && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.link }} />}
+                          <span>Link</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'link' ? null : 'link'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3 text-slate-400" />
+                            </button>
+                            {activeColorPicker === 'link' && (
+                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, link: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredNews.map((article) => (
                       <tr key={article.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors" data-testid={`article-row-${article.id}`}>
                         <td className="py-3 px-6">
-                          <span className="font-medium text-slate-800">{article.title}</span>
+                          <span className="font-medium text-slate-800" style={{ color: columnColors.title || undefined }}>{article.title}</span>
                         </td>
-                        {visibleColumns.source && <td className="py-3 px-4 text-sm text-slate-600">{article.source}</td>}
+                        {visibleColumns.source && <td className="py-3 px-4 text-sm text-slate-600" style={{ color: columnColors.source || undefined }}>{article.source}</td>}
                         {visibleColumns.category && (
                           <td className="py-3 px-4 text-center">
-                            <span className="px-2 py-1 rounded text-xs font-medium bg-purple-50 text-purple-600">{article.category}</span>
+                            <span className="px-2 py-1 rounded text-xs font-medium bg-purple-50 text-purple-600" style={{ color: columnColors.category || undefined, backgroundColor: columnColors.category ? undefined : undefined }}>{article.category}</span>
                           </td>
                         )}
-                        {visibleColumns.company && <td className="py-3 px-4 text-sm text-slate-600">{article.company}</td>}
-                        {visibleColumns.publishDate && <td className="py-3 px-4 text-sm text-slate-500">{article.publishDate}</td>}
+                        {visibleColumns.company && <td className="py-3 px-4 text-sm text-slate-600" style={{ color: columnColors.company || undefined }}>{article.company}</td>}
+                        {visibleColumns.publishDate && <td className="py-3 px-4 text-sm text-slate-500" style={{ color: columnColors.publishDate || undefined }}>{article.publishDate}</td>}
                         {visibleColumns.sentiment && (
                           <td className="py-3 px-4 text-center">
                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${
                               article.sentiment === "Positive" ? "text-emerald-600 bg-emerald-50" :
                               article.sentiment === "Negative" ? "text-red-600 bg-red-50" :
                               "text-slate-600 bg-slate-100"
-                            }`}>
+                            }`} style={{ color: columnColors.sentiment || undefined, backgroundColor: columnColors.sentiment ? undefined : undefined }}>
                               {article.sentiment}
                             </span>
                           </td>
                         )}
                         <td className="py-3 px-4 text-center">
-                          <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                          <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors" style={{ color: columnColors.link || undefined }}>
                             <ExternalLink className="w-4 h-4 text-slate-400" />
                           </button>
                         </td>

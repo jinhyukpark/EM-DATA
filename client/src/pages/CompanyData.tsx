@@ -262,21 +262,27 @@ export default function CompanyData() {
 
         <main className="flex-1 p-4 md:p-6 bg-slate-50/50 overflow-x-hidden">
           <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-4">
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => switchDataView("company")}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "company" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"}`}
-                data-testid="tab-company-info"
-              >
-                Company Info
-              </button>
-              <button
-                onClick={() => switchDataView("financial")}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "financial" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"}`}
-                data-testid="tab-financial-info"
-              >
-                Financial Info
-              </button>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => switchDataView("company")}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "company" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"}`}
+                  data-testid="tab-company-info"
+                >
+                  Company Info
+                </button>
+                <button
+                  onClick={() => switchDataView("financial")}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "financial" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"}`}
+                  data-testid="tab-financial-info"
+                >
+                  Financial Info
+                </button>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-lg border border-emerald-100">
+                <Activity className="w-4 h-4 text-emerald-600 animate-pulse" />
+                <span className="text-sm font-medium text-emerald-700">Collection Status: Running</span>
+              </div>
             </div>
           </motion.section>
 
@@ -287,14 +293,6 @@ export default function CompanyData() {
                 <div>
                   <p className="text-xs text-slate-400 uppercase tracking-wide">Total</p>
                   <p className="text-xl font-bold text-slate-800" data-testid="total-companies">{totalCompanies.toLocaleString()}</p>
-                </div>
-              </div>
-              <div className="w-px h-10 bg-slate-200" />
-              <div className="flex items-center gap-3">
-                <Activity className="w-5 h-5 text-emerald-500" />
-                <div>
-                  <p className="text-xs text-slate-400 uppercase tracking-wide">Collection Status</p>
-                  <p className="text-xl font-bold text-emerald-600" data-testid="collection-status">Running</p>
                 </div>
               </div>
               <div className="w-px h-10 bg-slate-200" />

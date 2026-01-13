@@ -517,11 +517,25 @@ function ServerStatusSection() {
               <h3 className="text-lg font-semibold text-slate-800">
                 {provider.provider}
               </h3>
-              <div className="ml-auto flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs text-slate-500">
-                  {provider.servers.filter(s => s.status === "running").length}/{provider.servers.length} Online
-                </span>
+              <div className="ml-auto flex items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span className="text-xs font-medium text-emerald-600">
+                    {provider.servers.filter(s => s.status === "running").length}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-amber-500" />
+                  <span className="text-xs font-medium text-amber-600">
+                    {provider.servers.filter(s => s.status === "warning").length}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-red-500" />
+                  <span className="text-xs font-medium text-red-600">
+                    {provider.servers.filter(s => s.status === "stopped").length}
+                  </span>
+                </div>
               </div>
             </div>
             <div className="space-y-3">

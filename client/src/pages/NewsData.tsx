@@ -270,9 +270,6 @@ export default function NewsData() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="h-8 w-8 p-0">
-                    <ChevronLeft className="w-4 h-4" />
-                  </Button>
                   {(() => {
                     const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
                     const pages: (number | string)[] = [];
@@ -287,23 +284,30 @@ export default function NewsData() {
                         pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
                       }
                     }
-                    return pages.map((page, idx) => (
-                      typeof page === 'number' ? (
-                        <button
-                          key={idx}
-                          onClick={() => setCurrentPage(page)}
-                          className={`h-8 w-8 text-xs rounded-md transition-colors ${currentPage === page ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          {page}
-                        </button>
-                      ) : (
-                        <span key={idx} className="px-1 text-slate-400">...</span>
-                      )
-                    ));
+                    return (
+                      <>
+                        <Button variant="ghost" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="h-8 w-8 p-0">
+                          <ChevronLeft className="w-3 h-3" /><ChevronLeft className="w-3 h-3 -ml-2" />
+                        </Button>
+                        <Button variant="ghost" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="h-8 w-8 p-0">
+                          <ChevronLeft className="w-4 h-4" />
+                        </Button>
+                        {pages.map((page, idx) => (
+                          typeof page === 'number' ? (
+                            <button key={idx} onClick={() => setCurrentPage(page)} className={`h-8 w-8 text-xs rounded-md transition-colors ${currentPage === page ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'}`}>{page}</button>
+                          ) : (
+                            <span key={idx} className="px-1 text-slate-400">...</span>
+                          )
+                        ))}
+                        <Button variant="ghost" size="sm" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="h-8 w-8 p-0">
+                          <ChevronRight className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(totalPages)} className="h-8 w-8 p-0">
+                          <ChevronRight className="w-3 h-3" /><ChevronRight className="w-3 h-3 -ml-2" />
+                        </Button>
+                      </>
+                    );
                   })()}
-                  <Button variant="ghost" size="sm" disabled={currentPage >= Math.ceil(filteredNews.length / itemsPerPage)} onClick={() => setCurrentPage(currentPage + 1)} className="h-8 w-8 p-0">
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
                 </div>
               </div>
             </div>

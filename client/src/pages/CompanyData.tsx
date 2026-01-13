@@ -335,14 +335,14 @@ export default function CompanyData() {
             <Palette className={`w-3 h-3 ${style.textColor || style.bgColor || style.textRules?.length > 0 || style.bgRules?.length > 0 ? 'text-blue-500 fill-blue-500' : 'text-slate-400'}`} />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-0" align="start" sideOffset={8}>
+        <PopoverContent className="w-80 p-0 bg-white border border-slate-200 shadow-xl" align="start" sideOffset={8}>
           <div className="p-3 border-b border-slate-100 bg-slate-50/50">
             <h4 className="font-medium text-sm text-slate-900">{label} Styling</h4>
           </div>
           <Tabs defaultValue="text" className="w-full">
             <TabsList className="w-full justify-start rounded-none border-b border-slate-100 bg-transparent p-0">
-              <TabsTrigger value="text" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:bg-white px-4 py-2 text-xs">Text Color</TabsTrigger>
-              <TabsTrigger value="bg" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:bg-white px-4 py-2 text-xs">Background</TabsTrigger>
+              <TabsTrigger value="text" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:bg-white px-4 py-2 text-xs text-slate-600 data-[state=active]:text-slate-900">Text Color</TabsTrigger>
+              <TabsTrigger value="bg" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:bg-white px-4 py-2 text-xs text-slate-600 data-[state=active]:text-slate-900">Background</TabsTrigger>
             </TabsList>
             
             <TabsContent value="text" className="p-4 space-y-4 mt-0">
@@ -373,10 +373,10 @@ export default function CompanyData() {
                     <div key={rule.id} className="p-2 bg-slate-50 rounded-lg border border-slate-100 space-y-2">
                       <div className="flex gap-2">
                          <Select value={rule.condition} onValueChange={(val) => updateRule(columnId, 'text', rule.id, { condition: val as any })}>
-                           <SelectTrigger className="h-7 text-xs w-[110px] bg-white">
+                           <SelectTrigger className="h-7 text-xs w-[110px] bg-white border-slate-200 text-slate-700">
                              <SelectValue />
                            </SelectTrigger>
-                           <SelectContent>
+                           <SelectContent className="bg-white border-slate-200 text-slate-700">
                              <SelectItem value="equals">Equals</SelectItem>
                              <SelectItem value="contains">Contains</SelectItem>
                              <SelectItem value="starts_with">Starts with</SelectItem>
@@ -387,7 +387,7 @@ export default function CompanyData() {
                          <Input 
                            value={rule.value} 
                            onChange={(e) => updateRule(columnId, 'text', rule.id, { value: e.target.value })}
-                           className="h-7 text-xs flex-1 bg-white" 
+                           className="h-7 text-xs flex-1 bg-white border-slate-200 text-slate-700" 
                            placeholder="Value..." 
                          />
                       </div>
@@ -447,10 +447,10 @@ export default function CompanyData() {
                     <div key={rule.id} className="p-2 bg-slate-50 rounded-lg border border-slate-100 space-y-2">
                       <div className="flex gap-2">
                          <Select value={rule.condition} onValueChange={(val) => updateRule(columnId, 'bg', rule.id, { condition: val as any })}>
-                           <SelectTrigger className="h-7 text-xs w-[110px] bg-white">
+                           <SelectTrigger className="h-7 text-xs w-[110px] bg-white border-slate-200 text-slate-700">
                              <SelectValue />
                            </SelectTrigger>
-                           <SelectContent>
+                           <SelectContent className="bg-white border-slate-200 text-slate-700">
                              <SelectItem value="equals">Equals</SelectItem>
                              <SelectItem value="contains">Contains</SelectItem>
                              <SelectItem value="starts_with">Starts with</SelectItem>
@@ -461,7 +461,7 @@ export default function CompanyData() {
                          <Input 
                            value={rule.value} 
                            onChange={(e) => updateRule(columnId, 'bg', rule.id, { value: e.target.value })}
-                           className="h-7 text-xs flex-1 bg-white" 
+                           className="h-7 text-xs flex-1 bg-white border-slate-200 text-slate-700" 
                            placeholder="Value..." 
                          />
                       </div>

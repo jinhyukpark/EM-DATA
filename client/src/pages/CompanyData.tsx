@@ -472,8 +472,36 @@ export default function CompanyData() {
                   <Button variant="ghost" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="h-8 w-8 p-0" data-testid="prev-page">
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
-                  <span className="text-xs text-slate-500 px-2">Page {currentPage}</span>
-                  <Button variant="ghost" size="sm" onClick={() => setCurrentPage(currentPage + 1)} className="h-8 w-8 p-0" data-testid="next-page">
+                  {(() => {
+                    const totalPages = Math.ceil(filteredCompanies.length / itemsPerPage);
+                    const pages: (number | string)[] = [];
+                    if (totalPages <= 7) {
+                      for (let i = 1; i <= totalPages; i++) pages.push(i);
+                    } else {
+                      if (currentPage <= 4) {
+                        pages.push(1, 2, 3, 4, 5, '...', totalPages);
+                      } else if (currentPage >= totalPages - 3) {
+                        pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+                      } else {
+                        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+                      }
+                    }
+                    return pages.map((page, idx) => (
+                      typeof page === 'number' ? (
+                        <button
+                          key={idx}
+                          onClick={() => setCurrentPage(page)}
+                          className={`h-8 w-8 text-xs rounded-md transition-colors ${currentPage === page ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'}`}
+                          data-testid={`page-${page}`}
+                        >
+                          {page}
+                        </button>
+                      ) : (
+                        <span key={idx} className="px-1 text-slate-400">...</span>
+                      )
+                    ));
+                  })()}
+                  <Button variant="ghost" size="sm" disabled={currentPage >= Math.ceil(filteredCompanies.length / itemsPerPage)} onClick={() => setCurrentPage(currentPage + 1)} className="h-8 w-8 p-0" data-testid="next-page">
                     <ChevronRight className="w-4 h-4" />
                   </Button>
                 </div>

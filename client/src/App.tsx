@@ -28,7 +28,8 @@ function AppRouter() {
     <Router base={BASE_PATH}>
       <Switch>
         <Route path="/login" component={Login} />
-        <Route path="/" component={Dashboard} />
+        <Route path="/dashboard" component={Dashboard} />
+        <Route path="/" component={Login} />
         <Route path="/data/company" component={CompanyData} />
         <Route path="/data/patent" component={PatentData} />
         <Route path="/data/paper" component={PaperData} />

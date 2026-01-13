@@ -352,7 +352,7 @@ function DataSummaryCarousel() {
               return (
                 <div
                   key={`${data.id}-${currentPage}-${index}`}
-                  className="stat-card-light group min-w-0 flex-shrink-0"
+                  className="stat-card-light group min-w-0 flex-shrink-0 !p-4"
                   style={{ width: cardWidth }}
                   data-testid={`stat-card-${data.id}`}
                 >
@@ -360,20 +360,20 @@ function DataSummaryCarousel() {
                     className={`absolute inset-0 bg-gradient-to-br ${data.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl`}
                   />
                   <div className="relative z-10">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="p-2.5 rounded-lg" style={{ backgroundColor: `${data.color}15` }}>
-                        <Icon className="w-5 h-5" style={{ color: data.color }} strokeWidth={1.5} />
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="p-2 rounded-lg" style={{ backgroundColor: `${data.color}15` }}>
+                        <Icon className="w-4 h-4" style={{ color: data.color }} strokeWidth={1.5} />
                       </div>
                       <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? "text-emerald-600" : "text-red-500"}`}>
                         {isPositive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                         <span>{isPositive ? "+" : ""}{diffPercent}%</span>
                       </div>
                     </div>
-                    <h3 className="text-slate-500 text-xs font-medium mb-1 truncate">{data.name}</h3>
-                    <p className="text-2xl font-semibold tracking-tight text-slate-800 mb-3">
+                    <h3 className="text-slate-500 text-xs font-medium mb-0.5 truncate">{data.name}</h3>
+                    <p className="text-xl font-semibold tracking-tight text-slate-800 mb-2">
                       {formatNumber(data.total)}
                     </p>
-                    <div className="flex items-center justify-between pt-3 mt-3 -mx-5 -mb-5 px-5 py-3 rounded-b-xl" style={{ backgroundColor: `${data.color}08` }}>
+                    <div className="flex items-center justify-between pt-2 mt-2 -mx-4 -mb-4 px-4 py-2 rounded-b-xl" style={{ backgroundColor: `${data.color}08` }}>
                       <div>
                         <p className="text-[10px] text-slate-400 mb-0.5">Today</p>
                         <p className="text-sm font-semibold" style={{ color: data.color }}>+{formatNumber(data.todayUpdate)}</p>

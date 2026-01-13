@@ -657,8 +657,7 @@ export default function CompanyData() {
                         )}
                         {visibleColumns.status && (
                           <td className="py-3 px-4 text-center">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium text-emerald-500" style={{ color: columnColors.status || undefined }}>
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" style={{ backgroundColor: columnColors.status || undefined }} />
+                            <span className="text-xs font-medium text-emerald-500" style={{ color: columnColors.status || undefined }}>
                               {company.status}
                             </span>
                           </td>

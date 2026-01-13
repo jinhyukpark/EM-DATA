@@ -375,12 +375,12 @@ function DataSummaryCarousel() {
                     </p>
                     <div className="flex items-center justify-between pt-2 mt-2 -mx-4 -mb-4 px-4 py-2 rounded-b-xl" style={{ backgroundColor: `${data.color}08` }}>
                       <div>
-                        <p className="text-[10px] text-slate-400 mb-0.5">Today</p>
-                        <p className="text-sm font-semibold" style={{ color: data.color }}>+{formatNumber(data.todayUpdate)}</p>
+                        <p className="text-xs text-slate-400 mb-0.5">Today</p>
+                        <p className="text-lg font-semibold" style={{ color: data.color }}>+{formatNumber(data.todayUpdate)}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] text-slate-400 mb-0.5">vs Yesterday</p>
-                        <p className={`text-sm font-semibold ${isPositive ? "text-emerald-600" : "text-red-500"}`}>
+                        <p className="text-xs text-slate-400 mb-0.5">vs Yesterday</p>
+                        <p className={`text-lg font-semibold ${isPositive ? "text-emerald-600" : "text-red-500"}`}>
                           {isPositive ? "+" : ""}{diff}
                         </p>
                       </div>

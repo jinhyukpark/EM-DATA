@@ -282,11 +282,11 @@ export default function EmploymentData() {
                   }
                   return (
                     <>
-                      <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="h-8 w-8 p-0">
-                        <ChevronLeft className="w-3 h-3" /><ChevronLeft className="w-3 h-3 -ml-2" />
+                      <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="h-8 w-8 p-0 border-slate-300">
+                        <ChevronLeft className="w-3 h-3 text-slate-600" /><ChevronLeft className="w-3 h-3 -ml-2 text-slate-600" />
                       </Button>
-                      <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="h-8 w-8 p-0">
-                        <ChevronLeft className="w-4 h-4" />
+                      <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="h-8 w-8 p-0 border-slate-300">
+                        <ChevronLeft className="w-4 h-4 text-slate-600" />
                       </Button>
                       {pages.map((page, idx) => (
                         typeof page === 'number' ? (
@@ -295,11 +295,11 @@ export default function EmploymentData() {
                           <span key={idx} className="px-1 text-slate-400">...</span>
                         )
                       ))}
-                      <Button variant="outline" size="sm" disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} className="h-8 w-8 p-0">
-                        <ChevronRight className="w-4 h-4" />
+                      <Button variant="outline" size="sm" disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} className="h-8 w-8 p-0 border-slate-300">
+                        <ChevronRight className="w-4 h-4 text-slate-600" />
                       </Button>
-                      <Button variant="outline" size="sm" disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(totalPages)} className="h-8 w-8 p-0">
-                        <ChevronRight className="w-3 h-3" /><ChevronRight className="w-3 h-3 -ml-2" />
+                      <Button variant="outline" size="sm" disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(totalPages)} className="h-8 w-8 p-0 border-slate-300">
+                        <ChevronRight className="w-3 h-3 text-slate-600" /><ChevronRight className="w-3 h-3 -ml-2 text-slate-600" />
                       </Button>
                     </>
                   );

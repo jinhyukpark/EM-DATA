@@ -37,15 +37,15 @@ const dailyStatusData = [
 ];
 
 const awsServices = [
-  { id: 1, name: "Company Data API", type: "EC2", instanceId: "i-0a1b2c3d4e5f", region: "ap-northeast-2", cpu: 45, memory: 62, status: "running", ip: "10.0.1.101", port: "8080", service: "Company" },
-  { id: 2, name: "Patent Crawler", type: "EC2", instanceId: "i-1b2c3d4e5f6a", region: "ap-northeast-2", cpu: 78, memory: 81, status: "running", ip: "10.0.1.102", port: "8081", service: "Patent" },
-  { id: 3, name: "News Aggregator", type: "EC2", instanceId: "i-2c3d4e5f6a7b", region: "ap-northeast-2", cpu: 23, memory: 45, status: "running", ip: "10.0.1.103", port: "8082", service: "News" },
-  { id: 4, name: "Stock Data Collector", type: "Lambda", instanceId: "stock-collector-fn", region: "ap-northeast-2", cpu: 0, memory: 0, status: "idle", ip: "-", port: "-", service: "Stock" },
-  { id: 5, name: "ML Prediction Engine", type: "EC2", instanceId: "i-3d4e5f6a7b8c", region: "ap-northeast-2", cpu: 92, memory: 88, status: "warning", ip: "10.0.1.105", port: "5000", service: "ML" },
-  { id: 6, name: "Data Warehouse", type: "RDS", instanceId: "db-main-prod", region: "ap-northeast-2", cpu: 35, memory: 72, status: "running", ip: "10.0.2.50", port: "5432", service: "All" },
-  { id: 7, name: "Redis Cache", type: "ElastiCache", instanceId: "cache-prod-01", region: "ap-northeast-2", cpu: 12, memory: 45, status: "running", ip: "10.0.2.51", port: "6379", service: "All" },
-  { id: 8, name: "File Storage", type: "S3", instanceId: "company-data-bucket", region: "ap-northeast-2", cpu: 0, memory: 0, status: "running", ip: "-", port: "-", service: "Company" },
-  { id: 9, name: "Backup Service", type: "EC2", instanceId: "i-4e5f6a7b8c9d", region: "ap-northeast-2", cpu: 5, memory: 28, status: "stopped", ip: "10.0.1.110", port: "9000", service: "All" },
+  { id: 1, name: "Company Data API", type: "EC2", instanceId: "i-0a1b2c3d4e5f", region: "ap-northeast-2", cpu: 45, memory: 62, status: "running", ip: "10.0.1.101", port: "8080", service: "Company", warnings: 2, errors: 0 },
+  { id: 2, name: "Patent Crawler", type: "EC2", instanceId: "i-1b2c3d4e5f6a", region: "ap-northeast-2", cpu: 78, memory: 81, status: "running", ip: "10.0.1.102", port: "8081", service: "Patent", warnings: 0, errors: 0 },
+  { id: 3, name: "News Aggregator", type: "EC2", instanceId: "i-2c3d4e5f6a7b", region: "ap-northeast-2", cpu: 23, memory: 45, status: "running", ip: "10.0.1.103", port: "8082", service: "News", warnings: 1, errors: 0 },
+  { id: 4, name: "Stock Data Collector", type: "Lambda", instanceId: "stock-collector-fn", region: "ap-northeast-2", cpu: 0, memory: 0, status: "idle", ip: "-", port: "-", service: "Stock", warnings: 0, errors: 0 },
+  { id: 5, name: "ML Prediction Engine", type: "EC2", instanceId: "i-3d4e5f6a7b8c", region: "ap-northeast-2", cpu: 92, memory: 88, status: "warning", ip: "10.0.1.105", port: "5000", service: "ML", warnings: 5, errors: 2 },
+  { id: 6, name: "Data Warehouse", type: "RDS", instanceId: "db-main-prod", region: "ap-northeast-2", cpu: 35, memory: 72, status: "running", ip: "10.0.2.50", port: "5432", service: "All", warnings: 1, errors: 0 },
+  { id: 7, name: "Redis Cache", type: "ElastiCache", instanceId: "cache-prod-01", region: "ap-northeast-2", cpu: 12, memory: 45, status: "running", ip: "10.0.2.51", port: "6379", service: "All", warnings: 0, errors: 0 },
+  { id: 8, name: "File Storage", type: "S3", instanceId: "company-data-bucket", region: "ap-northeast-2", cpu: 0, memory: 0, status: "running", ip: "-", port: "-", service: "Company", warnings: 0, errors: 0 },
+  { id: 9, name: "Backup Service", type: "EC2", instanceId: "i-4e5f6a7b8c9d", region: "ap-northeast-2", cpu: 5, memory: 28, status: "stopped", ip: "10.0.1.110", port: "9000", service: "All", warnings: 0, errors: 3 },
 ];
 
 const serviceColors: Record<string, { bg: string; text: string }> = {
@@ -221,6 +221,8 @@ export default function AWSServers() {
                       <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">CPU</th>
                       <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Memory</th>
                       <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Status</th>
+                      <th className="text-center py-3 px-4 text-xs font-medium text-amber-500 uppercase tracking-wide">Warnings</th>
+                      <th className="text-center py-3 px-4 text-xs font-medium text-red-500 uppercase tracking-wide">Errors</th>
                       <th className="text-right py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">Actions</th>
                     </tr>
                   </thead>
@@ -268,6 +270,24 @@ export default function AWSServers() {
                         </td>
                         <td className="py-3 px-4 text-center">
                           <StatusBadge status={service.status} />
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          {service.warnings > 0 ? (
+                            <span className="inline-flex items-center justify-center min-w-[24px] px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                              {service.warnings}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-slate-300">-</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          {service.errors > 0 ? (
+                            <span className="inline-flex items-center justify-center min-w-[24px] px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                              {service.errors}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-slate-300">-</span>
+                          )}
                         </td>
                         <td className="py-3 px-6 text-right">
                           <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">

@@ -26,6 +26,7 @@ import {
   Check,
   Menu,
   TrendingUp,
+  Palette,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import {
@@ -152,6 +153,23 @@ export default function CompanyData() {
   };
 
   const [visibleColumns, setVisibleColumns] = useState(companyInfoColumns);
+  
+  const colorOptions = [
+    { name: "Default", value: "" },
+    { name: "Red", value: "#ef4444" },
+    { name: "Orange", value: "#f97316" },
+    { name: "Amber", value: "#f59e0b" },
+    { name: "Green", value: "#22c55e" },
+    { name: "Emerald", value: "#10b981" },
+    { name: "Cyan", value: "#06b6d4" },
+    { name: "Blue", value: "#3b82f6" },
+    { name: "Indigo", value: "#6366f1" },
+    { name: "Purple", value: "#a855f7" },
+    { name: "Pink", value: "#ec4899" },
+  ];
+  
+  const [columnColors, setColumnColors] = useState<Record<string, string>>({});
+  const [activeColorPicker, setActiveColorPicker] = useState<string | null>(null);
 
   const columnLabels: Record<string, string> = {
     ceo: "CEO",
@@ -387,18 +405,210 @@ export default function CompanyData() {
                 <table className="w-full" data-testid="company-table">
                   <thead>
                     <tr className="bg-slate-50/50">
-                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">Company Name</th>
-                      {visibleColumns.ceo && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">CEO</th>}
-                      {visibleColumns.address && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Address</th>}
-                      {visibleColumns.industry && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Industry</th>}
-                      {visibleColumns.foundedDate && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Founded</th>}
-                      {visibleColumns.employees && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Employees</th>}
-                      {visibleColumns.revenue && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Revenue</th>}
-                      {visibleColumns.operatingProfit && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Op. Profit</th>}
-                      {visibleColumns.debt && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Debt</th>}
-                      {visibleColumns.netIncome && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Net Income</th>}
-                      {visibleColumns.status && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">Status</th>}
-                      {visibleColumns.lastUpdate && <th className="text-right py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">Updated</th>}
+                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1">
+                          <span style={{ color: columnColors.name || undefined }}>Company Name</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'name' ? null : 'name'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3" style={{ color: columnColors.name || '#94a3b8' }} />
+                            </button>
+                            {activeColorPicker === 'name' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, name: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>
+                      {visibleColumns.ceo && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1">
+                          <span style={{ color: columnColors.ceo || undefined }}>CEO</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'ceo' ? null : 'ceo'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3" style={{ color: columnColors.ceo || '#94a3b8' }} />
+                            </button>
+                            {activeColorPicker === 'ceo' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, ceo: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.address && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1">
+                          <span style={{ color: columnColors.address || undefined }}>Address</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'address' ? null : 'address'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3" style={{ color: columnColors.address || '#94a3b8' }} />
+                            </button>
+                            {activeColorPicker === 'address' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, address: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.industry && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1">
+                          <span style={{ color: columnColors.industry || undefined }}>Industry</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'industry' ? null : 'industry'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3" style={{ color: columnColors.industry || '#94a3b8' }} />
+                            </button>
+                            {activeColorPicker === 'industry' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, industry: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.foundedDate && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1">
+                          <span style={{ color: columnColors.foundedDate || undefined }}>Founded</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'foundedDate' ? null : 'foundedDate'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3" style={{ color: columnColors.foundedDate || '#94a3b8' }} />
+                            </button>
+                            {activeColorPicker === 'foundedDate' && (
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, foundedDate: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.employees && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center justify-end gap-1">
+                          <span style={{ color: columnColors.employees || undefined }}>Employees</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'employees' ? null : 'employees'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3" style={{ color: columnColors.employees || '#94a3b8' }} />
+                            </button>
+                            {activeColorPicker === 'employees' && (
+                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, employees: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.revenue && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center justify-end gap-1">
+                          <span style={{ color: columnColors.revenue || undefined }}>Revenue</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'revenue' ? null : 'revenue'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3" style={{ color: columnColors.revenue || '#94a3b8' }} />
+                            </button>
+                            {activeColorPicker === 'revenue' && (
+                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, revenue: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.operatingProfit && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center justify-end gap-1">
+                          <span style={{ color: columnColors.operatingProfit || undefined }}>Op. Profit</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'operatingProfit' ? null : 'operatingProfit'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3" style={{ color: columnColors.operatingProfit || '#94a3b8' }} />
+                            </button>
+                            {activeColorPicker === 'operatingProfit' && (
+                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, operatingProfit: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.debt && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center justify-end gap-1">
+                          <span style={{ color: columnColors.debt || undefined }}>Debt</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'debt' ? null : 'debt'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3" style={{ color: columnColors.debt || '#94a3b8' }} />
+                            </button>
+                            {activeColorPicker === 'debt' && (
+                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, debt: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.netIncome && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center justify-end gap-1">
+                          <span style={{ color: columnColors.netIncome || undefined }}>Net Income</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'netIncome' ? null : 'netIncome'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3" style={{ color: columnColors.netIncome || '#94a3b8' }} />
+                            </button>
+                            {activeColorPicker === 'netIncome' && (
+                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, netIncome: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.status && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center justify-center gap-1">
+                          <span style={{ color: columnColors.status || undefined }}>Status</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'status' ? null : 'status'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3" style={{ color: columnColors.status || '#94a3b8' }} />
+                            </button>
+                            {activeColorPicker === 'status' && (
+                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, status: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
+                      {visibleColumns.lastUpdate && <th className="text-right py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center justify-end gap-1">
+                          <span style={{ color: columnColors.lastUpdate || undefined }}>Updated</span>
+                          <div className="relative">
+                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'lastUpdate' ? null : 'lastUpdate'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                              <Palette className="w-3 h-3" style={{ color: columnColors.lastUpdate || '#94a3b8' }} />
+                            </button>
+                            {activeColorPicker === 'lastUpdate' && (
+                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                                {colorOptions.map((color) => (
+                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, lastUpdate: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -407,42 +617,43 @@ export default function CompanyData() {
                         <td className="py-3 px-6">
                           <button
                             onClick={() => setSelectedCompany(company)}
-                            className="font-medium text-slate-800 hover:text-blue-600 hover:underline text-left"
+                            className="font-medium hover:text-blue-600 hover:underline text-left"
+                            style={{ color: columnColors.name || '#1e293b' }}
                             data-testid={`company-name-${company.id}`}
                           >
                             {company.name}
                           </button>
                         </td>
-                        {visibleColumns.ceo && <td className="py-3 px-4 text-sm text-slate-600">{company.ceo}</td>}
-                        {visibleColumns.address && <td className="py-3 px-4 text-sm text-slate-500 max-w-[180px] truncate" title={company.address}>{company.address}</td>}
-                        {visibleColumns.industry && <td className="py-3 px-4 text-sm text-slate-600">{company.industry}</td>}
-                        {visibleColumns.foundedDate && <td className="py-3 px-4 text-sm text-slate-500">{company.foundedDate || "-"}</td>}
-                        {visibleColumns.employees && <td className="py-3 px-4 text-right text-sm text-slate-600">{company.employees?.toLocaleString() || "-"}</td>}
-                        {visibleColumns.revenue && <td className="py-3 px-4 text-right text-sm font-mono text-slate-700">{company.revenue}</td>}
+                        {visibleColumns.ceo && <td className="py-3 px-4 text-sm" style={{ color: columnColors.ceo || '#475569' }}>{company.ceo}</td>}
+                        {visibleColumns.address && <td className="py-3 px-4 text-sm max-w-[180px] truncate" style={{ color: columnColors.address || '#64748b' }} title={company.address}>{company.address}</td>}
+                        {visibleColumns.industry && <td className="py-3 px-4 text-sm" style={{ color: columnColors.industry || '#475569' }}>{company.industry}</td>}
+                        {visibleColumns.foundedDate && <td className="py-3 px-4 text-sm" style={{ color: columnColors.foundedDate || '#64748b' }}>{company.foundedDate || "-"}</td>}
+                        {visibleColumns.employees && <td className="py-3 px-4 text-right text-sm" style={{ color: columnColors.employees || '#475569' }}>{company.employees?.toLocaleString() || "-"}</td>}
+                        {visibleColumns.revenue && <td className="py-3 px-4 text-right text-sm font-mono" style={{ color: columnColors.revenue || '#334155' }}>{company.revenue}</td>}
                         {visibleColumns.operatingProfit && (
                           <td className="py-3 px-4 text-right text-sm font-mono">
-                            <span className={company.operatingProfit.startsWith("-") ? "text-red-500" : "text-emerald-600"}>
+                            <span style={{ color: columnColors.operatingProfit || (company.operatingProfit.startsWith("-") ? '#ef4444' : '#10b981') }}>
                               {company.operatingProfit}
                             </span>
                           </td>
                         )}
-                        {visibleColumns.debt && <td className="py-3 px-4 text-right text-sm font-mono text-slate-600">{company.debt}</td>}
+                        {visibleColumns.debt && <td className="py-3 px-4 text-right text-sm font-mono" style={{ color: columnColors.debt || '#475569' }}>{company.debt}</td>}
                         {visibleColumns.netIncome && (
                           <td className="py-3 px-4 text-right text-sm font-mono">
-                            <span className={company.netIncome?.startsWith("-") ? "text-red-500" : "text-slate-700"}>
+                            <span style={{ color: columnColors.netIncome || (company.netIncome?.startsWith("-") ? '#ef4444' : '#334155') }}>
                               {company.netIncome || "-"}
                             </span>
                           </td>
                         )}
                         {visibleColumns.status && (
                           <td className="py-3 px-4 text-center">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium text-emerald-600">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium" style={{ color: columnColors.status || '#10b981' }}>
+                              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: columnColors.status || '#10b981' }} />
                               {company.status}
                             </span>
                           </td>
                         )}
-                        {visibleColumns.lastUpdate && <td className="py-3 px-6 text-right text-xs text-slate-400">{company.lastUpdate}</td>}
+                        {visibleColumns.lastUpdate && <td className="py-3 px-6 text-right text-xs" style={{ color: columnColors.lastUpdate || '#94a3b8' }}>{company.lastUpdate}</td>}
                       </tr>
                     ))}
                   </tbody>

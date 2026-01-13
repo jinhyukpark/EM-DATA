@@ -293,8 +293,8 @@ export default function CompanyData() {
               <div className="flex items-center gap-3">
                 <Activity className="w-5 h-5 text-emerald-500" />
                 <div>
-                  <p className="text-xs text-slate-400 uppercase tracking-wide">Active</p>
-                  <p className="text-xl font-bold text-emerald-600" data-testid="active-companies">32,104</p>
+                  <p className="text-xs text-slate-400 uppercase tracking-wide">Collection Status</p>
+                  <p className="text-xl font-bold text-emerald-600" data-testid="collection-status">Running</p>
                 </div>
               </div>
               <div className="w-px h-10 bg-slate-200" />

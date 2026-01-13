@@ -630,41 +630,42 @@ export default function CompanyData() {
                           <button
                             onClick={() => setSelectedCompany(company)}
                             className="font-medium hover:text-blue-600 hover:underline text-left text-slate-800"
+                            style={{ color: columnColors.name || undefined }}
                             data-testid={`company-name-${company.id}`}
                           >
                             {company.name}
                           </button>
                         </td>
-                        {visibleColumns.ceo && <td className="py-3 px-4 text-sm text-slate-600">{company.ceo}</td>}
-                        {visibleColumns.address && <td className="py-3 px-4 text-sm max-w-[180px] truncate text-slate-500" title={company.address}>{company.address}</td>}
-                        {visibleColumns.industry && <td className="py-3 px-4 text-sm text-slate-600">{company.industry}</td>}
-                        {visibleColumns.foundedDate && <td className="py-3 px-4 text-sm text-slate-500">{company.foundedDate || "-"}</td>}
-                        {visibleColumns.employees && <td className="py-3 px-4 text-right text-sm text-slate-600">{company.employees?.toLocaleString() || "-"}</td>}
-                        {visibleColumns.revenue && <td className="py-3 px-4 text-right text-sm font-mono text-slate-700">{company.revenue}</td>}
+                        {visibleColumns.ceo && <td className="py-3 px-4 text-sm text-slate-600" style={{ color: columnColors.ceo || undefined }}>{company.ceo}</td>}
+                        {visibleColumns.address && <td className="py-3 px-4 text-sm max-w-[180px] truncate text-slate-500" style={{ color: columnColors.address || undefined }} title={company.address}>{company.address}</td>}
+                        {visibleColumns.industry && <td className="py-3 px-4 text-sm text-slate-600" style={{ color: columnColors.industry || undefined }}>{company.industry}</td>}
+                        {visibleColumns.foundedDate && <td className="py-3 px-4 text-sm text-slate-500" style={{ color: columnColors.foundedDate || undefined }}>{company.foundedDate || "-"}</td>}
+                        {visibleColumns.employees && <td className="py-3 px-4 text-right text-sm text-slate-600" style={{ color: columnColors.employees || undefined }}>{company.employees?.toLocaleString() || "-"}</td>}
+                        {visibleColumns.revenue && <td className="py-3 px-4 text-right text-sm font-mono text-slate-700" style={{ color: columnColors.revenue || undefined }}>{company.revenue}</td>}
                         {visibleColumns.operatingProfit && (
                           <td className="py-3 px-4 text-right text-sm font-mono">
-                            <span className={company.operatingProfit.startsWith("-") ? 'text-red-500' : 'text-emerald-500'}>
+                            <span className={company.operatingProfit.startsWith("-") ? 'text-red-500' : 'text-emerald-500'} style={{ color: columnColors.operatingProfit || undefined }}>
                               {company.operatingProfit}
                             </span>
                           </td>
                         )}
-                        {visibleColumns.debt && <td className="py-3 px-4 text-right text-sm font-mono text-slate-600">{company.debt}</td>}
+                        {visibleColumns.debt && <td className="py-3 px-4 text-right text-sm font-mono text-slate-600" style={{ color: columnColors.debt || undefined }}>{company.debt}</td>}
                         {visibleColumns.netIncome && (
                           <td className="py-3 px-4 text-right text-sm font-mono">
-                            <span className={company.netIncome?.startsWith("-") ? 'text-red-500' : 'text-slate-700'}>
+                            <span className={company.netIncome?.startsWith("-") ? 'text-red-500' : 'text-slate-700'} style={{ color: columnColors.netIncome || undefined }}>
                               {company.netIncome || "-"}
                             </span>
                           </td>
                         )}
                         {visibleColumns.status && (
                           <td className="py-3 px-4 text-center">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium text-emerald-500">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium text-emerald-500" style={{ color: columnColors.status || undefined }}>
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" style={{ backgroundColor: columnColors.status || undefined }} />
                               {company.status}
                             </span>
                           </td>
                         )}
-                        {visibleColumns.lastUpdate && <td className="py-3 px-6 text-right text-xs text-slate-400">{company.lastUpdate}</td>}
+                        {visibleColumns.lastUpdate && <td className="py-3 px-6 text-right text-xs text-slate-400" style={{ color: columnColors.lastUpdate || undefined }}>{company.lastUpdate}</td>}
                       </tr>
                     ))}
                   </tbody>

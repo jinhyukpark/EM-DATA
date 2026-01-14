@@ -230,9 +230,11 @@ export default function StockData() {
           </motion.section>
 
           <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.3 }}>
-            <div className="bg-white rounded-xl border border-slate-100">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-                <h2 className="text-sm font-medium text-slate-800">Stock Records</h2>
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+              <div className="flex items-center justify-between gap-3 p-4 border-b border-slate-100">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">Stock Records</h2>
+                </div>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
                     <select 
@@ -257,7 +259,7 @@ export default function StockData() {
                     </div>
                   </div>
                   <div className="relative">
-                    <select value={selectedMarket} onChange={(e) => setSelectedMarket(e.target.value)} className="pl-3 pr-8 py-2 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 appearance-none cursor-pointer" data-testid="market-filter">
+                    <select value={selectedMarket} onChange={(e) => setSelectedMarket(e.target.value)} className="pl-3 pr-8 py-2 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 appearance-none cursor-pointer shadow-sm" data-testid="market-filter">
                       <option value="All">All Markets</option>
                       <option value="KOSPI">KOSPI</option>
                       <option value="KOSDAQ">KOSDAQ</option>
@@ -267,7 +269,7 @@ export default function StockData() {
                   <div className="relative">
                     <button
                       onClick={() => setShowColumnSelector(!showColumnSelector)}
-                      className="flex items-center gap-2 px-3 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 hover:bg-slate-50 transition-colors"
+                      className="flex items-center gap-2 px-3 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
                       data-testid="column-selector-button"
                     >
                       <Columns className="w-4 h-4" />

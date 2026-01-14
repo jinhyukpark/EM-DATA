@@ -6,6 +6,7 @@ import {
   Filter,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Download,
   Clock,
   Activity,
@@ -625,6 +626,14 @@ export default function RnDData() {
                         data-testid="search-rnd" 
                       />
                     </div>
+                  </div>
+                  <div className="relative">
+                    <select value={filterType} onChange={(e) => setFilterType(e.target.value as any)} className="pl-3 pr-8 py-2 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 appearance-none cursor-pointer shadow-sm">
+                      <option value="All">All Types</option>
+                      <option value="Entry">Entry</option>
+                      <option value="Exit">Exit</option>
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                   </div>
                   <div className="relative">
                     <button

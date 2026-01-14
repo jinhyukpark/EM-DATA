@@ -238,9 +238,8 @@ export default function PaperData() {
 
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
               <div className="flex items-center justify-between gap-3 p-4 border-b border-slate-100">
-                <div className="flex items-center gap-2">
+                <div>
                   <h2 className="text-lg font-semibold text-slate-900">Total</h2>
-                  <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs font-medium">{papers.length}</span>
                 </div>
                 
                 <div className="flex items-center gap-3">

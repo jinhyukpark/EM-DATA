@@ -236,68 +236,67 @@ export default function PaperData() {
               </div>
             </motion.section>
 
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-1">
-                <button className="px-4 py-2 text-sm font-medium transition-colors rounded-lg bg-slate-900 text-white">
-                  Total <span className="ml-1 text-xs opacity-60">{papers.length}</span>
-                </button>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
-                  <select 
-                    value={searchField}
-                    onChange={(e) => setSearchField(e.target.value)}
-                    className="h-full pl-3 pr-8 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-32 rounded-none appearance-none"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
-                  >
-                    <option value="all">All Fields</option>
-                    <option value="title">Title</option>
-                    <option value="authors">Authors</option>
-                    <option value="journal">Journal</option>
-                    <option value="field">Field</option>
-                  </select>
-                  <div className="relative flex items-center flex-1 h-full min-w-[200px]">
-                    <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
-                    <Input
-                      placeholder="Search..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none"
-                      data-testid="search-paper"
-                    />
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+              <div className="flex items-center justify-between gap-3 p-4 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-semibold text-slate-900">Total</h2>
+                  <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs font-medium">{papers.length}</span>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
+                    <select 
+                      value={searchField}
+                      onChange={(e) => setSearchField(e.target.value)}
+                      className="h-full pl-3 pr-8 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-32 rounded-none appearance-none"
+                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
+                    >
+                      <option value="all">All Fields</option>
+                      <option value="title">Title</option>
+                      <option value="authors">Authors</option>
+                      <option value="journal">Journal</option>
+                      <option value="field">Field</option>
+                    </select>
+                    <div className="relative flex items-center flex-1 h-full min-w-[200px]">
+                      <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
+                      <Input
+                        placeholder="Search..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none"
+                        data-testid="search-paper"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowColumnSelector(!showColumnSelector)}
+                      className="flex items-center gap-2 px-3 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
+                    >
+                      <Columns className="w-4 h-4" />
+                      Fields
+                    </button>
+                    {showColumnSelector && (
+                      <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-10">
+                        {Object.entries(columnLabels).map(([key, label]) => (
+                          <button
+                            key={key}
+                            onClick={() => toggleColumn(key)}
+                            className="flex items-center justify-between w-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+                          >
+                            <span>{label}</span>
+                            {visibleColumns[key as keyof typeof visibleColumns] && (
+                              <Check className="w-4 h-4 text-blue-500" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
-
-                <div className="relative">
-                  <button
-                    onClick={() => setShowColumnSelector(!showColumnSelector)}
-                    className="flex items-center gap-2 px-3 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
-                  >
-                    <Columns className="w-4 h-4" />
-                    Fields
-                  </button>
-                  {showColumnSelector && (
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-10">
-                      {Object.entries(columnLabels).map(([key, label]) => (
-                        <button
-                          key={key}
-                          onClick={() => toggleColumn(key)}
-                          className="flex items-center justify-between w-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
-                        >
-                          <span>{label}</span>
-                          {visibleColumns[key as keyof typeof visibleColumns] && (
-                            <Check className="w-4 h-4 text-blue-500" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
               </div>
-            </div>
 
-            <div className="bg-white rounded-xl border border-slate-100 overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full" data-testid="paper-table">
                   <thead>

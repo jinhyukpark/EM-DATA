@@ -394,19 +394,7 @@ export default function PatentData() {
                         )}
                         {visibleColumns.status && (
                           <td className="py-3 px-4 text-center">
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${
-                              patent.status === "Registered" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                              patent.status === "Published" ? "bg-blue-50 text-blue-600 border-blue-100" :
-                              patent.status === "Under Review" ? "bg-amber-50 text-amber-600 border-amber-100" :
-                              "bg-slate-50 text-slate-600 border-slate-100"
-                            }`} style={{ color: columnColors.status || undefined, backgroundColor: columnColors.status ? undefined : undefined, borderColor: columnColors.status ? columnColors.status : undefined }}>
-                              {columnColors.status && <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: columnColors.status }} />}
-                              {!columnColors.status && <span className={`w-1.5 h-1.5 rounded-full ${
-                                patent.status === "Registered" ? "bg-emerald-500" :
-                                patent.status === "Published" ? "bg-blue-500" :
-                                patent.status === "Under Review" ? "bg-amber-500" :
-                                "bg-slate-500"
-                              }`} />}
+                            <span className="text-sm text-slate-600" style={{ color: columnColors.status || undefined }}>
                               {patent.status}
                             </span>
                           </td>

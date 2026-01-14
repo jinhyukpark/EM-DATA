@@ -671,7 +671,7 @@ export default function EmploymentData() {
 
                     return (
                       <tr key={record.id} className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" data-testid={`employment-row-${record.id}`}>
-                        <td className="py-4 px-4" style={{ backgroundColor: styles.employeeName.backgroundColor }}>
+                        <td className="py-4 px-4 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.employeeName.backgroundColor }}>
                           <div className="flex items-center gap-3">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${record.type === "Entry" ? "bg-emerald-50" : "bg-red-50"}`}>
                               {record.type === "Entry" ? (
@@ -687,7 +687,7 @@ export default function EmploymentData() {
                             </span>
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-center" style={{ backgroundColor: styles.type.backgroundColor }}>
+                        <td className="py-4 px-4 text-center border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.type.backgroundColor }}>
                           <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
                             record.type === "Entry" ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
                           }`} style={{ 
@@ -697,35 +697,35 @@ export default function EmploymentData() {
                             {record.type}
                           </span>
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-600" style={{ backgroundColor: styles.company.backgroundColor }}>
+                        <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.company.backgroundColor }}>
                            <span style={{ color: styles.company.color }}>
                             {styles.company.isTextOnly && styles.company.rawBgColor ? (
                               <span className="px-1 rounded" style={{ backgroundColor: styles.company.rawBgColor }}>{record.company}</span>
                             ) : record.company}
                            </span>
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-600" style={{ backgroundColor: styles.department.backgroundColor }}>
+                        <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.department.backgroundColor }}>
                            <span style={{ color: styles.department.color }}>
                             {styles.department.isTextOnly && styles.department.rawBgColor ? (
                               <span className="px-1 rounded" style={{ backgroundColor: styles.department.rawBgColor }}>{record.department}</span>
                             ) : record.department}
                            </span>
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-600" style={{ backgroundColor: styles.position.backgroundColor }}>
+                        <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.position.backgroundColor }}>
                            <span style={{ color: styles.position.color }}>
                             {styles.position.isTextOnly && styles.position.rawBgColor ? (
                               <span className="px-1 rounded" style={{ backgroundColor: styles.position.rawBgColor }}>{record.position}</span>
                             ) : record.position}
                            </span>
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-600" style={{ backgroundColor: styles.date.backgroundColor }}>
+                        <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.date.backgroundColor }}>
                            <span style={{ color: styles.date.color }}>
                             {styles.date.isTextOnly && styles.date.rawBgColor ? (
                               <span className="px-1 rounded" style={{ backgroundColor: styles.date.rawBgColor }}>{record.date}</span>
                             ) : record.date}
                            </span>
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-500" style={{ backgroundColor: styles.reason.backgroundColor }}>
+                        <td className="py-4 px-4 text-sm text-slate-500 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.reason.backgroundColor }}>
                           <span style={{ color: styles.reason.color }}>
                              {record.type === "Entry" ? (
                               <span className="flex items-center gap-1">

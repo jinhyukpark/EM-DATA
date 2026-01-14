@@ -637,7 +637,7 @@ export default function RnDData() {
                     const getStyle = (col: string, val: any) => getCellStyle(col, val) as any;
                     return (
                     <tr key={record.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors" data-testid={`rnd-row-${record.id}`}>
-                      <td className="py-3 px-6" style={{ backgroundColor: getStyle('employee', record.employee).backgroundColor }}>
+                      <td className="py-3 px-6 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('employee', record.employee).backgroundColor }}>
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
                             <UserCog className="w-4 h-4 text-slate-600" />
@@ -656,7 +656,7 @@ export default function RnDData() {
                           </span>
                         </div>
                       </td>
-                      <td className="py-3 px-4" style={{ backgroundColor: getStyle('type', record.type).backgroundColor }}>
+                      <td className="py-3 px-4 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('type', record.type).backgroundColor }}>
                         <span 
                           className={`px-2.5 py-1 rounded-full text-xs font-medium ${
                             record.type === "Entry" ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
@@ -672,7 +672,7 @@ export default function RnDData() {
                           {record.type}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-sm text-slate-600" style={{ backgroundColor: getStyle('company', record.company).backgroundColor }}>
+                      <td className="py-3 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('company', record.company).backgroundColor }}>
                         <span style={{ 
                             color: getStyle('company', record.company).color,
                             backgroundColor: getStyle('company', record.company).isTextOnly ? getStyle('company', record.company).rawBgColor : undefined, 
@@ -683,7 +683,7 @@ export default function RnDData() {
                           {record.company}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-sm text-slate-600" style={{ backgroundColor: getStyle('department', record.department).backgroundColor }}>
+                      <td className="py-3 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('department', record.department).backgroundColor }}>
                         <span style={{ 
                             color: getStyle('department', record.department).color,
                             backgroundColor: getStyle('department', record.department).isTextOnly ? getStyle('department', record.department).rawBgColor : undefined, 
@@ -694,7 +694,7 @@ export default function RnDData() {
                           {record.department}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-sm text-slate-600" style={{ backgroundColor: getStyle('position', record.position).backgroundColor }}>
+                      <td className="py-3 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('position', record.position).backgroundColor }}>
                         <span style={{ 
                             color: getStyle('position', record.position).color,
                             backgroundColor: getStyle('position', record.position).isTextOnly ? getStyle('position', record.position).rawBgColor : undefined, 
@@ -705,7 +705,7 @@ export default function RnDData() {
                           {record.position}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-sm text-slate-600" style={{ backgroundColor: getStyle('date', record.date).backgroundColor }}>
+                      <td className="py-3 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('date', record.date).backgroundColor }}>
                         <span style={{ 
                             color: getStyle('date', record.date).color,
                             backgroundColor: getStyle('date', record.date).isTextOnly ? getStyle('date', record.date).rawBgColor : undefined, 
@@ -716,7 +716,7 @@ export default function RnDData() {
                           {record.date}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-sm text-slate-500" style={{ backgroundColor: getStyle('previousReason', record.previousReason).backgroundColor }}>
+                      <td className="py-3 px-4 text-sm text-slate-500 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('previousReason', record.previousReason).backgroundColor }}>
                         <span style={{ 
                             color: getStyle('previousReason', record.previousReason).color,
                             backgroundColor: getStyle('previousReason', record.previousReason).isTextOnly ? getStyle('previousReason', record.previousReason).rawBgColor : undefined, 

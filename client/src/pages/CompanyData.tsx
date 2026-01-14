@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import React from "react";
 import {
   Building2,
   Search,
@@ -206,8 +207,61 @@ export default function CompanyData() {
     { name: "Slate", value: "#64748b" },
   ];
   
-  const [columnStyles, setColumnStyles] = useState<Record<string, ColumnStyle>>({});
-  const [activeConfigColumn, setActiveConfigColumn] = useState<string | null>(null);
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({
+    name: 200,
+    ceo: 120,
+    address: 250,
+    industry: 150,
+    foundedDate: 120,
+    employees: 120,
+    revenue: 120,
+    operatingProfit: 120,
+    debt: 120,
+    netIncome: 120,
+    status: 100,
+    lastUpdate: 120,
+  });
+
+  const handleResize = (columnId: string, width: number) => {
+    setColumnWidths(prev => ({
+      ...prev,
+      [columnId]: Math.max(width, 50)
+    }));
+  };
+
+  const ResizableHeader = ({ id, label, align = "left", children }: { id: string, label: string, align?: "left" | "center" | "right", children?: React.ReactNode }) => {
+    return (
+      <th 
+        className={`relative py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide border-r border-slate-200 group last:border-r-0`}
+        style={{ width: columnWidths[id] }}
+      >
+        <div className={`flex items-center gap-1.5 ${align === 'center' ? 'justify-center' : align === 'right' ? 'justify-end' : 'justify-start'}`}>
+          <span>{label}</span>
+          {children}
+        </div>
+        <div
+          className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-400/50 transition-colors"
+          onMouseDown={(e) => {
+            const startX = e.pageX;
+            const startWidth = columnWidths[id];
+            
+            const onMouseMove = (moveEvent: MouseEvent) => {
+              const newWidth = startWidth + (moveEvent.pageX - startX);
+              handleResize(id, newWidth);
+            };
+            
+            const onMouseUp = () => {
+              document.removeEventListener('mousemove', onMouseMove);
+              document.removeEventListener('mouseup', onMouseUp);
+            };
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+          }}
+        />
+      </th>
+    );
+  };
 
   const getCellStyle = (columnId: string, value: any) => {
     const style = columnStyles[columnId];
@@ -765,105 +819,100 @@ export default function CompanyData() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full" data-testid="company-table">
+                <table className="w-full border-collapse" data-testid="company-table">
                   <thead>
-                    <tr className="bg-slate-50/50">
-                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center gap-1.5">
-                          <span>Company Name</span>
-                          <div className="relative">
-                            {renderColumnConfig('name', 'Company Name')}
-                          </div>
+                    <tr className="bg-slate-50/50 border-b border-slate-200">
+                      <ResizableHeader id="name" label="Company Name">
+                        <div className="relative">
+                          {renderColumnConfig('name', 'Company Name')}
                         </div>
-                      </th>
-                      {visibleColumns.ceo && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center gap-1.5">
-                          <span>CEO</span>
+                      </ResizableHeader>
+                      
+                      {visibleColumns.ceo && (
+                        <ResizableHeader id="ceo" label="CEO">
                           <div className="relative">
                             {renderColumnConfig('ceo', 'CEO')}
                           </div>
-                        </div>
-                      </th>}
-                      {visibleColumns.address && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center gap-1.5">
-                          <span>Address</span>
+                        </ResizableHeader>
+                      )}
+                      
+                      {visibleColumns.address && (
+                        <ResizableHeader id="address" label="Address">
                           <div className="relative">
                             {renderColumnConfig('address', 'Address')}
                           </div>
-                        </div>
-                      </th>}
-                      {visibleColumns.industry && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center gap-1.5">
-                          <span>Industry</span>
+                        </ResizableHeader>
+                      )}
+                      
+                      {visibleColumns.industry && (
+                        <ResizableHeader id="industry" label="Industry">
                           <div className="relative">
                             {renderColumnConfig('industry', 'Industry')}
                           </div>
-                        </div>
-                      </th>}
-                      {visibleColumns.foundedDate && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center gap-1.5">
-                          <span>Founded</span>
+                        </ResizableHeader>
+                      )}
+                      
+                      {visibleColumns.foundedDate && (
+                        <ResizableHeader id="foundedDate" label="Founded">
                           <div className="relative">
                             {renderColumnConfig('foundedDate', 'Founded Date')}
                           </div>
-                        </div>
-                      </th>}
-                      {visibleColumns.employees && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <span>Employees</span>
+                        </ResizableHeader>
+                      )}
+                      
+                      {visibleColumns.employees && (
+                        <ResizableHeader id="employees" label="Employees" align="right">
                           <div className="relative">
                             {renderColumnConfig('employees', 'Employees')}
                           </div>
-                        </div>
-                      </th>}
-                      {visibleColumns.revenue && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <span>Revenue</span>
+                        </ResizableHeader>
+                      )}
+                      
+                      {visibleColumns.revenue && (
+                        <ResizableHeader id="revenue" label="Revenue" align="right">
                           <div className="relative">
                             {renderColumnConfig('revenue', 'Revenue')}
                           </div>
-                        </div>
-                      </th>}
-                      {visibleColumns.operatingProfit && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <span>Op. Profit</span>
+                        </ResizableHeader>
+                      )}
+                      
+                      {visibleColumns.operatingProfit && (
+                        <ResizableHeader id="operatingProfit" label="Op. Profit" align="right">
                           <div className="relative">
                             {renderColumnConfig('operatingProfit', 'Operating Profit')}
                           </div>
-                        </div>
-                      </th>}
-                      {visibleColumns.debt && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <span>Debt</span>
+                        </ResizableHeader>
+                      )}
+                      {visibleColumns.debt && (
+                        <ResizableHeader id="debt" label="Debt" align="right">
                           <div className="relative">
                             {renderColumnConfig('debt', 'Debt')}
                           </div>
-                        </div>
-                      </th>}
-                      {visibleColumns.netIncome && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <span>Net Income</span>
+                        </ResizableHeader>
+                      )}
+                      {visibleColumns.netIncome && (
+                        <ResizableHeader id="netIncome" label="Net Income" align="right">
                           <div className="relative">
                             {renderColumnConfig('netIncome', 'Net Income')}
                           </div>
-                        </div>
-                      </th>}
-                      {visibleColumns.status && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <span>Status</span>
+                        </ResizableHeader>
+                      )}
+                      
+                      {visibleColumns.status && (
+                        <ResizableHeader id="status" label="Status" align="center">
                           <div className="relative">
                             {renderColumnConfig('status', 'Status')}
                           </div>
-                        </div>
-                      </th>}
-                      {visibleColumns.lastUpdate && <th className="text-right py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <span>Updated</span>
+                        </ResizableHeader>
+                      )}
+                      
+                      {visibleColumns.lastUpdate && (
+                        <ResizableHeader id="lastUpdate" label="Updated" align="right">
                           <div className="relative">
                             {renderColumnConfig('lastUpdate', 'Last Updated')}
                           </div>
-                        </div>
-                      </th>}
+                        </ResizableHeader>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -872,7 +921,7 @@ export default function CompanyData() {
                       const renderSimpleCell = (col: string, val: any, className: string = "text-slate-600", align: "left" | "center" | "right" = "left") => {
                         const s = getStyle(col, val);
                         return (
-                          <td className={`py-3 px-4 text-sm ${className} ${align === 'right' ? 'text-right' : align === 'center' ? 'text-center' : 'text-left'}`} style={{ color: s.color, backgroundColor: s.backgroundColor }}>
+                          <td className={`py-3 px-4 text-sm ${className} ${align === 'right' ? 'text-right' : align === 'center' ? 'text-center' : 'text-left'} border-r border-slate-100 last:border-r-0`} style={{ color: s.color, backgroundColor: s.backgroundColor }}>
                             <span style={{ backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, padding: s.isTextOnly ? '2px 8px' : undefined, borderRadius: s.isTextOnly ? '4px' : undefined, display: s.isTextOnly ? 'inline-block' : undefined }}>
                               {val || "-"}
                             </span>
@@ -882,7 +931,7 @@ export default function CompanyData() {
 
                       return (
                       <tr key={company.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors" data-testid={`company-row-${company.id}`}>
-                        <td className="py-3 px-6" style={{ backgroundColor: getStyle('name', company.name).backgroundColor }}>
+                        <td className="py-3 px-6 border-r border-slate-100" style={{ backgroundColor: getStyle('name', company.name).backgroundColor }}>
                           <span style={{ backgroundColor: getStyle('name', company.name).isTextOnly ? getStyle('name', company.name).rawBgColor : undefined, padding: getStyle('name', company.name).isTextOnly ? '2px 8px' : undefined, borderRadius: getStyle('name', company.name).isTextOnly ? '4px' : undefined, display: getStyle('name', company.name).isTextOnly ? 'inline-block' : undefined }}>
                             <button
                               onClick={() => setSelectedCompany(company)}
@@ -896,7 +945,7 @@ export default function CompanyData() {
                         </td>
                         {visibleColumns.ceo && renderSimpleCell('ceo', company.ceo)}
                         {visibleColumns.address && (() => { const s = getStyle('address', company.address); return (
-                            <td className="py-3 px-4 text-sm max-w-[180px] truncate text-slate-500" style={{ color: s.color, backgroundColor: s.backgroundColor }} title={company.address}>
+                            <td className="py-3 px-4 text-sm max-w-[180px] truncate text-slate-500 border-r border-slate-100" style={{ color: s.color, backgroundColor: s.backgroundColor }} title={company.address}>
                               <span style={{ backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, padding: s.isTextOnly ? '2px 8px' : undefined, borderRadius: s.isTextOnly ? '4px' : undefined, display: s.isTextOnly ? 'inline-block' : undefined }}>
                                 {company.address}
                               </span>
@@ -905,7 +954,7 @@ export default function CompanyData() {
                         {visibleColumns.industry && renderSimpleCell('industry', company.industry)}
                         {visibleColumns.foundedDate && renderSimpleCell('foundedDate', company.foundedDate, "text-slate-500")}
                         {visibleColumns.employees && (() => { const s = getStyle('employees', company.employees); return (
-                            <td className="py-3 px-4 text-right text-sm text-slate-600" style={{ color: s.color, backgroundColor: s.backgroundColor }}>
+                            <td className="py-3 px-4 text-right text-sm text-slate-600 border-r border-slate-100" style={{ color: s.color, backgroundColor: s.backgroundColor }}>
                                <span style={{ backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, padding: s.isTextOnly ? '2px 8px' : undefined, borderRadius: s.isTextOnly ? '4px' : undefined, display: s.isTextOnly ? 'inline-block' : undefined }}>
                                  {company.employees?.toLocaleString() || "-"}
                                </span>
@@ -913,7 +962,7 @@ export default function CompanyData() {
                         )})()}
                         {visibleColumns.revenue && renderSimpleCell('revenue', company.revenue, "font-mono text-slate-700", "right")}
                         {visibleColumns.operatingProfit && (() => { const s = getStyle('operatingProfit', company.operatingProfit); return (
-                          <td className="py-3 px-4 text-right text-sm font-mono" style={{ backgroundColor: s.backgroundColor }}>
+                          <td className="py-3 px-4 text-right text-sm font-mono border-r border-slate-100" style={{ backgroundColor: s.backgroundColor }}>
                             <span className={company.operatingProfit.startsWith("-") ? 'text-red-500' : 'text-emerald-500'} style={{ 
                                 color: s.color,
                                 backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, 
@@ -927,7 +976,7 @@ export default function CompanyData() {
                         )})()}
                         {visibleColumns.debt && renderSimpleCell('debt', company.debt, "font-mono text-slate-600", "right")}
                         {visibleColumns.netIncome && (() => { const s = getStyle('netIncome', company.netIncome); return (
-                          <td className="py-3 px-4 text-right text-sm font-mono" style={{ backgroundColor: s.backgroundColor }}>
+                          <td className="py-3 px-4 text-right text-sm font-mono border-r border-slate-100" style={{ backgroundColor: s.backgroundColor }}>
                             <span className={company.netIncome?.startsWith("-") ? 'text-red-500' : 'text-slate-700'} style={{ 
                                 color: s.color,
                                 backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, 
@@ -940,7 +989,7 @@ export default function CompanyData() {
                           </td>
                         )})()}
                         {visibleColumns.status && (() => { const s = getStyle('status', company.status); return (
-                          <td className="py-3 px-4 text-center" style={{ backgroundColor: s.backgroundColor }}>
+                          <td className="py-3 px-4 text-center border-r border-slate-100" style={{ backgroundColor: s.backgroundColor }}>
                             <span className="text-xs font-medium text-emerald-500" style={{ 
                                 color: s.color,
                                 backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, 

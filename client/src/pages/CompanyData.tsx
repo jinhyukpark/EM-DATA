@@ -461,7 +461,7 @@ export default function CompanyData() {
                   <Switch 
                     checked={!!style.bgTextOnly}
                     onCheckedChange={(checked) => setColumnStyles(prev => ({...prev, [columnId]: {...(prev[columnId] || {textRules:[], bgRules:[]}), bgTextOnly: checked}}))}
-                    className="scale-75 origin-right"
+                    className="scale-75 origin-right data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-slate-200"
                   />
                 </div>
               </div>

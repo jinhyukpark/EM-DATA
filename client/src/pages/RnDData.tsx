@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import React from "react";
 import {
   Search,
   Filter,
@@ -201,6 +202,59 @@ export default function RnDData() {
         }
       };
     });
+  };
+
+  const [searchField, setSearchField] = useState("all");
+
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({
+    employee: 200,
+    type: 100,
+    company: 150,
+    department: 150,
+    position: 150,
+    date: 120,
+    previousReason: 200,
+  });
+
+  const handleResize = (columnId: string, width: number) => {
+    setColumnWidths(prev => ({
+      ...prev,
+      [columnId]: Math.max(width, 50)
+    }));
+  };
+
+  const ResizableHeader = ({ id, label, align = "left", children }: { id: string, label: string, align?: "left" | "center" | "right", children?: React.ReactNode }) => {
+    return (
+      <th 
+        className={`relative py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide border-r border-slate-200 group last:border-r-0`}
+        style={{ width: columnWidths[id] }}
+      >
+        <div className={`flex items-center gap-1.5 ${align === 'center' ? 'justify-center' : align === 'right' ? 'justify-end' : 'justify-start'}`}>
+          <span>{label}</span>
+          {children}
+        </div>
+        <div
+          className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-400/50 transition-colors"
+          onMouseDown={(e) => {
+            const startX = e.pageX;
+            const startWidth = columnWidths[id];
+            
+            const onMouseMove = (moveEvent: MouseEvent) => {
+              const newWidth = startWidth + (moveEvent.pageX - startX);
+              handleResize(id, newWidth);
+            };
+            
+            const onMouseUp = () => {
+              document.removeEventListener('mousemove', onMouseMove);
+              document.removeEventListener('mouseup', onMouseUp);
+            };
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+          }}
+        />
+      </th>
+    );
   };
 
   const renderColumnConfig = (columnId: string, title: string) => {
@@ -505,15 +559,30 @@ export default function RnDData() {
             </motion.section>
 
             <div className="flex items-center justify-between gap-3 mb-6">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input
-                  placeholder="Search employees, companies, or departments..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 border-slate-200"
-                  data-testid="search-rnd"
-                />
+              <div className="flex items-center gap-3">
+                <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
+                  <select 
+                    value={searchField} 
+                    onChange={(e) => setSearchField(e.target.value)}
+                    className="h-full pl-3 pr-8 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-32 rounded-none appearance-none"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
+                  >
+                    <option value="all">All Fields</option>
+                    <option value="employee">Employee</option>
+                    <option value="company">Company</option>
+                    <option value="department">Department</option>
+                  </select>
+                  <div className="relative flex items-center flex-1 h-full min-w-[200px]">
+                    <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
+                    <Input 
+                      placeholder="Search employees, companies..." 
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none" 
+                      data-testid="search-rnd" 
+                    />
+                  </div>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex items-center bg-slate-100 rounded-lg p-1">

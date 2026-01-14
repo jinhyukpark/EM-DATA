@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import React from "react";
 import {
   TrendingUp,
   TrendingDown,
@@ -86,6 +87,61 @@ export default function StockData() {
     const matchesMarket = selectedMarket === "All" || stock.market === selectedMarket;
     return matchesSearch && matchesMarket;
   });
+
+  const [searchField, setSearchField] = useState("all");
+
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({
+    name: 200,
+    symbol: 100,
+    market: 100,
+    price: 120,
+    change: 100,
+    volume: 120,
+    marketCap: 120,
+    per: 80,
+    pbr: 80,
+  });
+
+  const handleResize = (columnId: string, width: number) => {
+    setColumnWidths(prev => ({
+      ...prev,
+      [columnId]: Math.max(width, 50)
+    }));
+  };
+
+  const ResizableHeader = ({ id, label, align = "left", children }: { id: string, label: string, align?: "left" | "center" | "right", children?: React.ReactNode }) => {
+    return (
+      <th 
+        className={`relative py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide border-r border-slate-200 group last:border-r-0`}
+        style={{ width: columnWidths[id] }}
+      >
+        <div className={`flex items-center gap-1.5 ${align === 'center' ? 'justify-center' : align === 'right' ? 'justify-end' : 'justify-start'}`}>
+          <span>{label}</span>
+          {children}
+        </div>
+        <div
+          className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-400/50 transition-colors"
+          onMouseDown={(e) => {
+            const startX = e.pageX;
+            const startWidth = columnWidths[id];
+            
+            const onMouseMove = (moveEvent: MouseEvent) => {
+              const newWidth = startWidth + (moveEvent.pageX - startX);
+              handleResize(id, newWidth);
+            };
+            
+            const onMouseUp = () => {
+              document.removeEventListener('mousemove', onMouseMove);
+              document.removeEventListener('mouseup', onMouseUp);
+            };
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+          }}
+        />
+      </th>
+    );
+  };
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -178,9 +234,27 @@ export default function StockData() {
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
                 <h2 className="text-sm font-medium text-slate-800">Stock Records</h2>
                 <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <Input placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9 w-48 h-9 border-slate-200 text-sm" data-testid="search-input" />
+                  <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
+                    <select 
+                      value={searchField} 
+                      onChange={(e) => setSearchField(e.target.value)}
+                      className="h-full pl-3 pr-8 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-32 rounded-none appearance-none"
+                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
+                    >
+                      <option value="all">All Fields</option>
+                      <option value="name">Name</option>
+                      <option value="symbol">Symbol</option>
+                    </select>
+                    <div className="relative flex items-center flex-1 h-full min-w-[200px]">
+                      <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
+                      <Input 
+                        placeholder="Search..." 
+                        value={searchTerm} 
+                        onChange={(e) => setSearchTerm(e.target.value)} 
+                        className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none" 
+                        data-testid="search-input" 
+                      />
+                    </div>
                   </div>
                   <div className="relative">
                     <select value={selectedMarket} onChange={(e) => setSelectedMarket(e.target.value)} className="pl-3 pr-8 py-2 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 appearance-none cursor-pointer" data-testid="market-filter">
@@ -222,169 +296,133 @@ export default function StockData() {
               <div className="overflow-x-auto">
                 <table className="w-full" data-testid="stock-table">
                   <thead>
-                    <tr className="bg-slate-50/50">
-                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center gap-1.5">
-                          {columnColors.name && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.name }} />}
-                          <span>Stock Name</span>
-                          <div className="relative">
-                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'name' ? null : 'name'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                              <Palette className="w-3 h-3 text-slate-400" />
-                            </button>
-                            {activeColorPicker === 'name' && (
-                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                                {colorOptions.map((color) => (
-                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, name: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                    <tr className="bg-slate-50/50 border-b border-slate-100">
+                      <ResizableHeader id="name" label="Stock Name">
+                        <div className="relative">
+                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'name' ? null : 'name'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                            <Palette className="w-3 h-3 text-slate-400" />
+                          </button>
+                          {activeColorPicker === 'name' && (
+                            <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                              {colorOptions.map((color) => (
+                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, name: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </th>
-                      {visibleColumns.symbol && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center gap-1.5">
-                          {columnColors.symbol && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.symbol }} />}
-                          <span>Symbol</span>
-                          <div className="relative">
-                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'symbol' ? null : 'symbol'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                              <Palette className="w-3 h-3 text-slate-400" />
-                            </button>
-                            {activeColorPicker === 'symbol' && (
-                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                                {colorOptions.map((color) => (
-                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, symbol: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                      </ResizableHeader>
+                      {visibleColumns.symbol && <ResizableHeader id="symbol" label="Symbol">
+                        <div className="relative">
+                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'symbol' ? null : 'symbol'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                            <Palette className="w-3 h-3 text-slate-400" />
+                          </button>
+                          {activeColorPicker === 'symbol' && (
+                            <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                              {colorOptions.map((color) => (
+                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, symbol: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </th>}
-                      {visibleColumns.market && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-center gap-1.5">
-                          {columnColors.market && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.market }} />}
-                          <span>Market</span>
-                          <div className="relative">
-                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'market' ? null : 'market'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                              <Palette className="w-3 h-3 text-slate-400" />
-                            </button>
-                            {activeColorPicker === 'market' && (
-                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                                {colorOptions.map((color) => (
-                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, market: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                      </ResizableHeader>}
+                      {visibleColumns.market && <ResizableHeader id="market" label="Market" align="center">
+                        <div className="relative">
+                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'market' ? null : 'market'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                            <Palette className="w-3 h-3 text-slate-400" />
+                          </button>
+                          {activeColorPicker === 'market' && (
+                            <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                              {colorOptions.map((color) => (
+                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, market: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </th>}
-                      {visibleColumns.price && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-end gap-1.5">
-                          {columnColors.price && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.price }} />}
-                          <span>Price</span>
-                          <div className="relative">
-                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'price' ? null : 'price'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                              <Palette className="w-3 h-3 text-slate-400" />
-                            </button>
-                            {activeColorPicker === 'price' && (
-                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                                {colorOptions.map((color) => (
-                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, price: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                      </ResizableHeader>}
+                      {visibleColumns.price && <ResizableHeader id="price" label="Price" align="right">
+                        <div className="relative">
+                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'price' ? null : 'price'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                            <Palette className="w-3 h-3 text-slate-400" />
+                          </button>
+                          {activeColorPicker === 'price' && (
+                            <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                              {colorOptions.map((color) => (
+                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, price: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </th>}
-                      {visibleColumns.change && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-end gap-1.5">
-                          {columnColors.change && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.change }} />}
-                          <span>Change</span>
-                          <div className="relative">
-                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'change' ? null : 'change'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                              <Palette className="w-3 h-3 text-slate-400" />
-                            </button>
-                            {activeColorPicker === 'change' && (
-                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                                {colorOptions.map((color) => (
-                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, change: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                      </ResizableHeader>}
+                      {visibleColumns.change && <ResizableHeader id="change" label="Change" align="right">
+                        <div className="relative">
+                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'change' ? null : 'change'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                            <Palette className="w-3 h-3 text-slate-400" />
+                          </button>
+                          {activeColorPicker === 'change' && (
+                            <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                              {colorOptions.map((color) => (
+                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, change: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </th>}
-                      {visibleColumns.volume && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-end gap-1.5">
-                          {columnColors.volume && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.volume }} />}
-                          <span>Volume</span>
-                          <div className="relative">
-                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'volume' ? null : 'volume'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                              <Palette className="w-3 h-3 text-slate-400" />
-                            </button>
-                            {activeColorPicker === 'volume' && (
-                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                                {colorOptions.map((color) => (
-                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, volume: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                      </ResizableHeader>}
+                      {visibleColumns.volume && <ResizableHeader id="volume" label="Volume" align="right">
+                        <div className="relative">
+                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'volume' ? null : 'volume'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                            <Palette className="w-3 h-3 text-slate-400" />
+                          </button>
+                          {activeColorPicker === 'volume' && (
+                            <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                              {colorOptions.map((color) => (
+                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, volume: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </th>}
-                      {visibleColumns.marketCap && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-end gap-1.5">
-                          {columnColors.marketCap && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.marketCap }} />}
-                          <span>Market Cap</span>
-                          <div className="relative">
-                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'marketCap' ? null : 'marketCap'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                              <Palette className="w-3 h-3 text-slate-400" />
-                            </button>
-                            {activeColorPicker === 'marketCap' && (
-                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                                {colorOptions.map((color) => (
-                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, marketCap: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                      </ResizableHeader>}
+                      {visibleColumns.marketCap && <ResizableHeader id="marketCap" label="Market Cap" align="right">
+                        <div className="relative">
+                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'marketCap' ? null : 'marketCap'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                            <Palette className="w-3 h-3 text-slate-400" />
+                          </button>
+                          {activeColorPicker === 'marketCap' && (
+                            <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                              {colorOptions.map((color) => (
+                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, marketCap: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </th>}
-                      {visibleColumns.per && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-end gap-1.5">
-                          {columnColors.per && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.per }} />}
-                          <span>PER</span>
-                          <div className="relative">
-                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'per' ? null : 'per'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                              <Palette className="w-3 h-3 text-slate-400" />
-                            </button>
-                            {activeColorPicker === 'per' && (
-                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                                {colorOptions.map((color) => (
-                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, per: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                      </ResizableHeader>}
+                      {visibleColumns.per && <ResizableHeader id="per" label="PER" align="right">
+                        <div className="relative">
+                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'per' ? null : 'per'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                            <Palette className="w-3 h-3 text-slate-400" />
+                          </button>
+                          {activeColorPicker === 'per' && (
+                            <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                              {colorOptions.map((color) => (
+                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, per: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </th>}
-                      {visibleColumns.pbr && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center justify-end gap-1.5">
-                          {columnColors.pbr && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.pbr }} />}
-                          <span>PBR</span>
-                          <div className="relative">
-                            <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'pbr' ? null : 'pbr'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                              <Palette className="w-3 h-3 text-slate-400" />
-                            </button>
-                            {activeColorPicker === 'pbr' && (
-                              <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                                {colorOptions.map((color) => (
-                                  <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, pbr: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                      </ResizableHeader>}
+                      {visibleColumns.pbr && <ResizableHeader id="pbr" label="PBR" align="right">
+                        <div className="relative">
+                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'pbr' ? null : 'pbr'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
+                            <Palette className="w-3 h-3 text-slate-400" />
+                          </button>
+                          {activeColorPicker === 'pbr' && (
+                            <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
+                              {colorOptions.map((color) => (
+                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, pbr: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </th>}
+                      </ResizableHeader>}
                     </tr>
                   </thead>
                   <tbody>

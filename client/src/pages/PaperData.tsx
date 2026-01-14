@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import React from "react";
 import {
   Search,
   Filter,
@@ -95,6 +96,58 @@ export default function PaperData() {
   );
 
   const totalCitations = papers.reduce((sum, p) => sum + p.citations, 0);
+
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({
+    title: 300,
+    authors: 200,
+    journal: 150,
+    field: 120,
+    year: 80,
+    citations: 100,
+    status: 100,
+    doi: 100,
+  });
+
+  const handleResize = (columnId: string, width: number) => {
+    setColumnWidths(prev => ({
+      ...prev,
+      [columnId]: Math.max(width, 50)
+    }));
+  };
+
+  const ResizableHeader = ({ id, label, align = "left", children }: { id: string, label: string, align?: "left" | "center" | "right", children?: React.ReactNode }) => {
+    return (
+      <th 
+        className={`relative py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide border-r border-slate-200 group last:border-r-0`}
+        style={{ width: columnWidths[id] }}
+      >
+        <div className={`flex items-center gap-1.5 ${align === 'center' ? 'justify-center' : align === 'right' ? 'justify-end' : 'justify-start'}`}>
+          <span>{label}</span>
+          {children}
+        </div>
+        <div
+          className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-400/50 transition-colors"
+          onMouseDown={(e) => {
+            const startX = e.pageX;
+            const startWidth = columnWidths[id];
+            
+            const onMouseMove = (moveEvent: MouseEvent) => {
+              const newWidth = startWidth + (moveEvent.pageX - startX);
+              handleResize(id, newWidth);
+            };
+            
+            const onMouseUp = () => {
+              document.removeEventListener('mousemove', onMouseMove);
+              document.removeEventListener('mouseup', onMouseUp);
+            };
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+          }}
+        />
+      </th>
+    );
+  };
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -249,45 +302,27 @@ export default function PaperData() {
                 <table className="w-full" data-testid="paper-table">
                   <thead>
                     <tr className="bg-slate-50/50 border-b border-slate-100">
-                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                        <div className="flex items-center gap-1.5">
-                          <span>Paper Title</span>
-                        </div>
-                      </th>
+                      <ResizableHeader id="title" label="Paper Title" />
                       {visibleColumns.authors && (
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                          Authors
-                        </th>
+                        <ResizableHeader id="authors" label="Authors" />
                       )}
                       {visibleColumns.journal && (
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                          Journal
-                        </th>
+                        <ResizableHeader id="journal" label="Journal" />
                       )}
                       {visibleColumns.field && (
-                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                          Field
-                        </th>
+                        <ResizableHeader id="field" label="Field" />
                       )}
                       {visibleColumns.year && (
-                        <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                          Year
-                        </th>
+                        <ResizableHeader id="year" label="Year" align="center" />
                       )}
                       {visibleColumns.citations && (
-                        <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                          Citations
-                        </th>
+                        <ResizableHeader id="citations" label="Citations" align="center" />
                       )}
                       {visibleColumns.status && (
-                        <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                          Status
-                        </th>
+                        <ResizableHeader id="status" label="Status" align="center" />
                       )}
                       {visibleColumns.doi && (
-                        <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                          DOI
-                        </th>
+                        <ResizableHeader id="doi" label="DOI" align="center" />
                       )}
                     </tr>
                   </thead>

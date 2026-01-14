@@ -796,7 +796,7 @@ export default function EmploymentData() {
                 </table>
               </div>
 
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100 p-4 bg-slate-50/50">
+              <div className="flex items-center justify-between border-t border-slate-100 p-4 bg-slate-50/50">
                 <div className="flex items-center gap-4">
                   <p className="text-sm text-slate-500">
                     Showing {filteredRecords.length > 0 ? ((currentPage - 1) * itemsPerPage) + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredRecords.length)} of {filteredRecords.length} records

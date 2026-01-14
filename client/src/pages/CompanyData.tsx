@@ -443,7 +443,7 @@ export default function CompanyData() {
             
             <TabsContent value="bg" className="p-4 space-y-4 mt-0">
                <div className="space-y-3">
-                <label className="text-xs font-medium text-slate-500">Default Background</label>
+                <label className="text-xs font-medium text-slate-500 block mb-3">Default Background</label>
                 <div className="flex flex-wrap gap-2">
                    {colorOptions.map(color => (
                      <button

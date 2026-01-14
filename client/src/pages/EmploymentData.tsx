@@ -571,196 +571,198 @@ export default function EmploymentData() {
               </div>
             </motion.section>
 
-            <div className="flex items-center justify-between gap-3 mb-6">
-              <div className="flex-1" />
-              <div className="flex items-center gap-3">
-                <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
-                  <select 
-                    value={searchField} 
-                    onChange={(e) => setSearchField(e.target.value)}
-                    className="h-full pl-3 pr-8 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-32 rounded-none appearance-none"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
-                  >
-                    <option value="all">All Fields</option>
-                    <option value="employeeName">Employee</option>
-                    <option value="company">Company</option>
-                    <option value="department">Department</option>
-                  </select>
-                  <div className="relative flex items-center flex-1 h-full min-w-[200px]">
-                    <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
-                    <Input 
-                      placeholder="Search employees, companies..." 
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none" 
-                      data-testid="search-employment" 
-                    />
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+              <div className="flex items-center justify-between gap-3 p-4 border-b border-slate-100">
+                <div className="flex-1" />
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
+                    <select 
+                      value={searchField} 
+                      onChange={(e) => setSearchField(e.target.value)}
+                      className="h-full pl-3 pr-8 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-32 rounded-none appearance-none"
+                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
+                    >
+                      <option value="all">All Fields</option>
+                      <option value="employeeName">Employee</option>
+                      <option value="company">Company</option>
+                      <option value="department">Department</option>
+                    </select>
+                    <div className="relative flex items-center flex-1 h-full min-w-[200px]">
+                      <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
+                      <Input 
+                        placeholder="Search employees, companies..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none" 
+                        data-testid="search-employment" 
+                      />
+                    </div>
+                  </div>
+                  <Button variant="outline" className="gap-2 h-9">
+                    <Filter className="w-4 h-4" />
+                    Filters
+                  </Button>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full" data-testid="employment-table">
+                  <thead>
+                    <tr className="bg-slate-50/50 border-b border-slate-100">
+                      <ResizableHeader id="employeeName" label="Employee">
+                        {renderColumnConfig('employeeName', 'Employee')}
+                      </ResizableHeader>
+                      <ResizableHeader id="type" label="Type" align="center">
+                        {renderColumnConfig('type', 'Type')}
+                      </ResizableHeader>
+                      <ResizableHeader id="company" label="Company">
+                        {renderColumnConfig('company', 'Company')}
+                      </ResizableHeader>
+                      <ResizableHeader id="department" label="Department">
+                        {renderColumnConfig('department', 'Department')}
+                      </ResizableHeader>
+                      <ResizableHeader id="position" label="Position">
+                        {renderColumnConfig('position', 'Position')}
+                      </ResizableHeader>
+                      <ResizableHeader id="date" label="Date">
+                        {renderColumnConfig('date', 'Date')}
+                      </ResizableHeader>
+                      <ResizableHeader id="reason" label="Previous/Reason">
+                        {renderColumnConfig('reason', 'Previous/Reason')}
+                      </ResizableHeader>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedRecords.map((record) => {
+                      // Pre-calculate cell styles
+                      const styles = {
+                        employeeName: getCellStyle('employeeName', record.employeeName),
+                        type: getCellStyle('type', record.type),
+                        company: getCellStyle('company', record.company),
+                        department: getCellStyle('department', record.department),
+                        position: getCellStyle('position', record.position),
+                        date: getCellStyle('date', record.date),
+                        reason: getCellStyle('reason', record.type === "Entry" ? record.previousCompany : record.reason),
+                      };
+
+                      return (
+                        <tr key={record.id} className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" data-testid={`employment-row-${record.id}`}>
+                          <td className="py-4 px-4 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.employeeName.backgroundColor }}>
+                            <div className="flex items-center gap-3">
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${record.type === "Entry" ? "bg-emerald-50" : "bg-red-50"}`}>
+                                {record.type === "Entry" ? (
+                                  <UserPlus className="w-4 h-4 text-emerald-600" />
+                                ) : (
+                                  <UserMinus className="w-4 h-4 text-red-600" />
+                                )}
+                              </div>
+                              <span className="font-medium text-slate-800" style={{ color: styles.employeeName.color }}>
+                                {styles.employeeName.isTextOnly && styles.employeeName.rawBgColor && (
+                                  <span className="px-1 rounded" style={{ backgroundColor: styles.employeeName.rawBgColor }}>{record.employeeName}</span>
+                                ) || record.employeeName}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-center border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.type.backgroundColor }}>
+                            <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                              record.type === "Entry" ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
+                            }`} style={{ 
+                              color: styles.type.color, 
+                              backgroundColor: styles.type.isTextOnly ? undefined : (styles.type.backgroundColor || (record.type === "Entry" ? "#ecfdf5" : "#fef2f2")) 
+                            }}>
+                              {record.type}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.company.backgroundColor }}>
+                             <span style={{ color: styles.company.color }}>
+                              {styles.company.isTextOnly && styles.company.rawBgColor ? (
+                                <span className="px-1 rounded" style={{ backgroundColor: styles.company.rawBgColor }}>{record.company}</span>
+                              ) : record.company}
+                             </span>
+                          </td>
+                          <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.department.backgroundColor }}>
+                             <span style={{ color: styles.department.color }}>
+                              {styles.department.isTextOnly && styles.department.rawBgColor ? (
+                                <span className="px-1 rounded" style={{ backgroundColor: styles.department.rawBgColor }}>{record.department}</span>
+                              ) : record.department}
+                             </span>
+                          </td>
+                          <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.position.backgroundColor }}>
+                             <span style={{ color: styles.position.color }}>
+                              {styles.position.isTextOnly && styles.position.rawBgColor ? (
+                                <span className="px-1 rounded" style={{ backgroundColor: styles.position.rawBgColor }}>{record.position}</span>
+                              ) : record.position}
+                             </span>
+                          </td>
+                          <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.date.backgroundColor }}>
+                             <span style={{ color: styles.date.color }}>
+                              {styles.date.isTextOnly && styles.date.rawBgColor ? (
+                                <span className="px-1 rounded" style={{ backgroundColor: styles.date.rawBgColor }}>{record.date}</span>
+                              ) : record.date}
+                             </span>
+                          </td>
+                          <td className="py-4 px-4 text-sm text-slate-500 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.reason.backgroundColor }}>
+                            <span style={{ color: styles.reason.color }}>
+                               {record.type === "Entry" ? (
+                                <span className="flex items-center gap-1">
+                                  <span className="text-slate-400">From:</span> 
+                                  {styles.reason.isTextOnly && styles.reason.rawBgColor ? (
+                                    <span className="px-1 rounded" style={{ backgroundColor: styles.reason.rawBgColor }}>{record.previousCompany}</span>
+                                  ) : record.previousCompany}
+                                </span>
+                              ) : (
+                                styles.reason.isTextOnly && styles.reason.rawBgColor ? (
+                                  <span className="px-1 rounded" style={{ backgroundColor: styles.reason.rawBgColor }}>{record.reason}</span>
+                                ) : record.reason
+                              )}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100 p-4 bg-slate-50/50">
+                <div className="flex items-center gap-4">
+                  <p className="text-sm text-slate-500">
+                    Showing {filteredRecords.length > 0 ? ((currentPage - 1) * itemsPerPage) + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredRecords.length)} of {filteredRecords.length} records
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-slate-500">Rows per page:</span>
+                    <select 
+                      value={itemsPerPage} 
+                      onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                      className="text-sm border-none bg-transparent font-medium text-slate-700 focus:ring-0 cursor-pointer"
+                    >
+                      <option value={10}>10</option>
+                      <option value={20}>20</option>
+                      <option value={50}>50</option>
+                    </select>
                   </div>
                 </div>
-                <Button variant="outline" className="gap-2 h-9">
-                  <Filter className="w-4 h-4" />
-                  Filters
-                </Button>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full" data-testid="employment-table">
-                <thead>
-                  <tr className="bg-slate-50/50 border-b border-slate-100">
-                    <ResizableHeader id="employeeName" label="Employee">
-                      {renderColumnConfig('employeeName', 'Employee')}
-                    </ResizableHeader>
-                    <ResizableHeader id="type" label="Type" align="center">
-                      {renderColumnConfig('type', 'Type')}
-                    </ResizableHeader>
-                    <ResizableHeader id="company" label="Company">
-                      {renderColumnConfig('company', 'Company')}
-                    </ResizableHeader>
-                    <ResizableHeader id="department" label="Department">
-                      {renderColumnConfig('department', 'Department')}
-                    </ResizableHeader>
-                    <ResizableHeader id="position" label="Position">
-                      {renderColumnConfig('position', 'Position')}
-                    </ResizableHeader>
-                    <ResizableHeader id="date" label="Date">
-                      {renderColumnConfig('date', 'Date')}
-                    </ResizableHeader>
-                    <ResizableHeader id="reason" label="Previous/Reason">
-                      {renderColumnConfig('reason', 'Previous/Reason')}
-                    </ResizableHeader>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedRecords.map((record) => {
-                    // Pre-calculate cell styles
-                    const styles = {
-                      employeeName: getCellStyle('employeeName', record.employeeName),
-                      type: getCellStyle('type', record.type),
-                      company: getCellStyle('company', record.company),
-                      department: getCellStyle('department', record.department),
-                      position: getCellStyle('position', record.position),
-                      date: getCellStyle('date', record.date),
-                      reason: getCellStyle('reason', record.type === "Entry" ? record.previousCompany : record.reason),
-                    };
-
-                    return (
-                      <tr key={record.id} className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" data-testid={`employment-row-${record.id}`}>
-                        <td className="py-4 px-4 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.employeeName.backgroundColor }}>
-                          <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${record.type === "Entry" ? "bg-emerald-50" : "bg-red-50"}`}>
-                              {record.type === "Entry" ? (
-                                <UserPlus className="w-4 h-4 text-emerald-600" />
-                              ) : (
-                                <UserMinus className="w-4 h-4 text-red-600" />
-                              )}
-                            </div>
-                            <span className="font-medium text-slate-800" style={{ color: styles.employeeName.color }}>
-                              {styles.employeeName.isTextOnly && styles.employeeName.rawBgColor && (
-                                <span className="px-1 rounded" style={{ backgroundColor: styles.employeeName.rawBgColor }}>{record.employeeName}</span>
-                              ) || record.employeeName}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-4 text-center border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.type.backgroundColor }}>
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                            record.type === "Entry" ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
-                          }`} style={{ 
-                            color: styles.type.color, 
-                            backgroundColor: styles.type.isTextOnly ? undefined : (styles.type.backgroundColor || (record.type === "Entry" ? "#ecfdf5" : "#fef2f2")) 
-                          }}>
-                            {record.type}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.company.backgroundColor }}>
-                           <span style={{ color: styles.company.color }}>
-                            {styles.company.isTextOnly && styles.company.rawBgColor ? (
-                              <span className="px-1 rounded" style={{ backgroundColor: styles.company.rawBgColor }}>{record.company}</span>
-                            ) : record.company}
-                           </span>
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.department.backgroundColor }}>
-                           <span style={{ color: styles.department.color }}>
-                            {styles.department.isTextOnly && styles.department.rawBgColor ? (
-                              <span className="px-1 rounded" style={{ backgroundColor: styles.department.rawBgColor }}>{record.department}</span>
-                            ) : record.department}
-                           </span>
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.position.backgroundColor }}>
-                           <span style={{ color: styles.position.color }}>
-                            {styles.position.isTextOnly && styles.position.rawBgColor ? (
-                              <span className="px-1 rounded" style={{ backgroundColor: styles.position.rawBgColor }}>{record.position}</span>
-                            ) : record.position}
-                           </span>
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.date.backgroundColor }}>
-                           <span style={{ color: styles.date.color }}>
-                            {styles.date.isTextOnly && styles.date.rawBgColor ? (
-                              <span className="px-1 rounded" style={{ backgroundColor: styles.date.rawBgColor }}>{record.date}</span>
-                            ) : record.date}
-                           </span>
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-500 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.reason.backgroundColor }}>
-                          <span style={{ color: styles.reason.color }}>
-                             {record.type === "Entry" ? (
-                              <span className="flex items-center gap-1">
-                                <span className="text-slate-400">From:</span> 
-                                {styles.reason.isTextOnly && styles.reason.rawBgColor ? (
-                                  <span className="px-1 rounded" style={{ backgroundColor: styles.reason.rawBgColor }}>{record.previousCompany}</span>
-                                ) : record.previousCompany}
-                              </span>
-                            ) : (
-                              styles.reason.isTextOnly && styles.reason.rawBgColor ? (
-                                <span className="px-1 rounded" style={{ backgroundColor: styles.reason.rawBgColor }}>{record.reason}</span>
-                              ) : record.reason
-                            )}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
-              <div className="flex items-center gap-4">
-                <p className="text-sm text-slate-500">
-                  Showing {filteredRecords.length > 0 ? ((currentPage - 1) * itemsPerPage) + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredRecords.length)} of {filteredRecords.length} records
-                </p>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-slate-500">Rows per page:</span>
-                  <select 
-                    value={itemsPerPage} 
-                    onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                    className="text-sm border-none bg-transparent font-medium text-slate-700 focus:ring-0 cursor-pointer"
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
                   >
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                  </select>
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  <span className="text-sm font-medium text-slate-700">
+                    Page {currentPage} of {Math.max(1, totalPages)}
+                  </span>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <span className="text-sm font-medium text-slate-700">
-                  Page {currentPage} of {Math.max(1, totalPages)}
-                </span>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
               </div>
             </div>
           </motion.div>

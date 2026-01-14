@@ -407,6 +407,7 @@ export default function PaperData() {
                 })()}
               </div>
             </div>
+            </div>
           </motion.div>
         </main>
       </div>

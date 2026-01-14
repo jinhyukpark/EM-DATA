@@ -17,6 +17,8 @@ import {
   Menu,
   TrendingUp,
   Palette,
+  Columns,
+  Check,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
@@ -34,8 +36,33 @@ const papers = [
 ];
 
 export default function PaperData() {
-  const [columnColors, setColumnColors] = useState<Record<string, string>>({});
-  const [activeColorPicker, setActiveColorPicker] = useState<string | null>(null);
+  const [columnStyles, setColumnStyles] = useState<Record<string, any>>({});
+  const [showColumnSelector, setShowColumnSelector] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState({
+    authors: true,
+    journal: true,
+    field: true,
+    year: true,
+    citations: true,
+    status: true,
+    doi: true,
+  });
+
+  const columnLabels: Record<string, string> = {
+    authors: "Authors",
+    journal: "Journal",
+    field: "Field",
+    year: "Year",
+    citations: "Citations",
+    status: "Status",
+    doi: "DOI",
+  };
+
+  const toggleColumn = (col: string) => {
+    setVisibleColumns(prev => ({ ...prev, [col]: !prev[col as keyof typeof prev] }));
+  };
+
+  const [searchField, setSearchField] = useState("all");
 
   const colorOptions = [
     { name: 'Default', value: '' },
@@ -156,213 +183,162 @@ export default function PaperData() {
               </div>
             </motion.section>
 
-            <div className="flex items-center h-10 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all mb-6 max-w-xl">
-              <select 
-                className="h-full pl-3 pr-8 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-32 rounded-none appearance-none"
-                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
-              >
-                <option value="all">All Fields</option>
-                <option value="title">Title</option>
-                <option value="authors">Authors</option>
-                <option value="journal">Journal</option>
-                <option value="field">Field</option>
-              </select>
-              <div className="relative flex items-center flex-1 h-full">
-                <Search className="absolute left-3.5 w-4 h-4 text-slate-400" />
-                <Input
-                  placeholder="Search papers, authors, journals, or fields..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none"
-                  data-testid="search-paper"
-                />
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-1">
+                <button className="px-4 py-2 text-sm font-medium transition-colors rounded-lg bg-slate-900 text-white">
+                  Total <span className="ml-1 text-xs opacity-60">{papers.length}</span>
+                </button>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
+                  <select 
+                    value={searchField}
+                    onChange={(e) => setSearchField(e.target.value)}
+                    className="h-full pl-3 pr-8 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-32 rounded-none appearance-none"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
+                  >
+                    <option value="all">All Fields</option>
+                    <option value="title">Title</option>
+                    <option value="authors">Authors</option>
+                    <option value="journal">Journal</option>
+                    <option value="field">Field</option>
+                  </select>
+                  <div className="relative flex items-center flex-1 h-full min-w-[200px]">
+                    <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
+                    <Input
+                      placeholder="Search..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none"
+                      data-testid="search-paper"
+                    />
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <button
+                    onClick={() => setShowColumnSelector(!showColumnSelector)}
+                    className="flex items-center gap-2 px-3 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
+                  >
+                    <Columns className="w-4 h-4" />
+                    Fields
+                  </button>
+                  {showColumnSelector && (
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-10">
+                      {Object.entries(columnLabels).map(([key, label]) => (
+                        <button
+                          key={key}
+                          onClick={() => toggleColumn(key)}
+                          className="flex items-center justify-between w-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+                        >
+                          <span>{label}</span>
+                          {visibleColumns[key as keyof typeof visibleColumns] && (
+                            <Check className="w-4 h-4 text-blue-500" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full" data-testid="paper-table">
-                <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                      <div className="flex items-center gap-1.5">
-                        {columnColors.title && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.title }} />}
-                        <span>Title</span>
-                        <div className="relative">
-                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'title' ? null : 'title'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                            <Palette className="w-3 h-3 text-slate-400" />
-                          </button>
-                          {activeColorPicker === 'title' && (
-                            <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                              {colorOptions.map((color) => (
-                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, title: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                              ))}
-                            </div>
-                          )}
+            <div className="bg-white rounded-xl border border-slate-100 overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full" data-testid="paper-table">
+                  <thead>
+                    <tr className="bg-slate-50/50 border-b border-slate-100">
+                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                        <div className="flex items-center gap-1.5">
+                          <span>Paper Title</span>
                         </div>
-                      </div>
-                    </th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                      <div className="flex items-center gap-1.5">
-                        {columnColors.authors && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.authors }} />}
-                        <span>Authors</span>
-                        <div className="relative">
-                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'authors' ? null : 'authors'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                            <Palette className="w-3 h-3 text-slate-400" />
-                          </button>
-                          {activeColorPicker === 'authors' && (
-                            <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                              {colorOptions.map((color) => (
-                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, authors: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                      <div className="flex items-center gap-1.5">
-                        {columnColors.journal && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.journal }} />}
-                        <span>Journal</span>
-                        <div className="relative">
-                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'journal' ? null : 'journal'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                            <Palette className="w-3 h-3 text-slate-400" />
-                          </button>
-                          {activeColorPicker === 'journal' && (
-                            <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                              {colorOptions.map((color) => (
-                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, journal: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </th>
-                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                      <div className="flex items-center gap-1.5">
-                        {columnColors.field && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.field }} />}
-                        <span>Field</span>
-                        <div className="relative">
-                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'field' ? null : 'field'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                            <Palette className="w-3 h-3 text-slate-400" />
-                          </button>
-                          {activeColorPicker === 'field' && (
-                            <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                              {colorOptions.map((color) => (
-                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, field: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </th>
-                    <th className="text-center py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                      <div className="flex items-center justify-center gap-1.5">
-                        {columnColors.year && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.year }} />}
-                        <span>Year</span>
-                        <div className="relative">
-                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'year' ? null : 'year'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                            <Palette className="w-3 h-3 text-slate-400" />
-                          </button>
-                          {activeColorPicker === 'year' && (
-                            <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                              {colorOptions.map((color) => (
-                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, year: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </th>
-                    <th className="text-center py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                      <div className="flex items-center justify-center gap-1.5">
-                        {columnColors.citations && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.citations }} />}
-                        <span>Citations</span>
-                        <div className="relative">
-                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'citations' ? null : 'citations'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                            <Palette className="w-3 h-3 text-slate-400" />
-                          </button>
-                          {activeColorPicker === 'citations' && (
-                            <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                              {colorOptions.map((color) => (
-                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, citations: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </th>
-                    <th className="text-center py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                      <div className="flex items-center justify-center gap-1.5">
-                        {columnColors.status && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.status }} />}
-                        <span>Status</span>
-                        <div className="relative">
-                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'status' ? null : 'status'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                            <Palette className="w-3 h-3 text-slate-400" />
-                          </button>
-                          {activeColorPicker === 'status' && (
-                            <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                              {colorOptions.map((color) => (
-                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, status: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </th>
-                    <th className="text-center py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                      <div className="flex items-center justify-center gap-1.5">
-                        {columnColors.doi && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnColors.doi }} />}
-                        <span>DOI</span>
-                        <div className="relative">
-                          <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'doi' ? null : 'doi'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                            <Palette className="w-3 h-3 text-slate-400" />
-                          </button>
-                          {activeColorPicker === 'doi' && (
-                            <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                              {colorOptions.map((color) => (
-                                <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, doi: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedPapers.map((paper) => (
-                    <tr key={paper.id} className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" data-testid={`paper-row-${paper.id}`}>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-3">
-                          <span className="font-medium text-slate-800 max-w-xs truncate" style={{ color: columnColors.title || undefined }}>{paper.title}</span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4 text-sm text-slate-600 max-w-[150px] truncate" style={{ color: columnColors.authors || undefined }}>{paper.authors}</td>
-                      <td className="py-4 px-4 text-sm text-slate-600" style={{ color: columnColors.journal || undefined }}>{paper.journal}</td>
-                      <td className="py-4 px-4">
-                        <span className="text-sm text-slate-600" style={{ color: columnColors.field || undefined }}>
-                          {paper.field}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-center text-sm text-slate-600" style={{ color: columnColors.year || undefined }}>{paper.year}</td>
-                      <td className="py-4 px-4 text-center">
-                        <span className="font-medium text-slate-800" style={{ color: columnColors.citations || undefined }}>{paper.citations}</span>
-                      </td>
-                      <td className="py-4 px-4 text-center">
-                        <span className="text-sm text-slate-600" style={{ color: columnColors.status || undefined }}>
-                          {paper.status}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-center">
-                        <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm" style={{ color: columnColors.doi || undefined }}>
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-                      </td>
+                      </th>
+                      {visibleColumns.authors && (
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                          Authors
+                        </th>
+                      )}
+                      {visibleColumns.journal && (
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                          Journal
+                        </th>
+                      )}
+                      {visibleColumns.field && (
+                        <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                          Field
+                        </th>
+                      )}
+                      {visibleColumns.year && (
+                        <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                          Year
+                        </th>
+                      )}
+                      {visibleColumns.citations && (
+                        <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                          Citations
+                        </th>
+                      )}
+                      {visibleColumns.status && (
+                        <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                          Status
+                        </th>
+                      )}
+                      {visibleColumns.doi && (
+                        <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
+                          DOI
+                        </th>
+                      )}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {paginatedPapers.map((paper) => (
+                      <tr key={paper.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer" data-testid={`paper-row-${paper.id}`}>
+                        <td className="py-3 px-6">
+                          <span className="font-medium text-slate-800 max-w-xs truncate block">{paper.title}</span>
+                        </td>
+                        {visibleColumns.authors && (
+                          <td className="py-3 px-4 text-sm text-slate-600 truncate max-w-[150px]">
+                            {paper.authors}
+                          </td>
+                        )}
+                        {visibleColumns.journal && (
+                          <td className="py-3 px-4 text-sm text-slate-600 truncate max-w-[150px]">
+                            {paper.journal}
+                          </td>
+                        )}
+                        {visibleColumns.field && (
+                          <td className="py-3 px-4 text-sm text-slate-600">
+                            {paper.field}
+                          </td>
+                        )}
+                        {visibleColumns.year && (
+                          <td className="py-3 px-4 text-center text-sm text-slate-600">
+                            {paper.year}
+                          </td>
+                        )}
+                        {visibleColumns.citations && (
+                          <td className="py-3 px-4 text-center text-sm font-semibold text-slate-800">
+                            {paper.citations}
+                          </td>
+                        )}
+                        {visibleColumns.status && (
+                          <td className="py-3 px-4 text-center text-sm text-emerald-600 font-medium">
+                            {paper.status}
+                          </td>
+                        )}
+                        {visibleColumns.doi && (
+                          <td className="py-3 px-4 text-center">
+                            <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm">
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
             <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
               <div className="flex items-center gap-4">

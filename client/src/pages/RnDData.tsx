@@ -263,8 +263,22 @@ export default function RnDData() {
     return (
       <Popover>
         <PopoverTrigger asChild>
-          <button className="p-1 hover:bg-slate-100 rounded transition-colors opacity-0 group-hover:opacity-100">
+          <button className="p-1 hover:bg-slate-200 rounded transition-colors flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
             <Palette className="w-3 h-3 text-slate-400" />
+            {(style.textColor || style.textRules?.length > 0) && (
+              <div 
+                className="w-2 h-2 rounded-full border border-slate-200" 
+                style={{ backgroundColor: style.textColor || '#3b82f6' }}
+                title="Text Color Active"
+              />
+            )}
+            {(style.bgColor || style.bgRules?.length > 0) && (
+              <div 
+                className="w-2 h-2 rounded-full border border-slate-200" 
+                style={{ backgroundColor: style.bgColor || '#3b82f6' }}
+                title="Background Color Active"
+              />
+            )}
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-80 p-0 bg-white border border-slate-200 shadow-xl z-50">
@@ -559,6 +573,7 @@ export default function RnDData() {
             </motion.section>
 
             <div className="flex items-center justify-between gap-3 mb-6">
+              <div className="flex-1" />
               <div className="flex items-center gap-3">
                 <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
                   <select 
@@ -583,89 +598,38 @@ export default function RnDData() {
                     />
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center bg-slate-100 rounded-lg p-1">
-                  {(["All", "Entry", "Exit"] as const).map((type) => (
-                    <button
-                      key={type}
-                      onClick={() => setFilterType(type)}
-                      className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                        filterType === type
-                          ? "bg-blue-600 text-white"
-                          : "text-slate-600 hover:text-slate-800"
-                      }`}
-                      data-testid={`filter-${type.toLowerCase()}`}
-                    >
-                      {type === "Entry" && <span className="inline-flex items-center gap-1"><UserCog className="w-3 h-3" /> Entry</span>}
-                      {type === "Exit" && <span className="inline-flex items-center gap-1"><UserCog className="w-3 h-3" /> Exit</span>}
-                      {type === "All" && "All"}
-                    </button>
-                  ))}
-                </div>
+                <Button variant="outline" className="gap-2 h-9">
+                  <Columns className="w-4 h-4" />
+                  Fields
+                </Button>
               </div>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full" data-testid="rnd-table">
                 <thead>
-                  <tr className="bg-slate-50/50">
-                    <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                      <div className="flex items-center gap-1.5">
-                        <span>Employee</span>
-                        <div className="relative">
-                          {renderColumnConfig('employee', 'Employee')}
-                        </div>
-                      </div>
-                    </th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                      <div className="flex items-center gap-1.5">
-                        <span>Type</span>
-                        <div className="relative">
-                          {renderColumnConfig('type', 'Type')}
-                        </div>
-                      </div>
-                    </th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                      <div className="flex items-center gap-1.5">
-                        <span>Company</span>
-                        <div className="relative">
-                          {renderColumnConfig('company', 'Company')}
-                        </div>
-                      </div>
-                    </th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                      <div className="flex items-center gap-1.5">
-                        <span>Department</span>
-                        <div className="relative">
-                          {renderColumnConfig('department', 'Department')}
-                        </div>
-                      </div>
-                    </th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                      <div className="flex items-center gap-1.5">
-                        <span>Position</span>
-                        <div className="relative">
-                          {renderColumnConfig('position', 'Position')}
-                        </div>
-                      </div>
-                    </th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                      <div className="flex items-center gap-1.5">
-                        <span>Date</span>
-                        <div className="relative">
-                          {renderColumnConfig('date', 'Date')}
-                        </div>
-                      </div>
-                    </th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
-                      <div className="flex items-center gap-1.5">
-                        <span>Previous/Reason</span>
-                        <div className="relative">
-                          {renderColumnConfig('previousReason', 'Previous/Reason')}
-                        </div>
-                      </div>
-                    </th>
+                  <tr className="bg-slate-50/50 border-b border-slate-100">
+                    <ResizableHeader id="employee" label="Employee">
+                      {renderColumnConfig('employee', 'Employee')}
+                    </ResizableHeader>
+                    <ResizableHeader id="type" label="Type" align="center">
+                      {renderColumnConfig('type', 'Type')}
+                    </ResizableHeader>
+                    <ResizableHeader id="company" label="Company">
+                      {renderColumnConfig('company', 'Company')}
+                    </ResizableHeader>
+                    <ResizableHeader id="department" label="Department">
+                      {renderColumnConfig('department', 'Department')}
+                    </ResizableHeader>
+                    <ResizableHeader id="position" label="Position">
+                      {renderColumnConfig('position', 'Position')}
+                    </ResizableHeader>
+                    <ResizableHeader id="date" label="Date">
+                      {renderColumnConfig('date', 'Date')}
+                    </ResizableHeader>
+                    <ResizableHeader id="previousReason" label="Previous/Reason">
+                      {renderColumnConfig('previousReason', 'Previous/Reason')}
+                    </ResizableHeader>
                   </tr>
                 </thead>
                 <tbody>

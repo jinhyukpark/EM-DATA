@@ -572,32 +572,7 @@ export default function EmploymentData() {
             </motion.section>
 
             <div className="flex items-center justify-between gap-3 mb-6">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setActiveTab("all")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "all" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
-                  data-testid="tab-all"
-                >
-                  All
-                </button>
-                <button
-                  onClick={() => setActiveTab("entry")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${activeTab === "entry" ? "bg-emerald-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
-                  data-testid="tab-entry"
-                >
-                  <ArrowUpRight className="w-4 h-4" />
-                  Entry
-                </button>
-                <button
-                  onClick={() => setActiveTab("exit")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${activeTab === "exit" ? "bg-red-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
-                  data-testid="tab-exit"
-                >
-                  <ArrowDownRight className="w-4 h-4" />
-                  Exit
-                </button>
-              </div>
-              
+              <div className="flex-1" />
               <div className="flex items-center gap-3">
                 <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
                   <select 

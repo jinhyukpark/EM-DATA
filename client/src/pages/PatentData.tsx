@@ -217,7 +217,7 @@ export default function PatentData() {
                     <select 
                       value={searchField} 
                       onChange={(e) => setSearchField(e.target.value)}
-                      className="h-full pl-3 pr-1 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-24"
+                      className="h-full pl-3 pr-1 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-24 rounded-none"
                     >
                       <option value="all">All Fields</option>
                       <option value="title">Title</option>
@@ -225,13 +225,13 @@ export default function PatentData() {
                       <option value="applicationNo">App No.</option>
                       <option value="status">Status</option>
                     </select>
-                    <div className="relative flex items-center flex-1">
+                    <div className="relative flex items-center flex-1 h-full">
                       <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
                       <Input 
                         placeholder="Search..." 
                         value={searchTerm} 
                         onChange={(e) => setSearchTerm(e.target.value)} 
-                        className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full" 
+                        className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none" 
                         data-testid="search-input" 
                       />
                     </div>

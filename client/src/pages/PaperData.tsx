@@ -158,7 +158,7 @@ export default function PaperData() {
 
             <div className="flex items-center h-10 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all mb-6 max-w-xl">
               <select 
-                className="h-full pl-3 pr-1 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-24"
+                className="h-full pl-3 pr-1 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-24 rounded-none"
               >
                 <option value="all">All Fields</option>
                 <option value="title">Title</option>
@@ -166,13 +166,13 @@ export default function PaperData() {
                 <option value="journal">Journal</option>
                 <option value="field">Field</option>
               </select>
-              <div className="relative flex items-center flex-1">
+              <div className="relative flex items-center flex-1 h-full">
                 <Search className="absolute left-3.5 w-4 h-4 text-slate-400" />
                 <Input
                   placeholder="Search papers, authors, journals, or fields..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-full border-none focus-visible:ring-0 text-sm h-full"
+                  className="pl-10 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none"
                   data-testid="search-paper"
                 />
               </div>

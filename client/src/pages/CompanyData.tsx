@@ -331,8 +331,22 @@ export default function CompanyData() {
     return (
       <Popover>
         <PopoverTrigger asChild>
-          <button className="p-1 hover:bg-slate-200 rounded transition-colors" onClick={(e) => e.stopPropagation()}>
-            <Palette className={`w-3 h-3 ${style.textColor || style.bgColor || style.textRules?.length > 0 || style.bgRules?.length > 0 ? 'text-blue-500 fill-blue-500' : 'text-slate-400'}`} />
+          <button className="p-1 hover:bg-slate-200 rounded transition-colors flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+            <Palette className="w-3 h-3 text-slate-400" />
+            {(style.textColor || style.textRules?.length > 0) && (
+              <div 
+                className="w-2 h-2 rounded-full border border-slate-200" 
+                style={{ backgroundColor: style.textColor || '#3b82f6' }}
+                title="Text Color Active"
+              />
+            )}
+            {(style.bgColor || style.bgRules?.length > 0) && (
+              <div 
+                className="w-2 h-2 rounded-full border border-slate-200" 
+                style={{ backgroundColor: style.bgColor || '#3b82f6' }}
+                title="Background Color Active"
+              />
+            )}
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-80 p-0 bg-white border border-slate-200 shadow-xl" align="start" sideOffset={8}>

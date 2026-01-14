@@ -732,7 +732,6 @@ export default function CompanyData() {
                     <tr className="bg-slate-50/50">
                       <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">
                         <div className="flex items-center gap-1.5">
-                          {columnStyles.name?.textColor && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnStyles.name.textColor }} />}
                           <span>Company Name</span>
                           <div className="relative">
                             {renderColumnConfig('name', 'Company Name')}
@@ -741,7 +740,6 @@ export default function CompanyData() {
                       </th>
                       {visibleColumns.ceo && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
                         <div className="flex items-center gap-1.5">
-                          {columnStyles.ceo?.textColor && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnStyles.ceo.textColor }} />}
                           <span>CEO</span>
                           <div className="relative">
                             {renderColumnConfig('ceo', 'CEO')}
@@ -750,7 +748,6 @@ export default function CompanyData() {
                       </th>}
                       {visibleColumns.address && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
                         <div className="flex items-center gap-1.5">
-                          {columnStyles.address?.textColor && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnStyles.address.textColor }} />}
                           <span>Address</span>
                           <div className="relative">
                             {renderColumnConfig('address', 'Address')}
@@ -759,7 +756,6 @@ export default function CompanyData() {
                       </th>}
                       {visibleColumns.industry && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
                         <div className="flex items-center gap-1.5">
-                          {columnStyles.industry?.textColor && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnStyles.industry.textColor }} />}
                           <span>Industry</span>
                           <div className="relative">
                             {renderColumnConfig('industry', 'Industry')}
@@ -768,7 +764,6 @@ export default function CompanyData() {
                       </th>}
                       {visibleColumns.foundedDate && <th className="text-left py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
                         <div className="flex items-center gap-1.5">
-                          {columnStyles.foundedDate?.textColor && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnStyles.foundedDate.textColor }} />}
                           <span>Founded</span>
                           <div className="relative">
                             {renderColumnConfig('foundedDate', 'Founded Date')}
@@ -777,7 +772,6 @@ export default function CompanyData() {
                       </th>}
                       {visibleColumns.employees && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
                         <div className="flex items-center justify-end gap-1.5">
-                          {columnStyles.employees?.textColor && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnStyles.employees.textColor }} />}
                           <span>Employees</span>
                           <div className="relative">
                             {renderColumnConfig('employees', 'Employees')}
@@ -786,7 +780,6 @@ export default function CompanyData() {
                       </th>}
                       {visibleColumns.revenue && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
                         <div className="flex items-center justify-end gap-1.5">
-                          {columnStyles.revenue?.textColor && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnStyles.revenue.textColor }} />}
                           <span>Revenue</span>
                           <div className="relative">
                             {renderColumnConfig('revenue', 'Revenue')}
@@ -795,7 +788,6 @@ export default function CompanyData() {
                       </th>}
                       {visibleColumns.operatingProfit && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
                         <div className="flex items-center justify-end gap-1.5">
-                          {columnStyles.operatingProfit?.textColor && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnStyles.operatingProfit.textColor }} />}
                           <span>Op. Profit</span>
                           <div className="relative">
                             {renderColumnConfig('operatingProfit', 'Operating Profit')}
@@ -804,7 +796,6 @@ export default function CompanyData() {
                       </th>}
                       {visibleColumns.debt && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
                         <div className="flex items-center justify-end gap-1.5">
-                          {columnStyles.debt?.textColor && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnStyles.debt.textColor }} />}
                           <span>Debt</span>
                           <div className="relative">
                             {renderColumnConfig('debt', 'Debt')}
@@ -813,7 +804,6 @@ export default function CompanyData() {
                       </th>}
                       {visibleColumns.netIncome && <th className="text-right py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
                         <div className="flex items-center justify-end gap-1.5">
-                          {columnStyles.netIncome?.textColor && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnStyles.netIncome.textColor }} />}
                           <span>Net Income</span>
                           <div className="relative">
                             {renderColumnConfig('netIncome', 'Net Income')}
@@ -822,7 +812,6 @@ export default function CompanyData() {
                       </th>}
                       {visibleColumns.status && <th className="text-center py-3 px-4 text-xs font-medium text-slate-400 uppercase tracking-wide">
                         <div className="flex items-center justify-center gap-1.5">
-                          {columnStyles.status?.textColor && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnStyles.status.textColor }} />}
                           <span>Status</span>
                           <div className="relative">
                             {renderColumnConfig('status', 'Status')}
@@ -831,7 +820,6 @@ export default function CompanyData() {
                       </th>}
                       {visibleColumns.lastUpdate && <th className="text-right py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">
                         <div className="flex items-center justify-end gap-1.5">
-                          {columnStyles.lastUpdate?.textColor && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: columnStyles.lastUpdate.textColor }} />}
                           <span>Updated</span>
                           <div className="relative">
                             {renderColumnConfig('lastUpdate', 'Last Updated')}

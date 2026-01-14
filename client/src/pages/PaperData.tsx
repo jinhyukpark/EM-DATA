@@ -328,16 +328,13 @@ export default function PaperData() {
                     <tr key={paper.id} className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" data-testid={`paper-row-${paper.id}`}>
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-                            <BookOpen className="w-4 h-4 text-emerald-600" />
-                          </div>
                           <span className="font-medium text-slate-800 max-w-xs truncate" style={{ color: columnColors.title || undefined }}>{paper.title}</span>
                         </div>
                       </td>
                       <td className="py-4 px-4 text-sm text-slate-600 max-w-[150px] truncate" style={{ color: columnColors.authors || undefined }}>{paper.authors}</td>
                       <td className="py-4 px-4 text-sm text-slate-600" style={{ color: columnColors.journal || undefined }}>{paper.journal}</td>
                       <td className="py-4 px-4">
-                        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-600" style={{ color: columnColors.field || undefined, backgroundColor: columnColors.field ? undefined : undefined }}>
+                        <span className="text-sm text-slate-600" style={{ color: columnColors.field || undefined }}>
                           {paper.field}
                         </span>
                       </td>
@@ -346,9 +343,7 @@ export default function PaperData() {
                         <span className="font-medium text-slate-800" style={{ color: columnColors.citations || undefined }}>{paper.citations}</span>
                       </td>
                       <td className="py-4 px-4 text-center">
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                          paper.status === "Published" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
-                        }`} style={{ color: columnColors.status || undefined, backgroundColor: columnColors.status ? undefined : undefined }}>
+                        <span className="text-sm text-slate-600" style={{ color: columnColors.status || undefined }}>
                           {paper.status}
                         </span>
                       </td>

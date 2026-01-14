@@ -22,6 +22,7 @@ import {
   Plus,
   Trash2,
   Check,
+  Columns,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";

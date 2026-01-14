@@ -64,6 +64,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 const industryData = [
   { name: "Manufacturing", value: 8542, color: "hsl(221, 83%, 53%)" },
@@ -154,6 +155,7 @@ type ColorRule = {
 type ColumnStyle = {
   textColor?: string;
   bgColor?: string;
+  bgTextOnly?: boolean;
   textRules: ColorRule[];
   bgRules: ColorRule[];
 };
@@ -254,9 +256,15 @@ export default function CompanyData() {
       }
     }
 
+    const isTextOnly = !!style.bgTextOnly;
+    const bgWithOpacity = finalBg ? `${finalBg}20` : undefined;
+
     return {
       color: finalColor,
-      backgroundColor: finalBg ? `${finalBg}20` : undefined, // 20 = 12% opacity for background
+      backgroundColor: (!isTextOnly && finalBg) ? bgWithOpacity : undefined,
+      // Custom properties for cell rendering
+      isTextOnly: isTextOnly && !!finalBg,
+      rawBgColor: bgWithOpacity,
     };
   };
 
@@ -434,7 +442,7 @@ export default function CompanyData() {
             </TabsContent>
             
             <TabsContent value="bg" className="p-4 space-y-4 mt-0">
-               <div className="space-y-2">
+               <div className="space-y-3">
                 <label className="text-xs font-medium text-slate-500">Default Background</label>
                 <div className="flex flex-wrap gap-2">
                    {colorOptions.map(color => (
@@ -446,6 +454,15 @@ export default function CompanyData() {
                        title={color.name}
                      />
                    ))}
+                </div>
+                
+                <div className="flex items-center justify-between pt-2">
+                  <label className="text-xs font-medium text-slate-500">Apply to Text Only</label>
+                  <Switch 
+                    checked={!!style.bgTextOnly}
+                    onCheckedChange={(checked) => setColumnStyles(prev => ({...prev, [columnId]: {...(prev[columnId] || {textRules:[], bgRules:[]}), bgTextOnly: checked}}))}
+                    className="scale-75 origin-right"
+                  />
                 </div>
               </div>
               
@@ -829,49 +846,95 @@ export default function CompanyData() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredCompanies.map((company) => (
+                    {filteredCompanies.map((company) => {
+                      const getStyle = (col: string, val: any) => getCellStyle(col, val) as any;
+                      const renderSimpleCell = (col: string, val: any, className: string = "text-slate-600", align: "left" | "center" | "right" = "left") => {
+                        const s = getStyle(col, val);
+                        return (
+                          <td className={`py-3 px-4 text-sm ${className} ${align === 'right' ? 'text-right' : align === 'center' ? 'text-center' : 'text-left'}`} style={{ color: s.color, backgroundColor: s.backgroundColor }}>
+                            <span style={{ backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, padding: s.isTextOnly ? '2px 8px' : undefined, borderRadius: s.isTextOnly ? '4px' : undefined, display: s.isTextOnly ? 'inline-block' : undefined }}>
+                              {val || "-"}
+                            </span>
+                          </td>
+                        );
+                      };
+
+                      return (
                       <tr key={company.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors" data-testid={`company-row-${company.id}`}>
-                        <td className="py-3 px-6" style={getCellStyle('name', company.name)}>
-                          <button
-                            onClick={() => setSelectedCompany(company)}
-                            className="font-medium hover:text-blue-600 hover:underline text-left text-slate-800"
-                            style={{ color: getCellStyle('name', company.name).color }}
-                            data-testid={`company-name-${company.id}`}
-                          >
-                            {company.name}
-                          </button>
+                        <td className="py-3 px-6" style={{ backgroundColor: getStyle('name', company.name).backgroundColor }}>
+                          <span style={{ backgroundColor: getStyle('name', company.name).isTextOnly ? getStyle('name', company.name).rawBgColor : undefined, padding: getStyle('name', company.name).isTextOnly ? '2px 8px' : undefined, borderRadius: getStyle('name', company.name).isTextOnly ? '4px' : undefined, display: getStyle('name', company.name).isTextOnly ? 'inline-block' : undefined }}>
+                            <button
+                              onClick={() => setSelectedCompany(company)}
+                              className="font-medium hover:text-blue-600 hover:underline text-left text-slate-800"
+                              style={{ color: getStyle('name', company.name).color }}
+                              data-testid={`company-name-${company.id}`}
+                            >
+                              {company.name}
+                            </button>
+                          </span>
                         </td>
-                        {visibleColumns.ceo && <td className="py-3 px-4 text-sm text-slate-600" style={getCellStyle('ceo', company.ceo)}>{company.ceo}</td>}
-                        {visibleColumns.address && <td className="py-3 px-4 text-sm max-w-[180px] truncate text-slate-500" style={getCellStyle('address', company.address)} title={company.address}>{company.address}</td>}
-                        {visibleColumns.industry && <td className="py-3 px-4 text-sm text-slate-600" style={getCellStyle('industry', company.industry)}>{company.industry}</td>}
-                        {visibleColumns.foundedDate && <td className="py-3 px-4 text-sm text-slate-500" style={getCellStyle('foundedDate', company.foundedDate)}>{company.foundedDate || "-"}</td>}
-                        {visibleColumns.employees && <td className="py-3 px-4 text-right text-sm text-slate-600" style={getCellStyle('employees', company.employees)}>{company.employees?.toLocaleString() || "-"}</td>}
-                        {visibleColumns.revenue && <td className="py-3 px-4 text-right text-sm font-mono text-slate-700" style={getCellStyle('revenue', company.revenue)}>{company.revenue}</td>}
-                        {visibleColumns.operatingProfit && (
-                          <td className="py-3 px-4 text-right text-sm font-mono" style={getCellStyle('operatingProfit', company.operatingProfit)}>
-                            <span className={company.operatingProfit.startsWith("-") ? 'text-red-500' : 'text-emerald-500'} style={{ color: getCellStyle('operatingProfit', company.operatingProfit).color }}>
+                        {visibleColumns.ceo && renderSimpleCell('ceo', company.ceo)}
+                        {visibleColumns.address && (() => { const s = getStyle('address', company.address); return (
+                            <td className="py-3 px-4 text-sm max-w-[180px] truncate text-slate-500" style={{ color: s.color, backgroundColor: s.backgroundColor }} title={company.address}>
+                              <span style={{ backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, padding: s.isTextOnly ? '2px 8px' : undefined, borderRadius: s.isTextOnly ? '4px' : undefined, display: s.isTextOnly ? 'inline-block' : undefined }}>
+                                {company.address}
+                              </span>
+                            </td>
+                        )})()}
+                        {visibleColumns.industry && renderSimpleCell('industry', company.industry)}
+                        {visibleColumns.foundedDate && renderSimpleCell('foundedDate', company.foundedDate, "text-slate-500")}
+                        {visibleColumns.employees && (() => { const s = getStyle('employees', company.employees); return (
+                            <td className="py-3 px-4 text-right text-sm text-slate-600" style={{ color: s.color, backgroundColor: s.backgroundColor }}>
+                               <span style={{ backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, padding: s.isTextOnly ? '2px 8px' : undefined, borderRadius: s.isTextOnly ? '4px' : undefined, display: s.isTextOnly ? 'inline-block' : undefined }}>
+                                 {company.employees?.toLocaleString() || "-"}
+                               </span>
+                            </td>
+                        )})()}
+                        {visibleColumns.revenue && renderSimpleCell('revenue', company.revenue, "font-mono text-slate-700", "right")}
+                        {visibleColumns.operatingProfit && (() => { const s = getStyle('operatingProfit', company.operatingProfit); return (
+                          <td className="py-3 px-4 text-right text-sm font-mono" style={{ backgroundColor: s.backgroundColor }}>
+                            <span className={company.operatingProfit.startsWith("-") ? 'text-red-500' : 'text-emerald-500'} style={{ 
+                                color: s.color,
+                                backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, 
+                                padding: s.isTextOnly ? '2px 8px' : undefined, 
+                                borderRadius: s.isTextOnly ? '4px' : undefined, 
+                                display: s.isTextOnly ? 'inline-block' : undefined 
+                            }}>
                               {company.operatingProfit}
                             </span>
                           </td>
-                        )}
-                        {visibleColumns.debt && <td className="py-3 px-4 text-right text-sm font-mono text-slate-600" style={getCellStyle('debt', company.debt)}>{company.debt}</td>}
-                        {visibleColumns.netIncome && (
-                          <td className="py-3 px-4 text-right text-sm font-mono" style={getCellStyle('netIncome', company.netIncome)}>
-                            <span className={company.netIncome?.startsWith("-") ? 'text-red-500' : 'text-slate-700'} style={{ color: getCellStyle('netIncome', company.netIncome).color }}>
+                        )})()}
+                        {visibleColumns.debt && renderSimpleCell('debt', company.debt, "font-mono text-slate-600", "right")}
+                        {visibleColumns.netIncome && (() => { const s = getStyle('netIncome', company.netIncome); return (
+                          <td className="py-3 px-4 text-right text-sm font-mono" style={{ backgroundColor: s.backgroundColor }}>
+                            <span className={company.netIncome?.startsWith("-") ? 'text-red-500' : 'text-slate-700'} style={{ 
+                                color: s.color,
+                                backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, 
+                                padding: s.isTextOnly ? '2px 8px' : undefined, 
+                                borderRadius: s.isTextOnly ? '4px' : undefined, 
+                                display: s.isTextOnly ? 'inline-block' : undefined 
+                            }}>
                               {company.netIncome || "-"}
                             </span>
                           </td>
-                        )}
-                        {visibleColumns.status && (
-                          <td className="py-3 px-4 text-center" style={getCellStyle('status', company.status)}>
-                            <span className="text-xs font-medium text-emerald-500" style={{ color: getCellStyle('status', company.status).color }}>
+                        )})()}
+                        {visibleColumns.status && (() => { const s = getStyle('status', company.status); return (
+                          <td className="py-3 px-4 text-center" style={{ backgroundColor: s.backgroundColor }}>
+                            <span className="text-xs font-medium text-emerald-500" style={{ 
+                                color: s.color,
+                                backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, 
+                                padding: s.isTextOnly ? '2px 8px' : undefined, 
+                                borderRadius: s.isTextOnly ? '4px' : undefined, 
+                                display: s.isTextOnly ? 'inline-block' : undefined 
+                            }}>
                               {company.status}
                             </span>
                           </td>
-                        )}
-                        {visibleColumns.lastUpdate && <td className="py-3 px-6 text-right text-xs text-slate-400" style={getCellStyle('lastUpdate', company.lastUpdate)}>{company.lastUpdate}</td>}
+                        )})()}
+                        {visibleColumns.lastUpdate && renderSimpleCell('lastUpdate', company.lastUpdate, "text-xs text-slate-400", "right")}
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

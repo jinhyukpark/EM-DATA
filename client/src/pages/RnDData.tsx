@@ -572,209 +572,211 @@ export default function RnDData() {
               </div>
             </motion.section>
 
-            <div className="flex items-center justify-between gap-3 mb-6">
-              <div className="flex-1" />
-              <div className="flex items-center gap-3">
-                <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
-                  <select 
-                    value={searchField} 
-                    onChange={(e) => setSearchField(e.target.value)}
-                    className="h-full pl-3 pr-8 text-xs bg-slate-100 border-r border-slate-200 text-slate-700 focus:outline-none cursor-pointer hover:bg-slate-200 transition-colors w-32 rounded-none appearance-none"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
-                  >
-                    <option value="all">All Fields</option>
-                    <option value="employee">Employee</option>
-                    <option value="company">Company</option>
-                    <option value="department">Department</option>
-                  </select>
-                  <div className="relative flex items-center flex-1 h-full min-w-[200px]">
-                    <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
-                    <Input 
-                      placeholder="Search employees, companies..." 
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none" 
-                      data-testid="search-rnd" 
-                    />
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+              <div className="flex items-center justify-between gap-3 p-4 border-b border-slate-100">
+                <div className="flex-1" />
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
+                    <select 
+                      value={searchField} 
+                      onChange={(e) => setSearchField(e.target.value)}
+                      className="h-full pl-3 pr-8 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-32 rounded-none appearance-none"
+                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
+                    >
+                      <option value="all">All Fields</option>
+                      <option value="employee">Employee</option>
+                      <option value="company">Company</option>
+                      <option value="department">Department</option>
+                    </select>
+                    <div className="relative flex items-center flex-1 h-full min-w-[200px]">
+                      <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
+                      <Input 
+                        placeholder="Search employees, companies..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none" 
+                        data-testid="search-rnd" 
+                      />
+                    </div>
                   </div>
+                  <Button variant="outline" className="gap-2 h-9">
+                    <Columns className="w-4 h-4" />
+                    Fields
+                  </Button>
                 </div>
-                <Button variant="outline" className="gap-2 h-9">
-                  <Columns className="w-4 h-4" />
-                  Fields
-                </Button>
               </div>
-            </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full" data-testid="rnd-table">
-                <thead>
-                  <tr className="bg-slate-50/50 border-b border-slate-100">
-                    <ResizableHeader id="employee" label="Employee">
-                      {renderColumnConfig('employee', 'Employee')}
-                    </ResizableHeader>
-                    <ResizableHeader id="type" label="Type" align="center">
-                      {renderColumnConfig('type', 'Type')}
-                    </ResizableHeader>
-                    <ResizableHeader id="company" label="Company">
-                      {renderColumnConfig('company', 'Company')}
-                    </ResizableHeader>
-                    <ResizableHeader id="department" label="Department">
-                      {renderColumnConfig('department', 'Department')}
-                    </ResizableHeader>
-                    <ResizableHeader id="position" label="Position">
-                      {renderColumnConfig('position', 'Position')}
-                    </ResizableHeader>
-                    <ResizableHeader id="date" label="Date">
-                      {renderColumnConfig('date', 'Date')}
-                    </ResizableHeader>
-                    <ResizableHeader id="previousReason" label="Previous/Reason">
-                      {renderColumnConfig('previousReason', 'Previous/Reason')}
-                    </ResizableHeader>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedData.map((record) => {
-                    const getStyle = (col: string, val: any) => getCellStyle(col, val) as any;
-                    return (
-                    <tr key={record.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors" data-testid={`rnd-row-${record.id}`}>
-                      <td className="py-3 px-6 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('employee', record.employee).backgroundColor }}>
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                            <UserCog className="w-4 h-4 text-slate-600" />
+              <div className="overflow-x-auto">
+                <table className="w-full" data-testid="rnd-table">
+                  <thead>
+                    <tr className="bg-slate-50/50 border-b border-slate-100">
+                      <ResizableHeader id="employee" label="Employee">
+                        {renderColumnConfig('employee', 'Employee')}
+                      </ResizableHeader>
+                      <ResizableHeader id="type" label="Type" align="center">
+                        {renderColumnConfig('type', 'Type')}
+                      </ResizableHeader>
+                      <ResizableHeader id="company" label="Company">
+                        {renderColumnConfig('company', 'Company')}
+                      </ResizableHeader>
+                      <ResizableHeader id="department" label="Department">
+                        {renderColumnConfig('department', 'Department')}
+                      </ResizableHeader>
+                      <ResizableHeader id="position" label="Position">
+                        {renderColumnConfig('position', 'Position')}
+                      </ResizableHeader>
+                      <ResizableHeader id="date" label="Date">
+                        {renderColumnConfig('date', 'Date')}
+                      </ResizableHeader>
+                      <ResizableHeader id="previousReason" label="Previous/Reason">
+                        {renderColumnConfig('previousReason', 'Previous/Reason')}
+                      </ResizableHeader>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedData.map((record) => {
+                      const getStyle = (col: string, val: any) => getCellStyle(col, val) as any;
+                      return (
+                      <tr key={record.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors" data-testid={`rnd-row-${record.id}`}>
+                        <td className="py-3 px-6 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('employee', record.employee).backgroundColor }}>
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                              <UserCog className="w-4 h-4 text-slate-600" />
+                            </div>
+                            <span 
+                              className="font-medium text-slate-800" 
+                              style={{ 
+                                color: getStyle('employee', record.employee).color,
+                                backgroundColor: getStyle('employee', record.employee).isTextOnly ? getStyle('employee', record.employee).rawBgColor : undefined, 
+                                padding: getStyle('employee', record.employee).isTextOnly ? '2px 8px' : undefined, 
+                                borderRadius: getStyle('employee', record.employee).isTextOnly ? '4px' : undefined, 
+                                display: getStyle('employee', record.employee).isTextOnly ? 'inline-block' : undefined 
+                              }}
+                            >
+                              {record.employee}
+                            </span>
                           </div>
+                        </td>
+                        <td className="py-3 px-4 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('type', record.type).backgroundColor }}>
                           <span 
-                            className="font-medium text-slate-800" 
+                            className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                              record.type === "Entry" ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
+                            }`} 
                             style={{ 
-                              color: getStyle('employee', record.employee).color,
-                              backgroundColor: getStyle('employee', record.employee).isTextOnly ? getStyle('employee', record.employee).rawBgColor : undefined, 
-                              padding: getStyle('employee', record.employee).isTextOnly ? '2px 8px' : undefined, 
-                              borderRadius: getStyle('employee', record.employee).isTextOnly ? '4px' : undefined, 
-                              display: getStyle('employee', record.employee).isTextOnly ? 'inline-block' : undefined 
+                              color: getStyle('type', record.type).color, 
+                              backgroundColor: getStyle('type', record.type).backgroundColor || (getStyle('type', record.type).isTextOnly ? getStyle('type', record.type).rawBgColor : undefined),
+                              // If user sets a style, override default colors
+                              ...(getStyle('type', record.type).color ? { color: getStyle('type', record.type).color } : {}),
+                              ...(getStyle('type', record.type).backgroundColor ? { backgroundColor: getStyle('type', record.type).backgroundColor } : {})
                             }}
                           >
-                            {record.employee}
+                            {record.type}
                           </span>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('type', record.type).backgroundColor }}>
-                        <span 
-                          className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                            record.type === "Entry" ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
-                          }`} 
-                          style={{ 
-                            color: getStyle('type', record.type).color, 
-                            backgroundColor: getStyle('type', record.type).backgroundColor || (getStyle('type', record.type).isTextOnly ? getStyle('type', record.type).rawBgColor : undefined),
-                            // If user sets a style, override default colors
-                            ...(getStyle('type', record.type).color ? { color: getStyle('type', record.type).color } : {}),
-                            ...(getStyle('type', record.type).backgroundColor ? { backgroundColor: getStyle('type', record.type).backgroundColor } : {})
-                          }}
-                        >
-                          {record.type}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('company', record.company).backgroundColor }}>
-                        <span style={{ 
-                            color: getStyle('company', record.company).color,
-                            backgroundColor: getStyle('company', record.company).isTextOnly ? getStyle('company', record.company).rawBgColor : undefined, 
-                            padding: getStyle('company', record.company).isTextOnly ? '2px 8px' : undefined, 
-                            borderRadius: getStyle('company', record.company).isTextOnly ? '4px' : undefined, 
-                            display: getStyle('company', record.company).isTextOnly ? 'inline-block' : undefined 
-                        }}>
-                          {record.company}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('department', record.department).backgroundColor }}>
-                        <span style={{ 
-                            color: getStyle('department', record.department).color,
-                            backgroundColor: getStyle('department', record.department).isTextOnly ? getStyle('department', record.department).rawBgColor : undefined, 
-                            padding: getStyle('department', record.department).isTextOnly ? '2px 8px' : undefined, 
-                            borderRadius: getStyle('department', record.department).isTextOnly ? '4px' : undefined, 
-                            display: getStyle('department', record.department).isTextOnly ? 'inline-block' : undefined 
-                        }}>
-                          {record.department}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('position', record.position).backgroundColor }}>
-                        <span style={{ 
-                            color: getStyle('position', record.position).color,
-                            backgroundColor: getStyle('position', record.position).isTextOnly ? getStyle('position', record.position).rawBgColor : undefined, 
-                            padding: getStyle('position', record.position).isTextOnly ? '2px 8px' : undefined, 
-                            borderRadius: getStyle('position', record.position).isTextOnly ? '4px' : undefined, 
-                            display: getStyle('position', record.position).isTextOnly ? 'inline-block' : undefined 
-                        }}>
-                          {record.position}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('date', record.date).backgroundColor }}>
-                        <span style={{ 
-                            color: getStyle('date', record.date).color,
-                            backgroundColor: getStyle('date', record.date).isTextOnly ? getStyle('date', record.date).rawBgColor : undefined, 
-                            padding: getStyle('date', record.date).isTextOnly ? '2px 8px' : undefined, 
-                            borderRadius: getStyle('date', record.date).isTextOnly ? '4px' : undefined, 
-                            display: getStyle('date', record.date).isTextOnly ? 'inline-block' : undefined 
-                        }}>
-                          {record.date}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-slate-500 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('previousReason', record.previousReason).backgroundColor }}>
-                        <span style={{ 
-                            color: getStyle('previousReason', record.previousReason).color,
-                            backgroundColor: getStyle('previousReason', record.previousReason).isTextOnly ? getStyle('previousReason', record.previousReason).rawBgColor : undefined, 
-                            padding: getStyle('previousReason', record.previousReason).isTextOnly ? '2px 8px' : undefined, 
-                            borderRadius: getStyle('previousReason', record.previousReason).isTextOnly ? '4px' : undefined, 
-                            display: getStyle('previousReason', record.previousReason).isTextOnly ? 'inline-block' : undefined 
-                        }}>
-                          {record.previousReason}
-                        </span>
-                      </td>
-                    </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
-              <div className="flex items-center gap-4">
-                <p className="text-sm text-slate-500">
-                  Showing {filteredData.length > 0 ? ((currentPage - 1) * itemsPerPage) + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} records
-                </p>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-slate-500">Show</span>
-                  <select
-                    value={itemsPerPage}
-                    onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-                    className="border border-slate-200 rounded-md px-2 py-1 text-sm text-slate-700 bg-white"
-                    data-testid="items-per-page"
-                  >
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                  </select>
-                  <span className="text-sm text-slate-500">per page</span>
-                </div>
+                        </td>
+                        <td className="py-3 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('company', record.company).backgroundColor }}>
+                          <span style={{ 
+                              color: getStyle('company', record.company).color,
+                              backgroundColor: getStyle('company', record.company).isTextOnly ? getStyle('company', record.company).rawBgColor : undefined, 
+                              padding: getStyle('company', record.company).isTextOnly ? '2px 8px' : undefined, 
+                              borderRadius: getStyle('company', record.company).isTextOnly ? '4px' : undefined, 
+                              display: getStyle('company', record.company).isTextOnly ? 'inline-block' : undefined 
+                          }}>
+                            {record.company}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('department', record.department).backgroundColor }}>
+                          <span style={{ 
+                              color: getStyle('department', record.department).color,
+                              backgroundColor: getStyle('department', record.department).isTextOnly ? getStyle('department', record.department).rawBgColor : undefined, 
+                              padding: getStyle('department', record.department).isTextOnly ? '2px 8px' : undefined, 
+                              borderRadius: getStyle('department', record.department).isTextOnly ? '4px' : undefined, 
+                              display: getStyle('department', record.department).isTextOnly ? 'inline-block' : undefined 
+                          }}>
+                            {record.department}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('position', record.position).backgroundColor }}>
+                          <span style={{ 
+                              color: getStyle('position', record.position).color,
+                              backgroundColor: getStyle('position', record.position).isTextOnly ? getStyle('position', record.position).rawBgColor : undefined, 
+                              padding: getStyle('position', record.position).isTextOnly ? '2px 8px' : undefined, 
+                              borderRadius: getStyle('position', record.position).isTextOnly ? '4px' : undefined, 
+                              display: getStyle('position', record.position).isTextOnly ? 'inline-block' : undefined 
+                          }}>
+                            {record.position}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('date', record.date).backgroundColor }}>
+                          <span style={{ 
+                              color: getStyle('date', record.date).color,
+                              backgroundColor: getStyle('date', record.date).isTextOnly ? getStyle('date', record.date).rawBgColor : undefined, 
+                              padding: getStyle('date', record.date).isTextOnly ? '2px 8px' : undefined, 
+                              borderRadius: getStyle('date', record.date).isTextOnly ? '4px' : undefined, 
+                              display: getStyle('date', record.date).isTextOnly ? 'inline-block' : undefined 
+                          }}>
+                            {record.date}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-sm text-slate-500 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: getStyle('previousReason', record.previousReason).backgroundColor }}>
+                          <span style={{ 
+                              color: getStyle('previousReason', record.previousReason).color,
+                              backgroundColor: getStyle('previousReason', record.previousReason).isTextOnly ? getStyle('previousReason', record.previousReason).rawBgColor : undefined, 
+                              padding: getStyle('previousReason', record.previousReason).isTextOnly ? '2px 8px' : undefined, 
+                              borderRadius: getStyle('previousReason', record.previousReason).isTextOnly ? '4px' : undefined, 
+                              display: getStyle('previousReason', record.previousReason).isTextOnly ? 'inline-block' : undefined 
+                          }}>
+                            {record.previousReason}
+                          </span>
+                        </td>
+                      </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="border-slate-200 text-slate-600">
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition-colors ${
-                      currentPage === page
-                        ? "bg-slate-900 text-white"
-                        : "text-slate-600 hover:bg-slate-100"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-                <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="border-slate-200 text-slate-600">
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
+
+              <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+                <div className="flex items-center gap-4">
+                  <p className="text-sm text-slate-500">
+                    Showing {filteredData.length > 0 ? ((currentPage - 1) * itemsPerPage) + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} records
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-slate-500">Show</span>
+                    <select
+                      value={itemsPerPage}
+                      onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                      className="border border-slate-200 rounded-md px-2 py-1 text-sm text-slate-700 bg-white cursor-pointer"
+                      data-testid="items-per-page"
+                    >
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                    <span className="text-sm text-slate-500">per page</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="border-slate-200 text-slate-600">
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition-colors ${
+                        currentPage === page
+                          ? "bg-slate-900 text-white"
+                          : "text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="border-slate-200 text-slate-600">
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </motion.div>

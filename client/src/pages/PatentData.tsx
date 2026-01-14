@@ -60,7 +60,7 @@ export default function PatentData() {
     { name: 'Pink', value: '#ec4899' },
   ];
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("All");
+  const [searchField, setSearchField] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [dataViewTab, setDataViewTab] = useState<"basic" | "fulltext" | "drawing">("basic");
@@ -91,9 +91,20 @@ export default function PatentData() {
   const totalPatents = 125842;
 
   const filteredPatents = patents.filter((patent) => {
-    const matchesSearch = patent.title.toLowerCase().includes(searchTerm.toLowerCase()) || patent.applicant.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = selectedStatus === "All" || patent.status === selectedStatus;
-    return matchesSearch && matchesStatus;
+    const term = searchTerm.toLowerCase();
+    if (!term) return true;
+    
+    if (searchField === "all") {
+      return (
+        patent.title.toLowerCase().includes(term) ||
+        patent.applicant.toLowerCase().includes(term) ||
+        patent.applicationNo.toLowerCase().includes(term) ||
+        patent.status.toLowerCase().includes(term)
+      );
+    }
+    
+    const value = patent[searchField as keyof Patent];
+    return String(value).toLowerCase().includes(term);
   });
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -202,19 +213,28 @@ export default function PatentData() {
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
                 <h2 className="text-sm font-medium text-slate-800">Patent Records</h2>
                 <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <Input placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9 w-48 h-9 border-slate-200 text-sm" data-testid="search-input" />
-                  </div>
-                  <div className="relative">
-                    <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="pl-3 pr-8 py-2 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 appearance-none cursor-pointer" data-testid="status-filter">
-                      <option value="All">All Status</option>
-                      <option value="Registered">Registered</option>
-                      <option value="Published">Published</option>
-                      <option value="Under Review">Under Review</option>
-                      <option value="Filed">Filed</option>
+                  <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
+                    <select 
+                      value={searchField} 
+                      onChange={(e) => setSearchField(e.target.value)}
+                      className="h-full pl-3 pr-2 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors"
+                    >
+                      <option value="all">All Fields</option>
+                      <option value="title">Title</option>
+                      <option value="applicant">Applicant</option>
+                      <option value="applicationNo">App No.</option>
+                      <option value="status">Status</option>
                     </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                    <div className="relative flex items-center">
+                      <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
+                      <Input 
+                        placeholder="Search..." 
+                        value={searchTerm} 
+                        onChange={(e) => setSearchTerm(e.target.value)} 
+                        className="pl-9 w-48 border-none focus-visible:ring-0 text-sm h-full" 
+                        data-testid="search-input" 
+                      />
+                    </div>
                   </div>
                   <div className="relative">
                     <button

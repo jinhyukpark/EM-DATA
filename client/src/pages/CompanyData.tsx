@@ -162,7 +162,7 @@ type ColumnStyle = {
 
 export default function CompanyData() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedIndustry, setSelectedIndustry] = useState("All");
+  const [searchField, setSearchField] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeTab, setActiveTab] = useState<"all" | "unlisted" | "listed" | "audited">("listed");
@@ -558,9 +558,20 @@ export default function CompanyData() {
 
   const companies = getCompaniesForTab();
   const filteredCompanies = companies.filter((company) => {
-    const matchesSearch = company.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesIndustry = selectedIndustry === "All" || company.industry === selectedIndustry;
-    return matchesSearch && matchesIndustry;
+    const term = searchTerm.toLowerCase();
+    if (!term) return true;
+    
+    if (searchField === "all") {
+      return (
+        company.name.toLowerCase().includes(term) ||
+        company.ceo.toLowerCase().includes(term) ||
+        company.industry.toLowerCase().includes(term) ||
+        company.address.toLowerCase().includes(term)
+      );
+    }
+    
+    const value = company[searchField as keyof Company];
+    return String(value).toLowerCase().includes(term);
   });
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -700,19 +711,28 @@ export default function CompanyData() {
                   </button>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <Input placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9 w-48 h-9 border-slate-200 text-sm" data-testid="search-input" />
-                  </div>
-                  <div className="relative">
-                    <select value={selectedIndustry} onChange={(e) => setSelectedIndustry(e.target.value)} className="pl-3 pr-8 py-2 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 appearance-none cursor-pointer" data-testid="industry-filter">
-                      <option value="All">All Industries</option>
-                      <option value="Manufacturing">Manufacturing</option>
-                      <option value="IT/Software">IT/Software</option>
-                      <option value="Finance">Finance</option>
-                      <option value="Retail">Retail</option>
+                  <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
+                    <select 
+                      value={searchField} 
+                      onChange={(e) => setSearchField(e.target.value)}
+                      className="h-full pl-3 pr-2 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors"
+                    >
+                      <option value="all">All Fields</option>
+                      <option value="name">Company Name</option>
+                      <option value="ceo">CEO</option>
+                      <option value="industry">Industry</option>
+                      <option value="address">Address</option>
                     </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                    <div className="relative flex items-center">
+                      <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
+                      <Input 
+                        placeholder="Search..." 
+                        value={searchTerm} 
+                        onChange={(e) => setSearchTerm(e.target.value)} 
+                        className="pl-9 w-48 border-none focus-visible:ring-0 text-sm h-full" 
+                        data-testid="search-input" 
+                      />
+                    </div>
                   </div>
                   <div className="relative">
                     <button

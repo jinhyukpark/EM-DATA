@@ -19,10 +19,47 @@ import {
   ArrowDownRight,
   Menu,
   Palette,
+  Plus,
+  Trash2,
+  Check,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+
+type ColorRule = {
+  id: string;
+  condition: 'equals' | 'contains' | 'starts_with' | 'greater_than' | 'less_than';
+  value: string;
+  color: string;
+};
+
+type ColumnStyle = {
+  textColor?: string;
+  bgColor?: string;
+  bgTextOnly?: boolean;
+  textRules: ColorRule[];
+  bgRules: ColorRule[];
+};
 
 const employmentRecords = [
   { id: 1, employeeName: "Kim Ji-Hoon", company: "Samsung Electronics", department: "Semiconductor R&D", position: "Senior Engineer", type: "Entry", date: "2025-01-08", previousCompany: "SK Hynix", reason: "Career Development" },
@@ -38,26 +75,138 @@ const employmentRecords = [
 ];
 
 export default function EmploymentData() {
-  const [columnColors, setColumnColors] = useState<Record<string, string>>({});
-  const [activeColorPicker, setActiveColorPicker] = useState<string | null>(null);
-
+  const [columnStyles, setColumnStyles] = useState<Record<string, ColumnStyle>>({});
+  
   const colorOptions = [
-    { name: 'Default', value: '' },
-    { name: 'Red', value: '#ef4444' },
-    { name: 'Orange', value: '#f97316' },
-    { name: 'Amber', value: '#f59e0b' },
-    { name: 'Green', value: '#84cc16' },
-    { name: 'Emerald', value: '#10b981' },
-    { name: 'Cyan', value: '#06b6d4' },
-    { name: 'Blue', value: '#3b82f6' },
-    { name: 'Indigo', value: '#6366f1' },
-    { name: 'Purple', value: '#a855f7' },
-    { name: 'Pink', value: '#ec4899' },
+    { name: "Default", value: "" },
+    { name: "Red", value: "#ef4444" },
+    { name: "Orange", value: "#f97316" },
+    { name: "Amber", value: "#f59e0b" },
+    { name: "Green", value: "#22c55e" },
+    { name: "Emerald", value: "#10b981" },
+    { name: "Cyan", value: "#06b6d4" },
+    { name: "Blue", value: "#3b82f6" },
+    { name: "Indigo", value: "#6366f1" },
+    { name: "Purple", value: "#a855f7" },
+    { name: "Pink", value: "#ec4899" },
+    { name: "Slate", value: "#64748b" },
   ];
+
+  const getCellStyle = (columnId: string, value: any) => {
+    const style = columnStyles[columnId];
+    if (!style) return {};
+
+    let finalColor = style.textColor;
+    let finalBg = style.bgColor;
+
+    // Apply text rules
+    if (style.textRules?.length > 0) {
+      const stringValue = String(value).toLowerCase();
+      for (const rule of style.textRules) {
+        const ruleValue = rule.value.toLowerCase();
+        let match = false;
+        
+        if (rule.condition === 'equals' && stringValue === ruleValue) match = true;
+        else if (rule.condition === 'contains' && stringValue.includes(ruleValue)) match = true;
+        else if (rule.condition === 'starts_with' && stringValue.startsWith(ruleValue)) match = true;
+        else if (rule.condition === 'greater_than' && parseFloat(stringValue) > parseFloat(ruleValue)) match = true;
+        else if (rule.condition === 'less_than' && parseFloat(stringValue) < parseFloat(ruleValue)) match = true;
+
+        if (match) {
+          finalColor = rule.color;
+          break; // First match wins
+        }
+      }
+    }
+
+    // Apply background rules
+    if (style.bgRules?.length > 0) {
+      const stringValue = String(value).toLowerCase();
+      for (const rule of style.bgRules) {
+        const ruleValue = rule.value.toLowerCase();
+        let match = false;
+        
+        if (rule.condition === 'equals' && stringValue === ruleValue) match = true;
+        else if (rule.condition === 'contains' && stringValue.includes(ruleValue)) match = true;
+        else if (rule.condition === 'starts_with' && stringValue.startsWith(ruleValue)) match = true;
+        else if (rule.condition === 'greater_than' && parseFloat(stringValue) > parseFloat(ruleValue)) match = true;
+        else if (rule.condition === 'less_than' && parseFloat(stringValue) < parseFloat(ruleValue)) match = true;
+
+        if (match) {
+          finalBg = rule.color;
+          break; 
+        }
+      }
+    }
+
+    const isTextOnly = !!style.bgTextOnly;
+    const bgWithOpacity = finalBg ? `${finalBg}20` : undefined;
+
+    return {
+      color: finalColor,
+      backgroundColor: (!isTextOnly && finalBg) ? bgWithOpacity : undefined,
+      // Custom properties for cell rendering if needed, though we use them directly
+      isTextOnly: isTextOnly && !!finalBg,
+      rawBgColor: bgWithOpacity,
+    };
+  };
+
+  const addRule = (columnId: string, type: 'text' | 'bg') => {
+    setColumnStyles(prev => {
+      const current = prev[columnId] || { textRules: [], bgRules: [] };
+      const newRule: ColorRule = {
+        id: Math.random().toString(36).substr(2, 9),
+        condition: 'contains',
+        value: '',
+        color: '#3b82f6'
+      };
+      
+      return {
+        ...prev,
+        [columnId]: {
+          ...current,
+          [type === 'text' ? 'textRules' : 'bgRules']: [
+            ...(current[type === 'text' ? 'textRules' : 'bgRules'] || []),
+            newRule
+          ]
+        }
+      };
+    });
+  };
+
+  const updateRule = (columnId: string, type: 'text' | 'bg', ruleId: string, updates: Partial<ColorRule>) => {
+    setColumnStyles(prev => {
+      const current = prev[columnId];
+      const rulesKey = type === 'text' ? 'textRules' : 'bgRules';
+      return {
+        ...prev,
+        [columnId]: {
+          ...current,
+          [rulesKey]: current[rulesKey].map(r => r.id === ruleId ? { ...r, ...updates } : r)
+        }
+      };
+    });
+  };
+
+  const removeRule = (columnId: string, type: 'text' | 'bg', ruleId: string) => {
+    setColumnStyles(prev => {
+      const current = prev[columnId];
+      const rulesKey = type === 'text' ? 'textRules' : 'bgRules';
+      return {
+        ...prev,
+        [columnId]: {
+          ...current,
+          [rulesKey]: current[rulesKey].filter(r => r.id !== ruleId)
+        }
+      };
+    });
+  };
+
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState<"all" | "entry" | "exit">("all");
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [searchField, setSearchField] = useState("all");
 
   const filteredRecords = employmentRecords.filter(record => {
     const matchesSearch = record.employeeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -77,8 +226,6 @@ export default function EmploymentData() {
 
   const entryCount = employmentRecords.filter(r => r.type === "Entry").length;
   const exitCount = employmentRecords.filter(r => r.type === "Exit").length;
-
-  const [searchField, setSearchField] = useState("all");
 
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({
     employeeName: 200,
@@ -128,6 +275,212 @@ export default function EmploymentData() {
           }}
         />
       </th>
+    );
+  };
+
+  const renderColumnConfig = (columnId: string, title: string) => {
+    const style = columnStyles[columnId] || { textRules: [], bgRules: [] };
+    
+    return (
+      <Popover>
+        <PopoverTrigger asChild>
+          <button className="p-1 hover:bg-slate-200 rounded transition-colors flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+            <Palette className="w-3 h-3 text-slate-400" />
+            {(style.textColor || style.textRules?.length > 0) && (
+              <div 
+                className="w-2 h-2 rounded-full border border-slate-200" 
+                style={{ backgroundColor: style.textColor || '#3b82f6' }}
+                title="Text Color Active"
+              />
+            )}
+            {(style.bgColor || style.bgRules?.length > 0) && (
+              <div 
+                className="w-2 h-2 rounded-full border border-slate-200" 
+                style={{ backgroundColor: style.bgColor || '#3b82f6' }}
+                title="Background Color Active"
+              />
+            )}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-80 p-0 bg-white border border-slate-200 shadow-xl z-50">
+          <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
+            <h4 className="font-semibold text-sm text-slate-800">{title} Styling</h4>
+          </div>
+          <Tabs defaultValue="text" className="w-full">
+            <TabsList className="w-full justify-start rounded-none border-b border-slate-100 bg-transparent p-0">
+              <TabsTrigger 
+                value="text" 
+                className="flex-1 rounded-none border-b-2 border-transparent px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-700 data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 data-[state=active]:bg-transparent shadow-none"
+              >
+                Text Color
+              </TabsTrigger>
+              <TabsTrigger 
+                value="bg" 
+                className="flex-1 rounded-none border-b-2 border-transparent px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-700 data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 data-[state=active]:bg-transparent shadow-none"
+              >
+                Background
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="text" className="p-4 space-y-4 mt-0">
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-slate-500">Default Color</label>
+                <div className="flex flex-wrap gap-2">
+                   {colorOptions.map(color => (
+                     <button
+                       key={color.name}
+                       onClick={() => setColumnStyles(prev => ({...prev, [columnId]: {...(prev[columnId] || {textRules:[], bgRules:[]}), textColor: color.value}}))}
+                       className={`w-6 h-6 rounded-full border transition-transform hover:scale-110 ${style.textColor === color.value ? 'ring-2 ring-offset-1 ring-slate-400' : 'border-slate-200'}`}
+                       style={{ backgroundColor: color.value || '#000000' }}
+                       title={color.name}
+                     />
+                   ))}
+                </div>
+              </div>
+              
+              <div className="space-y-3 pt-3 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-slate-500">Conditional Rules</label>
+                  <Button variant="ghost" size="sm" className="h-6 text-xs gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50" onClick={() => addRule(columnId, 'text')}>
+                    <Plus className="w-3 h-3" /> Add Rule
+                  </Button>
+                </div>
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  {style.textRules?.map(rule => (
+                    <div key={rule.id} className="p-2 bg-slate-50 rounded-lg border border-slate-100 space-y-2">
+                      <div className="flex gap-2">
+                         <Select value={rule.condition} onValueChange={(val) => updateRule(columnId, 'text', rule.id, { condition: val as any })}>
+                           <SelectTrigger className="h-7 text-xs w-[110px] bg-white border-slate-200 text-slate-700">
+                             <SelectValue />
+                           </SelectTrigger>
+                           <SelectContent className="bg-white border-slate-200 text-slate-700">
+                             <SelectItem value="equals">Equals</SelectItem>
+                             <SelectItem value="contains">Contains</SelectItem>
+                             <SelectItem value="starts_with">Starts with</SelectItem>
+                             <SelectItem value="greater_than">Greater than</SelectItem>
+                             <SelectItem value="less_than">Less than</SelectItem>
+                           </SelectContent>
+                         </Select>
+                         <Input 
+                           value={rule.value} 
+                           onChange={(e) => updateRule(columnId, 'text', rule.id, { value: e.target.value })}
+                           className="h-7 text-xs flex-1 bg-white border-slate-200 text-slate-700" 
+                           placeholder="Value..." 
+                         />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-slate-400">Color:</span>
+                          <div className="flex gap-1">
+                            {colorOptions.filter(c => c.value).map(color => (
+                              <button
+                                key={color.name}
+                                onClick={() => updateRule(columnId, 'text', rule.id, { color: color.value })}
+                                className={`w-4 h-4 rounded-full border ${rule.color === color.value ? 'ring-1 ring-offset-1 ring-slate-400' : 'border-slate-200'}`}
+                                style={{ backgroundColor: color.value }}
+                                title={color.name}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <button onClick={() => removeRule(columnId, 'text', rule.id)} className="text-slate-400 hover:text-red-500 p-1">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {style.textRules?.length === 0 && (
+                    <p className="text-xs text-slate-400 italic text-center py-2 bg-slate-50/50 rounded-lg">No rules configured</p>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="bg" className="p-4 space-y-4 mt-0">
+               <div className="space-y-3">
+                <label className="text-xs font-medium text-slate-500 block mb-3">Default Background</label>
+                <div className="flex flex-wrap gap-2">
+                   {colorOptions.map(color => (
+                     <button
+                       key={color.name}
+                       onClick={() => setColumnStyles(prev => ({...prev, [columnId]: {...(prev[columnId] || {textRules:[], bgRules:[]}), bgColor: color.value}}))}
+                       className={`w-6 h-6 rounded-full border transition-transform hover:scale-110 ${style.bgColor === color.value ? 'ring-2 ring-offset-1 ring-slate-400' : 'border-slate-200'}`}
+                       style={{ backgroundColor: color.value || '#f1f5f9' }}
+                       title={color.name}
+                     />
+                   ))}
+                </div>
+                
+                <div className="flex items-center justify-between pt-2">
+                  <label className="text-xs font-medium text-slate-500">Apply to Text Only</label>
+                  <Switch 
+                    checked={!!style.bgTextOnly}
+                    onCheckedChange={(checked) => setColumnStyles(prev => ({...prev, [columnId]: {...(prev[columnId] || {textRules:[], bgRules:[]}), bgTextOnly: checked}}))}
+                    className="scale-75 origin-right data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-slate-200"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-3 pt-3 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-slate-500">Conditional Rules</label>
+                  <Button variant="ghost" size="sm" className="h-6 text-xs gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50" onClick={() => addRule(columnId, 'bg')}>
+                    <Plus className="w-3 h-3" /> Add Rule
+                  </Button>
+                </div>
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  {style.bgRules?.map(rule => (
+                    <div key={rule.id} className="p-2 bg-slate-50 rounded-lg border border-slate-100 space-y-2">
+                      <div className="flex gap-2">
+                         <Select value={rule.condition} onValueChange={(val) => updateRule(columnId, 'bg', rule.id, { condition: val as any })}>
+                           <SelectTrigger className="h-7 text-xs w-[110px] bg-white border-slate-200 text-slate-700">
+                             <SelectValue />
+                           </SelectTrigger>
+                           <SelectContent className="bg-white border-slate-200 text-slate-700">
+                             <SelectItem value="equals">Equals</SelectItem>
+                             <SelectItem value="contains">Contains</SelectItem>
+                             <SelectItem value="starts_with">Starts with</SelectItem>
+                             <SelectItem value="greater_than">Greater than</SelectItem>
+                             <SelectItem value="less_than">Less than</SelectItem>
+                           </SelectContent>
+                         </Select>
+                         <Input 
+                           value={rule.value} 
+                           onChange={(e) => updateRule(columnId, 'bg', rule.id, { value: e.target.value })}
+                           className="h-7 text-xs flex-1 bg-white border-slate-200 text-slate-700" 
+                           placeholder="Value..." 
+                         />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-slate-400">Color:</span>
+                          <div className="flex gap-1">
+                            {colorOptions.filter(c => c.value).map(color => (
+                              <button
+                                key={color.name}
+                                onClick={() => updateRule(columnId, 'bg', rule.id, { color: color.value })}
+                                className={`w-4 h-4 rounded-full border ${rule.color === color.value ? 'ring-1 ring-offset-1 ring-slate-400' : 'border-slate-200'}`}
+                                style={{ backgroundColor: color.value }}
+                                title={color.name}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <button onClick={() => removeRule(columnId, 'bg', rule.id)} className="text-slate-400 hover:text-red-500 p-1">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {style.bgRules?.length === 0 && (
+                    <p className="text-xs text-slate-400 italic text-center py-2 bg-slate-50/50 rounded-lg">No rules configured</p>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </PopoverContent>
+      </Popover>
     );
   };
 
@@ -219,6 +572,32 @@ export default function EmploymentData() {
             </motion.section>
 
             <div className="flex items-center justify-between gap-3 mb-6">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveTab("all")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "all" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
+                  data-testid="tab-all"
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => setActiveTab("entry")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${activeTab === "entry" ? "bg-emerald-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
+                  data-testid="tab-entry"
+                >
+                  <ArrowUpRight className="w-4 h-4" />
+                  Entry
+                </button>
+                <button
+                  onClick={() => setActiveTab("exit")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${activeTab === "exit" ? "bg-red-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
+                  data-testid="tab-exit"
+                >
+                  <ArrowDownRight className="w-4 h-4" />
+                  Exit
+                </button>
+              </div>
+              
               <div className="flex items-center gap-3">
                 <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
                   <select 
@@ -248,31 +627,6 @@ export default function EmploymentData() {
                   Filters
                 </Button>
               </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setActiveTab("all")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "all" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
-                  data-testid="tab-all"
-                >
-                  All
-                </button>
-                <button
-                  onClick={() => setActiveTab("entry")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${activeTab === "entry" ? "bg-emerald-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
-                  data-testid="tab-entry"
-                >
-                  <ArrowUpRight className="w-4 h-4" />
-                  Entry
-                </button>
-                <button
-                  onClick={() => setActiveTab("exit")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${activeTab === "exit" ? "bg-red-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}
-                  data-testid="tab-exit"
-                >
-                  <ArrowDownRight className="w-4 h-4" />
-                  Exit
-                </button>
-              </div>
             </div>
 
             <div className="overflow-x-auto">
@@ -280,142 +634,116 @@ export default function EmploymentData() {
                 <thead>
                   <tr className="bg-slate-50/50 border-b border-slate-100">
                     <ResizableHeader id="employeeName" label="Employee">
-                      <div className="relative">
-                        <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'employeeName' ? null : 'employeeName'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                          <Palette className="w-3 h-3 text-slate-400" />
-                        </button>
-                        {activeColorPicker === 'employeeName' && (
-                          <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                            {colorOptions.map((color) => (
-                              <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, employeeName: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      {renderColumnConfig('employeeName', 'Employee')}
                     </ResizableHeader>
                     <ResizableHeader id="type" label="Type" align="center">
-                      <div className="relative">
-                        <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'type' ? null : 'type'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                          <Palette className="w-3 h-3 text-slate-400" />
-                        </button>
-                        {activeColorPicker === 'type' && (
-                          <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                            {colorOptions.map((color) => (
-                              <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, type: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      {renderColumnConfig('type', 'Type')}
                     </ResizableHeader>
                     <ResizableHeader id="company" label="Company">
-                      <div className="relative">
-                        <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'company' ? null : 'company'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                          <Palette className="w-3 h-3 text-slate-400" />
-                        </button>
-                        {activeColorPicker === 'company' && (
-                          <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                            {colorOptions.map((color) => (
-                              <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, company: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      {renderColumnConfig('company', 'Company')}
                     </ResizableHeader>
                     <ResizableHeader id="department" label="Department">
-                      <div className="relative">
-                        <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'department' ? null : 'department'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                          <Palette className="w-3 h-3 text-slate-400" />
-                        </button>
-                        {activeColorPicker === 'department' && (
-                          <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                            {colorOptions.map((color) => (
-                              <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, department: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      {renderColumnConfig('department', 'Department')}
                     </ResizableHeader>
                     <ResizableHeader id="position" label="Position">
-                      <div className="relative">
-                        <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'position' ? null : 'position'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                          <Palette className="w-3 h-3 text-slate-400" />
-                        </button>
-                        {activeColorPicker === 'position' && (
-                          <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                            {colorOptions.map((color) => (
-                              <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, position: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      {renderColumnConfig('position', 'Position')}
                     </ResizableHeader>
                     <ResizableHeader id="date" label="Date">
-                      <div className="relative">
-                        <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'date' ? null : 'date'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                          <Palette className="w-3 h-3 text-slate-400" />
-                        </button>
-                        {activeColorPicker === 'date' && (
-                          <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                            {colorOptions.map((color) => (
-                              <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, date: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      {renderColumnConfig('date', 'Date')}
                     </ResizableHeader>
                     <ResizableHeader id="reason" label="Previous/Reason">
-                      <div className="relative">
-                        <button onClick={(e) => { e.stopPropagation(); setActiveColorPicker(activeColorPicker === 'reason' ? null : 'reason'); }} className="p-1 hover:bg-slate-200 rounded transition-colors">
-                          <Palette className="w-3 h-3 text-slate-400" />
-                        </button>
-                        {activeColorPicker === 'reason' && (
-                          <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-200 p-2 z-20 flex flex-wrap gap-1 w-32">
-                            {colorOptions.map((color) => (
-                              <button key={color.name} onClick={() => { setColumnColors(prev => ({ ...prev, reason: color.value })); setActiveColorPicker(null); }} className="w-5 h-5 rounded-full border border-slate-200 hover:scale-110 transition-transform" style={{ backgroundColor: color.value || '#f1f5f9' }} title={color.name} />
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      {renderColumnConfig('reason', 'Previous/Reason')}
                     </ResizableHeader>
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedRecords.map((record) => (
-                    <tr key={record.id} className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" data-testid={`employment-row-${record.id}`}>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${record.type === "Entry" ? "bg-emerald-50" : "bg-red-50"}`}>
-                            {record.type === "Entry" ? (
-                              <UserPlus className="w-4 h-4 text-emerald-600" />
-                            ) : (
-                              <UserMinus className="w-4 h-4 text-red-600" />
-                            )}
+                  {paginatedRecords.map((record) => {
+                    // Pre-calculate cell styles
+                    const styles = {
+                      employeeName: getCellStyle('employeeName', record.employeeName),
+                      type: getCellStyle('type', record.type),
+                      company: getCellStyle('company', record.company),
+                      department: getCellStyle('department', record.department),
+                      position: getCellStyle('position', record.position),
+                      date: getCellStyle('date', record.date),
+                      reason: getCellStyle('reason', record.type === "Entry" ? record.previousCompany : record.reason),
+                    };
+
+                    return (
+                      <tr key={record.id} className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" data-testid={`employment-row-${record.id}`}>
+                        <td className="py-4 px-4" style={{ backgroundColor: styles.employeeName.backgroundColor }}>
+                          <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${record.type === "Entry" ? "bg-emerald-50" : "bg-red-50"}`}>
+                              {record.type === "Entry" ? (
+                                <UserPlus className="w-4 h-4 text-emerald-600" />
+                              ) : (
+                                <UserMinus className="w-4 h-4 text-red-600" />
+                              )}
+                            </div>
+                            <span className="font-medium text-slate-800" style={{ color: styles.employeeName.color }}>
+                              {styles.employeeName.isTextOnly && styles.employeeName.rawBgColor && (
+                                <span className="px-1 rounded" style={{ backgroundColor: styles.employeeName.rawBgColor }}>{record.employeeName}</span>
+                              ) || record.employeeName}
+                            </span>
                           </div>
-                          <span className="font-medium text-slate-800" style={{ color: columnColors.employeeName || undefined }}>{record.employeeName}</span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4 text-center">
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                          record.type === "Entry" ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
-                        }`} style={{ color: columnColors.type || undefined, backgroundColor: columnColors.type ? undefined : undefined }}>
-                          {record.type}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-sm text-slate-600" style={{ color: columnColors.company || undefined }}>{record.company}</td>
-                      <td className="py-4 px-4 text-sm text-slate-600" style={{ color: columnColors.department || undefined }}>{record.department}</td>
-                      <td className="py-4 px-4 text-sm text-slate-600" style={{ color: columnColors.position || undefined }}>{record.position}</td>
-                      <td className="py-4 px-4 text-sm text-slate-600" style={{ color: columnColors.date || undefined }}>{record.date}</td>
-                      <td className="py-4 px-4 text-sm text-slate-500" style={{ color: columnColors.reason || undefined }}>
-                        {record.type === "Entry" ? (
-                          <span className="flex items-center gap-1">
-                            <span className="text-slate-400">From:</span> {record.previousCompany}
+                        </td>
+                        <td className="py-4 px-4 text-center" style={{ backgroundColor: styles.type.backgroundColor }}>
+                          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                            record.type === "Entry" ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
+                          }`} style={{ 
+                            color: styles.type.color, 
+                            backgroundColor: styles.type.isTextOnly ? undefined : (styles.type.backgroundColor || (record.type === "Entry" ? "#ecfdf5" : "#fef2f2")) 
+                          }}>
+                            {record.type}
                           </span>
-                        ) : (
-                          <span>{record.reason}</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-600" style={{ backgroundColor: styles.company.backgroundColor }}>
+                           <span style={{ color: styles.company.color }}>
+                            {styles.company.isTextOnly && styles.company.rawBgColor ? (
+                              <span className="px-1 rounded" style={{ backgroundColor: styles.company.rawBgColor }}>{record.company}</span>
+                            ) : record.company}
+                           </span>
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-600" style={{ backgroundColor: styles.department.backgroundColor }}>
+                           <span style={{ color: styles.department.color }}>
+                            {styles.department.isTextOnly && styles.department.rawBgColor ? (
+                              <span className="px-1 rounded" style={{ backgroundColor: styles.department.rawBgColor }}>{record.department}</span>
+                            ) : record.department}
+                           </span>
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-600" style={{ backgroundColor: styles.position.backgroundColor }}>
+                           <span style={{ color: styles.position.color }}>
+                            {styles.position.isTextOnly && styles.position.rawBgColor ? (
+                              <span className="px-1 rounded" style={{ backgroundColor: styles.position.rawBgColor }}>{record.position}</span>
+                            ) : record.position}
+                           </span>
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-600" style={{ backgroundColor: styles.date.backgroundColor }}>
+                           <span style={{ color: styles.date.color }}>
+                            {styles.date.isTextOnly && styles.date.rawBgColor ? (
+                              <span className="px-1 rounded" style={{ backgroundColor: styles.date.rawBgColor }}>{record.date}</span>
+                            ) : record.date}
+                           </span>
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-500" style={{ backgroundColor: styles.reason.backgroundColor }}>
+                          <span style={{ color: styles.reason.color }}>
+                             {record.type === "Entry" ? (
+                              <span className="flex items-center gap-1">
+                                <span className="text-slate-400">From:</span> 
+                                {styles.reason.isTextOnly && styles.reason.rawBgColor ? (
+                                  <span className="px-1 rounded" style={{ backgroundColor: styles.reason.rawBgColor }}>{record.previousCompany}</span>
+                                ) : record.previousCompany}
+                              </span>
+                            ) : (
+                              styles.reason.isTextOnly && styles.reason.rawBgColor ? (
+                                <span className="px-1 rounded" style={{ backgroundColor: styles.reason.rawBgColor }}>{record.reason}</span>
+                              ) : record.reason
+                            )}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -426,65 +754,38 @@ export default function EmploymentData() {
                   Showing {filteredRecords.length > 0 ? ((currentPage - 1) * itemsPerPage) + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredRecords.length)} of {filteredRecords.length} records
                 </p>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-slate-500">Show</span>
-                  <select
-                    value={itemsPerPage}
-                    onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-                    className="border border-slate-200 rounded-md px-2 py-1 text-sm text-slate-700 bg-white"
-                    data-testid="items-per-page"
+                  <span className="text-sm text-slate-500">Rows per page:</span>
+                  <select 
+                    value={itemsPerPage} 
+                    onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                    className="text-sm border-none bg-transparent font-medium text-slate-700 focus:ring-0 cursor-pointer"
                   >
                     <option value={10}>10</option>
-                    <option value={25}>25</option>
+                    <option value={20}>20</option>
                     <option value={50}>50</option>
-                    <option value={100}>100</option>
                   </select>
-                  <span className="text-sm text-slate-500">per page</span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {(() => {
-                  const pages: (number | string)[] = [];
-                  if (totalPages <= 7) {
-                    for (let i = 1; i <= totalPages; i++) pages.push(i);
-                  } else {
-                    if (currentPage <= 4) {
-                      pages.push(1, 2, 3, 4, 5, '...', totalPages);
-                    } else if (currentPage >= totalPages - 3) {
-                      pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-                    } else {
-                      pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
-                    }
-                  }
-                  return (
-                    <>
-                      <div className="flex items-center gap-1">
-                        <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="h-8 px-2 border-slate-200 text-slate-500 hover:text-slate-700">
-                          <ChevronLeft className="w-4 h-4" /><ChevronLeft className="w-4 h-4 -ml-3" />
-                        </Button>
-                        <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="h-8 px-2 border-slate-200 text-slate-500 hover:text-slate-700">
-                          <ChevronLeft className="w-4 h-4" />
-                        </Button>
-                      </div>
-                      <div className="flex items-center gap-1 mx-2">
-                        {pages.map((page, idx) => (
-                          typeof page === 'number' ? (
-                            <button key={idx} onClick={() => setCurrentPage(page)} className={`h-8 min-w-[32px] px-2 text-sm rounded-lg transition-all ${currentPage === page ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}>{page}</button>
-                          ) : (
-                            <span key={idx} className="px-2 text-slate-300">•••</span>
-                          )
-                        ))}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button variant="outline" size="sm" disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} className="h-8 px-2 border-slate-200 text-slate-500 hover:text-slate-700">
-                          <ChevronRight className="w-4 h-4" />
-                        </Button>
-                        <Button variant="outline" size="sm" disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(totalPages)} className="h-8 px-2 border-slate-200 text-slate-500 hover:text-slate-700">
-                          <ChevronRight className="w-4 h-4" /><ChevronRight className="w-4 h-4 -ml-3" />
-                        </Button>
-                      </div>
-                    </>
-                  );
-                })()}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <span className="text-sm font-medium text-slate-700">
+                  Page {currentPage} of {Math.max(1, totalPages)}
+                </span>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
               </div>
             </div>
           </motion.div>

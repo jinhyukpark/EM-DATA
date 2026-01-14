@@ -227,6 +227,31 @@ export default function EmploymentData() {
   const entryCount = employmentRecords.filter(r => r.type === "Entry").length;
   const exitCount = employmentRecords.filter(r => r.type === "Exit").length;
 
+  const [showColumnSelector, setShowColumnSelector] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState({
+    employeeName: true,
+    type: true,
+    company: true,
+    department: true,
+    position: true,
+    date: true,
+    reason: true,
+  });
+
+  const columnLabels: Record<string, string> = {
+    employeeName: "Employee",
+    type: "Type",
+    company: "Company",
+    department: "Department",
+    position: "Position",
+    date: "Date",
+    reason: "Previous/Reason",
+  };
+
+  const toggleColumn = (col: string) => {
+    setVisibleColumns(prev => ({ ...prev, [col]: !prev[col as keyof typeof prev] }));
+  };
+
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({
     employeeName: 200,
     type: 100,
@@ -600,10 +625,31 @@ export default function EmploymentData() {
                       />
                     </div>
                   </div>
-                  <Button variant="outline" className="gap-2 h-9">
-                    <Filter className="w-4 h-4" />
-                    Filters
-                  </Button>
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowColumnSelector(!showColumnSelector)}
+                      className="flex items-center gap-2 px-3 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
+                    >
+                      <Columns className="w-4 h-4" />
+                      Fields
+                    </button>
+                    {showColumnSelector && (
+                      <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-10">
+                        {Object.entries(columnLabels).map(([key, label]) => (
+                          <button
+                            key={key}
+                            onClick={() => toggleColumn(key)}
+                            className="flex items-center justify-between w-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+                          >
+                            <span>{label}</span>
+                            {visibleColumns[key as keyof typeof visibleColumns] && (
+                              <Check className="w-4 h-4 text-blue-500" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -614,24 +660,36 @@ export default function EmploymentData() {
                       <ResizableHeader id="employeeName" label="Employee">
                         {renderColumnConfig('employeeName', 'Employee')}
                       </ResizableHeader>
-                      <ResizableHeader id="type" label="Type" align="center">
-                        {renderColumnConfig('type', 'Type')}
-                      </ResizableHeader>
-                      <ResizableHeader id="company" label="Company">
-                        {renderColumnConfig('company', 'Company')}
-                      </ResizableHeader>
-                      <ResizableHeader id="department" label="Department">
-                        {renderColumnConfig('department', 'Department')}
-                      </ResizableHeader>
-                      <ResizableHeader id="position" label="Position">
-                        {renderColumnConfig('position', 'Position')}
-                      </ResizableHeader>
-                      <ResizableHeader id="date" label="Date">
-                        {renderColumnConfig('date', 'Date')}
-                      </ResizableHeader>
-                      <ResizableHeader id="reason" label="Previous/Reason">
-                        {renderColumnConfig('reason', 'Previous/Reason')}
-                      </ResizableHeader>
+                      {visibleColumns.type && (
+                        <ResizableHeader id="type" label="Type" align="center">
+                          {renderColumnConfig('type', 'Type')}
+                        </ResizableHeader>
+                      )}
+                      {visibleColumns.company && (
+                        <ResizableHeader id="company" label="Company">
+                          {renderColumnConfig('company', 'Company')}
+                        </ResizableHeader>
+                      )}
+                      {visibleColumns.department && (
+                        <ResizableHeader id="department" label="Department">
+                          {renderColumnConfig('department', 'Department')}
+                        </ResizableHeader>
+                      )}
+                      {visibleColumns.position && (
+                        <ResizableHeader id="position" label="Position">
+                          {renderColumnConfig('position', 'Position')}
+                        </ResizableHeader>
+                      )}
+                      {visibleColumns.date && (
+                        <ResizableHeader id="date" label="Date">
+                          {renderColumnConfig('date', 'Date')}
+                        </ResizableHeader>
+                      )}
+                      {visibleColumns.reason && (
+                        <ResizableHeader id="reason" label="Previous/Reason">
+                          {renderColumnConfig('reason', 'Previous/Reason')}
+                        </ResizableHeader>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -665,60 +723,72 @@ export default function EmploymentData() {
                               </span>
                             </div>
                           </td>
-                          <td className="py-4 px-4 text-center border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.type.backgroundColor }}>
-                            <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                              record.type === "Entry" ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
-                            }`} style={{ 
-                              color: styles.type.color, 
-                              backgroundColor: styles.type.isTextOnly ? undefined : (styles.type.backgroundColor || (record.type === "Entry" ? "#ecfdf5" : "#fef2f2")) 
-                            }}>
-                              {record.type}
-                            </span>
-                          </td>
-                          <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.company.backgroundColor }}>
-                             <span style={{ color: styles.company.color }}>
-                              {styles.company.isTextOnly && styles.company.rawBgColor ? (
-                                <span className="px-1 rounded" style={{ backgroundColor: styles.company.rawBgColor }}>{record.company}</span>
-                              ) : record.company}
-                             </span>
-                          </td>
-                          <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.department.backgroundColor }}>
-                             <span style={{ color: styles.department.color }}>
-                              {styles.department.isTextOnly && styles.department.rawBgColor ? (
-                                <span className="px-1 rounded" style={{ backgroundColor: styles.department.rawBgColor }}>{record.department}</span>
-                              ) : record.department}
-                             </span>
-                          </td>
-                          <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.position.backgroundColor }}>
-                             <span style={{ color: styles.position.color }}>
-                              {styles.position.isTextOnly && styles.position.rawBgColor ? (
-                                <span className="px-1 rounded" style={{ backgroundColor: styles.position.rawBgColor }}>{record.position}</span>
-                              ) : record.position}
-                             </span>
-                          </td>
-                          <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.date.backgroundColor }}>
-                             <span style={{ color: styles.date.color }}>
-                              {styles.date.isTextOnly && styles.date.rawBgColor ? (
-                                <span className="px-1 rounded" style={{ backgroundColor: styles.date.rawBgColor }}>{record.date}</span>
-                              ) : record.date}
-                             </span>
-                          </td>
-                          <td className="py-4 px-4 text-sm text-slate-500 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.reason.backgroundColor }}>
-                            <span style={{ color: styles.reason.color }}>
-                               {record.type === "Entry" ? (
-                                <span className="flex items-center gap-1">
-                                  <span className="text-slate-400">From:</span> 
-                                  {styles.reason.isTextOnly && styles.reason.rawBgColor ? (
-                                    <span className="px-1 rounded" style={{ backgroundColor: styles.reason.rawBgColor }}>{record.previousCompany}</span>
-                                  ) : record.previousCompany}
-                                </span>
-                              ) : (
-                                styles.reason.isTextOnly && styles.reason.rawBgColor ? (
-                                  <span className="px-1 rounded" style={{ backgroundColor: styles.reason.rawBgColor }}>{record.reason}</span>
-                                ) : record.reason
-                              )}
-                            </span>
-                          </td>
+                          {visibleColumns.type && (
+                            <td className="py-4 px-4 text-center border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.type.backgroundColor }}>
+                              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                                record.type === "Entry" ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
+                              }`} style={{ 
+                                color: styles.type.color, 
+                                backgroundColor: styles.type.isTextOnly ? undefined : (styles.type.backgroundColor || (record.type === "Entry" ? "#ecfdf5" : "#fef2f2")) 
+                              }}>
+                                {record.type}
+                              </span>
+                            </td>
+                          )}
+                          {visibleColumns.company && (
+                            <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.company.backgroundColor }}>
+                               <span style={{ color: styles.company.color }}>
+                                {styles.company.isTextOnly && styles.company.rawBgColor ? (
+                                  <span className="px-1 rounded" style={{ backgroundColor: styles.company.rawBgColor }}>{record.company}</span>
+                                ) : record.company}
+                               </span>
+                            </td>
+                          )}
+                          {visibleColumns.department && (
+                            <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.department.backgroundColor }}>
+                               <span style={{ color: styles.department.color }}>
+                                {styles.department.isTextOnly && styles.department.rawBgColor ? (
+                                  <span className="px-1 rounded" style={{ backgroundColor: styles.department.rawBgColor }}>{record.department}</span>
+                                ) : record.department}
+                               </span>
+                            </td>
+                          )}
+                          {visibleColumns.position && (
+                            <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.position.backgroundColor }}>
+                               <span style={{ color: styles.position.color }}>
+                                {styles.position.isTextOnly && styles.position.rawBgColor ? (
+                                  <span className="px-1 rounded" style={{ backgroundColor: styles.position.rawBgColor }}>{record.position}</span>
+                                ) : record.position}
+                               </span>
+                            </td>
+                          )}
+                          {visibleColumns.date && (
+                            <td className="py-4 px-4 text-sm text-slate-600 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.date.backgroundColor }}>
+                               <span style={{ color: styles.date.color }}>
+                                {styles.date.isTextOnly && styles.date.rawBgColor ? (
+                                  <span className="px-1 rounded" style={{ backgroundColor: styles.date.rawBgColor }}>{record.date}</span>
+                                ) : record.date}
+                               </span>
+                            </td>
+                          )}
+                          {visibleColumns.reason && (
+                            <td className="py-4 px-4 text-sm text-slate-500 border-r border-slate-200 last:border-r-0" style={{ backgroundColor: styles.reason.backgroundColor }}>
+                              <span style={{ color: styles.reason.color }}>
+                                 {record.type === "Entry" ? (
+                                  <span className="flex items-center gap-1">
+                                    <span className="text-slate-400">From:</span> 
+                                    {styles.reason.isTextOnly && styles.reason.rawBgColor ? (
+                                      <span className="px-1 rounded" style={{ backgroundColor: styles.reason.rawBgColor }}>{record.previousCompany}</span>
+                                    ) : record.previousCompany}
+                                  </span>
+                                ) : (
+                                  styles.reason.isTextOnly && styles.reason.rawBgColor ? (
+                                    <span className="px-1 rounded" style={{ backgroundColor: styles.reason.rawBgColor }}>{record.reason}</span>
+                                  ) : record.reason
+                                )}
+                              </span>
+                            </td>
+                          )}
                         </tr>
                       );
                     })}

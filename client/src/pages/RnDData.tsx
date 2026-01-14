@@ -574,7 +574,9 @@ export default function RnDData() {
 
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
               <div className="flex items-center justify-between gap-3 p-4 border-b border-slate-100">
-                <div className="flex-1" />
+                <div>
+                   <h2 className="text-lg font-semibold text-slate-800">R&D Basic</h2>
+                </div>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
                     <select 

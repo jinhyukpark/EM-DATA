@@ -170,6 +170,7 @@ export default function CompanyData() {
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [dataViewTab, setDataViewTab] = useState<"company" | "financial">("company");
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [columnStyles, setColumnStyles] = useState<Record<string, ColumnStyle>>({});
   
   const companyInfoColumns = {
     ceo: true,

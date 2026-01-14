@@ -949,7 +949,7 @@ export default function Dashboard() {
               <div className="chart-container-light" data-testid="area-chart">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-sm font-medium text-slate-500">
-                    Cumulative Data Trends (Excluding News)
+                    Cumulative Data Trends
                   </h3>
                   <button
                     onClick={() => setExpandedChart("area")}
@@ -1000,6 +1000,12 @@ export default function Dashboard() {
                         tickFormatter={(value) => formatNumber(value)}
                       />
                       <Tooltip content={<CustomTooltip />} />
+                      <Legend 
+                        wrapperStyle={{ paddingTop: "20px" }}
+                        formatter={(value) => (
+                          <span className="text-slate-500 text-sm">{value}</span>
+                        )}
+                      />
                       <Area
                         type="monotone"
                         dataKey="Patent"

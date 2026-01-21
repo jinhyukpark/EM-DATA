@@ -22,8 +22,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  LineChart,
+  ComposedChart,
   Line,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -204,7 +205,7 @@ export default function EmploymentData() {
 
                 <div className="h-[400px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
+                    <ComposedChart
                       data={filteredData}
                       margin={{
                         top: 5,
@@ -243,6 +244,22 @@ export default function EmploymentData() {
                         }}
                       />
                       <Legend />
+                      <Bar
+                        yAxisId="left"
+                        dataKey="entryCount"
+                        name="Entries"
+                        fill="#10b981"
+                        radius={[4, 4, 0, 0]}
+                        barSize={20}
+                      />
+                      <Bar
+                        yAxisId="left"
+                        dataKey="exitCount"
+                        name="Exits"
+                        fill="#ef4444"
+                        radius={[4, 4, 0, 0]}
+                        barSize={20}
+                      />
                       <Line
                         yAxisId="right"
                         type="monotone"
@@ -253,25 +270,7 @@ export default function EmploymentData() {
                         dot={{ fill: '#3b82f6', strokeWidth: 2 }}
                         activeDot={{ r: 6 }}
                       />
-                      <Line
-                        yAxisId="left"
-                        type="monotone"
-                        dataKey="entryCount"
-                        name="Entries"
-                        stroke="#10b981"
-                        strokeWidth={2}
-                        dot={{ fill: '#10b981', strokeWidth: 2 }}
-                      />
-                      <Line
-                        yAxisId="left"
-                        type="monotone"
-                        dataKey="exitCount"
-                        name="Exits"
-                        stroke="#ef4444"
-                        strokeWidth={2}
-                        dot={{ fill: '#ef4444', strokeWidth: 2 }}
-                      />
-                    </LineChart>
+                    </ComposedChart>
                   </ResponsiveContainer>
                 </div>
               </div>

@@ -9,6 +9,7 @@ import {
   UserPlus,
   UserMinus,
   Users,
+  Building2,
   Menu,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
@@ -129,9 +130,17 @@ export default function EmploymentData() {
             <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.3 }} className="mb-6">
               <div className="flex items-center gap-8 py-4 px-6 bg-white rounded-xl border border-slate-100 overflow-x-auto">
                 <div className="flex items-center gap-3 min-w-max">
+                  <Building2 className="w-5 h-5 text-indigo-500" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Company</p>
+                    <p className="text-xl font-bold text-slate-800">{selectedCompany}</p>
+                  </div>
+                </div>
+                <div className="w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3 min-w-max">
                   <Users className="w-5 h-5 text-blue-500" />
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Total Employees ({selectedCompany})</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Total Employees</p>
                     <p className="text-xl font-bold text-slate-800">{latestStats.total.toLocaleString()}</p>
                   </div>
                 </div>

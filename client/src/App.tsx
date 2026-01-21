@@ -11,7 +11,7 @@ import Settings from "@/pages/Settings";
 import QAReport from "@/pages/QAReport";
 import AWSServers from "@/pages/AWSServers";
 import GCPServers from "@/pages/GCPServers";
-import NCloudServers from "@/pages/NCloudServers";
+import IDCServers from "@/pages/IDCServers";
 import PatentData from "@/pages/PatentData";
 import StockData from "@/pages/StockData";
 import NewsData from "@/pages/NewsData";
@@ -47,7 +47,7 @@ function AppRouter() {
         <Route path="/qa-report/test/:id" component={TestDetail} />
         <Route path="/servers/aws" component={AWSServers} />
         <Route path="/servers/gcp" component={GCPServers} />
-        <Route path="/servers/ncloud" component={NCloudServers} />
+        <Route path="/servers/idc" component={IDCServers} />
         <Route component={NotFound} />
       </Switch>
     </Router>

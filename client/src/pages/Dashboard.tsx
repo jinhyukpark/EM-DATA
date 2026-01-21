@@ -462,8 +462,8 @@ const cloudServers = [
     ],
   },
   {
-    provider: "NCloud",
-    logo: "🟢",
+    provider: "IDC",
+    logo: "🖥️",
     color: "hsl(145, 63%, 42%)",
     bgColor: "bg-green-50",
     borderColor: "border-green-200",

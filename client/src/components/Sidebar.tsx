@@ -35,7 +35,7 @@ const dataMenuItems = [
 const serverMenuItems = [
   { id: "aws", name: "AWS", icon: Cloud, path: "/servers/aws", color: "text-orange-400" },
   { id: "gcp", name: "GCP", icon: Cloud, path: "/servers/gcp", color: "text-blue-400" },
-  { id: "ncloud", name: "NCloud", icon: Cloud, path: "/servers/ncloud", color: "text-green-400" },
+  { id: "idc", name: "IDC", icon: Server, path: "/servers/idc", color: "text-green-400" },
 ];
 
 function getStoredMenuState(key: string, defaultValue: boolean): boolean {

@@ -131,7 +131,7 @@ export default function EmploymentData() {
                 <div className="flex items-center gap-3 min-w-max">
                   <Users className="w-5 h-5 text-blue-500" />
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Total Employees</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Total Employees ({selectedCompany})</p>
                     <p className="text-xl font-bold text-slate-800">{latestStats.total.toLocaleString()}</p>
                   </div>
                 </div>
@@ -181,7 +181,7 @@ export default function EmploymentData() {
                   </div>
                   <div className="w-full sm:w-64">
                     <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-                      <SelectTrigger>
+                      <SelectTrigger className="text-slate-800">
                         <SelectValue placeholder="Select company" />
                       </SelectTrigger>
                       <SelectContent>

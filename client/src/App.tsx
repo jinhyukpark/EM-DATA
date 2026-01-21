@@ -20,7 +20,6 @@ import EmploymentData from "@/pages/EmploymentData";
 import PaperData from "@/pages/PaperData";
 import AddTestProcedure from "@/pages/AddTestProcedure";
 import TestDetail from "@/pages/TestDetail";
-import Sitemap from "@/pages/Sitemap";
 
 const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
 
@@ -31,7 +30,6 @@ function AppRouter() {
         <Route path="/login" component={Login} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/" component={Login} />
-        <Route path="/sitemap" component={Sitemap} />
         <Route path="/data/company" component={CompanyData} />
         <Route path="/data/patent" component={PatentData} />
         <Route path="/data/paper" component={PaperData} />

@@ -15,13 +15,11 @@ import {
   ClipboardCheck,
   Lightbulb,
   UserCog,
-  Map,
 } from "lucide-react";
 
 const menuItems = [
   { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { id: "qa-report", name: "QA Report", icon: ClipboardCheck, path: "/qa-report" },
-  { id: "sitemap", name: "Sitemap", icon: Map, path: "/sitemap" },
 ];
 
 const dataMenuItems = [

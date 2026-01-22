@@ -35,15 +35,15 @@ const dailyStatusData = [
   { date: "01/13", success: 7, warning: 1, error: 1 },
 ];
 
-const ncloudServices = [
-  { id: 1, name: "Main Web Server", type: "Server", instanceId: "ncloud-web-001", region: "KR-1", cpu: 52, memory: 68, status: "running", ip: "10.41.0.10", port: "80" },
-  { id: 2, name: "API Gateway", type: "Server", instanceId: "ncloud-api-001", region: "KR-1", cpu: 34, memory: 45, status: "running", ip: "10.41.0.11", port: "8080" },
+const idcServices = [
+  { id: 1, name: "Main Web Server", type: "Server", instanceId: "idc-web-001", region: "KR-1", cpu: 52, memory: 68, status: "running", ip: "10.41.0.10", port: "80" },
+  { id: 2, name: "API Gateway", type: "Server", instanceId: "idc-api-001", region: "KR-1", cpu: 34, memory: 45, status: "running", ip: "10.41.0.11", port: "8080" },
   { id: 3, name: "Database Primary", type: "Cloud DB", instanceId: "cdb-mysql-prod", region: "KR-1", cpu: 61, memory: 78, status: "running", ip: "10.41.1.5", port: "3306" },
   { id: 4, name: "Database Replica", type: "Cloud DB", instanceId: "cdb-mysql-replica", region: "KR-1", cpu: 28, memory: 52, status: "running", ip: "10.41.1.6", port: "3306" },
   { id: 5, name: "Object Storage", type: "Object Storage", instanceId: "obj-data-bucket", region: "KR-1", cpu: 0, memory: 0, status: "running", ip: "-", port: "-" },
   { id: 6, name: "CDN Distribution", type: "CDN+", instanceId: "cdn-static-assets", region: "KR-1", cpu: 0, memory: 0, status: "running", ip: "-", port: "-" },
-  { id: 7, name: "Batch Processing", type: "Server", instanceId: "ncloud-batch-001", region: "KR-1", cpu: 85, memory: 79, status: "warning", ip: "10.41.0.20", port: "9000" },
-  { id: 8, name: "Log Collector", type: "Server", instanceId: "ncloud-log-001", region: "KR-1", cpu: 0, memory: 0, status: "stopped", ip: "10.41.0.21", port: "5044" },
+  { id: 7, name: "Batch Processing", type: "Server", instanceId: "idc-batch-001", region: "KR-1", cpu: 85, memory: 79, status: "warning", ip: "10.41.0.20", port: "9000" },
+  { id: 8, name: "Log Collector", type: "Server", instanceId: "idc-log-001", region: "KR-1", cpu: 0, memory: 0, status: "stopped", ip: "10.41.0.21", port: "5044" },
   { id: 9, name: "Redis Cache", type: "Cloud DB", instanceId: "cdb-redis-prod", region: "KR-1", cpu: 15, memory: 42, status: "running", ip: "10.41.1.10", port: "6379" },
 ];
 
@@ -64,10 +64,10 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-export default function NCloudServers() {
-  const runningCount = ncloudServices.filter(s => s.status === "running").length;
-  const warningCount = ncloudServices.filter(s => s.status === "warning").length;
-  const stoppedCount = ncloudServices.filter(s => s.status === "stopped").length;
+export default function IDCServers() {
+  const runningCount = idcServices.filter(s => s.status === "running").length;
+  const warningCount = idcServices.filter(s => s.status === "warning").length;
+  const stoppedCount = idcServices.filter(s => s.status === "stopped").length;
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -97,10 +97,10 @@ export default function NCloudServers() {
                   <Menu className="w-5 h-5" />
                 </button>
                 <div className="w-10 h-10 rounded-xl bg-green-500 flex items-center justify-center flex-shrink-0">
-                  <Cloud className="w-5 h-5 text-white" />
+                  <Server className="w-5 h-5 text-white" />
                 </div>
                 <div className="min-w-0">
-                  <h1 className="text-lg md:text-xl font-semibold tracking-tight text-slate-800 truncate">NCloud Services</h1>
+                  <h1 className="text-lg md:text-xl font-semibold tracking-tight text-slate-800 truncate">IDC Services</h1>
                   <p className="text-xs md:text-sm text-slate-500 mt-0.5 hidden sm:block">KR-1 (Korea)</p>
                 </div>
               </div>
@@ -119,7 +119,7 @@ export default function NCloudServers() {
                 <Server className="w-5 h-5 text-green-500" />
                 <div>
                   <p className="text-xs text-slate-400 uppercase tracking-wide">Total Services</p>
-                  <p className="text-xl font-bold text-slate-800">{ncloudServices.length}</p>
+                  <p className="text-xl font-bold text-slate-800">{idcServices.length}</p>
                 </div>
               </div>
               <div className="w-px h-10 bg-slate-200" />
@@ -201,7 +201,7 @@ export default function NCloudServers() {
                 <h2 className="text-sm font-medium text-slate-800">Managed Services</h2>
               </div>
               <div className="overflow-x-auto">
-                <table className="w-full" data-testid="ncloud-services-table">
+                <table className="w-full" data-testid="idc-services-table">
                   <thead>
                     <tr className="bg-slate-50/50">
                       <th className="text-left py-3 px-6 text-xs font-medium text-slate-400 uppercase tracking-wide">Service Name</th>
@@ -215,7 +215,7 @@ export default function NCloudServers() {
                     </tr>
                   </thead>
                   <tbody>
-                    {ncloudServices.map((service) => (
+                    {idcServices.map((service) => (
                       <tr key={service.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors" data-testid={`service-row-${service.id}`}>
                         <td className="py-3 px-6">
                           <span className="font-medium text-slate-800">{service.name}</span>

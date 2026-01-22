@@ -27,6 +27,7 @@ import {
   X,
   Server,
   ChevronDown,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -99,6 +100,20 @@ function ProfileTab() {
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <Input defaultValue="Data Engineering Team" className="pl-10 border-slate-200" data-testid="department" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">New Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Input type="password" placeholder="Enter new password" className="pl-10 border-slate-200" data-testid="new-password" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Confirm Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Input type="password" placeholder="Confirm new password" className="pl-10 border-slate-200" data-testid="confirm-password" />
               </div>
             </div>
           </div>

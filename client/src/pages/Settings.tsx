@@ -116,21 +116,39 @@ function ProfileTab() {
 
 function UsersTab() {
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newUser, setNewUser] = useState({ name: "", email: "", role: "Viewer" });
+  const [newUser, setNewUser] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    tempPassword: "",
+    confirmPassword: "",
+    phone: "",
+    department: "",
+    role: "Viewer"
+  });
   const [userList, setUserList] = useState(users);
 
   const handleAddUser = () => {
-    if (newUser.name && newUser.email) {
+    if (newUser.firstName && newUser.lastName && newUser.email) {
       const newId = userList.length + 1;
       setUserList([...userList, {
         id: newId,
-        name: newUser.name,
+        name: `${newUser.firstName} ${newUser.lastName}`,
         email: newUser.email,
         role: newUser.role,
         status: "Active",
         lastLogin: "-"
       }]);
-      setNewUser({ name: "", email: "", role: "Viewer" });
+      setNewUser({
+        firstName: "",
+        lastName: "",
+        email: "",
+        tempPassword: "",
+        confirmPassword: "",
+        phone: "",
+        department: "",
+        role: "Viewer"
+      });
       setShowAddModal(false);
     }
   };
@@ -142,32 +160,93 @@ function UsersTab() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl"
+            className="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-semibold text-slate-800 mb-4">Add New User</h3>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Name</label>
-                <Input
-                  value={newUser.name}
-                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                  placeholder="Enter name"
-                  className="border-slate-200"
-                  data-testid="new-user-name"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">First Name</label>
+                  <Input
+                    value={newUser.firstName}
+                    onChange={(e) => setNewUser({ ...newUser, firstName: e.target.value })}
+                    placeholder="Enter first name"
+                    className="border-slate-200"
+                    data-testid="new-user-firstname"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Last Name</label>
+                  <Input
+                    value={newUser.lastName}
+                    onChange={(e) => setNewUser({ ...newUser, lastName: e.target.value })}
+                    placeholder="Enter last name"
+                    className="border-slate-200"
+                    data-testid="new-user-lastname"
+                  />
+                </div>
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
                 <Input
                   type="email"
                   value={newUser.email}
                   onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                  placeholder="Enter email"
+                  placeholder="Enter email address"
                   className="border-slate-200"
                   data-testid="new-user-email"
                 />
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Temporary Password</label>
+                  <Input
+                    type="password"
+                    value={newUser.tempPassword}
+                    onChange={(e) => setNewUser({ ...newUser, tempPassword: e.target.value })}
+                    placeholder="Enter password"
+                    className="border-slate-200"
+                    data-testid="new-user-password"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Confirm Password</label>
+                  <Input
+                    type="password"
+                    value={newUser.confirmPassword}
+                    onChange={(e) => setNewUser({ ...newUser, confirmPassword: e.target.value })}
+                    placeholder="Confirm password"
+                    className="border-slate-200"
+                    data-testid="new-user-confirm-password"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Phone Number</label>
+                <Input
+                  value={newUser.phone}
+                  onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
+                  placeholder="Enter phone number"
+                  className="border-slate-200"
+                  data-testid="new-user-phone"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Department</label>
+                <Input
+                  value={newUser.department}
+                  onChange={(e) => setNewUser({ ...newUser, department: e.target.value })}
+                  placeholder="Enter department"
+                  className="border-slate-200"
+                  data-testid="new-user-department"
+                />
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
                 <select

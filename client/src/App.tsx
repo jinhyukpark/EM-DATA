@@ -15,7 +15,7 @@ import IDCServers from "@/pages/IDCServers";
 import PatentData from "@/pages/PatentData";
 import StockData from "@/pages/StockData";
 import NewsData from "@/pages/NewsData";
-import RnDData from "@/pages/RnDData";
+import FinanceData from "@/pages/FinanceData";
 import EmploymentData from "@/pages/EmploymentData";
 import PaperData from "@/pages/PaperData";
 import AddTestProcedure from "@/pages/AddTestProcedure";
@@ -35,7 +35,7 @@ function AppRouter() {
         <Route path="/data/paper" component={PaperData} />
         <Route path="/data/stock" component={StockData} />
         <Route path="/data/news" component={NewsData} />
-        <Route path="/data/rnd" component={RnDData} />
+        <Route path="/data/finance" component={FinanceData} />
         <Route path="/data/employment" component={EmploymentData} />
         <Route path="/settings" component={Settings} />
         <Route path="/settings/profile" component={Settings} />

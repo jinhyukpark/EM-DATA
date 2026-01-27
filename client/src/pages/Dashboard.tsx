@@ -24,7 +24,7 @@ import {
   Users,
   Shield,
   ClipboardCheck,
-  Lightbulb,
+  DollarSign,
   UserCog,
   Maximize2,
   Menu,
@@ -102,9 +102,9 @@ const dataTypes = [
     bgGradient: "from-rose-500/15 to-rose-600/5",
   },
   {
-    id: "rnd",
-    name: "R&D Data",
-    icon: Lightbulb,
+    id: "finance",
+    name: "Finance Data",
+    icon: DollarSign,
     total: 156789,
     todayUpdate: 234,
     yesterdayUpdate: 198,
@@ -138,7 +138,7 @@ const generateDailyData = () => {
       News: Math.floor(Math.random() * 2000) + 3500,
       Stock: Math.floor(Math.random() * 1000) + 2500,
       Company: Math.floor(Math.random() * 50) + 80,
-      RnD: Math.floor(Math.random() * 100) + 150,
+      Finance: Math.floor(Math.random() * 100) + 150,
       Employment: Math.floor(Math.random() * 80) + 100,
     });
   }
@@ -155,7 +155,7 @@ const generateWeeklyData = () => {
       News: Math.floor(Math.random() * 15000) + 25000,
       Stock: Math.floor(Math.random() * 8000) + 18000,
       Company: Math.floor(Math.random() * 300) + 500,
-      RnD: Math.floor(Math.random() * 600) + 1000,
+      Finance: Math.floor(Math.random() * 600) + 1000,
       Employment: Math.floor(Math.random() * 400) + 700,
     });
   }
@@ -171,7 +171,7 @@ const generateMonthlyData = () => {
     News: Math.floor(Math.random() * 60000) + 100000,
     Stock: Math.floor(Math.random() * 30000) + 70000,
     Company: Math.floor(Math.random() * 1500) + 2500,
-    RnD: Math.floor(Math.random() * 3000) + 5000,
+    Finance: Math.floor(Math.random() * 3000) + 5000,
     Employment: Math.floor(Math.random() * 2000) + 3000,
   }));
 };
@@ -185,7 +185,7 @@ const generateYearlyData = () => {
     News: Math.floor(Math.random() * 800000) + 1200000,
     Stock: Math.floor(Math.random() * 400000) + 800000,
     Company: Math.floor(Math.random() * 5000) + 30000,
-    RnD: Math.floor(Math.random() * 30000) + 50000,
+    Finance: Math.floor(Math.random() * 30000) + 50000,
     Employment: Math.floor(Math.random() * 20000) + 30000,
   }));
 };
@@ -414,7 +414,7 @@ const chartColors = {
   News: "hsl(25, 95%, 53%)",
   Stock: "hsl(271, 76%, 53%)",
   Company: "hsl(346, 77%, 50%)",
-  RnD: "hsl(45, 93%, 47%)",
+  Finance: "hsl(45, 93%, 47%)",
   Employment: "hsl(199, 89%, 48%)",
 };
 

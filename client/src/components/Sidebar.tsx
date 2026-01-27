@@ -13,7 +13,7 @@ import {
   Cloud,
   Settings,
   ClipboardCheck,
-  Lightbulb,
+  DollarSign,
   UserCog,
 } from "lucide-react";
 
@@ -28,7 +28,7 @@ const dataMenuItems = [
   { id: "paper-data", name: "Paper Data", icon: FileText, path: "/data/paper", status: "stopped" },
   { id: "stock-data", name: "Stock Data", icon: TrendingUp, path: "/data/stock", status: "normal" },
   { id: "news-data", name: "News Data", icon: Newspaper, path: "/data/news", status: "error" },
-  { id: "rnd-data", name: "R&D Data", icon: Lightbulb, path: "/data/rnd", status: "normal" },
+  { id: "finance-data", name: "Finance Data", icon: DollarSign, path: "/data/finance", status: "normal" },
   { id: "employment-data", name: "Employment Data", icon: UserCog, path: "/data/employment", status: "stopped" },
 ];
 

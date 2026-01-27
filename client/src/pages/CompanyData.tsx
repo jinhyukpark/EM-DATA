@@ -726,22 +726,26 @@ export default function CompanyData() {
                           Fields
                         </button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-56" align="end">
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-sm text-slate-900">Columns</h4>
-                            <span className="text-xs text-slate-500">{getSearchFields(activeTab).filter(f => f.value !== 'all').length} fields</span>
+                      <PopoverContent className="w-56 p-0 bg-slate-950 border-slate-800" align="end">
+                        <div className="p-3 border-b border-slate-800 bg-slate-900/50">
+                           <div className="flex items-center justify-between">
+                            <h4 className="font-medium text-sm text-slate-100">Columns</h4>
+                            <span className="text-xs text-slate-400">{getSearchFields(activeTab).filter(f => f.value !== 'all').length} fields</span>
                           </div>
-                          <div className="space-y-1">
-                            {getSearchFields(activeTab).filter(f => f.value !== 'all').map((field) => (
-                              <div key={field.value} className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded-md cursor-pointer" onClick={() => toggleColumn(field.value)}>
-                                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${visibleColumns[field.value] !== false ? 'bg-blue-600 border-blue-600' : 'border-slate-300 bg-white'}`}>
-                                  {visibleColumns[field.value] !== false && <Check className="w-3 h-3 text-white" />}
-                                </div>
-                                <span className="text-sm text-slate-700">{field.label}</span>
+                        </div>
+                        <div className="p-1.5 space-y-0.5 max-h-[300px] overflow-y-auto custom-scrollbar">
+                          {getSearchFields(activeTab).filter(f => f.value !== 'all').map((field) => (
+                            <div 
+                              key={field.value} 
+                              className="flex items-center gap-2.5 px-2.5 py-2 hover:bg-slate-800/50 rounded-md cursor-pointer transition-colors group" 
+                              onClick={() => toggleColumn(field.value)}
+                            >
+                              <div className={`w-4 h-4 rounded flex items-center justify-center transition-all ${visibleColumns[field.value] !== false ? 'bg-blue-600 shadow-sm shadow-blue-500/20' : 'border-2 border-slate-600 bg-transparent group-hover:border-slate-500'}`}>
+                                {visibleColumns[field.value] !== false && <Check className="w-3 h-3 text-white stroke-[3]" />}
                               </div>
-                            ))}
-                          </div>
+                              <span className={`text-sm ${visibleColumns[field.value] !== false ? 'text-slate-200 font-medium' : 'text-slate-400'}`}>{field.label}</span>
+                            </div>
+                          ))}
                         </div>
                       </PopoverContent>
                     </Popover>

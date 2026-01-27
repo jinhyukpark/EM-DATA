@@ -68,6 +68,27 @@ export default function FinanceData() {
   const [columnStyles, setColumnStyles] = useState<Record<string, ColumnStyle>>({});
   const [showColumnSelector, setShowColumnSelector] = useState(false);
 
+  const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({
+    companyName: true,
+    bizNum: true,
+    year: true,
+    amount: true,
+    status: true,
+    revenue: true,
+    profit: true,
+    funding: true,
+    valuation: true,
+    auditor: true,
+    opinion: true,
+  });
+
+  const toggleColumn = (columnId: string) => {
+    setVisibleColumns(prev => ({
+      ...prev,
+      [columnId]: !prev[columnId]
+    }));
+  };
+
   // Mock data for different finance categories
   const financeData = {
     aws: [
@@ -725,12 +746,26 @@ export default function FinanceData() {
                           Fields
                         </button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-56" align="end">
-                        <div className="space-y-2">
-                          <h4 className="font-medium text-sm text-slate-900 mb-2">Column Settings</h4>
-                          <div className="text-xs text-slate-500">
-                            Configure columns visibility here.
+                      <PopoverContent className="w-56 p-0 bg-slate-950 border-slate-800" align="end">
+                        <div className="p-3 border-b border-slate-800 bg-slate-900/50">
+                           <div className="flex items-center justify-between">
+                            <h4 className="font-medium text-sm text-slate-100">Columns</h4>
+                            <span className="text-xs text-slate-400">{getSearchFields(activeTab).filter(f => f.value !== 'all').length} fields</span>
                           </div>
+                        </div>
+                        <div className="p-1.5 space-y-0.5 max-h-[300px] overflow-y-auto custom-scrollbar">
+                          {getSearchFields(activeTab).filter(f => f.value !== 'all').map((field) => (
+                            <div 
+                              key={field.value} 
+                              className="flex items-center gap-2.5 px-2.5 py-2 hover:bg-slate-800/50 rounded-md cursor-pointer transition-colors group" 
+                              onClick={() => toggleColumn(field.value)}
+                            >
+                              <div className={`w-4 h-4 rounded flex items-center justify-center transition-all ${visibleColumns[field.value] !== false ? 'bg-blue-600 shadow-sm shadow-blue-500/20' : 'border-2 border-slate-600 bg-transparent group-hover:border-slate-500'}`}>
+                                {visibleColumns[field.value] !== false && <Check className="w-3 h-3 text-white stroke-[3]" />}
+                              </div>
+                              <span className={`text-sm ${visibleColumns[field.value] !== false ? 'text-slate-200 font-medium' : 'text-slate-400'}`}>{field.label}</span>
+                            </div>
+                          ))}
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -744,72 +779,108 @@ export default function FinanceData() {
                       <tr>
                         {activeTab === "aws" && (
                           <>
-                            <ResizableHeader id="companyName" label="Company Name">
-                              {renderColumnConfig("companyName", "Company Name")}
-                            </ResizableHeader>
-                            <ResizableHeader id="bizNum" label="Business Number">
-                              {renderColumnConfig("bizNum", "Business Number")}
-                            </ResizableHeader>
-                            <ResizableHeader id="year" label="Year">
-                              {renderColumnConfig("year", "Year")}
-                            </ResizableHeader>
-                            <ResizableHeader id="amount" label="Amount">
-                              {renderColumnConfig("amount", "Amount")}
-                            </ResizableHeader>
-                            <ResizableHeader id="status" label="Status">
-                              {renderColumnConfig("status", "Status")}
-                            </ResizableHeader>
+                            {(visibleColumns["companyName"] !== false) && (
+                              <ResizableHeader id="companyName" label="Company Name">
+                                {renderColumnConfig("companyName", "Company Name")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["bizNum"] !== false) && (
+                              <ResizableHeader id="bizNum" label="Business Number">
+                                {renderColumnConfig("bizNum", "Business Number")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["year"] !== false) && (
+                              <ResizableHeader id="year" label="Year">
+                                {renderColumnConfig("year", "Year")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["amount"] !== false) && (
+                              <ResizableHeader id="amount" label="Amount">
+                                {renderColumnConfig("amount", "Amount")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["status"] !== false) && (
+                              <ResizableHeader id="status" label="Status">
+                                {renderColumnConfig("status", "Status")}
+                              </ResizableHeader>
+                            )}
                           </>
                         )}
                         {activeTab === "dart" && (
                           <>
-                            <ResizableHeader id="companyName" label="Company Name">
-                              {renderColumnConfig("companyName", "Company Name")}
-                            </ResizableHeader>
-                            <ResizableHeader id="year" label="Year">
-                              {renderColumnConfig("year", "Year")}
-                            </ResizableHeader>
-                            <ResizableHeader id="revenue" label="Revenue">
-                              {renderColumnConfig("revenue", "Revenue")}
-                            </ResizableHeader>
-                            <ResizableHeader id="profit" label="Profit">
-                              {renderColumnConfig("profit", "Profit")}
-                            </ResizableHeader>
+                            {(visibleColumns["companyName"] !== false) && (
+                              <ResizableHeader id="companyName" label="Company Name">
+                                {renderColumnConfig("companyName", "Company Name")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["year"] !== false) && (
+                              <ResizableHeader id="year" label="Year">
+                                {renderColumnConfig("year", "Year")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["revenue"] !== false) && (
+                              <ResizableHeader id="revenue" label="Revenue">
+                                {renderColumnConfig("revenue", "Revenue")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["profit"] !== false) && (
+                              <ResizableHeader id="profit" label="Profit">
+                                {renderColumnConfig("profit", "Profit")}
+                              </ResizableHeader>
+                            )}
                           </>
                         )}
                         {activeTab === "venture" && (
                           <>
-                            <ResizableHeader id="companyName" label="Company Name">
-                              {renderColumnConfig("companyName", "Company Name")}
-                            </ResizableHeader>
-                            <ResizableHeader id="bizNum" label="Business Number">
-                              {renderColumnConfig("bizNum", "Business Number")}
-                            </ResizableHeader>
-                            <ResizableHeader id="year" label="Year">
-                              {renderColumnConfig("year", "Year")}
-                            </ResizableHeader>
-                            <ResizableHeader id="funding" label="Funding Stage">
-                              {renderColumnConfig("funding", "Funding Stage")}
-                            </ResizableHeader>
-                            <ResizableHeader id="valuation" label="Valuation">
-                              {renderColumnConfig("valuation", "Valuation")}
-                            </ResizableHeader>
+                            {(visibleColumns["companyName"] !== false) && (
+                              <ResizableHeader id="companyName" label="Company Name">
+                                {renderColumnConfig("companyName", "Company Name")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["bizNum"] !== false) && (
+                              <ResizableHeader id="bizNum" label="Business Number">
+                                {renderColumnConfig("bizNum", "Business Number")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["year"] !== false) && (
+                              <ResizableHeader id="year" label="Year">
+                                {renderColumnConfig("year", "Year")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["funding"] !== false) && (
+                              <ResizableHeader id="funding" label="Funding Stage">
+                                {renderColumnConfig("funding", "Funding Stage")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["valuation"] !== false) && (
+                              <ResizableHeader id="valuation" label="Valuation">
+                                {renderColumnConfig("valuation", "Valuation")}
+                              </ResizableHeader>
+                            )}
                           </>
                         )}
                         {activeTab === "audit" && (
                           <>
-                            <ResizableHeader id="companyName" label="Company Name">
-                              {renderColumnConfig("companyName", "Company Name")}
-                            </ResizableHeader>
-                            <ResizableHeader id="year" label="Year">
-                              {renderColumnConfig("year", "Year")}
-                            </ResizableHeader>
-                            <ResizableHeader id="auditor" label="Auditor">
-                              {renderColumnConfig("auditor", "Auditor")}
-                            </ResizableHeader>
-                            <ResizableHeader id="opinion" label="Opinion">
-                              {renderColumnConfig("opinion", "Opinion")}
-                            </ResizableHeader>
+                            {(visibleColumns["companyName"] !== false) && (
+                              <ResizableHeader id="companyName" label="Company Name">
+                                {renderColumnConfig("companyName", "Company Name")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["year"] !== false) && (
+                              <ResizableHeader id="year" label="Year">
+                                {renderColumnConfig("year", "Year")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["auditor"] !== false) && (
+                              <ResizableHeader id="auditor" label="Auditor">
+                                {renderColumnConfig("auditor", "Auditor")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["opinion"] !== false) && (
+                              <ResizableHeader id="opinion" label="Opinion">
+                                {renderColumnConfig("opinion", "Opinion")}
+                              </ResizableHeader>
+                            )}
                           </>
                         )}
                       </tr>
@@ -818,7 +889,7 @@ export default function FinanceData() {
                       {paginatedData.length > 0 ? (
                         paginatedData.map((row: any) => (
                           <tr key={row.id} className="hover:bg-slate-50/50 transition-colors group">
-                            {Object.keys(row).filter(k => k !== 'id').map((key) => {
+                            {Object.keys(row).filter(k => k !== 'id' && visibleColumns[k] !== false).map((key) => {
                                const style = getCellStyle(key, row[key]);
                                return (
                                 <td 

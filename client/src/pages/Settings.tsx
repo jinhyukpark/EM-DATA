@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import {
   Building2,
@@ -28,6 +29,7 @@ import {
   Server,
   ChevronDown,
   Lock,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,6 +63,13 @@ const notificationCategories = [
 ];
 
 function ProfileTab() {
+  const [, setLocation] = useLocation();
+
+  const handleLogout = () => {
+    // Navigate to login page
+    setLocation("/login");
+  };
+
   return (
     <div className="space-y-6">
       <div className="chart-container-light">
@@ -118,7 +127,16 @@ function ProfileTab() {
             </div>
           </div>
         </div>
-        <div className="flex justify-end mt-6 pt-6 border-t border-slate-100">
+        <div className="flex items-center justify-between mt-6 pt-6 border-t border-slate-100">
+          <Button 
+            variant="outline" 
+            className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+            onClick={handleLogout}
+          >
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </Button>
+
           <Button className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="save-profile">
             <Save className="w-4 h-4" />
             Save Changes

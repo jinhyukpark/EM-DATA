@@ -169,6 +169,9 @@ export default function AddTestProcedure() {
   const [presetTime, setPresetTime] = useState(existingData?.presetTime || "");
   const [activeTab, setActiveTab] = useState<"basic" | "items">("basic");
   
+  const [serviceSearchOpen, setServiceSearchOpen] = useState(false);
+  const [serviceSearchQuery, setServiceSearchQuery] = useState("");
+
   // Template state
   const [templates, setTemplates] = useState([
     { id: 1, name: "Basic QA Check", isDefault: true, items: [
@@ -459,19 +462,64 @@ export default function AddTestProcedure() {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Service Name</label>
-                    <select
-                      value={serviceName}
-                      onChange={(e) => setServiceName(e.target.value)}
-                      className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      data-testid="select-service"
-                    >
-                      <option value="">Select a service...</option>
-                      {services.map((s) => (
-                        <option key={s.id} value={s.name}>
-                          {s.name}
-                        </option>
-                      ))}
-                    </select>
+                    <Popover open={serviceSearchOpen} onOpenChange={setServiceSearchOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={serviceSearchOpen}
+                          className="w-full justify-between h-10 px-3 border-slate-200 text-slate-800 font-normal bg-white hover:bg-slate-50"
+                          data-testid="select-service-trigger"
+                        >
+                          {serviceName
+                            ? services.find((s) => s.name === serviceName)?.name || serviceName
+                            : "Select or enter a service..."}
+                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-2" align="start">
+                         <Input
+                            placeholder="Search or add new service..."
+                            value={serviceSearchQuery}
+                            onChange={(e) => setServiceSearchQuery(e.target.value)}
+                            className="mb-2 h-9"
+                         />
+                         <div className="max-h-[200px] overflow-y-auto space-y-1">
+                            {services
+                                .filter(s => s.name.toLowerCase().includes(serviceSearchQuery.toLowerCase()))
+                                .map(s => (
+                                <button
+                                    key={s.id}
+                                    onClick={() => {
+                                        setServiceName(s.name);
+                                        setServiceSearchOpen(false);
+                                        setServiceSearchQuery("");
+                                    }}
+                                    className="flex items-center w-full px-2 py-1.5 text-sm rounded-sm hover:bg-slate-100 text-left"
+                                >
+                                    <Check className={`mr-2 h-4 w-4 ${serviceName === s.name ? "opacity-100" : "opacity-0"}`} />
+                                    {s.name}
+                                </button>
+                            ))}
+                            {serviceSearchQuery && !services.some(s => s.name.toLowerCase() === serviceSearchQuery.toLowerCase()) && (
+                                <button
+                                    onClick={() => {
+                                        setServiceName(serviceSearchQuery);
+                                        setServiceSearchOpen(false);
+                                        setServiceSearchQuery("");
+                                    }}
+                                    className="flex items-center w-full px-2 py-1.5 text-sm rounded-sm hover:bg-slate-100 text-left text-blue-600"
+                                >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Create "{serviceSearchQuery}"
+                                </button>
+                            )}
+                             {!serviceSearchQuery && services.length === 0 && (
+                                 <p className="text-sm text-slate-500 p-2">No services found.</p>
+                             )}
+                         </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Procedure Name</label>

@@ -5,48 +5,32 @@ import {
   Building2,
   Search,
   Filter,
+  Download,
+  Menu,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Download,
-  Clock,
-  Activity,
-  PieChart as PieChartIcon,
-  X,
-  MapPin,
-  User,
-  DollarSign,
-  Calendar,
-  Briefcase,
-  Globe,
-  Users,
-  Tag,
-  ExternalLink,
-  BarChart3,
-  Columns,
-  Check,
-  Menu,
-  TrendingUp,
   Palette,
   Plus,
   Trash2,
-  MoreHorizontal,
+  Check,
+  Columns,
+  RefreshCw,
+  FileText,
+  Activity,
+  TrendingUp,
+  Clock,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Popover,
   PopoverContent,
@@ -58,94 +42,9 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
-const industryData = [
-  { name: "Manufacturing", value: 8542, color: "hsl(221, 83%, 53%)" },
-  { name: "IT/Software", value: 6234, color: "hsl(152, 69%, 40%)" },
-  { name: "Finance", value: 4521, color: "hsl(25, 95%, 53%)" },
-  { name: "Retail", value: 3892, color: "hsl(271, 76%, 53%)" },
-  { name: "Healthcare", value: 2847, color: "hsl(346, 77%, 50%)" },
-  { name: "Construction", value: 2156, color: "hsl(199, 89%, 48%)" },
-  { name: "Others", value: 6329, color: "hsl(220, 14%, 60%)" },
-];
-
-const regionData = [
-  { name: "Seoul", count: 12450 },
-  { name: "Gyeonggi", count: 8320 },
-  { name: "Busan", count: 3240 },
-  { name: "Incheon", count: 2180 },
-  { name: "Daegu", count: 1890 },
-  { name: "Daejeon", count: 1560 },
-  { name: "Others", count: 4881 },
-];
-
-const listedCompanies = [
-  { id: 1, name: "Samsung Electronics", ceo: "Jong-Hee Han", address: "129 Samsung-ro, Yeongtong-gu, Suwon", industry: "Manufacturing", revenue: "302.2T", operatingProfit: "43.4T", debt: "91.2T", netIncome: "38.2T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "1969-01-13", employees: 267937, companyType: "Large Enterprise", country: "Korea", listingStatus: "KOSPI", website: "www.samsung.com", keywords: ["Electronics", "Semiconductor", "Display"] },
-  { id: 2, name: "SK Hynix", ceo: "Kwak Noh-Jung", address: "2091 Gyeongchung-daero, Bubal-eup, Icheon", industry: "Manufacturing", revenue: "44.6T", operatingProfit: "6.8T", debt: "28.4T", netIncome: "5.2T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "1983-02-01", employees: 29000, companyType: "Large Enterprise", country: "Korea", listingStatus: "KOSPI", website: "www.skhynix.com", keywords: ["Semiconductor", "Memory", "NAND"] },
-  { id: 3, name: "Hyundai Motor", ceo: "Jae-Hoon Chang", address: "12 Heolleung-ro, Seocho-gu, Seoul", industry: "Manufacturing", revenue: "142.5T", operatingProfit: "11.6T", debt: "45.8T", netIncome: "8.9T", status: "Active", lastUpdate: "2025-01-08", foundedDate: "1967-12-29", employees: 75000, companyType: "Large Enterprise", country: "Korea", listingStatus: "KOSPI", website: "www.hyundai.com", keywords: ["Automotive", "EV", "Mobility"] },
-  { id: 4, name: "NAVER", ceo: "Soo-Yeon Choi", address: "6 Buljeong-ro, Bundang-gu, Seongnam", industry: "IT/Software", revenue: "8.2T", operatingProfit: "1.4T", debt: "3.2T", netIncome: "1.1T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "1999-06-02", employees: 6200, companyType: "Large Enterprise", country: "Korea", listingStatus: "KOSPI", website: "www.navercorp.com", keywords: ["Search", "Portal", "AI"] },
-  { id: 5, name: "Kakao", ceo: "Sung-Soo Hong", address: "242 Cheomdan-ro, Jeju-si", industry: "IT/Software", revenue: "7.1T", operatingProfit: "0.8T", debt: "4.1T", netIncome: "0.5T", status: "Active", lastUpdate: "2025-01-08", foundedDate: "2010-03-18", employees: 5800, companyType: "Large Enterprise", country: "Korea", listingStatus: "KOSPI", website: "www.kakaocorp.com", keywords: ["Messenger", "Platform", "Fintech"] },
-  { id: 6, name: "LG Electronics", ceo: "William Cho", address: "128 Yeoui-daero, Yeongdeungpo-gu, Seoul", industry: "Manufacturing", revenue: "83.5T", operatingProfit: "3.5T", debt: "22.1T", netIncome: "2.8T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "1958-10-01", employees: 39000, companyType: "Large Enterprise", country: "Korea", listingStatus: "KOSPI", website: "www.lg.com", keywords: ["Electronics", "Home Appliance", "TV"] },
-];
-
-const unlistedCompanies = [
-  { id: 7, name: "Woowa Brothers", ceo: "Bom-Jun Kim", address: "38 Songpa-daero, Songpa-gu, Seoul", industry: "IT/Software", revenue: "2.8T", operatingProfit: "0.3T", debt: "1.2T", netIncome: "0.2T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "2011-03-21", employees: 4200, companyType: "SME", country: "Korea", listingStatus: "Unlisted", website: "www.woowahan.com", keywords: ["Delivery", "Food", "Platform"] },
-  { id: 8, name: "Kurly", ceo: "Sophie Kim", address: "552 Teheran-ro, Gangnam-gu, Seoul", industry: "Retail", revenue: "2.1T", operatingProfit: "-0.4T", debt: "0.8T", netIncome: "-0.5T", status: "Active", lastUpdate: "2025-01-08", foundedDate: "2015-05-01", employees: 3800, companyType: "SME", country: "Korea", listingStatus: "Unlisted", website: "www.kurly.com", keywords: ["Grocery", "E-commerce", "Fresh"] },
-  { id: 9, name: "Yanolja", ceo: "Jong-Yoon Kim", address: "311 Gangnam-daero, Seocho-gu, Seoul", industry: "IT/Software", revenue: "0.9T", operatingProfit: "0.1T", debt: "0.5T", netIncome: "0.08T", status: "Active", lastUpdate: "2025-01-07", foundedDate: "2005-07-12", employees: 1200, companyType: "SME", country: "Korea", listingStatus: "Unlisted", website: "www.yanolja.com", keywords: ["Travel", "Accommodation", "Leisure"] },
-  { id: 10, name: "Viva Republica", ceo: "Seung-Gun Lee", address: "83 Uisadang-daero, Yeongdeungpo-gu, Seoul", industry: "Finance", revenue: "1.2T", operatingProfit: "-0.2T", debt: "0.6T", netIncome: "-0.3T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "2013-04-01", employees: 2100, companyType: "SME", country: "Korea", listingStatus: "Unlisted", website: "www.toss.im", keywords: ["Fintech", "Banking", "Payment"] },
-  { id: 11, name: "Musinsa", ceo: "Han-Seok Cho", address: "807 Seolleung-ro, Gangnam-gu, Seoul", industry: "Retail", revenue: "0.8T", operatingProfit: "0.08T", debt: "0.3T", netIncome: "0.05T", status: "Active", lastUpdate: "2025-01-08", foundedDate: "2001-08-01", employees: 1800, companyType: "SME", country: "Korea", listingStatus: "Unlisted", website: "www.musinsa.com", keywords: ["Fashion", "E-commerce", "Streetwear"] },
-];
-
-const auditedCompanies = [
-  { id: 12, name: "KB Financial", ceo: "Jong-Kyoo Yoon", address: "84 Namdaemun-ro, Jung-gu, Seoul", industry: "Finance", revenue: "14.2T", operatingProfit: "5.2T", debt: "412.5T", netIncome: "4.1T", status: "Active", lastUpdate: "2025-01-07", foundedDate: "2008-09-29", employees: 28000, companyType: "Large Enterprise", country: "Korea", listingStatus: "Audited", website: "www.kbfg.com", keywords: ["Banking", "Insurance", "Securities"] },
-  { id: 13, name: "Shinhan Financial", ceo: "Jin-Won Jin", address: "20 Sejong-daero 9-gil, Jung-gu, Seoul", industry: "Finance", revenue: "12.8T", operatingProfit: "4.8T", debt: "398.2T", netIncome: "3.8T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "2001-09-01", employees: 23000, companyType: "Large Enterprise", country: "Korea", listingStatus: "Audited", website: "www.shinhangroup.com", keywords: ["Banking", "Card", "Asset Management"] },
-  { id: 14, name: "CJ CheilJedang", ceo: "Eun-Seok Choi", address: "330 Dongho-ro, Jung-gu, Seoul", industry: "Manufacturing", revenue: "28.4T", operatingProfit: "1.2T", debt: "9.8T", netIncome: "0.8T", status: "Active", lastUpdate: "2025-01-08", foundedDate: "1953-08-01", employees: 9800, companyType: "Large Enterprise", country: "Korea", listingStatus: "Audited", website: "www.cj.co.kr", keywords: ["Food", "Bio", "Feed"] },
-  { id: 15, name: "Posco Holdings", ceo: "Jeong-Woo Choi", address: "100 Songdo-dong, Yeonsu-gu, Incheon", industry: "Manufacturing", revenue: "84.8T", operatingProfit: "2.9T", debt: "31.2T", netIncome: "2.1T", status: "Active", lastUpdate: "2025-01-08", foundedDate: "1968-04-01", employees: 19000, companyType: "Large Enterprise", country: "Korea", listingStatus: "Audited", website: "www.posco.co.kr", keywords: ["Steel", "Battery", "Hydrogen"] },
-  { id: 16, name: "Samsung SDI", ceo: "Young-Hyun Choi", address: "150-20 Gongse-ro, Giheung-gu, Yongin", industry: "Manufacturing", revenue: "20.1T", operatingProfit: "1.8T", debt: "7.6T", netIncome: "1.4T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "1970-01-01", employees: 11000, companyType: "Large Enterprise", country: "Korea", listingStatus: "Audited", website: "www.samsungsdi.com", keywords: ["Battery", "Energy", "Materials"] },
-  { id: 17, name: "Coupang", ceo: "Bom Kim", address: "570 Songpa-daero, Songpa-gu, Seoul", industry: "Retail", revenue: "26.5T", operatingProfit: "-0.2T", debt: "8.4T", netIncome: "-0.3T", status: "Active", lastUpdate: "2025-01-09", foundedDate: "2010-08-10", employees: 68000, companyType: "Large Enterprise", country: "Korea", listingStatus: "NYSE", website: "www.coupang.com", keywords: ["E-commerce", "Logistics", "Delivery"] },
-];
-
-function CustomTooltip({ active, payload, label }: any) {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white rounded-lg p-3 shadow-lg border border-slate-100">
-        <p className="text-sm font-medium text-slate-800 mb-1">{label}</p>
-        <p className="text-sm text-slate-600">{payload[0].value.toLocaleString()} companies</p>
-      </div>
-    );
-  }
-  return null;
-}
-
-type Company = {
-  id: number;
-  name: string;
-  ceo: string;
-  address: string;
-  industry: string;
-  revenue: string;
-  operatingProfit: string;
-  debt: string;
-  status: string;
-  lastUpdate: string;
-  foundedDate?: string;
-  employees?: number;
-  companyType?: string;
-  country?: string;
-  listingStatus?: string;
-  website?: string;
-  netIncome?: string;
-  keywords?: string[];
-};
-
+// Types
 type ColorRule = {
   id: string;
   condition: 'equals' | 'contains' | 'starts_with' | 'greater_than' | 'less_than';
@@ -162,37 +61,116 @@ type ColumnStyle = {
 };
 
 export default function CompanyData() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchField, setSearchField] = useState("all");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("aws");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [activeTab, setActiveTab] = useState<"all" | "unlisted" | "listed" | "audited">("listed");
-  const [showColumnSelector, setShowColumnSelector] = useState(false);
-  const [dataViewTab, setDataViewTab] = useState<"company" | "financial">("company");
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [columnStyles, setColumnStyles] = useState<Record<string, ColumnStyle>>({});
-  
-  const companyInfoColumns = {
-    ceo: true,
-    address: true,
-    industry: true,
-    foundedDate: true,
-    employees: true,
-    status: true,
-    lastUpdate: true,
-  };
-  
-  const financialInfoColumns = {
-    revenue: true,
-    operatingProfit: true,
-    debt: true,
-    netIncome: true,
-    status: true,
-    lastUpdate: true,
+  const [showColumnSelector, setShowColumnSelector] = useState(false);
+
+  // Mock data based on new categories
+  const companyData = {
+    aws: [
+      { id: 1, name: "Samsung Electronics", ceo: "Jong-Hee Han", industry: "Manufacturing", address: "129 Samsung-ro, Suwon", bizNum: "124-81-00998", majorProduct: "Semiconductors, Phones" },
+      { id: 2, name: "Hyundai Motor", ceo: "Jae-Hoon Chang", industry: "Automotive", address: "12 Heolleung-ro, Seoul", bizNum: "101-81-07316", majorProduct: "Vehicles" },
+      { id: 3, name: "SK Hynix", ceo: "Kwak Noh-Jung", industry: "Manufacturing", address: "2091 Gyeongchung-daero, Icheon", bizNum: "126-81-00998", majorProduct: "DRAM, NAND Flash" },
+      { id: 4, name: "LG Electronics", ceo: "William Cho", industry: "Electronics", address: "128 Yeoui-daero, Seoul", bizNum: "107-86-14075", majorProduct: "Home Appliances, TV" },
+      { id: 5, name: "POSCO Holdings", ceo: "Jeong-Woo Choi", industry: "Steel", address: "622 Teheran-ro, Seoul", bizNum: "506-81-00017", majorProduct: "Steel Products" },
+      { id: 6, name: "Kia", ceo: "Ho-Sung Song", industry: "Automotive", address: "12 Heolleung-ro, Seoul", bizNum: "119-81-02316", majorProduct: "Automobiles" },
+      { id: 7, name: "Naver", ceo: "Soo-Yeon Choi", industry: "IT Services", address: "6 Buljeong-ro, Seongnam", bizNum: "220-81-62517", majorProduct: "Search Portal" },
+      { id: 8, name: "Kakao", ceo: "Sung-Soo Hong", industry: "IT Services", address: "242 Cheomdan-ro, Jeju", bizNum: "120-81-47521", majorProduct: "Messaging, Platform" },
+    ],
+    dart: [
+      { id: 1, name: "Samsung Electronics", ceo: "Jong-Hee Han", industry: "Manufacturing", address: "129 Samsung-ro, Suwon", bizNum: "124-81-00998", stockCode: "005930", corpCls: "Y" },
+      { id: 2, name: "SK Hynix", ceo: "Kwak Noh-Jung", industry: "Manufacturing", address: "2091 Gyeongchung-daero, Icheon", bizNum: "126-81-00998", stockCode: "000660", corpCls: "Y" },
+      { id: 3, name: "LG Energy Solution", ceo: "Young-Soo Kwon", industry: "Manufacturing", address: "108 Yeoui-daero, Seoul", bizNum: "416-81-36430", stockCode: "373220", corpCls: "Y" },
+      { id: 4, name: "Samsung Biologics", ceo: "John Rim", industry: "Pharmaceuticals", address: "300 Songdo-bio-daero, Incheon", bizNum: "137-86-07969", stockCode: "207940", corpCls: "Y" },
+      { id: 5, name: "Celltrion", ceo: "Tae-Jin Kim", industry: "Pharmaceuticals", address: "23 Academy-ro, Incheon", bizNum: "137-81-07316", stockCode: "068270", corpCls: "Y" },
+      { id: 6, name: "Hyundai Mobis", ceo: "Sung-Hwan Cho", industry: "Automotive Parts", address: "203 Teheran-ro, Seoul", bizNum: "116-81-03736", stockCode: "012330", corpCls: "Y" },
+    ],
+    venture: [
+      { id: 1, name: "Zigbang", ceo: "Sung-Woo Ahn", industry: "Real Estate Tech", address: "123 Teheran-ro, Seoul", bizNum: "220-88-12345", mainProd: "Real Estate App" },
+      { id: 2, name: "Dunamu", ceo: "Seok-Woo Lee", industry: "Fintech", address: "456 Gangnam-daero, Seoul", bizNum: "119-86-54321", mainProd: "Upbit, Stockplus" },
+      { id: 3, name: "Bucketplace", ceo: "Seung-Jae Lee", industry: "Interior Platform", address: "789 Seocho-daero, Seoul", bizNum: "211-88-67890", mainProd: "Ohou" },
+      { id: 4, name: "Ridi", ceo: "Seung-Hoon Lee", industry: "Content Platform", address: "321 Yeoksam-ro, Seoul", bizNum: "120-87-98765", mainProd: "Ridi Books" },
+      { id: 5, name: "Danggeun Market", ceo: "Yong-Hyun Kim", industry: "Community", address: "654 Nambusunhwan-ro, Seoul", bizNum: "113-86-24680", mainProd: "Karrot" },
+      { id: 6, name: "Wanted Lab", ceo: "Bok-Ki Lee", industry: "HR Tech", address: "987 Olympic-ro, Seoul", bizNum: "261-81-13579", mainProd: "Wanted" },
+    ],
   };
 
-  const [visibleColumns, setVisibleColumns] = useState(companyInfoColumns);
+  const [searchParams, setSearchParams] = useState({
+    searchField: "all",
+    searchValue: "",
+  });
+
+  const handleSearchChange = (field: string, value: string) => {
+    setSearchParams(prev => ({ ...prev, [field]: value }));
+  };
+
+  const getSearchFields = (tab: string) => {
+    switch (tab) {
+      case "aws":
+        return [
+          { value: "all", label: "All Fields" },
+          { value: "name", label: "Company Name" },
+          { value: "ceo", label: "CEO" },
+          { value: "industry", label: "Industry" },
+          { value: "address", label: "Address" },
+          { value: "bizNum", label: "Business Number" },
+          { value: "majorProduct", label: "Major Product" },
+        ];
+      case "dart":
+        return [
+          { value: "all", label: "All Fields" },
+          { value: "name", label: "Company Name" },
+          { value: "ceo", label: "CEO" },
+          { value: "industry", label: "Industry" },
+          { value: "address", label: "Address" },
+          { value: "bizNum", label: "Business Number" },
+          { value: "stockCode", label: "Stock Code" },
+          { value: "corpCls", label: "Corp Class" },
+        ];
+      case "venture":
+        return [
+          { value: "all", label: "All Fields" },
+          { value: "name", label: "Company Name" },
+          { value: "ceo", label: "CEO" },
+          { value: "industry", label: "Industry" },
+          { value: "address", label: "Address" },
+          { value: "bizNum", label: "Business Number" },
+          { value: "mainProd", label: "Main Product" },
+        ];
+      default:
+        return [{ value: "all", label: "All Fields" }];
+    }
+  };
+
+  const getApiEndpoint = (tab: string) => {
+    switch (tab) {
+      case "aws": return "/internal/data/companies/list";
+      case "dart": return "/internal/data/dart/list";
+      case "venture": return "/internal/data/ventures/list";
+      default: return "";
+    }
+  };
+
+  const currentData = companyData[activeTab as keyof typeof companyData] || [];
   
+  // Filtering
+  const filteredData = currentData.filter((item: any) => {
+    const term = searchParams.searchValue.toLowerCase();
+    if (!term) return true;
+
+    if (searchParams.searchField === "all") {
+      return Object.values(item).some(val => 
+        String(val).toLowerCase().includes(term)
+      );
+    }
+
+    const value = item[searchParams.searchField];
+    return String(value).toLowerCase().includes(term);
+  });
+
   const colorOptions = [
     { name: "Default", value: "" },
     { name: "Red", value: "#ef4444" },
@@ -207,20 +185,17 @@ export default function CompanyData() {
     { name: "Pink", value: "#ec4899" },
     { name: "Slate", value: "#64748b" },
   ];
-  
+
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({
     name: 200,
     ceo: 120,
-    address: 250,
     industry: 150,
-    foundedDate: 120,
-    employees: 120,
-    revenue: 120,
-    operatingProfit: 120,
-    debt: 120,
-    netIncome: 120,
-    status: 100,
-    lastUpdate: 120,
+    address: 250,
+    bizNum: 120,
+    majorProduct: 200,
+    stockCode: 100,
+    corpCls: 80,
+    mainProd: 200,
   });
 
   const handleResize = (columnId: string, width: number) => {
@@ -372,20 +347,6 @@ export default function CompanyData() {
         }
       };
     });
-  };
-
-  const columnLabels: Record<string, string> = {
-    ceo: "CEO",
-    address: "Address",
-    revenue: "Revenue",
-    operatingProfit: "Op. Profit",
-    debt: "Debt",
-    status: "Status",
-    lastUpdate: "Updated",
-    industry: "Industry",
-    foundedDate: "Founded",
-    employees: "Employees",
-    netIncome: "Net Income",
   };
 
   const renderColumnConfig = (columnId: string, label: string) => {
@@ -584,52 +545,12 @@ export default function CompanyData() {
     );
   };
 
-  const toggleColumn = (col: string) => {
-    setVisibleColumns(prev => ({ ...prev, [col]: !prev[col as keyof typeof prev] }));
-  };
-  
-  const switchDataView = (tab: "company" | "financial") => {
-    setDataViewTab(tab);
-    if (tab === "company") {
-      setVisibleColumns(companyInfoColumns);
-    } else {
-      setVisibleColumns(financialInfoColumns);
-    }
-  };
-
-  const totalCompanies = 34521;
-  
-  const allCompanies = [...listedCompanies, ...unlistedCompanies, ...auditedCompanies];
-  
-  const getCompaniesForTab = () => {
-    switch (activeTab) {
-      case "all": return allCompanies;
-      case "unlisted": return unlistedCompanies;
-      case "listed": return listedCompanies;
-      case "audited": return auditedCompanies;
-      default: return listedCompanies;
-    }
-  };
-
-  const companies = getCompaniesForTab();
-  const filteredCompanies = companies.filter((company) => {
-    const term = searchTerm.toLowerCase();
-    if (!term) return true;
-    
-    if (searchField === "all") {
-      return (
-        company.name.toLowerCase().includes(term) ||
-        company.ceo.toLowerCase().includes(term) ||
-        company.industry.toLowerCase().includes(term) ||
-        company.address.toLowerCase().includes(term)
-      );
-    }
-    
-    const value = company[searchField as keyof Company];
-    return String(value).toLowerCase().includes(term);
-  });
-
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Pagination logic
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="h-screen flex bg-slate-50 overflow-hidden">
@@ -657,9 +578,12 @@ export default function CompanyData() {
                 >
                   <Menu className="w-5 h-5" />
                 </button>
+                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
+                  <Building2 className="w-5 h-5 text-white" />
+                </div>
                 <div className="min-w-0">
                   <h1 className="text-lg md:text-xl font-semibold tracking-tight text-slate-800 truncate">Company Data</h1>
-                  <p className="text-xs md:text-sm text-slate-500 mt-0.5 hidden sm:block">Audited company information database</p>
+                  <p className="text-xs md:text-sm text-slate-500 mt-0.5 hidden sm:block">Corporate information and analytics</p>
                 </div>
               </div>
               <Button variant="outline" size="sm" className="gap-2 border-slate-200 hover:bg-slate-50 text-slate-700" data-testid="export-button">
@@ -670,547 +594,302 @@ export default function CompanyData() {
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-6 bg-slate-50/50 overflow-x-hidden">
-          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-4">
-            <div className="flex items-center justify-between">
+        <main className="flex-1 p-4 md:p-6 bg-slate-50/50 overflow-y-auto overflow-x-hidden">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+            <div className="mb-4">
               <div className="flex items-center gap-1">
                 <button
-                  onClick={() => switchDataView("company")}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "company" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"}`}
-                  data-testid="tab-company-info"
+                  onClick={() => { setActiveTab("aws"); setCurrentPage(1); }}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    activeTab === "aws"
+                      ? "bg-blue-500 text-white"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"
+                  }`}
                 >
-                  Company Info
+                  AWS Companies
                 </button>
                 <button
-                  onClick={() => switchDataView("financial")}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${dataViewTab === "financial" ? "bg-blue-500 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"}`}
-                  data-testid="tab-financial-info"
+                  onClick={() => { setActiveTab("dart"); setCurrentPage(1); }}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    activeTab === "dart"
+                      ? "bg-blue-500 text-white"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"
+                  }`}
                 >
-                  Financial Info
+                  DART Companies
+                </button>
+                <button
+                  onClick={() => { setActiveTab("venture"); setCurrentPage(1); }}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    activeTab === "venture"
+                      ? "bg-blue-500 text-white"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"
+                  }`}
+                >
+                  Venture Companies
                 </button>
               </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-lg border border-emerald-100">
-                <Activity className="w-4 h-4 text-emerald-600 animate-pulse" />
-                <span className="text-sm font-medium text-emerald-700">Collection Status: Running</span>
-              </div>
             </div>
-          </motion.section>
 
-          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.3 }} className="mb-6">
-            <div className="flex items-center gap-8 py-4 px-6 bg-white rounded-xl border border-slate-100">
-              <div className="flex items-center gap-3">
-                <Building2 className="w-5 h-5 text-blue-500" />
-                <div>
-                  <p className="text-xs text-slate-400 uppercase tracking-wide">Total</p>
-                  <p className="text-xl font-bold text-slate-800" data-testid="total-companies">{totalCompanies.toLocaleString()}</p>
+            <div className="mb-6">
+              <div className="flex items-center gap-8 py-4 px-6 bg-white rounded-xl border border-slate-100">
+                <div className="flex items-center gap-3">
+                  <FileText className="w-5 h-5 text-purple-500" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Total Companies</p>
+                    <p className="text-xl font-bold text-slate-800">{filteredData.length * 154}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="w-px h-10 bg-slate-200" />
-              <div className="flex items-center gap-3">
-                <TrendingUp className="w-5 h-5 text-purple-500" />
-                <div>
-                  <p className="text-xs text-slate-400 uppercase tracking-wide">Today</p>
-                  <p className="text-xl font-bold text-purple-600" data-testid="today-updates">+127</p>
+                <div className="w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3">
+                  <Activity className="w-5 h-5 text-emerald-500" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Active</p>
+                    <p className="text-xl font-bold text-emerald-600">{Math.floor(filteredData.length * 123)}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="w-px h-10 bg-slate-200" />
-              <div className="flex items-center gap-3">
-                <PieChartIcon className="w-5 h-5 text-amber-500" />
-                <div>
-                  <p className="text-xs text-slate-400 uppercase tracking-wide">Coverage</p>
-                  <p className="text-xl font-bold text-slate-800">85%</p>
+                <div className="w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3">
+                  <TrendingUp className="w-5 h-5 text-blue-500" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">New This Month</p>
+                    <p className="text-xl font-bold text-blue-600">+8.4%</p>
+                  </div>
                 </div>
-              </div>
-              <div className="w-px h-10 bg-slate-200" />
-              <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-cyan-500" />
-                <div>
-                  <p className="text-xs text-slate-400 uppercase tracking-wide">Update Cycle</p>
-                  <p className="text-xl font-bold text-slate-800">Daily</p>
+                <div className="w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3">
+                  <Clock className="w-5 h-5 text-cyan-500" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Update Cycle</p>
+                    <p className="text-xl font-bold text-slate-800">Daily</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </motion.section>
 
-          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.3 }}>
-            <div className="bg-white rounded-xl border border-slate-100">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setActiveTab("all")}
-                    className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${activeTab === "all" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"}`}
-                    data-testid="tab-all"
-                  >
-                    Total <span className="ml-1 text-xs opacity-60">{allCompanies.length}</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("unlisted")}
-                    className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${activeTab === "unlisted" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"}`}
-                    data-testid="tab-unlisted"
-                  >
-                    Unlisted <span className="ml-1 text-xs opacity-60">{unlistedCompanies.length}</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("listed")}
-                    className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${activeTab === "listed" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"}`}
-                    data-testid="tab-listed"
-                  >
-                    Listed <span className="ml-1 text-xs opacity-60">{listedCompanies.length}</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("audited")}
-                    className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${activeTab === "audited" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"}`}
-                    data-testid="tab-audited"
-                  >
-                    Audited <span className="ml-1 text-xs opacity-60">{auditedCompanies.length}</span>
-                  </button>
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+              <div className="flex items-center justify-between gap-3 p-4 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-lg font-semibold text-slate-900">Company Records</h2>
+                  <div className="text-xs text-slate-500 font-mono px-2 py-1 bg-slate-100 rounded border border-slate-200">
+                    {getApiEndpoint(activeTab)}
+                  </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
-                    <select 
-                      value={searchField} 
-                      onChange={(e) => setSearchField(e.target.value)}
+                    <select
+                      value={searchParams.searchField}
+                      onChange={(e) => handleSearchChange("searchField", e.target.value)}
                       className="h-full pl-3 pr-8 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-32 rounded-none appearance-none"
                       style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
                     >
-                      <option value="all">All Fields</option>
-                      <option value="name">Company Name</option>
-                      <option value="ceo">CEO</option>
-                      <option value="industry">Industry</option>
-                      <option value="address">Address</option>
+                      {getSearchFields(activeTab).map(field => (
+                        <option key={field.value} value={field.value}>{field.label}</option>
+                      ))}
                     </select>
-                    <div className="relative flex items-center flex-1 h-full">
+                    <div className="relative flex items-center flex-1 h-full min-w-[200px]">
                       <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
                       <Input 
                         placeholder="Search..." 
-                        value={searchTerm} 
-                        onChange={(e) => setSearchTerm(e.target.value)} 
+                        value={searchParams.searchValue} 
+                        onChange={(e) => handleSearchChange("searchValue", e.target.value)} 
                         className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none" 
-                        data-testid="search-input" 
                       />
                     </div>
                   </div>
                   <div className="relative">
-                    <button
-                      onClick={() => setShowColumnSelector(!showColumnSelector)}
-                      className="flex items-center gap-2 px-3 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 hover:bg-slate-50 transition-colors"
-                      data-testid="column-selector-button"
-                    >
-                      <Columns className="w-4 h-4" />
-                      Fields
-                    </button>
-                    {showColumnSelector && (
-                      <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-10" data-testid="column-selector-dropdown">
-                        {Object.entries(columnLabels).map(([key, label]) => (
-                          <button
-                            key={key}
-                            onClick={() => toggleColumn(key)}
-                            className="flex items-center justify-between w-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
-                          >
-                            <span>{label}</span>
-                            {visibleColumns[key as keyof typeof visibleColumns] && (
-                              <Check className="w-4 h-4 text-blue-500" />
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                         <button
+                          className="flex items-center gap-2 px-3 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
+                        >
+                          <Columns className="w-4 h-4" />
+                          Fields
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-56" align="end">
+                        <div className="space-y-2">
+                          <h4 className="font-medium text-sm text-slate-900 mb-2">Column Settings</h4>
+                          <div className="text-xs text-slate-500">
+                            Configure columns visibility here.
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse" data-testid="company-table">
-                  <thead>
-                    <tr className="bg-slate-50/50 border-b border-slate-200">
-                      <ResizableHeader id="name" label="Company Name">
-                        <div className="relative">
-                          {renderColumnConfig('name', 'Company Name')}
-                        </div>
-                      </ResizableHeader>
-                      
-                      {visibleColumns.ceo && (
-                        <ResizableHeader id="ceo" label="CEO">
-                          <div className="relative">
-                            {renderColumnConfig('ceo', 'CEO')}
-                          </div>
-                        </ResizableHeader>
-                      )}
-                      
-                      {visibleColumns.address && (
-                        <ResizableHeader id="address" label="Address">
-                          <div className="relative">
-                            {renderColumnConfig('address', 'Address')}
-                          </div>
-                        </ResizableHeader>
-                      )}
-                      
-                      {visibleColumns.industry && (
-                        <ResizableHeader id="industry" label="Industry">
-                          <div className="relative">
-                            {renderColumnConfig('industry', 'Industry')}
-                          </div>
-                        </ResizableHeader>
-                      )}
-                      
-                      {visibleColumns.foundedDate && (
-                        <ResizableHeader id="foundedDate" label="Founded">
-                          <div className="relative">
-                            {renderColumnConfig('foundedDate', 'Founded Date')}
-                          </div>
-                        </ResizableHeader>
-                      )}
-                      
-                      {visibleColumns.employees && (
-                        <ResizableHeader id="employees" label="Employees" align="right">
-                          <div className="relative">
-                            {renderColumnConfig('employees', 'Employees')}
-                          </div>
-                        </ResizableHeader>
-                      )}
-                      
-                      {visibleColumns.revenue && (
-                        <ResizableHeader id="revenue" label="Revenue" align="right">
-                          <div className="relative">
-                            {renderColumnConfig('revenue', 'Revenue')}
-                          </div>
-                        </ResizableHeader>
-                      )}
-                      
-                      {visibleColumns.operatingProfit && (
-                        <ResizableHeader id="operatingProfit" label="Op. Profit" align="right">
-                          <div className="relative">
-                            {renderColumnConfig('operatingProfit', 'Operating Profit')}
-                          </div>
-                        </ResizableHeader>
-                      )}
-                      {visibleColumns.debt && (
-                        <ResizableHeader id="debt" label="Debt" align="right">
-                          <div className="relative">
-                            {renderColumnConfig('debt', 'Debt')}
-                          </div>
-                        </ResizableHeader>
-                      )}
-                      {visibleColumns.netIncome && (
-                        <ResizableHeader id="netIncome" label="Net Income" align="right">
-                          <div className="relative">
-                            {renderColumnConfig('netIncome', 'Net Income')}
-                          </div>
-                        </ResizableHeader>
-                      )}
-                      
-                      {visibleColumns.status && (
-                        <ResizableHeader id="status" label="Status" align="center">
-                          <div className="relative">
-                            {renderColumnConfig('status', 'Status')}
-                          </div>
-                        </ResizableHeader>
-                      )}
-                      
-                      {visibleColumns.lastUpdate && (
-                        <ResizableHeader id="lastUpdate" label="Updated" align="right">
-                          <div className="relative">
-                            {renderColumnConfig('lastUpdate', 'Last Updated')}
-                          </div>
-                        </ResizableHeader>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredCompanies.map((company) => {
-                      const getStyle = (col: string, val: any) => getCellStyle(col, val) as any;
-                      const renderSimpleCell = (col: string, val: any, className: string = "text-slate-600", align: "left" | "center" | "right" = "left") => {
-                        const s = getStyle(col, val);
-                        return (
-                          <td className={`py-3 px-4 text-sm ${className} ${align === 'right' ? 'text-right' : align === 'center' ? 'text-center' : 'text-left'} border-r border-slate-100 last:border-r-0`} style={{ color: s.color, backgroundColor: s.backgroundColor }}>
-                            <span style={{ backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, padding: s.isTextOnly ? '2px 8px' : undefined, borderRadius: s.isTextOnly ? '4px' : undefined, display: s.isTextOnly ? 'inline-block' : undefined }}>
-                              {val || "-"}
-                            </span>
-                          </td>
-                        );
-                      };
-
-                      return (
-                      <tr key={company.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors" data-testid={`company-row-${company.id}`}>
-                        <td className="py-3 px-6 border-r border-slate-100" style={{ backgroundColor: getStyle('name', company.name).backgroundColor }}>
-                          <span style={{ backgroundColor: getStyle('name', company.name).isTextOnly ? getStyle('name', company.name).rawBgColor : undefined, padding: getStyle('name', company.name).isTextOnly ? '2px 8px' : undefined, borderRadius: getStyle('name', company.name).isTextOnly ? '4px' : undefined, display: getStyle('name', company.name).isTextOnly ? 'inline-block' : undefined }}>
-                            <button
-                              onClick={() => setSelectedCompany(company)}
-                              className="font-medium hover:text-blue-600 hover:underline text-left text-slate-800"
-                              style={{ color: getStyle('name', company.name).color }}
-                              data-testid={`company-name-${company.id}`}
-                            >
-                              {company.name}
-                            </button>
-                          </span>
-                        </td>
-                        {visibleColumns.ceo && renderSimpleCell('ceo', company.ceo)}
-                        {visibleColumns.address && (() => { const s = getStyle('address', company.address); return (
-                            <td className="py-3 px-4 text-sm max-w-[180px] truncate text-slate-500 border-r border-slate-100" style={{ color: s.color, backgroundColor: s.backgroundColor }} title={company.address}>
-                              <span style={{ backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, padding: s.isTextOnly ? '2px 8px' : undefined, borderRadius: s.isTextOnly ? '4px' : undefined, display: s.isTextOnly ? 'inline-block' : undefined }}>
-                                {company.address}
-                              </span>
-                            </td>
-                        )})()}
-                        {visibleColumns.industry && renderSimpleCell('industry', company.industry)}
-                        {visibleColumns.foundedDate && renderSimpleCell('foundedDate', company.foundedDate, "text-slate-500")}
-                        {visibleColumns.employees && (() => { const s = getStyle('employees', company.employees); return (
-                            <td className="py-3 px-4 text-right text-sm text-slate-600 border-r border-slate-100" style={{ color: s.color, backgroundColor: s.backgroundColor }}>
-                               <span style={{ backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, padding: s.isTextOnly ? '2px 8px' : undefined, borderRadius: s.isTextOnly ? '4px' : undefined, display: s.isTextOnly ? 'inline-block' : undefined }}>
-                                 {company.employees?.toLocaleString() || "-"}
-                               </span>
-                            </td>
-                        )})()}
-                        {visibleColumns.revenue && renderSimpleCell('revenue', company.revenue, "font-mono text-slate-700", "right")}
-                        {visibleColumns.operatingProfit && (() => { const s = getStyle('operatingProfit', company.operatingProfit); return (
-                          <td className="py-3 px-4 text-right text-sm font-mono border-r border-slate-100" style={{ backgroundColor: s.backgroundColor }}>
-                            <span className={company.operatingProfit.startsWith("-") ? 'text-red-500' : 'text-emerald-500'} style={{ 
-                                color: s.color,
-                                backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, 
-                                padding: s.isTextOnly ? '2px 8px' : undefined, 
-                                borderRadius: s.isTextOnly ? '4px' : undefined, 
-                                display: s.isTextOnly ? 'inline-block' : undefined 
-                            }}>
-                              {company.operatingProfit}
-                            </span>
-                          </td>
-                        )})()}
-                        {visibleColumns.debt && renderSimpleCell('debt', company.debt, "font-mono text-slate-600", "right")}
-                        {visibleColumns.netIncome && (() => { const s = getStyle('netIncome', company.netIncome); return (
-                          <td className="py-3 px-4 text-right text-sm font-mono border-r border-slate-100" style={{ backgroundColor: s.backgroundColor }}>
-                            <span className={company.netIncome?.startsWith("-") ? 'text-red-500' : 'text-slate-700'} style={{ 
-                                color: s.color,
-                                backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, 
-                                padding: s.isTextOnly ? '2px 8px' : undefined, 
-                                borderRadius: s.isTextOnly ? '4px' : undefined, 
-                                display: s.isTextOnly ? 'inline-block' : undefined 
-                            }}>
-                              {company.netIncome || "-"}
-                            </span>
-                          </td>
-                        )})()}
-                        {visibleColumns.status && (() => { const s = getStyle('status', company.status); return (
-                          <td className="py-3 px-4 text-center border-r border-slate-100" style={{ backgroundColor: s.backgroundColor }}>
-                            <span className="text-xs font-medium text-emerald-500" style={{ 
-                                color: s.color,
-                                backgroundColor: s.isTextOnly ? s.rawBgColor : undefined, 
-                                padding: s.isTextOnly ? '2px 8px' : undefined, 
-                                borderRadius: s.isTextOnly ? '4px' : undefined, 
-                                display: s.isTextOnly ? 'inline-block' : undefined 
-                            }}>
-                              {company.status}
-                            </span>
-                          </td>
-                        )})()}
-                        {visibleColumns.lastUpdate && renderSimpleCell('lastUpdate', company.lastUpdate, "text-xs text-slate-400", "right")}
+                  <table className="w-full">
+                    <thead className="bg-slate-50/50 border-b border-slate-100">
+                      <tr>
+                        {activeTab === "aws" && (
+                          <>
+                            <ResizableHeader id="name" label="Company Name">
+                              {renderColumnConfig("name", "Company Name")}
+                            </ResizableHeader>
+                            <ResizableHeader id="ceo" label="CEO">
+                              {renderColumnConfig("ceo", "CEO")}
+                            </ResizableHeader>
+                            <ResizableHeader id="industry" label="Industry">
+                              {renderColumnConfig("industry", "Industry")}
+                            </ResizableHeader>
+                            <ResizableHeader id="address" label="Address">
+                              {renderColumnConfig("address", "Address")}
+                            </ResizableHeader>
+                            <ResizableHeader id="bizNum" label="Business Number">
+                              {renderColumnConfig("bizNum", "Business Number")}
+                            </ResizableHeader>
+                            <ResizableHeader id="majorProduct" label="Major Product">
+                              {renderColumnConfig("majorProduct", "Major Product")}
+                            </ResizableHeader>
+                          </>
+                        )}
+                        {activeTab === "dart" && (
+                          <>
+                            <ResizableHeader id="name" label="Company Name">
+                              {renderColumnConfig("name", "Company Name")}
+                            </ResizableHeader>
+                            <ResizableHeader id="ceo" label="CEO">
+                              {renderColumnConfig("ceo", "CEO")}
+                            </ResizableHeader>
+                            <ResizableHeader id="industry" label="Industry">
+                              {renderColumnConfig("industry", "Industry")}
+                            </ResizableHeader>
+                            <ResizableHeader id="address" label="Address">
+                              {renderColumnConfig("address", "Address")}
+                            </ResizableHeader>
+                            <ResizableHeader id="bizNum" label="Business Number">
+                              {renderColumnConfig("bizNum", "Business Number")}
+                            </ResizableHeader>
+                            <ResizableHeader id="stockCode" label="Stock Code">
+                              {renderColumnConfig("stockCode", "Stock Code")}
+                            </ResizableHeader>
+                            <ResizableHeader id="corpCls" label="Corp Class">
+                              {renderColumnConfig("corpCls", "Corp Class")}
+                            </ResizableHeader>
+                          </>
+                        )}
+                        {activeTab === "venture" && (
+                          <>
+                            <ResizableHeader id="name" label="Company Name">
+                              {renderColumnConfig("name", "Company Name")}
+                            </ResizableHeader>
+                            <ResizableHeader id="ceo" label="CEO">
+                              {renderColumnConfig("ceo", "CEO")}
+                            </ResizableHeader>
+                            <ResizableHeader id="industry" label="Industry">
+                              {renderColumnConfig("industry", "Industry")}
+                            </ResizableHeader>
+                            <ResizableHeader id="address" label="Address">
+                              {renderColumnConfig("address", "Address")}
+                            </ResizableHeader>
+                            <ResizableHeader id="bizNum" label="Business Number">
+                              {renderColumnConfig("bizNum", "Business Number")}
+                            </ResizableHeader>
+                            <ResizableHeader id="mainProd" label="Main Product">
+                              {renderColumnConfig("mainProd", "Main Product")}
+                            </ResizableHeader>
+                          </>
+                        )}
                       </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {paginatedData.length > 0 ? (
+                        paginatedData.map((row: any) => (
+                          <tr key={row.id} className="hover:bg-slate-50/50 transition-colors group">
+                            {Object.keys(row).filter(k => k !== 'id').map((key) => {
+                               const style = getCellStyle(key, row[key]);
+                               return (
+                                <td 
+                                  key={key} 
+                                  className="px-4 py-3 text-sm text-slate-600 truncate relative"
+                                  style={{ 
+                                    maxWidth: columnWidths[key],
+                                    color: style.color,
+                                    backgroundColor: style.backgroundColor
+                                  }}
+                                >
+                                  {style.isTextOnly && style.rawBgColor && (
+                                     <div 
+                                       className="absolute inset-0 opacity-100 pointer-events-none" 
+                                       style={{ backgroundColor: style.rawBgColor }} 
+                                     />
+                                  )}
+                                  <span className="relative z-10">{row[key]}</span>
+                                </td>
+                               );
+                            })}
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={10} className="px-6 py-12 text-center text-slate-500">
+                            <div className="flex flex-col items-center gap-2">
+                              <Search className="w-8 h-8 text-slate-300" />
+                              <p>No company data found matching your criteria.</p>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
               </div>
 
-              <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-                <div className="flex items-center gap-4">
-                  <p className="text-xs text-slate-400">Showing {filteredCompanies.length} of {totalCompanies.toLocaleString()} companies</p>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500">Show</span>
-                    <select
-                      value={itemsPerPage}
-                      onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-                      className="border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-700 bg-white"
-                      data-testid="items-per-page"
-                    >
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                    <span className="text-xs text-slate-500">per page</span>
-                  </div>
+              <div className="p-4 border-t border-slate-200 bg-white flex items-center justify-between text-xs text-slate-500">
+                <div>
+                   Showing {((currentPage - 1) * itemsPerPage) + 1} of {filteredData.length} records
                 </div>
                 <div className="flex items-center gap-2">
-                  {(() => {
-                    const totalPages = Math.ceil(filteredCompanies.length / itemsPerPage);
-                    const pages: (number | string)[] = [];
-                    if (totalPages <= 7) {
-                      for (let i = 1; i <= totalPages; i++) pages.push(i);
-                    } else {
-                      if (currentPage <= 4) {
-                        pages.push(1, 2, 3, 4, 5, '...', totalPages);
-                      } else if (currentPage >= totalPages - 3) {
-                        pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-                      } else {
-                        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
-                      }
-                    }
-                    return (
-                      <>
-                        <div className="flex items-center gap-1">
-                          <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="h-8 px-2 border-slate-200 text-slate-500 hover:text-slate-700" data-testid="first-page">
-                            <ChevronLeft className="w-4 h-4" /><ChevronLeft className="w-4 h-4 -ml-3" />
-                          </Button>
-                          <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="h-8 px-2 border-slate-200 text-slate-500 hover:text-slate-700" data-testid="prev-page">
-                            <ChevronLeft className="w-4 h-4" />
-                          </Button>
-                        </div>
-                        <div className="flex items-center gap-1 mx-2">
-                          {pages.map((page, idx) => (
-                            typeof page === 'number' ? (
-                              <button
-                                key={idx}
-                                onClick={() => setCurrentPage(page)}
-                                className={`h-8 min-w-[32px] px-2 text-sm rounded-lg transition-all ${currentPage === page ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}
-                                data-testid={`page-${page}`}
-                              >
-                                {page}
-                              </button>
-                            ) : (
-                              <span key={idx} className="px-2 text-slate-300">•••</span>
-                            )
-                          ))}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Button variant="outline" size="sm" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="h-8 px-2 border-slate-200 text-slate-500 hover:text-slate-700" data-testid="next-page">
-                            <ChevronRight className="w-4 h-4" />
-                          </Button>
-                          <Button variant="outline" size="sm" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(totalPages)} className="h-8 px-2 border-slate-200 text-slate-500 hover:text-slate-700" data-testid="last-page">
-                            <ChevronRight className="w-4 h-4" /><ChevronRight className="w-4 h-4 -ml-3" />
-                          </Button>
-                        </div>
-                      </>
-                    );
-                  })()}
+                    <span>Show</span>
+                    <Select
+                      value={String(itemsPerPage)}
+                      onValueChange={(val) => {
+                        setItemsPerPage(Number(val));
+                        setCurrentPage(1);
+                      }}
+                    >
+                      <SelectTrigger className="w-[60px] h-7 text-xs bg-white border-slate-200">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="10">10</SelectItem>
+                        <SelectItem value="20">20</SelectItem>
+                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="100">100</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <span>per page</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                  </Button>
+                  <div className="w-7 h-7 flex items-center justify-center bg-slate-900 text-white rounded-lg text-xs font-medium">
+                    {currentPage}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages || totalPages === 0}
+                  >
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </Button>
                 </div>
               </div>
             </div>
-          </motion.section>
+          </motion.div>
         </main>
       </div>
-
-      {selectedCompany && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setSelectedCompany(null)}>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                const currentIndex = filteredCompanies.findIndex(c => c.id === selectedCompany.id);
-                if (currentIndex > 0) {
-                  setSelectedCompany(filteredCompanies[currentIndex - 1]);
-                }
-              }}
-              disabled={filteredCompanies.findIndex(c => c.id === selectedCompany.id) === 0}
-              className="p-3 bg-white rounded-full shadow-lg hover:bg-slate-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              data-testid="prev-company"
-            >
-              <ChevronLeft className="w-6 h-6 text-slate-600" />
-            </button>
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()} style={{ width: '640px' }}>
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800">{selectedCompany.name}</h3>
-                <p className="text-xs text-slate-400">{filteredCompanies.findIndex(c => c.id === selectedCompany.id) + 1} / {filteredCompanies.length}</p>
-              </div>
-              <button onClick={() => setSelectedCompany(null)} className="p-2 hover:bg-slate-200 rounded-lg transition-colors" data-testid="close-detail-modal">
-                <X className="w-5 h-5 text-slate-500" />
-              </button>
-            </div>
-            <div className="overflow-y-auto max-h-[calc(80vh-60px)]">
-              <table className="w-full text-sm">
-                <tbody>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium w-40 bg-slate-50">ID</td>
-                    <td className="py-2.5 px-6 text-slate-800 font-mono">{selectedCompany.id}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Name</td>
-                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.name}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">CEO</td>
-                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.ceo}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Address</td>
-                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.address}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Industry</td>
-                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.industry}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Founded</td>
-                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.foundedDate || "-"}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Employees</td>
-                    <td className="py-2.5 px-6 text-slate-800 font-mono">{selectedCompany.employees?.toLocaleString() || "-"}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Company Type</td>
-                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.companyType || "-"}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Country</td>
-                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.country || "-"}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Listing Status</td>
-                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.listingStatus || "-"}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Website</td>
-                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.website || "-"}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Revenue</td>
-                    <td className="py-2.5 px-6 text-slate-800 font-mono">{selectedCompany.revenue}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Operating Profit</td>
-                    <td className={`py-2.5 px-6 font-mono ${selectedCompany.operatingProfit.startsWith("-") ? "text-red-500" : "text-slate-800"}`}>{selectedCompany.operatingProfit}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Debt</td>
-                    <td className="py-2.5 px-6 text-slate-800 font-mono">{selectedCompany.debt}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Net Income</td>
-                    <td className={`py-2.5 px-6 font-mono ${selectedCompany.netIncome?.startsWith("-") ? "text-red-500" : "text-slate-800"}`}>{selectedCompany.netIncome || "-"}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Status</td>
-                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.status}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Last Update</td>
-                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.lastUpdate}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2.5 px-6 text-slate-500 font-medium bg-slate-50">Keywords</td>
-                    <td className="py-2.5 px-6 text-slate-800">{selectedCompany.keywords?.join(", ") || "-"}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                const currentIndex = filteredCompanies.findIndex(c => c.id === selectedCompany.id);
-                if (currentIndex < filteredCompanies.length - 1) {
-                  setSelectedCompany(filteredCompanies[currentIndex + 1]);
-                }
-              }}
-              disabled={filteredCompanies.findIndex(c => c.id === selectedCompany.id) === filteredCompanies.length - 1}
-              className="p-3 bg-white rounded-full shadow-lg hover:bg-slate-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              data-testid="next-company"
-            >
-              <ChevronRight className="w-6 h-6 text-slate-600" />
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

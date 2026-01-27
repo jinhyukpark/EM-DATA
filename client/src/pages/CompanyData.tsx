@@ -68,6 +68,25 @@ export default function CompanyData() {
   const [columnStyles, setColumnStyles] = useState<Record<string, ColumnStyle>>({});
   const [showColumnSelector, setShowColumnSelector] = useState(false);
 
+  const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({
+    name: true,
+    ceo: true,
+    industry: true,
+    address: true,
+    bizNum: true,
+    majorProduct: true,
+    stockCode: true,
+    corpCls: true,
+    mainProd: true,
+  });
+
+  const toggleColumn = (columnId: string) => {
+    setVisibleColumns(prev => ({
+      ...prev,
+      [columnId]: !prev[columnId]
+    }));
+  };
+  
   // Mock data based on new categories
   const companyData = {
     aws: [
@@ -708,10 +727,20 @@ export default function CompanyData() {
                         </button>
                       </PopoverTrigger>
                       <PopoverContent className="w-56" align="end">
-                        <div className="space-y-2">
-                          <h4 className="font-medium text-sm text-slate-900 mb-2">Column Settings</h4>
-                          <div className="text-xs text-slate-500">
-                            Configure columns visibility here.
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium text-sm text-slate-900">Columns</h4>
+                            <span className="text-xs text-slate-500">{getSearchFields(activeTab).filter(f => f.value !== 'all').length} fields</span>
+                          </div>
+                          <div className="space-y-1">
+                            {getSearchFields(activeTab).filter(f => f.value !== 'all').map((field) => (
+                              <div key={field.value} className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded-md cursor-pointer" onClick={() => toggleColumn(field.value)}>
+                                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${visibleColumns[field.value] !== false ? 'bg-blue-600 border-blue-600' : 'border-slate-300 bg-white'}`}>
+                                  {visibleColumns[field.value] !== false && <Check className="w-3 h-3 text-white" />}
+                                </div>
+                                <span className="text-sm text-slate-700">{field.label}</span>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </PopoverContent>
@@ -726,71 +755,109 @@ export default function CompanyData() {
                       <tr>
                         {activeTab === "aws" && (
                           <>
-                            <ResizableHeader id="name" label="Company Name">
-                              {renderColumnConfig("name", "Company Name")}
-                            </ResizableHeader>
-                            <ResizableHeader id="ceo" label="CEO">
-                              {renderColumnConfig("ceo", "CEO")}
-                            </ResizableHeader>
-                            <ResizableHeader id="industry" label="Industry">
-                              {renderColumnConfig("industry", "Industry")}
-                            </ResizableHeader>
-                            <ResizableHeader id="address" label="Address">
-                              {renderColumnConfig("address", "Address")}
-                            </ResizableHeader>
-                            <ResizableHeader id="bizNum" label="Business Number">
-                              {renderColumnConfig("bizNum", "Business Number")}
-                            </ResizableHeader>
-                            <ResizableHeader id="majorProduct" label="Major Product">
-                              {renderColumnConfig("majorProduct", "Major Product")}
-                            </ResizableHeader>
+                            {(visibleColumns["name"] !== false) && (
+                              <ResizableHeader id="name" label="Company Name">
+                                {renderColumnConfig("name", "Company Name")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["ceo"] !== false) && (
+                              <ResizableHeader id="ceo" label="CEO">
+                                {renderColumnConfig("ceo", "CEO")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["industry"] !== false) && (
+                              <ResizableHeader id="industry" label="Industry">
+                                {renderColumnConfig("industry", "Industry")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["address"] !== false) && (
+                              <ResizableHeader id="address" label="Address">
+                                {renderColumnConfig("address", "Address")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["bizNum"] !== false) && (
+                              <ResizableHeader id="bizNum" label="Business Number">
+                                {renderColumnConfig("bizNum", "Business Number")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["majorProduct"] !== false) && (
+                              <ResizableHeader id="majorProduct" label="Major Product">
+                                {renderColumnConfig("majorProduct", "Major Product")}
+                              </ResizableHeader>
+                            )}
                           </>
                         )}
                         {activeTab === "dart" && (
                           <>
-                            <ResizableHeader id="name" label="Company Name">
-                              {renderColumnConfig("name", "Company Name")}
-                            </ResizableHeader>
-                            <ResizableHeader id="ceo" label="CEO">
-                              {renderColumnConfig("ceo", "CEO")}
-                            </ResizableHeader>
-                            <ResizableHeader id="industry" label="Industry">
-                              {renderColumnConfig("industry", "Industry")}
-                            </ResizableHeader>
-                            <ResizableHeader id="address" label="Address">
-                              {renderColumnConfig("address", "Address")}
-                            </ResizableHeader>
-                            <ResizableHeader id="bizNum" label="Business Number">
-                              {renderColumnConfig("bizNum", "Business Number")}
-                            </ResizableHeader>
-                            <ResizableHeader id="stockCode" label="Stock Code">
-                              {renderColumnConfig("stockCode", "Stock Code")}
-                            </ResizableHeader>
-                            <ResizableHeader id="corpCls" label="Corp Class">
-                              {renderColumnConfig("corpCls", "Corp Class")}
-                            </ResizableHeader>
+                            {(visibleColumns["name"] !== false) && (
+                              <ResizableHeader id="name" label="Company Name">
+                                {renderColumnConfig("name", "Company Name")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["ceo"] !== false) && (
+                              <ResizableHeader id="ceo" label="CEO">
+                                {renderColumnConfig("ceo", "CEO")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["industry"] !== false) && (
+                              <ResizableHeader id="industry" label="Industry">
+                                {renderColumnConfig("industry", "Industry")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["address"] !== false) && (
+                              <ResizableHeader id="address" label="Address">
+                                {renderColumnConfig("address", "Address")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["bizNum"] !== false) && (
+                              <ResizableHeader id="bizNum" label="Business Number">
+                                {renderColumnConfig("bizNum", "Business Number")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["stockCode"] !== false) && (
+                              <ResizableHeader id="stockCode" label="Stock Code">
+                                {renderColumnConfig("stockCode", "Stock Code")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["corpCls"] !== false) && (
+                              <ResizableHeader id="corpCls" label="Corp Class">
+                                {renderColumnConfig("corpCls", "Corp Class")}
+                              </ResizableHeader>
+                            )}
                           </>
                         )}
                         {activeTab === "venture" && (
                           <>
-                            <ResizableHeader id="name" label="Company Name">
-                              {renderColumnConfig("name", "Company Name")}
-                            </ResizableHeader>
-                            <ResizableHeader id="ceo" label="CEO">
-                              {renderColumnConfig("ceo", "CEO")}
-                            </ResizableHeader>
-                            <ResizableHeader id="industry" label="Industry">
-                              {renderColumnConfig("industry", "Industry")}
-                            </ResizableHeader>
-                            <ResizableHeader id="address" label="Address">
-                              {renderColumnConfig("address", "Address")}
-                            </ResizableHeader>
-                            <ResizableHeader id="bizNum" label="Business Number">
-                              {renderColumnConfig("bizNum", "Business Number")}
-                            </ResizableHeader>
-                            <ResizableHeader id="mainProd" label="Main Product">
-                              {renderColumnConfig("mainProd", "Main Product")}
-                            </ResizableHeader>
+                            {(visibleColumns["name"] !== false) && (
+                              <ResizableHeader id="name" label="Company Name">
+                                {renderColumnConfig("name", "Company Name")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["ceo"] !== false) && (
+                              <ResizableHeader id="ceo" label="CEO">
+                                {renderColumnConfig("ceo", "CEO")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["industry"] !== false) && (
+                              <ResizableHeader id="industry" label="Industry">
+                                {renderColumnConfig("industry", "Industry")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["address"] !== false) && (
+                              <ResizableHeader id="address" label="Address">
+                                {renderColumnConfig("address", "Address")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["bizNum"] !== false) && (
+                              <ResizableHeader id="bizNum" label="Business Number">
+                                {renderColumnConfig("bizNum", "Business Number")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["mainProd"] !== false) && (
+                              <ResizableHeader id="mainProd" label="Main Product">
+                                {renderColumnConfig("mainProd", "Main Product")}
+                              </ResizableHeader>
+                            )}
                           </>
                         )}
                       </tr>
@@ -800,6 +867,7 @@ export default function CompanyData() {
                         paginatedData.map((row: any) => (
                           <tr key={row.id} className="hover:bg-slate-50/50 transition-colors group">
                             {Object.keys(row).filter(k => k !== 'id').map((key) => {
+                               if (visibleColumns[key] === false) return null;
                                const style = getCellStyle(key, row[key]);
                                return (
                                 <td 

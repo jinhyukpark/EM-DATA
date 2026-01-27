@@ -13,12 +13,6 @@ import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -274,13 +268,49 @@ export default function FinanceData() {
 
         <main className="flex-1 p-4 md:p-6 bg-slate-50/50 overflow-y-auto overflow-x-hidden">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
-              <TabsList className="bg-white border border-slate-200 p-1 rounded-xl h-auto flex flex-wrap justify-start gap-1">
-                <TabsTrigger value="aws" className="px-4 py-2 rounded-lg data-[state=active]:bg-amber-50 data-[state=active]:text-amber-700 data-[state=active]:shadow-none">AWS Finance</TabsTrigger>
-                <TabsTrigger value="dart" className="px-4 py-2 rounded-lg data-[state=active]:bg-amber-50 data-[state=active]:text-amber-700 data-[state=active]:shadow-none">DART Finance</TabsTrigger>
-                <TabsTrigger value="venture" className="px-4 py-2 rounded-lg data-[state=active]:bg-amber-50 data-[state=active]:text-amber-700 data-[state=active]:shadow-none">Venture Finance</TabsTrigger>
-                <TabsTrigger value="audit" className="px-4 py-2 rounded-lg data-[state=active]:bg-amber-50 data-[state=active]:text-amber-700 data-[state=active]:shadow-none">Audit Finance</TabsTrigger>
-              </TabsList>
+            <div className="w-full space-y-6">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setActiveTab("aws")}
+                  className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${
+                    activeTab === "aws"
+                      ? "bg-slate-900 text-white"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+                  }`}
+                >
+                  AWS Finance
+                </button>
+                <button
+                  onClick={() => setActiveTab("dart")}
+                  className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${
+                    activeTab === "dart"
+                      ? "bg-slate-900 text-white"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+                  }`}
+                >
+                  DART Finance
+                </button>
+                <button
+                  onClick={() => setActiveTab("venture")}
+                  className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${
+                    activeTab === "venture"
+                      ? "bg-slate-900 text-white"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+                  }`}
+                >
+                  Venture Finance
+                </button>
+                <button
+                  onClick={() => setActiveTab("audit")}
+                  className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${
+                    activeTab === "audit"
+                      ? "bg-slate-900 text-white"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+                  }`}
+                >
+                  Audit Finance
+                </button>
+              </div>
 
               <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -331,7 +361,7 @@ export default function FinanceData() {
                   </table>
                 </div>
               </div>
-            </Tabs>
+            </div>
           </motion.div>
         </main>
       </div>

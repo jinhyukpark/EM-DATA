@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import React from "react";
 import {
-  Building2,
   Search,
   Filter,
   Download,
+  DollarSign,
   Menu,
   ChevronDown,
   ChevronLeft,
@@ -60,7 +60,7 @@ type ColumnStyle = {
   bgRules: ColorRule[];
 };
 
-export default function CompanyData() {
+export default function FinanceData() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("aws");
   const [currentPage, setCurrentPage] = useState(1);
@@ -68,33 +68,49 @@ export default function CompanyData() {
   const [columnStyles, setColumnStyles] = useState<Record<string, ColumnStyle>>({});
   const [showColumnSelector, setShowColumnSelector] = useState(false);
 
-  // Mock data based on new categories
-  const companyData = {
+  // Mock data for different finance categories
+  const financeData = {
     aws: [
-      { id: 1, name: "Samsung Electronics", ceo: "Jong-Hee Han", industry: "Manufacturing", address: "129 Samsung-ro, Suwon", bizNum: "124-81-00998", majorProduct: "Semiconductors, Phones" },
-      { id: 2, name: "Hyundai Motor", ceo: "Jae-Hoon Chang", industry: "Automotive", address: "12 Heolleung-ro, Seoul", bizNum: "101-81-07316", majorProduct: "Vehicles" },
-      { id: 3, name: "SK Hynix", ceo: "Kwak Noh-Jung", industry: "Manufacturing", address: "2091 Gyeongchung-daero, Icheon", bizNum: "126-81-00998", majorProduct: "DRAM, NAND Flash" },
-      { id: 4, name: "LG Electronics", ceo: "William Cho", industry: "Electronics", address: "128 Yeoui-daero, Seoul", bizNum: "107-86-14075", majorProduct: "Home Appliances, TV" },
-      { id: 5, name: "POSCO Holdings", ceo: "Jeong-Woo Choi", industry: "Steel", address: "622 Teheran-ro, Seoul", bizNum: "506-81-00017", majorProduct: "Steel Products" },
-      { id: 6, name: "Kia", ceo: "Ho-Sung Song", industry: "Automotive", address: "12 Heolleung-ro, Seoul", bizNum: "119-81-02316", majorProduct: "Automobiles" },
-      { id: 7, name: "Naver", ceo: "Soo-Yeon Choi", industry: "IT Services", address: "6 Buljeong-ro, Seongnam", bizNum: "220-81-62517", majorProduct: "Search Portal" },
-      { id: 8, name: "Kakao", ceo: "Sung-Soo Hong", industry: "IT Services", address: "242 Cheomdan-ro, Jeju", bizNum: "120-81-47521", majorProduct: "Messaging, Platform" },
+      { id: 1, companyName: "TechCorp", bizNum: "123-45-67890", year: "2024", amount: "$150,000", status: "Paid" },
+      { id: 2, companyName: "StartUp Inc", bizNum: "222-33-44444", year: "2024", amount: "$45,000", status: "Pending" },
+      { id: 3, companyName: "CloudSolutions", bizNum: "987-65-43210", year: "2023", amount: "$210,000", status: "Paid" },
+      { id: 4, companyName: "DataFlow Systems", bizNum: "456-78-90123", year: "2024", amount: "$89,000", status: "Paid" },
+      { id: 5, companyName: "NetSecure", bizNum: "789-01-23456", year: "2024", amount: "$12,500", status: "Overdue" },
+      { id: 6, companyName: "AppWorks", bizNum: "321-65-49870", year: "2023", amount: "$230,000", status: "Paid" },
+      { id: 7, companyName: "MobileFirst", bizNum: "147-25-83690", year: "2024", amount: "$67,000", status: "Pending" },
+      { id: 8, companyName: "WebScale", bizNum: "963-85-27410", year: "2023", amount: "$180,000", status: "Paid" },
+      { id: 9, companyName: "ComputeNodes", bizNum: "159-35-72846", year: "2024", amount: "$42,000", status: "Pending" },
+      { id: 10, companyName: "StorageBox", bizNum: "753-95-12468", year: "2024", amount: "$15,000", status: "Paid" },
+      { id: 11, companyName: "AI Labs", bizNum: "852-45-63917", year: "2024", amount: "$320,000", status: "Pending" },
+      { id: 12, companyName: "GameServer", bizNum: "951-75-32864", year: "2023", amount: "$56,000", status: "Paid" },
     ],
     dart: [
-      { id: 1, name: "Samsung Electronics", ceo: "Jong-Hee Han", industry: "Manufacturing", address: "129 Samsung-ro, Suwon", bizNum: "124-81-00998", stockCode: "005930", corpCls: "Y" },
-      { id: 2, name: "SK Hynix", ceo: "Kwak Noh-Jung", industry: "Manufacturing", address: "2091 Gyeongchung-daero, Icheon", bizNum: "126-81-00998", stockCode: "000660", corpCls: "Y" },
-      { id: 3, name: "LG Energy Solution", ceo: "Young-Soo Kwon", industry: "Manufacturing", address: "108 Yeoui-daero, Seoul", bizNum: "416-81-36430", stockCode: "373220", corpCls: "Y" },
-      { id: 4, name: "Samsung Biologics", ceo: "John Rim", industry: "Pharmaceuticals", address: "300 Songdo-bio-daero, Incheon", bizNum: "137-86-07969", stockCode: "207940", corpCls: "Y" },
-      { id: 5, name: "Celltrion", ceo: "Tae-Jin Kim", industry: "Pharmaceuticals", address: "23 Academy-ro, Incheon", bizNum: "137-81-07316", stockCode: "068270", corpCls: "Y" },
-      { id: 6, name: "Hyundai Mobis", ceo: "Sung-Hwan Cho", industry: "Automotive Parts", address: "203 Teheran-ro, Seoul", bizNum: "116-81-03736", stockCode: "012330", corpCls: "Y" },
+      { id: 1, companyName: "Samsung Electronics", year: "2024", revenue: "250T KRW", profit: "40T KRW" },
+      { id: 2, companyName: "LG Electronics", year: "2024", revenue: "80T KRW", profit: "3T KRW" },
+      { id: 3, companyName: "SK Hynix", year: "2023", revenue: "30T KRW", profit: "-2T KRW" },
+      { id: 4, companyName: "Hyundai Motor", year: "2024", revenue: "142T KRW", profit: "11T KRW" },
+      { id: 5, companyName: "KIA", year: "2024", revenue: "98T KRW", profit: "8T KRW" },
+      { id: 6, companyName: "POSCO Holdings", year: "2023", revenue: "85T KRW", profit: "4T KRW" },
+      { id: 7, companyName: "NAVER", year: "2024", revenue: "10T KRW", profit: "1.5T KRW" },
+      { id: 8, companyName: "Kakao", year: "2024", revenue: "8T KRW", profit: "0.5T KRW" },
     ],
     venture: [
-      { id: 1, name: "Zigbang", ceo: "Sung-Woo Ahn", industry: "Real Estate Tech", address: "123 Teheran-ro, Seoul", bizNum: "220-88-12345", mainProd: "Real Estate App" },
-      { id: 2, name: "Dunamu", ceo: "Seok-Woo Lee", industry: "Fintech", address: "456 Gangnam-daero, Seoul", bizNum: "119-86-54321", mainProd: "Upbit, Stockplus" },
-      { id: 3, name: "Bucketplace", ceo: "Seung-Jae Lee", industry: "Interior Platform", address: "789 Seocho-daero, Seoul", bizNum: "211-88-67890", mainProd: "Ohou" },
-      { id: 4, name: "Ridi", ceo: "Seung-Hoon Lee", industry: "Content Platform", address: "321 Yeoksam-ro, Seoul", bizNum: "120-87-98765", mainProd: "Ridi Books" },
-      { id: 5, name: "Danggeun Market", ceo: "Yong-Hyun Kim", industry: "Community", address: "654 Nambusunhwan-ro, Seoul", bizNum: "113-86-24680", mainProd: "Karrot" },
-      { id: 6, name: "Wanted Lab", ceo: "Bok-Ki Lee", industry: "HR Tech", address: "987 Olympic-ro, Seoul", bizNum: "261-81-13579", mainProd: "Wanted" },
+      { id: 1, companyName: "NextBigThing", bizNum: "555-55-55555", year: "2024", funding: "Series A", valuation: "$10M" },
+      { id: 2, companyName: "GreenEnergy", bizNum: "777-88-99999", year: "2024", funding: "Seed", valuation: "$2M" },
+      { id: 3, companyName: "AI Innovate", bizNum: "111-22-33333", year: "2023", funding: "Series B", valuation: "$50M" },
+      { id: 4, companyName: "BlockChainX", bizNum: "444-55-66666", year: "2024", funding: "Series A", valuation: "$15M" },
+      { id: 5, companyName: "BioHealth", bizNum: "888-99-00000", year: "2024", funding: "Series C", valuation: "$120M" },
+      { id: 6, companyName: "FinTechPro", bizNum: "222-33-44444", year: "2023", funding: "Series B", valuation: "$80M" },
+      { id: 7, companyName: "EdTechSolution", bizNum: "666-77-88888", year: "2024", funding: "Seed", valuation: "$3M" },
+    ],
+    audit: [
+      { id: 1, companyName: "Global Trade", year: "2024", auditor: "PwC", opinion: "Unqualified" },
+      { id: 2, companyName: "Construction Co", year: "2024", auditor: "KPMG", opinion: "Qualified" },
+      { id: 3, companyName: "Retail Giant", year: "2023", auditor: "Deloitte", opinion: "Unqualified" },
+      { id: 4, companyName: "Tech Services", year: "2024", auditor: "EY", opinion: "Unqualified" },
+      { id: 5, companyName: "Food & Bev Inc", year: "2024", auditor: "PwC", opinion: "Adverse" },
+      { id: 6, companyName: "AutoParts Ltd", year: "2023", auditor: "KPMG", opinion: "Unqualified" },
+      { id: 7, companyName: "PharmaGroup", year: "2024", auditor: "Deloitte", opinion: "Disclaimer" },
     ],
   };
 
@@ -112,64 +128,33 @@ export default function CompanyData() {
       case "aws":
         return [
           { value: "all", label: "All Fields" },
-          { value: "name", label: "Company Name" },
-          { value: "ceo", label: "CEO" },
-          { value: "industry", label: "Industry" },
-          { value: "address", label: "Address" },
+          { value: "companyName", label: "Company Name" },
           { value: "bizNum", label: "Business Number" },
-          { value: "majorProduct", label: "Major Product" },
+          { value: "year", label: "Year" },
         ];
       case "dart":
         return [
           { value: "all", label: "All Fields" },
-          { value: "name", label: "Company Name" },
-          { value: "ceo", label: "CEO" },
-          { value: "industry", label: "Industry" },
-          { value: "address", label: "Address" },
-          { value: "bizNum", label: "Business Number" },
-          { value: "stockCode", label: "Stock Code" },
-          { value: "corpCls", label: "Corp Class" },
+          { value: "companyName", label: "Company Name" },
+          { value: "year", label: "Year" },
         ];
       case "venture":
         return [
           { value: "all", label: "All Fields" },
-          { value: "name", label: "Company Name" },
-          { value: "ceo", label: "CEO" },
-          { value: "industry", label: "Industry" },
-          { value: "address", label: "Address" },
+          { value: "companyName", label: "Company Name" },
           { value: "bizNum", label: "Business Number" },
-          { value: "mainProd", label: "Main Product" },
+          { value: "year", label: "Year" },
+        ];
+      case "audit":
+        return [
+          { value: "all", label: "All Fields" },
+          { value: "companyName", label: "Company Name" },
+          { value: "year", label: "Year" },
         ];
       default:
         return [{ value: "all", label: "All Fields" }];
     }
   };
-
-  const getApiEndpoint = (tab: string) => {
-    switch (tab) {
-      case "aws": return "/internal/data/companies/list";
-      case "dart": return "/internal/data/dart/list";
-      case "venture": return "/internal/data/ventures/list";
-      default: return "";
-    }
-  };
-
-  const currentData = companyData[activeTab as keyof typeof companyData] || [];
-  
-  // Filtering
-  const filteredData = currentData.filter((item: any) => {
-    const term = searchParams.searchValue.toLowerCase();
-    if (!term) return true;
-
-    if (searchParams.searchField === "all") {
-      return Object.values(item).some(val => 
-        String(val).toLowerCase().includes(term)
-      );
-    }
-
-    const value = item[searchParams.searchField];
-    return String(value).toLowerCase().includes(term);
-  });
 
   const colorOptions = [
     { name: "Default", value: "" },
@@ -187,15 +172,17 @@ export default function CompanyData() {
   ];
 
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({
-    name: 200,
-    ceo: 120,
-    industry: 150,
-    address: 250,
-    bizNum: 120,
-    majorProduct: 200,
-    stockCode: 100,
-    corpCls: 80,
-    mainProd: 200,
+    companyName: 200,
+    bizNum: 150,
+    year: 100,
+    amount: 150,
+    status: 120,
+    revenue: 150,
+    profit: 150,
+    funding: 150,
+    valuation: 150,
+    auditor: 150,
+    opinion: 150,
   });
 
   const handleResize = (columnId: string, width: number) => {
@@ -545,6 +532,33 @@ export default function CompanyData() {
     );
   };
 
+  const getApiEndpoint = (tab: string) => {
+    switch (tab) {
+      case "aws": return "/internal/data/finance/aws/list";
+      case "dart": return "/internal/data/finance/dart/list";
+      case "venture": return "/internal/data/finance/venture/list";
+      case "audit": return "/internal/data/finance/audit/list";
+      default: return "";
+    }
+  };
+
+  const currentData = financeData[activeTab as keyof typeof financeData] || [];
+  
+  // Filtering
+  const filteredData = currentData.filter((item: any) => {
+    const term = searchParams.searchValue.toLowerCase();
+    if (!term) return true;
+
+    if (searchParams.searchField === "all") {
+      return Object.values(item).some(val => 
+        String(val).toLowerCase().includes(term)
+      );
+    }
+
+    const value = item[searchParams.searchField];
+    return String(value).toLowerCase().includes(term);
+  });
+
   // Pagination logic
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const paginatedData = filteredData.slice(
@@ -578,12 +592,9 @@ export default function CompanyData() {
                 >
                   <Menu className="w-5 h-5" />
                 </button>
-                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
-                  <Building2 className="w-5 h-5 text-white" />
-                </div>
                 <div className="min-w-0">
-                  <h1 className="text-lg md:text-xl font-semibold tracking-tight text-slate-800 truncate">Company Data</h1>
-                  <p className="text-xs md:text-sm text-slate-500 mt-0.5 hidden sm:block">Corporate information and analytics</p>
+                  <h1 className="text-lg md:text-xl font-semibold tracking-tight text-slate-800 truncate">Finance Data</h1>
+                  <p className="text-xs md:text-sm text-slate-500 mt-0.5 hidden sm:block">Financial data management and tracking</p>
                 </div>
               </div>
               <Button variant="outline" size="sm" className="gap-2 border-slate-200 hover:bg-slate-50 text-slate-700" data-testid="export-button">
@@ -606,7 +617,7 @@ export default function CompanyData() {
                       : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"
                   }`}
                 >
-                  AWS Companies
+                  AWS Finance
                 </button>
                 <button
                   onClick={() => { setActiveTab("dart"); setCurrentPage(1); }}
@@ -616,7 +627,7 @@ export default function CompanyData() {
                       : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"
                   }`}
                 >
-                  DART Companies
+                  DART Finance
                 </button>
                 <button
                   onClick={() => { setActiveTab("venture"); setCurrentPage(1); }}
@@ -626,7 +637,17 @@ export default function CompanyData() {
                       : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"
                   }`}
                 >
-                  Venture Companies
+                  Venture Finance
+                </button>
+                <button
+                  onClick={() => { setActiveTab("audit"); setCurrentPage(1); }}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    activeTab === "audit"
+                      ? "bg-blue-500 text-white"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"
+                  }`}
+                >
+                  Audit Finance
                 </button>
               </div>
             </div>
@@ -636,24 +657,24 @@ export default function CompanyData() {
                 <div className="flex items-center gap-3">
                   <FileText className="w-5 h-5 text-purple-500" />
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Total Companies</p>
-                    <p className="text-xl font-bold text-slate-800">{filteredData.length * 154}</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Total Records</p>
+                    <p className="text-xl font-bold text-slate-800">{filteredData.length * 12}</p>
                   </div>
                 </div>
                 <div className="w-px h-10 bg-slate-200" />
                 <div className="flex items-center gap-3">
                   <Activity className="w-5 h-5 text-emerald-500" />
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Active</p>
-                    <p className="text-xl font-bold text-emerald-600">{Math.floor(filteredData.length * 123)}</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Verified</p>
+                    <p className="text-xl font-bold text-emerald-600">{Math.floor(filteredData.length * 8.5)}</p>
                   </div>
                 </div>
                 <div className="w-px h-10 bg-slate-200" />
                 <div className="flex items-center gap-3">
                   <TrendingUp className="w-5 h-5 text-blue-500" />
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">New This Month</p>
-                    <p className="text-xl font-bold text-blue-600">+8.4%</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Monthly Growth</p>
+                    <p className="text-xl font-bold text-blue-600">+12.5%</p>
                   </div>
                 </div>
                 <div className="w-px h-10 bg-slate-200" />
@@ -669,11 +690,8 @@ export default function CompanyData() {
 
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
               <div className="flex items-center justify-between gap-3 p-4 border-b border-slate-100">
-                <div className="flex items-center gap-3">
-                  <h2 className="text-lg font-semibold text-slate-900">Company Records</h2>
-                  <div className="text-xs text-slate-500 font-mono px-2 py-1 bg-slate-100 rounded border border-slate-200">
-                    {getApiEndpoint(activeTab)}
-                  </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">Finance Records</h2>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
@@ -726,70 +744,71 @@ export default function CompanyData() {
                       <tr>
                         {activeTab === "aws" && (
                           <>
-                            <ResizableHeader id="name" label="Company Name">
-                              {renderColumnConfig("name", "Company Name")}
-                            </ResizableHeader>
-                            <ResizableHeader id="ceo" label="CEO">
-                              {renderColumnConfig("ceo", "CEO")}
-                            </ResizableHeader>
-                            <ResizableHeader id="industry" label="Industry">
-                              {renderColumnConfig("industry", "Industry")}
-                            </ResizableHeader>
-                            <ResizableHeader id="address" label="Address">
-                              {renderColumnConfig("address", "Address")}
+                            <ResizableHeader id="companyName" label="Company Name">
+                              {renderColumnConfig("companyName", "Company Name")}
                             </ResizableHeader>
                             <ResizableHeader id="bizNum" label="Business Number">
                               {renderColumnConfig("bizNum", "Business Number")}
                             </ResizableHeader>
-                            <ResizableHeader id="majorProduct" label="Major Product">
-                              {renderColumnConfig("majorProduct", "Major Product")}
+                            <ResizableHeader id="year" label="Year">
+                              {renderColumnConfig("year", "Year")}
+                            </ResizableHeader>
+                            <ResizableHeader id="amount" label="Amount">
+                              {renderColumnConfig("amount", "Amount")}
+                            </ResizableHeader>
+                            <ResizableHeader id="status" label="Status">
+                              {renderColumnConfig("status", "Status")}
                             </ResizableHeader>
                           </>
                         )}
                         {activeTab === "dart" && (
                           <>
-                            <ResizableHeader id="name" label="Company Name">
-                              {renderColumnConfig("name", "Company Name")}
+                            <ResizableHeader id="companyName" label="Company Name">
+                              {renderColumnConfig("companyName", "Company Name")}
                             </ResizableHeader>
-                            <ResizableHeader id="ceo" label="CEO">
-                              {renderColumnConfig("ceo", "CEO")}
+                            <ResizableHeader id="year" label="Year">
+                              {renderColumnConfig("year", "Year")}
                             </ResizableHeader>
-                            <ResizableHeader id="industry" label="Industry">
-                              {renderColumnConfig("industry", "Industry")}
+                            <ResizableHeader id="revenue" label="Revenue">
+                              {renderColumnConfig("revenue", "Revenue")}
                             </ResizableHeader>
-                            <ResizableHeader id="address" label="Address">
-                              {renderColumnConfig("address", "Address")}
-                            </ResizableHeader>
-                            <ResizableHeader id="bizNum" label="Business Number">
-                              {renderColumnConfig("bizNum", "Business Number")}
-                            </ResizableHeader>
-                            <ResizableHeader id="stockCode" label="Stock Code">
-                              {renderColumnConfig("stockCode", "Stock Code")}
-                            </ResizableHeader>
-                            <ResizableHeader id="corpCls" label="Corp Class">
-                              {renderColumnConfig("corpCls", "Corp Class")}
+                            <ResizableHeader id="profit" label="Profit">
+                              {renderColumnConfig("profit", "Profit")}
                             </ResizableHeader>
                           </>
                         )}
                         {activeTab === "venture" && (
                           <>
-                            <ResizableHeader id="name" label="Company Name">
-                              {renderColumnConfig("name", "Company Name")}
-                            </ResizableHeader>
-                            <ResizableHeader id="ceo" label="CEO">
-                              {renderColumnConfig("ceo", "CEO")}
-                            </ResizableHeader>
-                            <ResizableHeader id="industry" label="Industry">
-                              {renderColumnConfig("industry", "Industry")}
-                            </ResizableHeader>
-                            <ResizableHeader id="address" label="Address">
-                              {renderColumnConfig("address", "Address")}
+                            <ResizableHeader id="companyName" label="Company Name">
+                              {renderColumnConfig("companyName", "Company Name")}
                             </ResizableHeader>
                             <ResizableHeader id="bizNum" label="Business Number">
                               {renderColumnConfig("bizNum", "Business Number")}
                             </ResizableHeader>
-                            <ResizableHeader id="mainProd" label="Main Product">
-                              {renderColumnConfig("mainProd", "Main Product")}
+                            <ResizableHeader id="year" label="Year">
+                              {renderColumnConfig("year", "Year")}
+                            </ResizableHeader>
+                            <ResizableHeader id="funding" label="Funding Stage">
+                              {renderColumnConfig("funding", "Funding Stage")}
+                            </ResizableHeader>
+                            <ResizableHeader id="valuation" label="Valuation">
+                              {renderColumnConfig("valuation", "Valuation")}
+                            </ResizableHeader>
+                          </>
+                        )}
+                        {activeTab === "audit" && (
+                          <>
+                            <ResizableHeader id="companyName" label="Company Name">
+                              {renderColumnConfig("companyName", "Company Name")}
+                            </ResizableHeader>
+                            <ResizableHeader id="year" label="Year">
+                              {renderColumnConfig("year", "Year")}
+                            </ResizableHeader>
+                            <ResizableHeader id="auditor" label="Auditor">
+                              {renderColumnConfig("auditor", "Auditor")}
+                            </ResizableHeader>
+                            <ResizableHeader id="opinion" label="Opinion">
+                              {renderColumnConfig("opinion", "Opinion")}
                             </ResizableHeader>
                           </>
                         )}
@@ -828,7 +847,7 @@ export default function CompanyData() {
                           <td colSpan={10} className="px-6 py-12 text-center text-slate-500">
                             <div className="flex flex-col items-center gap-2">
                               <Search className="w-8 h-8 text-slate-300" />
-                              <p>No company data found matching your criteria.</p>
+                              <p>No finance data found matching your criteria.</p>
                             </div>
                           </td>
                         </tr>

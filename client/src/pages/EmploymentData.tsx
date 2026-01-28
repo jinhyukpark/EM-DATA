@@ -99,15 +99,7 @@ export default function EmploymentData() {
   const filteredData = employmentData.filter((item: any) => {
     const term = searchParams.searchValue.toLowerCase();
     if (!term) return true;
-
-    if (searchParams.searchField === "all") {
-      return Object.values(item).some(val => 
-        String(val).toLowerCase().includes(term)
-      );
-    }
-
-    const value = item[searchParams.searchField];
-    return String(value).toLowerCase().includes(term);
+    return String(item.company_id).toLowerCase().includes(term);
   });
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -269,21 +261,10 @@ export default function EmploymentData() {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
-                    <select
-                      value={searchParams.searchField}
-                      onChange={(e) => handleSearchChange("searchField", e.target.value)}
-                      className="h-full pl-3 pr-8 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-32 rounded-none appearance-none"
-                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
-                    >
-                      <option value="all">All Fields</option>
-                      {columns.map(col => (
-                        <option key={col.id} value={col.id}>{col.label}</option>
-                      ))}
-                    </select>
                     <div className="relative flex items-center flex-1 h-full min-w-[200px]">
                       <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
                       <Input 
-                        placeholder="Search..." 
+                        placeholder="Search by Company ID..." 
                         value={searchParams.searchValue} 
                         onChange={(e) => handleSearchChange("searchValue", e.target.value)} 
                         className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none" 

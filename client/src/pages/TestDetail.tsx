@@ -63,7 +63,7 @@ type TestItemResult = {
   answerType: string;
   options?: { text: string; isNormal: boolean }[];
   answer?: string;
-  status?: "pass" | "fail";
+  status?: "pass" | "fail" | "na";
   isResolved?: boolean;
   actionNote?: string;
 };
@@ -105,7 +105,7 @@ const testData: Record<string, {
     answerType: string; 
     options?: { text: string; isNormal: boolean }[]; 
     answer?: string; 
-    status?: "pass" | "fail";
+    status?: "pass" | "fail" | "na";
     isResolved?: boolean; 
     actionNote?: string 
   }[];
@@ -439,7 +439,7 @@ export default function TestDetail() {
     }));
   };
 
-  const handleStatusChange = (itemId: number, newStatus: "pass" | "fail") => {
+  const handleStatusChange = (itemId: number, newStatus: "pass" | "fail" | "na") => {
     const currentSchedule = test.schedule.find(s => s.id === selectedSchedule);
     if (!currentSchedule?.testResults) return;
     
@@ -1192,6 +1192,16 @@ export default function TestDetail() {
                                         >
                                             Fail / Abnormal
                                         </button>
+                                        <button
+                                            onClick={() => handleStatusChange(item.id, "na")}
+                                            className={`px-6 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                                item.status === "na" 
+                                                    ? "bg-slate-500 text-white" 
+                                                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                            }`}
+                                        >
+                                            N/A
+                                        </button>
                                     </div>
                                 </div>
                               )}
@@ -1257,9 +1267,14 @@ export default function TestDetail() {
                                                 ? "bg-emerald-100 text-emerald-700" 
                                                 : item.status === 'fail'
                                                     ? "bg-red-100 text-red-700"
-                                                    : "bg-slate-100 text-slate-500"
+                                                    : "bg-slate-100 text-slate-700"
                                         }`}>
-                                            Status: {item.status === 'pass' ? 'Normal' : item.status === 'fail' ? 'Abnormal' : 'Unknown'}
+                                            {item.status === 'pass' 
+                                                ? "Normal" 
+                                                : item.status === 'fail'
+                                                    ? "Abnormal"
+                                                    : "N/A"
+                                            }
                                         </span>
                                     </div>
                                 </div>

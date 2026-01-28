@@ -1171,30 +1171,27 @@ export default function TestDetail() {
                                     rows={3}
                                     placeholder="Enter observation notes..."
                                     />
-                                    <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border border-slate-100">
-                                        <span className="text-sm text-slate-600 font-medium">Status:</span>
-                                        <div className="flex bg-white rounded-md border border-slate-200 p-1">
-                                            <button
-                                                onClick={() => handleStatusChange(item.id, "pass")}
-                                                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                                                    item.status === "pass" 
-                                                        ? "bg-emerald-100 text-emerald-700" 
-                                                        : "text-slate-500 hover:text-slate-700"
-                                                }`}
-                                            >
-                                                Pass / Normal
-                                            </button>
-                                            <button
-                                                onClick={() => handleStatusChange(item.id, "fail")}
-                                                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                                                    item.status === "fail" 
-                                                        ? "bg-red-100 text-red-700" 
-                                                        : "text-slate-500 hover:text-slate-700"
-                                                }`}
-                                            >
-                                                Fail / Abnormal
-                                            </button>
-                                        </div>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => handleStatusChange(item.id, "pass")}
+                                            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                                item.status === "pass" 
+                                                    ? "bg-emerald-500 text-white" 
+                                                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                            }`}
+                                        >
+                                            Pass
+                                        </button>
+                                        <button
+                                            onClick={() => handleStatusChange(item.id, "fail")}
+                                            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                                item.status === "fail" 
+                                                    ? "bg-red-500 text-white" 
+                                                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                            }`}
+                                        >
+                                            Fail
+                                        </button>
                                     </div>
                                 </div>
                               )}

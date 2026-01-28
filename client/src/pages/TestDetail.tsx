@@ -1174,23 +1174,23 @@ export default function TestDetail() {
                                     <div className="flex gap-2">
                                         <button
                                             onClick={() => handleStatusChange(item.id, "pass")}
-                                            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                            className={`px-6 py-2 rounded-lg text-sm font-medium transition-colors ${
                                                 item.status === "pass" 
                                                     ? "bg-emerald-500 text-white" 
                                                     : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                                             }`}
                                         >
-                                            Pass
+                                            Pass / Normal
                                         </button>
                                         <button
                                             onClick={() => handleStatusChange(item.id, "fail")}
-                                            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                            className={`px-6 py-2 rounded-lg text-sm font-medium transition-colors ${
                                                 item.status === "fail" 
                                                     ? "bg-red-500 text-white" 
                                                     : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                                             }`}
                                         >
-                                            Fail
+                                            Fail / Abnormal
                                         </button>
                                     </div>
                                 </div>

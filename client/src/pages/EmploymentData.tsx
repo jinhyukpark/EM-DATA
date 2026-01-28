@@ -18,7 +18,8 @@ import {
   Check,
   TrendingUp,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  FileText
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
@@ -211,11 +212,11 @@ export default function EmploymentData() {
             <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-slate-400 uppercase tracking-wide font-medium mb-1">Total Employees</p>
+                  <p className="text-xs text-slate-400 uppercase tracking-wide font-medium mb-1">TOTAL RAWS</p>
                   <p className="text-2xl font-bold text-slate-800">{summaryStats.total.toLocaleString()}</p>
                 </div>
                 <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-blue-500" />
+                  <FileText className="w-5 h-5 text-blue-500" />
                 </div>
               </div>
 

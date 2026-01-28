@@ -61,8 +61,9 @@ type TestItemResult = {
   id: number;
   question: string;
   answerType: string;
-  options?: string[];
+  options?: { text: string; isNormal: boolean }[];
   answer?: string;
+  status?: "pass" | "fail" | "na";
   isResolved?: boolean;
   actionNote?: string;
 };
@@ -98,7 +99,16 @@ const testData: Record<string, {
   normalCount: number;
   abnormalCount: number;
   schedule: ScheduleItem[];
-  items: { id: number; question: string; answerType: string; options?: string[]; answer?: string; isResolved?: boolean; actionNote?: string }[];
+  items: { 
+    id: number; 
+    question: string; 
+    answerType: string; 
+    options?: { text: string; isNormal: boolean }[]; 
+    answer?: string; 
+    status?: "pass" | "fail" | "na";
+    isResolved?: boolean; 
+    actionNote?: string 
+  }[];
 }> = {
   "1": {
     id: 1,
@@ -131,19 +141,19 @@ const testData: Record<string, {
       { id: 2, date: "2025-01-09", assignee: "Sarah Lee", status: "completed", startTime: "14:00", endTime: "14:32", duration: "32 min", notes: "All checks passed.", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
         { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "O" },
-        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: ["Excellent", "Good", "Fair", "Poor"], answer: "Excellent" },
+        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }], answer: "Excellent" },
         { id: 4, question: "Duplicate records?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Duplicates removed." },
         { id: 5, question: "Additional notes:", answerType: "text", answer: "All checks passed." },
       ]},
       { id: 3, date: "2025-01-02", assignee: "John Kim", status: "completed", startTime: "09:45", endTime: "10:15", duration: "30 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
         { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Fixed." },
-        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: ["Excellent", "Good", "Fair", "Poor"], answer: "Good" },
+        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }], answer: "Good" },
       ]},
       { id: 4, date: "2024-12-26", assignee: "Sarah Lee", status: "completed", startTime: "16:20", endTime: "16:48", duration: "28 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
         { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "O" },
-        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: ["Excellent", "Good", "Fair", "Poor"], answer: "Excellent" },
+        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }], answer: "Excellent" },
       ]},
       { id: 5, date: "2024-12-19", assignee: "John Kim", status: "completed", startTime: "11:00", endTime: "11:22", duration: "22 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
@@ -198,7 +208,7 @@ const testData: Record<string, {
     items: [
       { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", answer: "O" },
-      { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"], answer: "Excellent (95-100%)" },
+      { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent (95-100%)", isNormal: true }, { text: "Good (80-94%)", isNormal: true }, { text: "Fair (60-79%)", isNormal: false }, { text: "Poor (<60%)", isNormal: false }], answer: "Excellent (95-100%)" },
       { id: 4, question: "Are there any duplicate records?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Duplicate records identified and removed on 2025-01-09. Data cleanup completed." },
       { id: 5, question: "Additional notes on data quality:", answerType: "text", answer: "All data passed integrity checks. No issues found." },
     ]
@@ -226,7 +236,7 @@ const testData: Record<string, {
     items: [
       { id: 1, question: "Is the API response time within acceptable limits (<500ms)?", answerType: "ox", answer: "O" },
       { id: 2, question: "Are all required fields present in the response?", answerType: "ox", answer: "O" },
-      { id: 3, question: "Error handling status:", answerType: "multiple_choice", options: ["All errors handled", "Some errors unhandled", "Major issues found"], answer: "Some errors unhandled" },
+      { id: 3, question: "Error handling status:", answerType: "multiple_choice", options: [{ text: "All errors handled", isNormal: true }, { text: "Some errors unhandled", isNormal: false }, { text: "Major issues found", isNormal: false }], answer: "Some errors unhandled" },
     ]
   },
   "3": {
@@ -251,14 +261,14 @@ const testData: Record<string, {
       { id: 4, date: "2024-12-22", assignee: "Mike Park", status: "completed", startTime: "10:15", endTime: "10:45", duration: "30 min", notes: "Pre-holiday check." },
     ],
     items: [
-      { id: 1, question: "Average response time:", answerType: "multiple_choice", options: ["<100ms", "100-300ms", "300-500ms", ">500ms"], answer: "300-500ms" },
+      { id: 1, question: "Average response time:", answerType: "multiple_choice", options: [{ text: "<100ms", isNormal: true }, { text: "100-300ms", isNormal: true }, { text: "300-500ms", isNormal: false }, { text: ">500ms", isNormal: false }], answer: "300-500ms" },
       { id: 2, question: "Throughput meets requirements?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Performance optimization scheduled for next sprint." },
       { id: 3, question: "Memory usage within limits?", answerType: "ox", answer: "O" },
       { id: 4, question: "CPU usage within limits?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Optimized query processing to reduce CPU usage." },
       { id: 5, question: "Are there any memory leaks detected?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Memory leak investigation in progress." },
       { id: 6, question: "Load test passed successfully?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Need to increase server capacity before re-testing." },
       { id: 7, question: "Stress test results:", answerType: "text", answer: "System shows degradation under heavy load. Needs optimization." },
-      { id: 8, question: "Overall performance rating:", answerType: "multiple_choice", options: ["Excellent", "Good", "Needs Improvement", "Critical"], answer: "Needs Improvement" },
+      { id: 8, question: "Overall performance rating:", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Needs Improvement", isNormal: false }, { text: "Critical", isNormal: false }], answer: "Needs Improvement" },
     ]
   },
   "4": {
@@ -284,7 +294,7 @@ const testData: Record<string, {
     items: [
       { id: 1, question: "All API endpoints secured?", answerType: "ox", answer: "O" },
       { id: 2, question: "Authentication mechanism working correctly?", answerType: "ox", answer: "O" },
-      { id: 3, question: "Data encryption status:", answerType: "multiple_choice", options: ["Full encryption", "Partial encryption", "No encryption"], answer: "Full encryption" },
+      { id: 3, question: "Data encryption status:", answerType: "multiple_choice", options: [{ text: "Full encryption", isNormal: true }, { text: "Partial encryption", isNormal: false }, { text: "No encryption", isNormal: false }], answer: "Full encryption" },
       { id: 4, question: "Security vulnerabilities found:", answerType: "text", answer: "No vulnerabilities detected in this audit cycle." },
     ]
   },
@@ -310,10 +320,10 @@ const testData: Record<string, {
     ],
     items: [
       { id: 1, question: "Model accuracy meets threshold (>90%)?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Model retraining scheduled with updated dataset." },
-      { id: 2, question: "Current accuracy percentage:", answerType: "multiple_choice", options: [">95%", "90-95%", "85-90%", "<85%"], answer: "85-90%" },
+      { id: 2, question: "Current accuracy percentage:", answerType: "multiple_choice", options: [{ text: ">95%", isNormal: true }, { text: "90-95%", isNormal: true }, { text: "85-90%", isNormal: false }, { text: "<85%", isNormal: false }], answer: "85-90%" },
       { id: 3, question: "Prediction confidence levels acceptable?", answerType: "ox", answer: "O" },
-      { id: 4, question: "False positive rate:", answerType: "multiple_choice", options: ["<1%", "1-5%", "5-10%", ">10%"], answer: "5-10%" },
-      { id: 5, question: "False negative rate:", answerType: "multiple_choice", options: ["<1%", "1-5%", "5-10%", ">10%"], answer: "1-5%" },
+      { id: 4, question: "False positive rate:", answerType: "multiple_choice", options: [{ text: "<1%", isNormal: true }, { text: "1-5%", isNormal: true }, { text: "5-10%", isNormal: false }, { text: ">10%", isNormal: false }], answer: "5-10%" },
+      { id: 5, question: "False negative rate:", answerType: "multiple_choice", options: [{ text: "<1%", isNormal: true }, { text: "1-5%", isNormal: true }, { text: "5-10%", isNormal: false }, { text: ">10%", isNormal: false }], answer: "1-5%" },
       { id: 6, question: "Recommendations for improvement:", answerType: "text", answer: "Consider retraining model with more recent data. Current dataset may be outdated." },
     ]
   },
@@ -1093,12 +1103,12 @@ export default function TestDetail() {
                                   {item.options.map((option, optIdx) => (
                                     <button
                                       key={optIdx}
-                                      onClick={() => handleAnswerChange(item.id, option)}
+                                      onClick={() => handleAnswerChange(item.id, option.text)}
                                       className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
-                                        item.answer === option ? "bg-blue-500 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                        item.answer === option.text ? "bg-blue-500 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                                       }`}
                                     >
-                                      {option}
+                                      {option.text}
                                     </button>
                                   ))}
                                 </div>
@@ -1146,13 +1156,20 @@ export default function TestDetail() {
                                   {item.options.map((option, optIdx) => (
                                     <div
                                       key={optIdx}
-                                      className={`px-4 py-2 rounded-lg ${
-                                        item.answer === option 
-                                          ? "bg-blue-500 text-white font-medium" 
+                                      className={`px-4 py-2 rounded-lg flex items-center justify-between ${
+                                        item.answer === option.text 
+                                          ? "bg-slate-800 text-white font-medium" 
                                           : "bg-slate-100 text-slate-500"
                                       }`}
                                     >
-                                      {option}
+                                      <span>{option.text}</span>
+                                      {item.answer === option.text && (
+                                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ml-2 ${
+                                            item.status === 'pass' ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
+                                         }`}>
+                                            {item.status === 'pass' ? "Normal" : "Abnormal"}
+                                         </span>
+                                      )}
                                     </div>
                                   ))}
                                 </div>

@@ -64,11 +64,16 @@ const inspectors = [
 
 type AnswerType = "multiple_choice" | "text" | "ox";
 
+interface TestItemOption {
+  text: string;
+  isNormal: boolean;
+}
+
 interface TestItem {
   id: number;
   question: string;
   answerType: AnswerType;
-  options: string[];
+  options: TestItemOption[];
 }
 
 const weekDays = [
@@ -108,7 +113,7 @@ const existingTests: Record<string, {
     testItems: [
       { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", options: [] },
       { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", options: [] },
-      { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: ["Excellent (95-100%)", "Good (80-94%)", "Fair (60-79%)", "Poor (<60%)"] },
+      { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent (95-100%)", isNormal: true }, { text: "Good (80-94%)", isNormal: true }, { text: "Fair (60-79%)", isNormal: false }, { text: "Poor (<60%)", isNormal: false }] },
       { id: 4, question: "Are there any duplicate records?", answerType: "ox", options: [] },
       { id: 5, question: "Additional notes on data quality:", answerType: "text", options: [] },
     ]
@@ -127,7 +132,7 @@ const existingTests: Record<string, {
     testItems: [
       { id: 1, question: "Is the API response time within acceptable limits (<500ms)?", answerType: "ox", options: [] },
       { id: 2, question: "Are all required fields present in the response?", answerType: "ox", options: [] },
-      { id: 3, question: "Error handling status:", answerType: "multiple_choice", options: ["All errors handled", "Some errors unhandled", "Major issues found"] },
+      { id: 3, question: "Error handling status:", answerType: "multiple_choice", options: [{ text: "All errors handled", isNormal: true }, { text: "Some errors unhandled", isNormal: false }, { text: "Major issues found", isNormal: false }] },
     ]
   },
   "3": {
@@ -143,7 +148,7 @@ const existingTests: Record<string, {
     presetTime: "",
     testItems: [
       { id: 1, question: "Average response time meets SLA?", answerType: "ox", options: [] },
-      { id: 2, question: "Peak load performance:", answerType: "multiple_choice", options: ["Excellent", "Good", "Needs Improvement", "Critical"] },
+      { id: 2, question: "Peak load performance:", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Needs Improvement", isNormal: false }, { text: "Critical", isNormal: false }] },
     ]
   }
 };
@@ -178,20 +183,20 @@ export default function AddTestProcedure() {
   const [serviceSearchQuery, setServiceSearchQuery] = useState("");
 
   // Template state
-  const [templates, setTemplates] = useState([
+  const [templates, setTemplates] = useState<{id: number; name: string; isDefault: boolean; items: TestItem[]}[]>([
     { id: 1, name: "Basic QA Check", isDefault: true, items: [
-      { id: 1, question: "Is the service responding correctly?", answerType: "ox" as const, options: [] },
-      { id: 2, question: "Are all endpoints accessible?", answerType: "ox" as const, options: [] },
+      { id: 1, question: "Is the service responding correctly?", answerType: "ox", options: [] },
+      { id: 2, question: "Are all endpoints accessible?", answerType: "ox", options: [] },
     ]},
     { id: 2, name: "Performance Review", isDefault: false, items: [
-      { id: 1, question: "Response time within SLA?", answerType: "ox" as const, options: [] },
-      { id: 2, question: "Performance rating:", answerType: "multiple_choice" as const, options: ["Excellent", "Good", "Fair", "Poor"] },
-      { id: 3, question: "Additional notes:", answerType: "text" as const, options: [] },
+      { id: 1, question: "Response time within SLA?", answerType: "ox", options: [] },
+      { id: 2, question: "Performance rating:", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }] },
+      { id: 3, question: "Additional notes:", answerType: "text", options: [] },
     ]},
     { id: 3, name: "Data Validation", isDefault: false, items: [
-      { id: 1, question: "Data format is correct?", answerType: "ox" as const, options: [] },
-      { id: 2, question: "All required fields present?", answerType: "ox" as const, options: [] },
-      { id: 3, question: "Data quality score:", answerType: "multiple_choice" as const, options: ["100%", "90-99%", "80-89%", "Below 80%"] },
+      { id: 1, question: "Data format is correct?", answerType: "ox", options: [] },
+      { id: 2, question: "All required fields present?", answerType: "ox", options: [] },
+      { id: 3, question: "Data quality score:", answerType: "multiple_choice", options: [{ text: "100%", isNormal: true }, { text: "90-99%", isNormal: true }, { text: "80-89%", isNormal: false }, { text: "Below 80%", isNormal: false }] },
     ]},
   ]);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
@@ -203,7 +208,7 @@ export default function AddTestProcedure() {
   const [templateNextId, setTemplateNextId] = useState(1);
 
   const addTemplateItem = () => {
-    setTemplateItems([...templateItems, { id: templateNextId, question: "", answerType: "text", options: ["", "", "", ""] }]);
+    setTemplateItems([...templateItems, { id: templateNextId, question: "", answerType: "text", options: [{ text: "", isNormal: true }, { text: "", isNormal: false }, { text: "", isNormal: false }, { text: "", isNormal: false }] }]);
     setTemplateNextId(templateNextId + 1);
   };
 
@@ -326,14 +331,14 @@ export default function AddTestProcedure() {
         id: nextId,
         question: "",
         answerType: "text",
-        options: ["", "", "", ""],
+        options: [{ text: "", isNormal: true }, { text: "", isNormal: false }, { text: "", isNormal: false }, { text: "", isNormal: false }],
       },
     ]);
     setNextId(nextId + 1);
     if (selectedTemplateId) setTemplateModified(true);
   };
 
-  const updateTestItem = (id: number, field: keyof TestItem, value: string | AnswerType | string[]) => {
+  const updateTestItem = (id: number, field: keyof TestItem, value: any) => {
     setTestItems(
       testItems.map((item) =>
         item.id === id ? { ...item, [field]: value } : item
@@ -347,7 +352,24 @@ export default function AddTestProcedure() {
       testItems.map((item) => {
         if (item.id === itemId) {
           const newOptions = [...item.options];
-          newOptions[optionIndex] = value;
+          newOptions[optionIndex] = { ...newOptions[optionIndex], text: value };
+          return { ...item, options: newOptions };
+        }
+        return item;
+      })
+    );
+    if (selectedTemplateId) setTemplateModified(true);
+  };
+
+  const toggleOptionNormal = (itemId: number, optionIndex: number) => {
+    setTestItems(
+      testItems.map((item) => {
+        if (item.id === itemId) {
+          const newOptions = [...item.options];
+          newOptions[optionIndex] = { 
+            ...newOptions[optionIndex], 
+            isNormal: !newOptions[optionIndex].isNormal 
+          };
           return { ...item, options: newOptions };
         }
         return item;
@@ -365,7 +387,7 @@ export default function AddTestProcedure() {
     setTestItems(
       testItems.map((item) => {
         if (item.id === itemId) {
-          return { ...item, options: [...item.options, ""] };
+          return { ...item, options: [...item.options, { text: "", isNormal: false }] };
         }
         return item;
       })
@@ -1077,23 +1099,36 @@ export default function AddTestProcedure() {
                                     Add Option
                                   </button>
                                 </div>
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 gap-3">
                                   {item.options.map((opt, optIndex) => (
                                     <div key={optIndex} className="flex items-center gap-2">
-                                      <span className="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-medium">
+                                      <span className="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-medium flex-shrink-0">
                                         {optIndex + 1}
                                       </span>
-                                      <Input
-                                        value={opt}
-                                        onChange={(e) => updateOption(item.id, optIndex, e.target.value)}
-                                        placeholder={`Option ${optIndex + 1}`}
-                                        className="border-slate-200 bg-white text-sm flex-1"
-                                        data-testid={`option-${item.id}-${optIndex}`}
-                                      />
+                                      <div className="flex-1 flex items-center gap-2">
+                                        <Input
+                                          value={opt.text}
+                                          onChange={(e) => updateOption(item.id, optIndex, e.target.value)}
+                                          placeholder={`Option ${optIndex + 1}`}
+                                          className="border-slate-200 bg-white text-sm flex-1"
+                                          data-testid={`option-${item.id}-${optIndex}`}
+                                        />
+                                        <div className="flex items-center gap-2 px-2 bg-slate-50 border border-slate-100 rounded h-10">
+                                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={opt.isNormal}
+                                                    onChange={() => toggleOptionNormal(item.id, optIndex)}
+                                                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                />
+                                                <span className={`text-xs font-medium ${opt.isNormal ? 'text-blue-600' : 'text-slate-400'}`}>Normal</span>
+                                            </label>
+                                        </div>
+                                      </div>
                                       {item.options.length > 2 && (
                                         <button
                                           onClick={() => removeOption(item.id, optIndex)}
-                                          className="p-1 hover:bg-red-50 rounded transition-colors"
+                                          className="p-1 hover:bg-red-50 rounded transition-colors flex-shrink-0"
                                           data-testid={`remove-option-${item.id}-${optIndex}`}
                                         >
                                           <Trash2 className="w-3.5 h-3.5 text-red-400" />

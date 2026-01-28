@@ -139,21 +139,21 @@ const testData: Record<string, {
       { id: -2, date: "2025-01-23", assignee: "Sarah Lee", status: "pending" },
       { id: 1, date: "2025-01-16", assignee: "John Kim", status: "in_progress" },
       { id: 2, date: "2025-01-09", assignee: "Sarah Lee", status: "completed", startTime: "14:00", endTime: "14:32", duration: "32 min", notes: "All checks passed.", testResults: [
-        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
-        { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "O" },
-        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }], answer: "Excellent" },
-        { id: 4, question: "Duplicate records?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Duplicates removed." },
-        { id: 5, question: "Additional notes:", answerType: "text", answer: "All checks passed." },
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O", status: "pass" },
+        { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "O", status: "pass" },
+        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }], answer: "Excellent", status: "pass" },
+        { id: 4, question: "Duplicate records?", answerType: "ox", answer: "X", status: "fail", isResolved: true, actionNote: "Duplicates removed." },
+        { id: 5, question: "Additional notes:", answerType: "text", answer: "All checks passed.", status: "pass" },
       ]},
       { id: 3, date: "2025-01-02", assignee: "John Kim", status: "completed", startTime: "09:45", endTime: "10:15", duration: "30 min", testResults: [
-        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
-        { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Fixed." },
-        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }], answer: "Good" },
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O", status: "pass" },
+        { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "X", status: "fail", isResolved: true, actionNote: "Fixed." },
+        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }], answer: "Good", status: "pass" },
       ]},
       { id: 4, date: "2024-12-26", assignee: "Sarah Lee", status: "completed", startTime: "16:20", endTime: "16:48", duration: "28 min", testResults: [
-        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
-        { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "O" },
-        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }], answer: "Excellent" },
+        { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O", status: "pass" },
+        { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "O", status: "pass" },
+        { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }], answer: "Excellent", status: "pass" },
       ]},
       { id: 5, date: "2024-12-19", assignee: "John Kim", status: "completed", startTime: "11:00", endTime: "11:22", duration: "22 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
@@ -206,11 +206,11 @@ const testData: Record<string, {
       ]},
     ],
     items: [
-      { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
-      { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", answer: "O" },
-      { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent (95-100%)", isNormal: true }, { text: "Good (80-94%)", isNormal: true }, { text: "Fair (60-79%)", isNormal: false }, { text: "Poor (<60%)", isNormal: false }], answer: "Excellent (95-100%)" },
-      { id: 4, question: "Are there any duplicate records?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Duplicate records identified and removed on 2025-01-09. Data cleanup completed." },
-      { id: 5, question: "Additional notes on data quality:", answerType: "text", answer: "All data passed integrity checks. No issues found." },
+      { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O", status: "pass" },
+      { id: 2, question: "Is the data format consistent across all records?", answerType: "ox", answer: "O", status: "pass" },
+      { id: 3, question: "What is the data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent (95-100%)", isNormal: true }, { text: "Good (80-94%)", isNormal: true }, { text: "Fair (60-79%)", isNormal: false }, { text: "Poor (<60%)", isNormal: false }], answer: "Excellent (95-100%)", status: "pass" },
+      { id: 4, question: "Are there any duplicate records?", answerType: "ox", answer: "X", status: "fail", isResolved: true, actionNote: "Duplicate records identified and removed on 2025-01-09. Data cleanup completed." },
+      { id: 5, question: "Additional notes on data quality:", answerType: "text", answer: "All data passed integrity checks. No issues found.", status: "pass" },
     ]
   },
   "2": {
@@ -234,9 +234,9 @@ const testData: Record<string, {
       { id: 3, date: "2025-01-01", assignee: "Sarah Lee", status: "completed", startTime: "13:00", endTime: "13:20", duration: "20 min", notes: "New year check." },
     ],
     items: [
-      { id: 1, question: "Is the API response time within acceptable limits (<500ms)?", answerType: "ox", answer: "O" },
-      { id: 2, question: "Are all required fields present in the response?", answerType: "ox", answer: "O" },
-      { id: 3, question: "Error handling status:", answerType: "multiple_choice", options: [{ text: "All errors handled", isNormal: true }, { text: "Some errors unhandled", isNormal: false }, { text: "Major issues found", isNormal: false }], answer: "Some errors unhandled" },
+      { id: 1, question: "Is the API response time within acceptable limits (<500ms)?", answerType: "ox", answer: "O", status: "pass" },
+      { id: 2, question: "Are all required fields present in the response?", answerType: "ox", answer: "O", status: "pass" },
+      { id: 3, question: "Error handling status:", answerType: "multiple_choice", options: [{ text: "All errors handled", isNormal: true }, { text: "Some errors unhandled", isNormal: false }, { text: "Major issues found", isNormal: false }], answer: "Some errors unhandled", status: "fail" },
     ]
   },
   "3": {
@@ -261,14 +261,14 @@ const testData: Record<string, {
       { id: 4, date: "2024-12-22", assignee: "Mike Park", status: "completed", startTime: "10:15", endTime: "10:45", duration: "30 min", notes: "Pre-holiday check." },
     ],
     items: [
-      { id: 1, question: "Average response time:", answerType: "multiple_choice", options: [{ text: "<100ms", isNormal: true }, { text: "100-300ms", isNormal: true }, { text: "300-500ms", isNormal: false }, { text: ">500ms", isNormal: false }], answer: "300-500ms" },
-      { id: 2, question: "Throughput meets requirements?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Performance optimization scheduled for next sprint." },
-      { id: 3, question: "Memory usage within limits?", answerType: "ox", answer: "O" },
-      { id: 4, question: "CPU usage within limits?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Optimized query processing to reduce CPU usage." },
-      { id: 5, question: "Are there any memory leaks detected?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Memory leak investigation in progress." },
-      { id: 6, question: "Load test passed successfully?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Need to increase server capacity before re-testing." },
-      { id: 7, question: "Stress test results:", answerType: "text", answer: "System shows degradation under heavy load. Needs optimization." },
-      { id: 8, question: "Overall performance rating:", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Needs Improvement", isNormal: false }, { text: "Critical", isNormal: false }], answer: "Needs Improvement" },
+      { id: 1, question: "Average response time:", answerType: "multiple_choice", options: [{ text: "<100ms", isNormal: true }, { text: "100-300ms", isNormal: true }, { text: "300-500ms", isNormal: false }, { text: ">500ms", isNormal: false }], answer: "300-500ms", status: "fail" },
+      { id: 2, question: "Throughput meets requirements?", answerType: "ox", answer: "X", status: "fail", isResolved: false, actionNote: "Performance optimization scheduled for next sprint." },
+      { id: 3, question: "Memory usage within limits?", answerType: "ox", answer: "O", status: "pass" },
+      { id: 4, question: "CPU usage within limits?", answerType: "ox", answer: "X", status: "fail", isResolved: true, actionNote: "Optimized query processing to reduce CPU usage." },
+      { id: 5, question: "Are there any memory leaks detected?", answerType: "ox", answer: "X", status: "fail", isResolved: false, actionNote: "Memory leak investigation in progress." },
+      { id: 6, question: "Load test passed successfully?", answerType: "ox", answer: "X", status: "fail", isResolved: false, actionNote: "Need to increase server capacity before re-testing." },
+      { id: 7, question: "Stress test results:", answerType: "text", answer: "System shows degradation under heavy load. Needs optimization.", status: "fail" },
+      { id: 8, question: "Overall performance rating:", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Needs Improvement", isNormal: false }, { text: "Critical", isNormal: false }], answer: "Needs Improvement", status: "fail" },
     ]
   },
   "4": {
@@ -292,10 +292,10 @@ const testData: Record<string, {
       { id: 3, date: "2025-01-02", assignee: "Emily Choi", status: "completed", startTime: "14:00", endTime: "14:30", duration: "30 min", notes: "Full security review." },
     ],
     items: [
-      { id: 1, question: "All API endpoints secured?", answerType: "ox", answer: "O" },
-      { id: 2, question: "Authentication mechanism working correctly?", answerType: "ox", answer: "O" },
-      { id: 3, question: "Data encryption status:", answerType: "multiple_choice", options: [{ text: "Full encryption", isNormal: true }, { text: "Partial encryption", isNormal: false }, { text: "No encryption", isNormal: false }], answer: "Full encryption" },
-      { id: 4, question: "Security vulnerabilities found:", answerType: "text", answer: "No vulnerabilities detected in this audit cycle." },
+      { id: 1, question: "All API endpoints secured?", answerType: "ox", answer: "O", status: "pass" },
+      { id: 2, question: "Authentication mechanism working correctly?", answerType: "ox", answer: "O", status: "pass" },
+      { id: 3, question: "Data encryption status:", answerType: "multiple_choice", options: [{ text: "Full encryption", isNormal: true }, { text: "Partial encryption", isNormal: false }, { text: "No encryption", isNormal: false }], answer: "Full encryption", status: "pass" },
+      { id: 4, question: "Security vulnerabilities found:", answerType: "text", answer: "No vulnerabilities detected in this audit cycle.", status: "pass" },
     ]
   },
   "5": {
@@ -319,12 +319,12 @@ const testData: Record<string, {
       { id: 3, date: "2024-12-13", assignee: "David Jung", status: "completed", startTime: "09:00", endTime: "09:30", duration: "30 min", notes: "Initial accuracy test." },
     ],
     items: [
-      { id: 1, question: "Model accuracy meets threshold (>90%)?", answerType: "ox", answer: "X", isResolved: false, actionNote: "Model retraining scheduled with updated dataset." },
-      { id: 2, question: "Current accuracy percentage:", answerType: "multiple_choice", options: [{ text: ">95%", isNormal: true }, { text: "90-95%", isNormal: true }, { text: "85-90%", isNormal: false }, { text: "<85%", isNormal: false }], answer: "85-90%" },
-      { id: 3, question: "Prediction confidence levels acceptable?", answerType: "ox", answer: "O" },
-      { id: 4, question: "False positive rate:", answerType: "multiple_choice", options: [{ text: "<1%", isNormal: true }, { text: "1-5%", isNormal: true }, { text: "5-10%", isNormal: false }, { text: ">10%", isNormal: false }], answer: "5-10%" },
-      { id: 5, question: "False negative rate:", answerType: "multiple_choice", options: [{ text: "<1%", isNormal: true }, { text: "1-5%", isNormal: true }, { text: "5-10%", isNormal: false }, { text: ">10%", isNormal: false }], answer: "1-5%" },
-      { id: 6, question: "Recommendations for improvement:", answerType: "text", answer: "Consider retraining model with more recent data. Current dataset may be outdated." },
+      { id: 1, question: "Model accuracy meets threshold (>90%)?", answerType: "ox", answer: "X", status: "fail", isResolved: false, actionNote: "Model retraining scheduled with updated dataset." },
+      { id: 2, question: "Current accuracy percentage:", answerType: "multiple_choice", options: [{ text: ">95%", isNormal: true }, { text: "90-95%", isNormal: true }, { text: "85-90%", isNormal: false }, { text: "<85%", isNormal: false }], answer: "85-90%", status: "fail" },
+      { id: 3, question: "Prediction confidence levels acceptable?", answerType: "ox", answer: "O", status: "pass" },
+      { id: 4, question: "False positive rate:", answerType: "multiple_choice", options: [{ text: "<1%", isNormal: true }, { text: "1-5%", isNormal: true }, { text: "5-10%", isNormal: false }, { text: ">10%", isNormal: false }], answer: "5-10%", status: "fail" },
+      { id: 5, question: "False negative rate:", answerType: "multiple_choice", options: [{ text: "<1%", isNormal: true }, { text: "1-5%", isNormal: true }, { text: "5-10%", isNormal: false }, { text: ">10%", isNormal: false }], answer: "1-5%", status: "pass" },
+      { id: 6, question: "Recommendations for improvement:", answerType: "text", answer: "Consider retraining model with more recent data. Current dataset may be outdated.", status: "pass" },
     ]
   },
 };
@@ -388,7 +388,7 @@ export default function TestDetail() {
       });
     }
   };
-  const [editedScheduleResults, setEditedScheduleResults] = useState<Record<number, typeof test.schedule[0]['testResults']>>({});
+  const [editedScheduleResults, setEditedScheduleResults] = useState<Record<number, TestItemResult[]>>({});
 
   if (!test) {
     return (
@@ -411,8 +411,41 @@ export default function TestDetail() {
     if (!currentSchedule?.testResults) return;
     
     const currentResults = editedScheduleResults[selectedSchedule] || currentSchedule.testResults;
+    const updatedResults = currentResults.map(item => {
+      if (item.id === itemId) {
+        let status = item.status;
+        
+        // Auto-calculate status for Multiple Choice
+        if (item.answerType === 'multiple_choice' && item.options) {
+          const selectedOption = item.options.find(o => o.text === newAnswer);
+          if (selectedOption) {
+            status = selectedOption.isNormal ? 'pass' : 'fail';
+          }
+        }
+        
+        // Auto-calculate status for O/X
+        if (item.answerType === 'ox') {
+          status = newAnswer === 'O' ? 'pass' : 'fail';
+        }
+
+        return { ...item, answer: newAnswer, status };
+      }
+      return item;
+    });
+
+    setEditedScheduleResults(prev => ({
+      ...prev,
+      [selectedSchedule]: updatedResults
+    }));
+  };
+
+  const handleStatusChange = (itemId: number, newStatus: "pass" | "fail" | "na") => {
+    const currentSchedule = test.schedule.find(s => s.id === selectedSchedule);
+    if (!currentSchedule?.testResults) return;
+    
+    const currentResults = editedScheduleResults[selectedSchedule] || currentSchedule.testResults;
     const updatedResults = currentResults.map(item => 
-      item.id === itemId ? { ...item, answer: newAnswer } : item
+      item.id === itemId ? { ...item, status: newStatus } : item
     );
     setEditedScheduleResults(prev => ({
       ...prev,
@@ -437,8 +470,13 @@ export default function TestDetail() {
 
   const getCurrentTestResults = () => {
     const currentSchedule = test.schedule.find(s => s.id === selectedSchedule);
-    if (!currentSchedule?.testResults) return editedItems;
-    return editedScheduleResults[selectedSchedule] || currentSchedule.testResults;
+    if (editedScheduleResults[selectedSchedule]) {
+      return editedScheduleResults[selectedSchedule];
+    }
+    if (currentSchedule?.testResults) {
+      return currentSchedule.testResults;
+    }
+    return editedItems;
   };
 
   const getAnswerIcon = (answerType: string) => {
@@ -1104,22 +1142,68 @@ export default function TestDetail() {
                                     <button
                                       key={optIdx}
                                       onClick={() => handleAnswerChange(item.id, option.text)}
-                                      className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
-                                        item.answer === option.text ? "bg-blue-500 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                      className={`w-full text-left px-4 py-3 rounded-lg transition-all border flex items-center justify-between ${
+                                        item.answer === option.text 
+                                          ? option.isNormal 
+                                            ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm" 
+                                            : "bg-red-50 border-red-500 text-red-700 shadow-sm"
+                                          : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
                                       }`}
                                     >
-                                      {option.text}
+                                      <span className="font-medium">{option.text}</span>
+                                      {item.answer === option.text && (
+                                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                                            option.isNormal ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+                                        }`}>
+                                            {option.isNormal ? "Normal" : "Abnormal"}
+                                        </span>
+                                      )}
                                     </button>
                                   ))}
                                 </div>
                               )}
                               {item.answerType === "text" && (
-                                <textarea
-                                  value={item.answer || ""}
-                                  onChange={(e) => handleAnswerChange(item.id, e.target.value)}
-                                  className="w-full border border-slate-200 rounded-lg p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  rows={3}
-                                />
+                                <div className="space-y-3">
+                                    <textarea
+                                    value={item.answer || ""}
+                                    onChange={(e) => handleAnswerChange(item.id, e.target.value)}
+                                    className="w-full border border-slate-200 rounded-lg p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px]"
+                                    rows={3}
+                                    placeholder="Enter observation notes..."
+                                    />
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => handleStatusChange(item.id, "pass")}
+                                            className={`px-6 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                                item.status === "pass" 
+                                                    ? "bg-emerald-500 text-white" 
+                                                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                            }`}
+                                        >
+                                            Pass / Normal
+                                        </button>
+                                        <button
+                                            onClick={() => handleStatusChange(item.id, "fail")}
+                                            className={`px-6 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                                item.status === "fail" 
+                                                    ? "bg-red-500 text-white" 
+                                                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                            }`}
+                                        >
+                                            Fail / Abnormal
+                                        </button>
+                                        <button
+                                            onClick={() => handleStatusChange(item.id, "na")}
+                                            className={`px-6 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                                item.status === "na" 
+                                                    ? "bg-slate-500 text-white" 
+                                                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                            }`}
+                                        >
+                                            N/A
+                                        </button>
+                                    </div>
+                                </div>
                               )}
                             </div>
                           ) : (
@@ -1167,7 +1251,7 @@ export default function TestDetail() {
                                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ml-2 ${
                                             item.status === 'pass' ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
                                          }`}>
-                                            {item.status === 'pass' ? "Normal" : "Abnormal"}
+                                             {item.status === 'pass' ? "Normal" : "Abnormal"}
                                          </span>
                                       )}
                                     </div>
@@ -1175,7 +1259,25 @@ export default function TestDetail() {
                                 </div>
                               )}
                               {item.answerType === "text" && (
-                                <p className="text-slate-600 bg-slate-50 rounded-lg p-3">{item.answer}</p>
+                                <div className="space-y-2">
+                                    <p className="text-slate-800 bg-slate-50 rounded-lg p-3 border border-slate-100">{item.answer}</p>
+                                    <div className="flex">
+                                        <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                                            item.status === 'pass' 
+                                                ? "bg-emerald-100 text-emerald-700" 
+                                                : item.status === 'fail'
+                                                    ? "bg-red-100 text-red-700"
+                                                    : "bg-slate-100 text-slate-700"
+                                        }`}>
+                                            {item.status === 'pass' 
+                                                ? "Normal" 
+                                                : item.status === 'fail'
+                                                    ? "Abnormal"
+                                                    : "N/A"
+                                            }
+                                        </span>
+                                    </div>
+                                </div>
                               )}
                             </div>
                           )}

@@ -149,6 +149,15 @@ function ProfileTab() {
 
 function UsersTab() {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editUserId, setEditUserId] = useState<number | null>(null);
+  const [editUser, setEditUser] = useState({
+    name: "",
+    email: "",
+    role: "Viewer",
+    status: "Active",
+  });
+
   const [newUser, setNewUser] = useState({
     firstName: "",
     lastName: "",
@@ -184,6 +193,37 @@ function UsersTab() {
       });
       setShowAddModal(false);
     }
+  };
+
+  const openEditUser = (id: number) => {
+    const u = userList.find((x) => x.id === id);
+    if (!u) return;
+    setEditUserId(id);
+    setEditUser({
+      name: u.name,
+      email: u.email,
+      role: u.role,
+      status: u.status,
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSaveEditUser = () => {
+    if (editUserId == null) return;
+    setUserList((prev) =>
+      prev.map((u) =>
+        u.id === editUserId
+          ? { ...u, role: editUser.role, status: editUser.status }
+          : u
+      )
+    );
+    setShowEditModal(false);
+    setEditUserId(null);
+  };
+
+  const closeEditUser = () => {
+    setShowEditModal(false);
+    setEditUserId(null);
   };
 
   return (

@@ -286,7 +286,6 @@ function UsersTab() {
                     data-testid="select-edit-user-status"
                   >
                     <option value="Active">Active</option>
-                    <option value="Suspended">Suspended</option>
                     <option value="Inactive">Inactive</option>
                   </select>
                 </div>

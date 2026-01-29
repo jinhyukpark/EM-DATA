@@ -177,7 +177,8 @@ export default function AddTestProcedure() {
   const [specificTime, setSpecificTime] = useState(existingData?.specificTime || "");
   const [timeOption, setTimeOption] = useState<"anytime" | "specific" | "preset">(existingData?.timeOption || "anytime");
   const [presetTime, setPresetTime] = useState(existingData?.presetTime || "");
-  const [activeTab, setActiveTab] = useState<"basic" | "items">("basic");
+  const [activeTab, setActiveTab] = useState<"basic">("basic");
+  const [itemSettingsOpen, setItemSettingsOpen] = useState(false);
   
   const [serviceSearchOpen, setServiceSearchOpen] = useState(false);
   const [serviceSearchQuery, setServiceSearchQuery] = useState("");
@@ -458,28 +459,28 @@ export default function AddTestProcedure() {
         <main className="flex-1 p-8 bg-white overflow-y-auto">
           <div className="max-w-4xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              {/* Tabs */}
-              <div className="flex gap-1 mb-6 p-1 bg-slate-100 rounded-lg w-fit">
+              {/* Basic Info + Item Settings */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex gap-1 p-1 bg-slate-100 rounded-lg w-fit">
+                  <button
+                    onClick={() => setActiveTab("basic")}
+                    className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
+                      activeTab === "basic"
+                        ? "bg-white text-slate-800 shadow-sm"
+                        : "text-slate-600 hover:text-slate-800"
+                    }`}
+                    data-testid="tab-basic"
+                  >
+                    Basic Info
+                  </button>
+                </div>
+
                 <button
-                  onClick={() => setActiveTab("basic")}
-                  className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
-                    activeTab === "basic"
-                      ? "bg-white text-slate-800 shadow-sm"
-                      : "text-slate-600 hover:text-slate-800"
-                  }`}
-                  data-testid="tab-basic"
+                  onClick={() => setItemSettingsOpen(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors"
+                  data-testid="button-open-item-settings"
                 >
-                  Basic Info
-                </button>
-                <button
-                  onClick={() => setActiveTab("items")}
-                  className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
-                    activeTab === "items"
-                      ? "bg-white text-slate-800 shadow-sm"
-                      : "text-slate-600 hover:text-slate-800"
-                  }`}
-                  data-testid="tab-items"
-                >
+                  <Settings className="w-4 h-4 text-slate-500" />
                   Item Settings
                 </button>
               </div>
@@ -871,8 +872,35 @@ export default function AddTestProcedure() {
               </div>
               )}
 
-              {activeTab === "items" && (
-              <div className="pt-6">
+              {/* Item Settings Modal */}
+              {itemSettingsOpen && (
+              <div
+                className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                onClick={() => setItemSettingsOpen(false)}
+                data-testid="modal-item-settings"
+              >
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.98, y: 8 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="bg-white rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+                    <div>
+                      <h2 className="text-lg font-semibold text-slate-900">Item Settings</h2>
+                      <p className="text-sm text-slate-500 mt-0.5">Set up test items and templates</p>
+                    </div>
+                    <button
+                      onClick={() => setItemSettingsOpen(false)}
+                      className="p-2 rounded-lg hover:bg-slate-100 text-slate-600"
+                      data-testid="button-close-item-settings"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <div className="p-6 overflow-y-auto max-h-[80vh]">
                 {/* Template Section */}
                 <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
                   <div className="flex items-center gap-2 mb-4">
@@ -1172,6 +1200,14 @@ export default function AddTestProcedure() {
                   </div>
                 )}
               </div>
+              )}
+
+                  </div>
+                </motion.div>
+              </div>
+                    </div>
+                  </motion.div>
+                </div>
               )}
 
               <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-slate-200">

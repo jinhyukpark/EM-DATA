@@ -1200,15 +1200,9 @@ export default function AddTestProcedure() {
                   </div>
                 )}
               </div>
-              )}
-
-                  </div>
-                </motion.div>
-              </div>
-                    </div>
-                  </motion.div>
-                </div>
-              )}
+            </motion.div>
+          </div>
+        )}
 
               <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-slate-200">
                 <Link href="/qa-report">

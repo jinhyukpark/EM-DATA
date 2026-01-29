@@ -149,6 +149,15 @@ function ProfileTab() {
 
 function UsersTab() {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editUserId, setEditUserId] = useState<number | null>(null);
+  const [editUser, setEditUser] = useState({
+    name: "",
+    email: "",
+    role: "Viewer",
+    status: "Active",
+  });
+
   const [newUser, setNewUser] = useState({
     firstName: "",
     lastName: "",
@@ -186,8 +195,115 @@ function UsersTab() {
     }
   };
 
+  const openEditUser = (id: number) => {
+    const u = userList.find((x) => x.id === id);
+    if (!u) return;
+    setEditUserId(id);
+    setEditUser({
+      name: u.name,
+      email: u.email,
+      role: u.role,
+      status: u.status,
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSaveEditUser = () => {
+    if (editUserId == null) return;
+    setUserList((prev) =>
+      prev.map((u) =>
+        u.id === editUserId
+          ? { ...u, role: editUser.role, status: editUser.status }
+          : u
+      )
+    );
+    setShowEditModal(false);
+    setEditUserId(null);
+  };
+
+  const closeEditUser = () => {
+    setShowEditModal(false);
+    setEditUserId(null);
+  };
+
   return (
     <div className="space-y-6">
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={closeEditUser}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl w-full max-w-lg shadow-xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+            data-testid="modal-edit-user"
+          >
+            <div className="flex items-start justify-between px-6 py-5 border-b border-slate-200">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900" data-testid="title-edit-user">Edit User</h3>
+                <p className="text-sm text-slate-500 mt-1" data-testid="text-edit-user-hint">Update role and status for this user.</p>
+              </div>
+              <button
+                onClick={closeEditUser}
+                className="p-2 rounded-lg hover:bg-slate-100 text-slate-600"
+                data-testid="button-close-edit-user"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">User</label>
+                  <div className="h-10 px-3 border border-slate-200 rounded-lg bg-slate-50 flex items-center justify-between" data-testid="display-edit-user-identity">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-slate-800 truncate">{editUser.name}</p>
+                      <p className="text-xs text-slate-500 truncate">{editUser.email}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
+                  <select
+                    value={editUser.role}
+                    onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
+                    className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    data-testid="select-edit-user-role"
+                  >
+                    <option value="Admin">Admin</option>
+                    <option value="Editor">Editor</option>
+                    <option value="Viewer">Viewer</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Status</label>
+                  <select
+                    value={editUser.status}
+                    onChange={(e) => setEditUser({ ...editUser, status: e.target.value })}
+                    className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    data-testid="select-edit-user-status"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+              <Button variant="outline" onClick={closeEditUser} data-testid="button-cancel-edit-user">
+                Cancel
+              </Button>
+              <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleSaveEditUser} data-testid="button-save-edit-user">
+                Save
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowAddModal(false)}>
           <motion.div
@@ -353,7 +469,11 @@ function UsersTab() {
                   <td className="py-4 px-4 text-right text-sm text-slate-500">{user.lastLogin}</td>
                   <td className="py-4 px-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors" data-testid={`edit-user-${user.id}`}>
+                      <button
+                        className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                        onClick={() => openEditUser(user.id)}
+                        data-testid={`edit-user-${user.id}`}
+                      >
                         <Edit2 className="w-4 h-4 text-slate-500" />
                       </button>
                       <button className="p-2 hover:bg-red-50 rounded-lg transition-colors" data-testid={`delete-user-${user.id}`}>

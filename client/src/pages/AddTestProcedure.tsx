@@ -177,7 +177,8 @@ export default function AddTestProcedure() {
   const [specificTime, setSpecificTime] = useState(existingData?.specificTime || "");
   const [timeOption, setTimeOption] = useState<"anytime" | "specific" | "preset">(existingData?.timeOption || "anytime");
   const [presetTime, setPresetTime] = useState(existingData?.presetTime || "");
-  const [activeTab, setActiveTab] = useState<"basic" | "items">("basic");
+  const [activeTab, setActiveTab] = useState<"basic">("basic");
+  const [itemSettingsOpen, setItemSettingsOpen] = useState(false);
   
   const [serviceSearchOpen, setServiceSearchOpen] = useState(false);
   const [serviceSearchQuery, setServiceSearchQuery] = useState("");
@@ -458,33 +459,23 @@ export default function AddTestProcedure() {
         <main className="flex-1 p-8 bg-white overflow-y-auto">
           <div className="max-w-4xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              {/* Tabs */}
-              <div className="flex gap-1 mb-6 p-1 bg-slate-100 rounded-lg w-fit">
+              {/* Basic Info + Item Settings */}
+              <div className="flex items-end justify-between mb-6 gap-4">
+                <div>
+                  <h2 className="text-base font-semibold tracking-tight text-slate-900" data-testid="title-basic-info">Basic Info</h2>
+                  <p className="text-xs text-slate-500 mt-1" data-testid="text-basic-info-hint">Set the procedure details. Configure items in Item Settings.</p>
+                </div>
+
                 <button
-                  onClick={() => setActiveTab("basic")}
-                  className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
-                    activeTab === "basic"
-                      ? "bg-white text-slate-800 shadow-sm"
-                      : "text-slate-600 hover:text-slate-800"
-                  }`}
-                  data-testid="tab-basic"
+                  onClick={() => setItemSettingsOpen(true)}
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold shadow-sm shadow-blue-600/20 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition"
+                  data-testid="button-open-item-settings"
                 >
-                  Basic Info
-                </button>
-                <button
-                  onClick={() => setActiveTab("items")}
-                  className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
-                    activeTab === "items"
-                      ? "bg-white text-slate-800 shadow-sm"
-                      : "text-slate-600 hover:text-slate-800"
-                  }`}
-                  data-testid="tab-items"
-                >
+                  <Settings className="w-4 h-4 text-white/90" />
                   Item Settings
                 </button>
               </div>
 
-              {activeTab === "basic" && (
               <div className="space-y-6 mb-8">
                 <div className="space-y-4">
                   <div>
@@ -869,10 +860,60 @@ export default function AddTestProcedure() {
                   )}
                 </div>
               </div>
-              )}
 
-              {activeTab === "items" && (
-              <div className="pt-6">
+
+              {/* Item Settings Modal */}
+              {itemSettingsOpen && (
+              <div
+                className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                onClick={() => setItemSettingsOpen(false)}
+                data-testid="modal-item-settings"
+              >
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.98, y: 8 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="relative bg-white rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+                    <div>
+                      <h2 className="text-lg font-semibold text-slate-900">Item Settings</h2>
+                      <p className="text-sm text-slate-500 mt-0.5">Set up test items and templates</p>
+                    </div>
+                    <button
+                      onClick={() => setItemSettingsOpen(false)}
+                      className="p-2 rounded-lg hover:bg-slate-100 text-slate-600"
+                      data-testid="button-close-item-settings"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <div className="p-6 overflow-y-auto max-h-[72vh] pb-24">
+
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white to-white/0" />
+
+                  <div className="absolute inset-x-0 bottom-0 border-t border-slate-200 bg-white/95 backdrop-blur px-6 py-4">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        className="border-slate-300 text-slate-700 hover:bg-slate-100"
+                        onClick={() => setItemSettingsOpen(false)}
+                        data-testid="button-item-settings-cancel"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className="bg-blue-600 hover:bg-blue-700"
+                        onClick={() => setItemSettingsOpen(false)}
+                        data-testid="button-item-settings-save"
+                      >
+                        Save
+                      </Button>
+                    </div>
+                  </div>
+
                 {/* Template Section */}
                 <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
                   <div className="flex items-center gap-2 mb-4">
@@ -1025,6 +1066,7 @@ export default function AddTestProcedure() {
                         className="border border-slate-200 rounded-xl p-5 bg-slate-50/50"
                         data-testid={`test-item-${item.id}`}
                       >
+                        <div className="sr-only" data-testid={`text-item-settings-dirty-${item.id}`}>{item.question}</div>
                         <div className="flex items-start gap-4">
                           <div className="flex items-center gap-2 pt-2">
                             <GripVertical className="w-4 h-4 text-slate-300" />
@@ -1172,7 +1214,9 @@ export default function AddTestProcedure() {
                   </div>
                 )}
               </div>
-              )}
+            </motion.div>
+          </div>
+        )}
 
               <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-slate-200">
                 <Link href="/qa-report">

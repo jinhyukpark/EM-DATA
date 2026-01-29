@@ -460,32 +460,22 @@ export default function AddTestProcedure() {
           <div className="max-w-4xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               {/* Basic Info + Item Settings */}
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex gap-1 p-1 bg-slate-100 rounded-lg w-fit">
-                  <button
-                    onClick={() => setActiveTab("basic")}
-                    className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
-                      activeTab === "basic"
-                        ? "bg-white text-slate-800 shadow-sm"
-                        : "text-slate-600 hover:text-slate-800"
-                    }`}
-                    data-testid="tab-basic"
-                  >
-                    Basic Info
-                  </button>
+              <div className="flex items-end justify-between mb-6 gap-4">
+                <div>
+                  <h2 className="text-base font-semibold tracking-tight text-slate-900" data-testid="title-basic-info">Basic Info</h2>
+                  <p className="text-xs text-slate-500 mt-1" data-testid="text-basic-info-hint">Set the procedure details. Configure items in Item Settings.</p>
                 </div>
 
                 <button
                   onClick={() => setItemSettingsOpen(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold shadow-sm shadow-blue-600/20 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition"
                   data-testid="button-open-item-settings"
                 >
-                  <Settings className="w-4 h-4 text-slate-500" />
+                  <Settings className="w-4 h-4 text-white/90" />
                   Item Settings
                 </button>
               </div>
 
-              {activeTab === "basic" && (
               <div className="space-y-6 mb-8">
                 <div className="space-y-4">
                   <div>
@@ -870,7 +860,7 @@ export default function AddTestProcedure() {
                   )}
                 </div>
               </div>
-              )}
+
 
               {/* Item Settings Modal */}
               {itemSettingsOpen && (

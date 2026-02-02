@@ -370,12 +370,6 @@ function UsersTab() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4" data-testid="note-user-profile-fields">
-                <p className="text-sm font-medium text-slate-800">Profile fields</p>
-                <p className="text-sm text-slate-600 mt-1">
-                  Phone number and department are not set here. Users can add them later in <span className="font-medium">Profile</span>.
-                </p>
-              </div>
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>

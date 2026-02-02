@@ -639,7 +639,12 @@ function PermissionsTab() {
             </div>
 
             <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
-              <Button variant="outline" onClick={cancelDeleteRole} data-testid="button-cancel-delete-role">
+              <Button
+                variant="outline"
+                className="bg-white text-slate-700 hover:bg-slate-50 border-slate-300 shadow-sm"
+                onClick={cancelDeleteRole}
+                data-testid="button-cancel-delete-role"
+              >
                 Cancel
               </Button>
               <Button className="bg-red-600 hover:bg-red-700" onClick={confirmDeleteRole} data-testid="button-confirm-delete-role">
@@ -735,7 +740,12 @@ function PermissionsTab() {
             </div>
 
             <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
-              <Button variant="outline" onClick={closeRoleModal} data-testid="button-cancel-role-modal">
+              <Button
+                variant="outline"
+                className="bg-white text-slate-700 hover:bg-slate-50 border-slate-300 shadow-sm"
+                onClick={closeRoleModal}
+                data-testid="button-cancel-role-modal"
+              >
                 Cancel
               </Button>
               <Button

@@ -499,6 +499,9 @@ function PermissionsTab() {
   const [selectedPerms, setSelectedPerms] = useState<string[]>([]);
   const [editRoleId, setEditRoleId] = useState<number | null>(null);
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
+  const [showDeleteRoleModal, setShowDeleteRoleModal] = useState(false);
+  const [deleteRoleId, setDeleteRoleId] = useState<number | null>(null);
+  const [deleteRoleName, setDeleteRoleName] = useState(" ");
 
   const permissionOptions = ["View", "Create", "Edit", "Delete", "Export", "Settings"];
 
@@ -563,9 +566,27 @@ function PermissionsTab() {
     setEditRoleId(null);
   };
 
-  const deleteRole = (id: number) => {
-    setRoles((prev) => prev.filter((r) => r.id !== id));
+  const requestDeleteRole = (id: number) => {
+    const r = roles.find((x) => x.id === id);
+    if (!r) return;
+    setDeleteRoleId(id);
+    setDeleteRoleName(r.role);
+    setShowDeleteRoleModal(true);
     setMenuOpenId(null);
+  };
+
+  const confirmDeleteRole = () => {
+    if (deleteRoleId == null) return;
+    setRoles((prev) => prev.filter((r) => r.id !== deleteRoleId));
+    setShowDeleteRoleModal(false);
+    setDeleteRoleId(null);
+    setDeleteRoleName("");
+  };
+
+  const cancelDeleteRole = () => {
+    setShowDeleteRoleModal(false);
+    setDeleteRoleId(null);
+    setDeleteRoleName("");
   };
 
   const roleColorClasses: Record<string, string> = {
@@ -579,6 +600,56 @@ function PermissionsTab() {
 
   return (
     <div className="space-y-6">
+      {showDeleteRoleModal && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={cancelDeleteRole}
+          data-testid="modal-delete-role"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.15 }}
+            className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between px-6 py-5 border-b border-slate-200">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900" data-testid="title-delete-role">Delete Role</h3>
+                <p className="text-sm text-slate-500 mt-1" data-testid="text-delete-role">해당 role을 삭제하시겠습니까?</p>
+              </div>
+              <button
+                onClick={cancelDeleteRole}
+                className="p-2 rounded-lg hover:bg-slate-100 text-slate-600"
+                data-testid="button-close-delete-role"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="px-6 py-5">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4" data-testid="card-delete-role-summary">
+                <p className="text-sm text-slate-700">
+                  Role: <span className="font-semibold" data-testid="text-delete-role-name">{deleteRoleName}</span>
+                </p>
+              </div>
+              <p className="text-xs text-slate-500 mt-3" data-testid="text-delete-role-warning">
+                This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+              <Button variant="outline" onClick={cancelDeleteRole} data-testid="button-cancel-delete-role">
+                Cancel
+              </Button>
+              <Button className="bg-red-600 hover:bg-red-700" onClick={confirmDeleteRole} data-testid="button-confirm-delete-role">
+                Delete
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {showRoleModal && (
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
@@ -737,7 +808,7 @@ function PermissionsTab() {
                         </button>
                         <button
                           className="w-full px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center justify-between"
-                          onClick={() => deleteRole(perm.id)}
+                          onClick={() => requestDeleteRole(perm.id)}
                           data-testid={`menu-role-delete-${perm.id}`}
                           type="button"
                         >

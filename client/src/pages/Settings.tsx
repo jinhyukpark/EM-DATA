@@ -164,8 +164,6 @@ function UsersTab() {
     email: "",
     tempPassword: "",
     confirmPassword: "",
-    phone: "",
-    department: "",
     role: "Viewer"
   });
   const [userList, setUserList] = useState(users);
@@ -187,8 +185,6 @@ function UsersTab() {
         email: "",
         tempPassword: "",
         confirmPassword: "",
-        phone: "",
-        department: "",
         role: "Viewer"
       });
       setShowAddModal(false);
@@ -374,27 +370,6 @@ function UsersTab() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Phone Number</label>
-                <Input
-                  value={newUser.phone}
-                  onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
-                  placeholder="Enter phone number"
-                  className="border-slate-200"
-                  data-testid="new-user-phone"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Department</label>
-                <Input
-                  value={newUser.department}
-                  onChange={(e) => setNewUser({ ...newUser, department: e.target.value })}
-                  placeholder="Enter department"
-                  className="border-slate-200"
-                  data-testid="new-user-department"
-                />
-              </div>
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>

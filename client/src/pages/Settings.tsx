@@ -492,41 +492,351 @@ function UsersTab() {
 }
 
 function PermissionsTab() {
+  const [roles, setRoles] = useState(permissions);
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [roleModalMode, setRoleModalMode] = useState<"add" | "edit">("add");
+  const [roleName, setRoleName] = useState("");
+  const [selectedPerms, setSelectedPerms] = useState<string[]>([]);
+  const [editRoleId, setEditRoleId] = useState<number | null>(null);
+  const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
+  const [showDeleteRoleModal, setShowDeleteRoleModal] = useState(false);
+  const [deleteRoleId, setDeleteRoleId] = useState<number | null>(null);
+  const [deleteRoleName, setDeleteRoleName] = useState(" ");
+
+  const permissionOptions = ["View", "Create", "Edit", "Delete", "Export", "Settings"];
+
+  const openAddRole = () => {
+    setRoleModalMode("add");
+    setEditRoleId(null);
+    setRoleName("");
+    setSelectedPerms(["View"]);
+    setShowRoleModal(true);
+  };
+
+  const openEditRole = (id: number) => {
+    const r = roles.find((x) => x.id === id);
+    if (!r) return;
+    setRoleModalMode("edit");
+    setEditRoleId(id);
+    setRoleName(r.role);
+    setSelectedPerms(r.permissions);
+    setShowRoleModal(true);
+    setMenuOpenId(null);
+  };
+
+  const closeRoleModal = () => {
+    setShowRoleModal(false);
+    setEditRoleId(null);
+  };
+
+  const togglePerm = (p: string) => {
+    setSelectedPerms((prev) => (prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]));
+  };
+
+  const saveRole = () => {
+    if (roleModalMode === "add") {
+      const nextId = Math.max(...roles.map((r) => r.id)) + 1;
+      setRoles((prev) => [
+        ...prev,
+        {
+          id: nextId,
+          role: roleName.trim() || `Role ${nextId}`,
+          description: "Custom role",
+          users: 0,
+          permissions: selectedPerms.length ? selectedPerms : ["View"],
+        },
+      ]);
+      setShowRoleModal(false);
+      return;
+    }
+
+    if (editRoleId == null) return;
+    setRoles((prev) =>
+      prev.map((r) =>
+        r.id === editRoleId
+          ? {
+              ...r,
+              role: r.role,
+              permissions: selectedPerms.length ? selectedPerms : ["View"],
+            }
+          : r
+      )
+    );
+    setShowRoleModal(false);
+    setEditRoleId(null);
+  };
+
+  const requestDeleteRole = (id: number) => {
+    const r = roles.find((x) => x.id === id);
+    if (!r) return;
+    setDeleteRoleId(id);
+    setDeleteRoleName(r.role);
+    setShowDeleteRoleModal(true);
+    setMenuOpenId(null);
+  };
+
+  const confirmDeleteRole = () => {
+    if (deleteRoleId == null) return;
+    setRoles((prev) => prev.filter((r) => r.id !== deleteRoleId));
+    setShowDeleteRoleModal(false);
+    setDeleteRoleId(null);
+    setDeleteRoleName("");
+  };
+
+  const cancelDeleteRole = () => {
+    setShowDeleteRoleModal(false);
+    setDeleteRoleId(null);
+    setDeleteRoleName("");
+  };
+
+  const roleColorClasses: Record<string, string> = {
+    View: "bg-slate-50 text-slate-700 border border-slate-100",
+    Create: "bg-emerald-50 text-emerald-700 border border-emerald-100",
+    Edit: "bg-blue-50 text-blue-700 border border-blue-100",
+    Delete: "bg-red-50 text-red-700 border border-red-100",
+    Export: "bg-amber-50 text-amber-700 border border-amber-100",
+    Settings: "bg-purple-50 text-purple-700 border border-purple-100",
+  };
+
   return (
     <div className="space-y-6">
+      {showDeleteRoleModal && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={cancelDeleteRole}
+          data-testid="modal-delete-role"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.15 }}
+            className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between px-6 py-5 border-b border-slate-200">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900" data-testid="title-delete-role">Delete Role</h3>
+                <p className="text-sm text-slate-500 mt-1" data-testid="text-delete-role">해당 role을 삭제하시겠습니까?</p>
+              </div>
+              <button
+                onClick={cancelDeleteRole}
+                className="p-2 rounded-lg hover:bg-slate-100 text-slate-600"
+                data-testid="button-close-delete-role"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="px-6 py-5">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4" data-testid="card-delete-role-summary">
+                <p className="text-sm text-slate-700">
+                  Role: <span className="font-semibold" data-testid="text-delete-role-name">{deleteRoleName}</span>
+                </p>
+              </div>
+              <p className="text-xs text-slate-500 mt-3" data-testid="text-delete-role-warning">
+                This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+              <Button
+                variant="outline"
+                className="bg-white text-slate-700 hover:bg-slate-50 border-slate-300 shadow-sm"
+                onClick={cancelDeleteRole}
+                data-testid="button-cancel-delete-role"
+              >
+                Cancel
+              </Button>
+              <Button className="bg-red-600 hover:bg-red-700" onClick={confirmDeleteRole} data-testid="button-confirm-delete-role">
+                Delete
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {showRoleModal && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={closeRoleModal}
+          data-testid="modal-role"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.15 }}
+            className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900" data-testid="title-role-modal">
+                  {roleModalMode === "add" ? "Add Role" : "Edit Role"}
+                </h3>
+                <p className="text-sm text-slate-500 mt-0.5" data-testid="text-role-modal-hint">
+                  {roleModalMode === "add"
+                    ? "Name the role and choose permissions."
+                    : "Update permissions for this role."}
+                </p>
+              </div>
+              <button
+                onClick={closeRoleModal}
+                className="p-2 rounded-lg hover:bg-slate-100 text-slate-600"
+                data-testid="button-close-role-modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Role Name</label>
+                {roleModalMode === "add" ? (
+                  <Input
+                    value={roleName}
+                    onChange={(e) => setRoleName(e.target.value)}
+                    placeholder="e.g., QA Lead"
+                    className="border-slate-200"
+                    data-testid="input-role-name"
+                  />
+                ) : (
+                  <div
+                    className="h-10 px-3 border border-slate-200 rounded-lg bg-slate-50 flex items-center"
+                    data-testid="text-role-name-readonly"
+                  >
+                    <span className="text-sm font-medium text-slate-800">{roleName}</span>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <label className="block text-sm font-medium text-slate-700">Permissions</label>
+                  <span className="text-xs text-slate-500" data-testid="text-role-perms-count">
+                    {selectedPerms.length} selected
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2" data-testid="wrap-role-perms">
+                  {permissionOptions.map((p) => {
+                    const active = selectedPerms.includes(p);
+                    return (
+                      <button
+                        key={p}
+                        onClick={() => togglePerm(p)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                          active
+                            ? roleColorClasses[p]
+                            : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
+                        }`}
+                        data-testid={`tag-perm-${p}`}
+                        type="button"
+                      >
+                        {p}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+              <Button
+                variant="outline"
+                className="bg-white text-slate-700 hover:bg-slate-50 border-slate-300 shadow-sm"
+                onClick={closeRoleModal}
+                data-testid="button-cancel-role-modal"
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-blue-600 hover:bg-blue-700"
+                onClick={saveRole}
+                disabled={roleModalMode === "add" && !roleName.trim()}
+                data-testid="button-save-role-modal"
+              >
+                Save
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       <div className="chart-container-light">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-slate-800">Permission Management</h3>
-          <Button className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-role">
+          <Button
+            className="gap-2 bg-blue-600 hover:bg-blue-700"
+            onClick={openAddRole}
+            data-testid="add-role"
+          >
             <Plus className="w-4 h-4" />
             Add Role
           </Button>
         </div>
         <div className="space-y-4">
-          {permissions.map((perm) => (
-            <div key={perm.id} className="border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors" data-testid={`permission-${perm.id}`}>
+          {roles.map((perm) => (
+            <div
+              key={perm.id}
+              className="border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors"
+              data-testid={`permission-${perm.id}`}
+            >
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <div className="flex items-center gap-3">
-                    <h4 className="text-lg font-semibold text-slate-800">{perm.role}</h4>
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">{perm.users} users</span>
+                    <h4 className="text-lg font-semibold text-slate-800" data-testid={`text-role-${perm.id}`}>{perm.role}</h4>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600" data-testid={`text-role-users-${perm.id}`}>
+                      {perm.users} users
+                    </span>
                   </div>
-                  <p className="text-sm text-slate-500 mt-1">{perm.description}</p>
+                  <p className="text-sm text-slate-500 mt-1" data-testid={`text-role-desc-${perm.id}`}>{perm.description}</p>
                 </div>
-                <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
-                  <MoreHorizontal className="w-5 h-5 text-slate-400" />
-                </button>
+
+                {perm.role !== "Admin" && (
+                  <div className="relative">
+                    <button
+                      className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                      onClick={() => setMenuOpenId(menuOpenId === perm.id ? null : perm.id)}
+                      data-testid={`button-role-menu-${perm.id}`}
+                      type="button"
+                    >
+                      <MoreHorizontal className="w-5 h-5 text-slate-400" />
+                    </button>
+
+                    {menuOpenId === perm.id && (
+                      <div
+                        className="absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-10"
+                        data-testid={`menu-role-${perm.id}`}
+                      >
+                        <button
+                          className="w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center justify-between"
+                          onClick={() => openEditRole(perm.id)}
+                          data-testid={`menu-role-edit-${perm.id}`}
+                          type="button"
+                        >
+                          Edit
+                          <Edit2 className="w-4 h-4 text-slate-400" />
+                        </button>
+                        <button
+                          className="w-full px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center justify-between"
+                          onClick={() => requestDeleteRole(perm.id)}
+                          data-testid={`menu-role-delete-${perm.id}`}
+                          type="button"
+                        >
+                          Delete
+                          <Trash2 className="w-4 h-4 text-red-500" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2" data-testid={`wrap-role-tags-${perm.id}`}>
                 {perm.permissions.map((p) => (
-                  <span key={p} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
-                    p === "Delete" ? "bg-red-50 text-red-600 border border-red-100" :
-                    p === "Settings" ? "bg-purple-50 text-purple-600 border border-purple-100" :
-                    p === "Export" ? "bg-amber-50 text-amber-600 border border-amber-100" :
-                    p === "Edit" ? "bg-blue-50 text-blue-600 border border-blue-100" :
-                    p === "Create" ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
-                    "bg-slate-50 text-slate-600 border border-slate-100"
-                  }`}>
+                  <span
+                    key={p}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium ${roleColorClasses[p] || "bg-slate-50 text-slate-600 border border-slate-100"}`}
+                    data-testid={`tag-role-${perm.id}-${p}`}
+                  >
                     {p}
                   </span>
                 ))}

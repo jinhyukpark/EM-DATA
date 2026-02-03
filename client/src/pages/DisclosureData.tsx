@@ -16,6 +16,9 @@ import {
   Activity,
   TrendingUp,
   Clock,
+  Building2,
+  CalendarPlus,
+  CalendarMinus,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
@@ -551,34 +554,34 @@ export default function DisclosureData() {
             <div className="mb-6">
               <div className="flex items-center gap-8 py-4 px-6 bg-white rounded-xl border border-slate-100">
                 <div className="flex items-center gap-3">
-                  <FileText className="w-5 h-5 text-purple-500" />
+                  <Building2 className="w-5 h-5 text-purple-500" />
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Total Filings</p>
-                    <p className="text-xl font-bold text-slate-800">{filteredData.length * 243}</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">TOTAL COMPANIES</p>
+                    <p className="text-xl font-bold text-slate-800">1.52M</p>
                   </div>
                 </div>
                 <div className="w-px h-10 bg-slate-200" />
                 <div className="flex items-center gap-3">
-                  <Activity className="w-5 h-5 text-emerald-500" />
+                  <CalendarPlus className="w-5 h-5 text-emerald-500" />
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Today</p>
-                    <p className="text-xl font-bold text-emerald-600">+{Math.floor(filteredData.length * 12)}</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">TODAY</p>
+                    <p className="text-xl font-bold text-emerald-600">0</p>
                   </div>
                 </div>
                 <div className="w-px h-10 bg-slate-200" />
                 <div className="flex items-center gap-3">
-                  <TrendingUp className="w-5 h-5 text-blue-500" />
+                  <CalendarMinus className="w-5 h-5 text-blue-500" />
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Growth</p>
-                    <p className="text-xl font-bold text-blue-600">+12.5%</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">YESTERDAY</p>
+                    <p className="text-xl font-bold text-blue-600">0</p>
                   </div>
                 </div>
                 <div className="w-px h-10 bg-slate-200" />
                 <div className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-cyan-500" />
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Last Update</p>
-                    <p className="text-xl font-bold text-slate-800">Just now</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">UPDATE CYCLE</p>
+                    <p className="text-xl font-bold text-slate-800">Daily</p>
                   </div>
                 </div>
               </div>
@@ -588,9 +591,6 @@ export default function DisclosureData() {
               <div className="flex items-center justify-between gap-3 p-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">
                   <h2 className="text-lg font-semibold text-slate-900">Disclosure Records</h2>
-                  <div className="text-xs text-slate-500 font-mono px-2 py-1 bg-slate-100 rounded border border-slate-200">
-                    /internal/data/disclosure/list
-                  </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">

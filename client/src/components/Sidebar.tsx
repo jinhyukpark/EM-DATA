@@ -24,12 +24,12 @@ const menuItems = [
 
 const dataMenuItems = [
   { id: "company-data", name: "Company Data", icon: Building2, path: "/data/company", status: "normal" },
+  { id: "disclosure-data", name: "Disclosure Data", icon: FileText, path: "/data/disclosure", status: "normal" },
   { id: "patent-data", name: "Patent Data", icon: FileText, path: "/data/patent", status: "normal" },
   { id: "paper-data", name: "Paper Data", icon: FileText, path: "/data/paper", status: "stopped" },
   { id: "stock-data", name: "Stock Data", icon: TrendingUp, path: "/data/stock", status: "normal" },
   { id: "news-data", name: "News Data", icon: Newspaper, path: "/data/news", status: "error" },
   { id: "finance-data", name: "Finance Data", icon: DollarSign, path: "/data/finance", status: "normal" },
-  { id: "disclosure-data", name: "Disclosure Data", icon: FileText, path: "/data/disclosure", status: "normal" },
   { id: "employment-data", name: "Employment Data", icon: UserCog, path: "/data/employment", status: "stopped" },
 ];
 

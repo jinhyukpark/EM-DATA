@@ -11,7 +11,8 @@ import {
   Columns,
   RefreshCw,
   LayoutGrid,
-  List
+  List,
+  Clock
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";

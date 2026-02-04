@@ -81,16 +81,16 @@ export default function FinanceData() {
   });
 
   const columnLabels: Record<string, string> = {
-    company_nm: "벤처기업 이름",
-    biz_no: "사업자 번호",
-    year: "년도",
-    total_revenue: "매출액",
-    operating_income: "영업손익",
-    net_income: "당기순이익",
-    total_assets: "자산총계",
-    total_liabilities: "부채총계",
-    total_equity: "자본총계",
-    create_date: "생성 날짜",
+    company_nm: "Company Name",
+    biz_no: "Business Number",
+    year: "Year",
+    total_revenue: "Total Revenue",
+    operating_income: "Operating Income",
+    net_income: "Net Income",
+    total_assets: "Total Assets",
+    total_liabilities: "Total Liabilities",
+    total_equity: "Total Equity",
+    create_date: "Created Date",
   };
 
   const toggleColumn = (columnId: string) => {
@@ -664,16 +664,16 @@ export default function FinanceData() {
                 <table className="w-full text-sm text-left">
                   <thead className="bg-slate-50 border-b border-slate-200">
                     <tr>
-                      {visibleColumns.company_nm && <ResizableHeader id="company_nm" label="벤처기업 이름" align="left">{renderColumnConfig('company_nm', '벤처기업 이름')}</ResizableHeader>}
-                      {visibleColumns.biz_no && <ResizableHeader id="biz_no" label="사업자 번호" align="left">{renderColumnConfig('biz_no', '사업자 번호')}</ResizableHeader>}
-                      {visibleColumns.year && <ResizableHeader id="year" label="년도" align="center">{renderColumnConfig('year', '년도')}</ResizableHeader>}
-                      {visibleColumns.total_revenue && <ResizableHeader id="total_revenue" label="매출액" align="right">{renderColumnConfig('total_revenue', '매출액')}</ResizableHeader>}
-                      {visibleColumns.operating_income && <ResizableHeader id="operating_income" label="영업손익" align="right">{renderColumnConfig('operating_income', '영업손익')}</ResizableHeader>}
-                      {visibleColumns.net_income && <ResizableHeader id="net_income" label="당기순이익" align="right">{renderColumnConfig('net_income', '당기순이익')}</ResizableHeader>}
-                      {visibleColumns.total_assets && <ResizableHeader id="total_assets" label="자산총계" align="right">{renderColumnConfig('total_assets', '자산총계')}</ResizableHeader>}
-                      {visibleColumns.total_liabilities && <ResizableHeader id="total_liabilities" label="부채총계" align="right">{renderColumnConfig('total_liabilities', '부채총계')}</ResizableHeader>}
-                      {visibleColumns.total_equity && <ResizableHeader id="total_equity" label="자본총계" align="right">{renderColumnConfig('total_equity', '자본총계')}</ResizableHeader>}
-                      {visibleColumns.create_date && <ResizableHeader id="create_date" label="생성 날짜" align="center">{renderColumnConfig('create_date', '생성 날짜')}</ResizableHeader>}
+                      {visibleColumns.company_nm && <ResizableHeader id="company_nm" label="Company Name" align="left">{renderColumnConfig('company_nm', 'Company Name')}</ResizableHeader>}
+                      {visibleColumns.biz_no && <ResizableHeader id="biz_no" label="Business Number" align="left">{renderColumnConfig('biz_no', 'Business Number')}</ResizableHeader>}
+                      {visibleColumns.year && <ResizableHeader id="year" label="Year" align="center">{renderColumnConfig('year', 'Year')}</ResizableHeader>}
+                      {visibleColumns.total_revenue && <ResizableHeader id="total_revenue" label="Total Revenue" align="right">{renderColumnConfig('total_revenue', 'Total Revenue')}</ResizableHeader>}
+                      {visibleColumns.operating_income && <ResizableHeader id="operating_income" label="Operating Income" align="right">{renderColumnConfig('operating_income', 'Operating Income')}</ResizableHeader>}
+                      {visibleColumns.net_income && <ResizableHeader id="net_income" label="Net Income" align="right">{renderColumnConfig('net_income', 'Net Income')}</ResizableHeader>}
+                      {visibleColumns.total_assets && <ResizableHeader id="total_assets" label="Total Assets" align="right">{renderColumnConfig('total_assets', 'Total Assets')}</ResizableHeader>}
+                      {visibleColumns.total_liabilities && <ResizableHeader id="total_liabilities" label="Total Liabilities" align="right">{renderColumnConfig('total_liabilities', 'Total Liabilities')}</ResizableHeader>}
+                      {visibleColumns.total_equity && <ResizableHeader id="total_equity" label="Total Equity" align="right">{renderColumnConfig('total_equity', 'Total Equity')}</ResizableHeader>}
+                      {visibleColumns.create_date && <ResizableHeader id="create_date" label="Created Date" align="center">{renderColumnConfig('create_date', 'Created Date')}</ResizableHeader>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">

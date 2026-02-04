@@ -44,73 +44,10 @@ const users = [
   { id: 5, name: "David Jung", email: "david.jung@company.com", role: "Viewer", status: "Active", lastLogin: "2025-01-09 10:00" },
 ];
 
-// Types
-type PermissionType = "View" | "Create" | "Edit" | "Delete" | "Export";
-
-interface ModuleConfig {
-  id: string;
-  name: string;
-}
-
-interface Role {
-  id: number;
-  role: string;
-  description: string;
-  users: number;
-  // Map module ID to list of allowed permissions
-  permissions: Record<string, PermissionType[]>;
-}
-
-const modules: ModuleConfig[] = [
-  { id: "qa-report", name: "QA Report" },
-  { id: "company-data", name: "Company Data" },
-  { id: "disclosure-data", name: "Disclosure Data" },
-  { id: "patent-data", name: "Patent Data" },
-  { id: "paper-data", name: "Paper Data" },
-  { id: "stock-data", name: "Stock Data" },
-  { id: "news-data", name: "News Data" },
-  { id: "finance-data", name: "Finance Data" },
-  { id: "employment-data", name: "Employment Data" },
-  { id: "aws", name: "Server (AWS)" },
-  { id: "gcp", name: "Server (GCP)" },
-  { id: "idc", name: "Server (IDC)" },
-];
-
-const permissionTypes: PermissionType[] = ["View", "Create", "Edit", "Delete", "Export"];
-
-// Initial data with updated structure
-const initialRoles: Role[] = [
-  { 
-    id: 1, 
-    role: "Admin", 
-    description: "Full access to all features", 
-    users: 2, 
-    permissions: modules.reduce((acc, mod) => ({
-      ...acc,
-      [mod.id]: permissionTypes // Admin has all permissions for all modules
-    }), {} as Record<string, PermissionType[]>)
-  },
-  { 
-    id: 2, 
-    role: "Editor", 
-    description: "Can view and edit data", 
-    users: 5, 
-    permissions: modules.reduce((acc, mod) => {
-      // Editor permissions logic
-      if (mod.id === "qa-report") return { ...acc, [mod.id]: ["View", "Create", "Edit", "Export"] };
-      return { ...acc, [mod.id]: ["View", "Create", "Edit", "Export"] };
-    }, {} as Record<string, PermissionType[]>)
-  },
-  { 
-    id: 3, 
-    role: "Viewer", 
-    description: "Read-only access", 
-    users: 12, 
-    permissions: modules.reduce((acc, mod) => ({
-      ...acc,
-      [mod.id]: ["View"] // Viewer only has View
-    }), {} as Record<string, PermissionType[]>)
-  },
+const permissions = [
+  { id: 1, role: "Admin", description: "Full access to all features", users: 2, permissions: ["View", "Create", "Edit", "Delete", "Export", "Settings"] },
+  { id: 2, role: "Editor", description: "Can view and edit data", users: 5, permissions: ["View", "Create", "Edit", "Export"] },
+  { id: 3, role: "Viewer", description: "Read-only access", users: 12, permissions: ["View"] },
 ];
 
 const notificationCategories = [
@@ -530,27 +467,24 @@ function UsersTab() {
 }
 
 function PermissionsTab() {
-  const [roles, setRoles] = useState<Role[]>(initialRoles);
+  const [roles, setRoles] = useState(permissions);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [roleModalMode, setRoleModalMode] = useState<"add" | "edit">("add");
   const [roleName, setRoleName] = useState("");
-  // Selected permissions state: Map of ModuleID -> PermissionType[]
-  const [selectedPerms, setSelectedPerms] = useState<Record<string, PermissionType[]>>({});
-  
+  const [selectedPerms, setSelectedPerms] = useState<string[]>([]);
   const [editRoleId, setEditRoleId] = useState<number | null>(null);
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
   const [showDeleteRoleModal, setShowDeleteRoleModal] = useState(false);
   const [deleteRoleId, setDeleteRoleId] = useState<number | null>(null);
   const [deleteRoleName, setDeleteRoleName] = useState(" ");
 
+  const permissionOptions = ["View", "Create", "Edit", "Delete", "Export", "Settings"];
+
   const openAddRole = () => {
     setRoleModalMode("add");
     setEditRoleId(null);
     setRoleName("");
-    // Default: View access to all modules
-    const defaultPerms: Record<string, PermissionType[]> = {};
-    modules.forEach(m => defaultPerms[m.id] = ["View"]);
-    setSelectedPerms(defaultPerms);
+    setSelectedPerms(["View"]);
     setShowRoleModal(true);
   };
 
@@ -570,30 +504,8 @@ function PermissionsTab() {
     setEditRoleId(null);
   };
 
-  const togglePerm = (moduleId: string, perm: PermissionType) => {
-    setSelectedPerms((prev) => {
-      const currentModulePerms = prev[moduleId] || [];
-      const hasPerm = currentModulePerms.includes(perm);
-      
-      let newModulePerms: PermissionType[];
-      if (hasPerm) {
-        newModulePerms = currentModulePerms.filter(p => p !== perm);
-      } else {
-        newModulePerms = [...currentModulePerms, perm];
-      }
-      
-      return {
-        ...prev,
-        [moduleId]: newModulePerms
-      };
-    });
-  };
-
-  const toggleAllInModule = (moduleId: string, check: boolean) => {
-    setSelectedPerms(prev => ({
-      ...prev,
-      [moduleId]: check ? [...permissionTypes] : []
-    }));
+  const togglePerm = (p: string) => {
+    setSelectedPerms((prev) => (prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]));
   };
 
   const saveRole = () => {
@@ -606,7 +518,7 @@ function PermissionsTab() {
           role: roleName.trim() || `Role ${nextId}`,
           description: "Custom role",
           users: 0,
-          permissions: selectedPerms,
+          permissions: selectedPerms.length ? selectedPerms : ["View"],
         },
       ]);
       setShowRoleModal(false);
@@ -620,7 +532,7 @@ function PermissionsTab() {
           ? {
               ...r,
               role: r.role,
-              permissions: selectedPerms,
+              permissions: selectedPerms.length ? selectedPerms : ["View"],
             }
           : r
       )
@@ -652,18 +564,13 @@ function PermissionsTab() {
     setDeleteRoleName("");
   };
 
-  // Helper to count total permissions for summary
-  const getPermissionCount = (perms: Record<string, PermissionType[]>) => {
-    return Object.values(perms).reduce((acc, curr) => acc + curr.length, 0);
-  };
-
   const roleColorClasses: Record<string, string> = {
-    View: "bg-slate-50 text-slate-700 border border-slate-200",
-    Create: "bg-emerald-50 text-emerald-700 border border-emerald-200",
-    Edit: "bg-blue-50 text-blue-700 border border-blue-200",
-    Delete: "bg-red-50 text-red-700 border border-red-200",
-    Export: "bg-amber-50 text-amber-700 border border-amber-200",
-    Settings: "bg-purple-50 text-purple-700 border border-purple-200", // Kept just in case, though unused in matrix now
+    View: "bg-slate-50 text-slate-700 border border-slate-100",
+    Create: "bg-emerald-50 text-emerald-700 border border-emerald-100",
+    Edit: "bg-blue-50 text-blue-700 border border-blue-100",
+    Delete: "bg-red-50 text-red-700 border border-red-100",
+    Export: "bg-amber-50 text-amber-700 border border-amber-100",
+    Settings: "bg-purple-50 text-purple-700 border border-purple-100",
   };
 
   return (
@@ -684,7 +591,7 @@ function PermissionsTab() {
             <div className="flex items-start justify-between px-6 py-5 border-b border-slate-200">
               <div>
                 <h3 className="text-lg font-semibold text-slate-900" data-testid="title-delete-role">Delete Role</h3>
-                <p className="text-sm text-slate-500 mt-1" data-testid="text-delete-role">Are you sure you want to delete this role?</p>
+                <p className="text-sm text-slate-500 mt-1" data-testid="text-delete-role">해당 role을 삭제하시겠습니까?</p>
               </div>
               <button
                 onClick={cancelDeleteRole}
@@ -702,7 +609,7 @@ function PermissionsTab() {
                 </p>
               </div>
               <p className="text-xs text-slate-500 mt-3" data-testid="text-delete-role-warning">
-                This action cannot be undone. Users with this role will need to be reassigned.
+                This action cannot be undone.
               </p>
             </div>
 
@@ -733,16 +640,18 @@ function PermissionsTab() {
             initial={{ opacity: 0, scale: 0.98, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.15 }}
-            className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+            className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 flex-shrink-0">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <div>
                 <h3 className="text-lg font-semibold text-slate-900" data-testid="title-role-modal">
                   {roleModalMode === "add" ? "Add Role" : "Edit Role"}
                 </h3>
                 <p className="text-sm text-slate-500 mt-0.5" data-testid="text-role-modal-hint">
-                  Manage granular permissions for each module.
+                  {roleModalMode === "add"
+                    ? "Name the role and choose permissions."
+                    : "Update permissions for this role."}
                 </p>
               </div>
               <button
@@ -754,8 +663,8 @@ function PermissionsTab() {
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
-              <div className="mb-6">
+            <div className="p-6 space-y-6">
+              <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Role Name</label>
                 {roleModalMode === "add" ? (
                   <Input
@@ -777,63 +686,35 @@ function PermissionsTab() {
 
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <label className="block text-sm font-medium text-slate-700">Module Permissions</label>
+                  <label className="block text-sm font-medium text-slate-700">Permissions</label>
                   <span className="text-xs text-slate-500" data-testid="text-role-perms-count">
-                    {getPermissionCount(selectedPerms)} total permissions
+                    {selectedPerms.length} selected
                   </span>
                 </div>
-                
-                <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm mb-6">
-                  <table className="w-full text-sm text-left">
-                    <thead className="bg-slate-50 border-b border-slate-200">
-                      <tr>
-                        <th className="px-4 py-3 font-medium text-slate-700 w-[200px]">Module</th>
-                        {permissionTypes.map(pt => (
-                          <th key={pt} className="px-2 py-3 font-medium text-slate-700 text-center">{pt}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {modules.map(mod => {
-                        const modPerms = selectedPerms[mod.id] || [];
-                        const allSelected = permissionTypes.every(pt => modPerms.includes(pt));
-                        
-                        return (
-                          <tr key={mod.id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium text-slate-800">{mod.name}</span>
-                              </div>
-                            </td>
-                            {permissionTypes.map(pt => {
-                              const isChecked = modPerms.includes(pt);
-                              // Disable logic: currently simplified to allow all, but you can add logic here if needed
-                              const isDisabled = false; 
-
-                              return (
-                                <td key={pt} className="px-2 py-3 text-center">
-                                  <label className="inline-flex items-center justify-center cursor-pointer p-1">
-                                    <input
-                                      type="checkbox"
-                                      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                                      checked={isChecked}
-                                      onChange={() => togglePerm(mod.id, pt)}
-                                      disabled={isDisabled}
-                                    />
-                                  </label>
-                                </td>
-                              );
-                            })}
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                <div className="flex flex-wrap gap-2" data-testid="wrap-role-perms">
+                  {permissionOptions.map((p) => {
+                    const active = selectedPerms.includes(p);
+                    return (
+                      <button
+                        key={p}
+                        onClick={() => togglePerm(p)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                          active
+                            ? roleColorClasses[p]
+                            : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
+                        }`}
+                        data-testid={`tag-perm-${p}`}
+                        type="button"
+                      >
+                        {p}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50 flex-shrink-0">
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
               <Button
                 variant="outline"
                 className="bg-white text-slate-700 hover:bg-slate-50 border-slate-300 shadow-sm"
@@ -848,7 +729,7 @@ function PermissionsTab() {
                 disabled={roleModalMode === "add" && !roleName.trim()}
                 data-testid="button-save-role-modal"
               >
-                Save Changes
+                Save
               </Button>
             </div>
           </motion.div>
@@ -868,43 +749,43 @@ function PermissionsTab() {
           </Button>
         </div>
         <div className="space-y-4">
-          {roles.map((role) => (
+          {roles.map((perm) => (
             <div
-              key={role.id}
+              key={perm.id}
               className="border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors"
-              data-testid={`permission-${role.id}`}
+              data-testid={`permission-${perm.id}`}
             >
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <div className="flex items-center gap-3">
-                    <h4 className="text-lg font-semibold text-slate-800" data-testid={`text-role-${role.id}`}>{role.role}</h4>
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600" data-testid={`text-role-users-${role.id}`}>
-                      {role.users} users
+                    <h4 className="text-lg font-semibold text-slate-800" data-testid={`text-role-${perm.id}`}>{perm.role}</h4>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600" data-testid={`text-role-users-${perm.id}`}>
+                      {perm.users} users
                     </span>
                   </div>
-                  <p className="text-sm text-slate-500 mt-1" data-testid={`text-role-desc-${role.id}`}>{role.description}</p>
+                  <p className="text-sm text-slate-500 mt-1" data-testid={`text-role-desc-${perm.id}`}>{perm.description}</p>
                 </div>
 
-                {role.role !== "Admin" && (
+                {perm.role !== "Admin" && (
                   <div className="relative">
                     <button
                       className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-                      onClick={() => setMenuOpenId(menuOpenId === role.id ? null : role.id)}
-                      data-testid={`button-role-menu-${role.id}`}
+                      onClick={() => setMenuOpenId(menuOpenId === perm.id ? null : perm.id)}
+                      data-testid={`button-role-menu-${perm.id}`}
                       type="button"
                     >
                       <MoreHorizontal className="w-5 h-5 text-slate-400" />
                     </button>
 
-                    {menuOpenId === role.id && (
+                    {menuOpenId === perm.id && (
                       <div
                         className="absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-10"
-                        data-testid={`menu-role-${role.id}`}
+                        data-testid={`menu-role-${perm.id}`}
                       >
                         <button
                           className="w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center justify-between"
-                          onClick={() => openEditRole(role.id)}
-                          data-testid={`menu-role-edit-${role.id}`}
+                          onClick={() => openEditRole(perm.id)}
+                          data-testid={`menu-role-edit-${perm.id}`}
                           type="button"
                         >
                           Edit
@@ -912,8 +793,8 @@ function PermissionsTab() {
                         </button>
                         <button
                           className="w-full px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center justify-between"
-                          onClick={() => requestDeleteRole(role.id)}
-                          data-testid={`menu-role-delete-${role.id}`}
+                          onClick={() => requestDeleteRole(perm.id)}
+                          data-testid={`menu-role-delete-${perm.id}`}
                           type="button"
                         >
                           Delete
@@ -924,21 +805,16 @@ function PermissionsTab() {
                   </div>
                 )}
               </div>
-              <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 mt-2" data-testid={`wrap-role-tags-${role.id}`}>
-                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-slate-600 text-xs font-medium">
-                    <Server className="w-3.5 h-3.5 text-slate-400" />
-                    {Object.keys(role.permissions).length} modules
-                 </div>
-                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-slate-600 text-xs font-medium">
-                    <Shield className="w-3.5 h-3.5 text-slate-400" />
-                    {getPermissionCount(role.permissions)} permissions
-                 </div>
-                 <button 
-                   onClick={() => openEditRole(role.id)}
-                   className="ml-auto text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-                 >
-                   View Details
-                 </button>
+              <div className="flex flex-wrap gap-2" data-testid={`wrap-role-tags-${perm.id}`}>
+                {perm.permissions.map((p) => (
+                  <span
+                    key={p}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium ${roleColorClasses[p] || "bg-slate-50 text-slate-600 border border-slate-100"}`}
+                    data-testid={`tag-role-${perm.id}-${p}`}
+                  >
+                    {p}
+                  </span>
+                ))}
               </div>
             </div>
           ))}

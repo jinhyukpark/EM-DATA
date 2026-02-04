@@ -22,8 +22,6 @@ export default function Login() {
     }, 1000);
   };
 
-  console.log("test")
-
   return (
     <div className="min-h-screen flex">
       {/* Login Form Section - Left Side */}

@@ -534,270 +534,209 @@ function UsersTab() {
 }
 
 function PermissionsTab() {
-  const [roles, setRoles] = useState(permissions);
+  const [roles, setRoles] = useState<Role[]>(initialRoles);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [roleModalMode, setRoleModalMode] = useState<"add" | "edit">("add");
   const [roleName, setRoleName] = useState("");
-  const [selectedPerms, setSelectedPerms] = useState<string[]>([]);
+  // Selected permissions state: Map of ModuleID -> PermissionType[]
+  const [selectedPerms, setSelectedPerms] = useState<Record<string, PermissionType[]>>({});
+  
   const [editRoleId, setEditRoleId] = useState<number | null>(null);
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
   const [showDeleteRoleModal, setShowDeleteRoleModal] = useState(false);
   const [deleteRoleId, setDeleteRoleId] = useState<number | null>(null);
   const [deleteRoleName, setDeleteRoleName] = useState(" ");
 
-  const permissionOptions = ["View", "Create", "Edit", "Delete", "Export", "Settings"];
-
   const openAddRole = () => {
     setRoleModalMode("add");
-    setEditRoleId(null);
     setRoleName("");
-    setSelectedPerms(["View"]);
+    // Default permissions: View only for all modules
+    const defaults = modules.reduce((acc, mod) => ({
+      ...acc,
+      [mod.id]: ["View"] as PermissionType[]
+    }), {} as Record<string, PermissionType[]>);
+    setSelectedPerms(defaults);
+    setEditRoleId(null);
     setShowRoleModal(true);
   };
 
   const openEditRole = (id: number) => {
-    const r = roles.find((x) => x.id === id);
-    if (!r) return;
+    const role = roles.find((r) => r.id === id);
+    if (!role) return;
     setRoleModalMode("edit");
+    setRoleName(role.role);
+    setSelectedPerms(role.permissions);
     setEditRoleId(id);
-    setRoleName(r.role);
-    setSelectedPerms(r.permissions);
     setShowRoleModal(true);
     setMenuOpenId(null);
   };
 
-  const closeRoleModal = () => {
-    setShowRoleModal(false);
-    setEditRoleId(null);
-  };
+  const handleSaveRole = () => {
+    if (roleName.trim() === "") return;
 
-  const togglePerm = (p: string) => {
-    setSelectedPerms((prev) => (prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]));
-  };
-
-  const saveRole = () => {
     if (roleModalMode === "add") {
-      const nextId = Math.max(...roles.map((r) => r.id)) + 1;
-      setRoles((prev) => [
-        ...prev,
-        {
-          id: nextId,
-          role: roleName.trim() || `Role ${nextId}`,
-          description: "Custom role",
-          users: 0,
-          permissions: selectedPerms.length ? selectedPerms : ["View"],
-        },
-      ]);
-      setShowRoleModal(false);
-      return;
+      const newRole: Role = {
+        id: roles.length > 0 ? Math.max(...roles.map(r => r.id)) + 1 : 1,
+        role: roleName,
+        description: "Custom role",
+        users: 0,
+        permissions: selectedPerms
+      };
+      setRoles([...roles, newRole]);
+    } else if (roleModalMode === "edit" && editRoleId) {
+      setRoles(roles.map(r => r.id === editRoleId ? { ...r, role: roleName, permissions: selectedPerms } : r));
     }
-
-    if (editRoleId == null) return;
-    setRoles((prev) =>
-      prev.map((r) =>
-        r.id === editRoleId
-          ? {
-              ...r,
-              role: r.role,
-              permissions: selectedPerms.length ? selectedPerms : ["View"],
-            }
-          : r
-      )
-    );
     setShowRoleModal(false);
-    setEditRoleId(null);
   };
 
   const requestDeleteRole = (id: number) => {
-    const r = roles.find((x) => x.id === id);
-    if (!r) return;
-    setDeleteRoleId(id);
-    setDeleteRoleName(r.role);
-    setShowDeleteRoleModal(true);
-    setMenuOpenId(null);
+    const role = roles.find(r => r.id === id);
+    if (role) {
+      setDeleteRoleId(id);
+      setDeleteRoleName(role.role);
+      setShowDeleteRoleModal(true);
+      setMenuOpenId(null);
+    }
   };
 
   const confirmDeleteRole = () => {
-    if (deleteRoleId == null) return;
-    setRoles((prev) => prev.filter((r) => r.id !== deleteRoleId));
-    setShowDeleteRoleModal(false);
-    setDeleteRoleId(null);
-    setDeleteRoleName("");
+    if (deleteRoleId) {
+      setRoles(roles.filter(r => r.id !== deleteRoleId));
+      setShowDeleteRoleModal(false);
+      setDeleteRoleId(null);
+    }
   };
 
-  const cancelDeleteRole = () => {
-    setShowDeleteRoleModal(false);
-    setDeleteRoleId(null);
-    setDeleteRoleName("");
+  const togglePermission = (moduleId: string, type: PermissionType) => {
+    setSelectedPerms(prev => {
+      const modulePerms = prev[moduleId] || [];
+      if (modulePerms.includes(type)) {
+        return { ...prev, [moduleId]: modulePerms.filter(p => p !== type) };
+      } else {
+        return { ...prev, [moduleId]: [...modulePerms, type] };
+      }
+    });
   };
 
-  const roleColorClasses: Record<string, string> = {
-    View: "bg-slate-50 text-slate-700 border border-slate-100",
-    Create: "bg-emerald-50 text-emerald-700 border border-emerald-100",
-    Edit: "bg-blue-50 text-blue-700 border border-blue-100",
-    Delete: "bg-red-50 text-red-700 border border-red-100",
-    Export: "bg-amber-50 text-amber-700 border border-amber-100",
-    Settings: "bg-purple-50 text-purple-700 border border-purple-100",
+  const toggleAllInModule = (moduleId: string) => {
+    setSelectedPerms(prev => {
+      const modulePerms = prev[moduleId] || [];
+      if (modulePerms.length === permissionTypes.length) {
+        // Deselect all
+        return { ...prev, [moduleId]: [] };
+      } else {
+        // Select all
+        return { ...prev, [moduleId]: [...permissionTypes] };
+      }
+    });
   };
 
   return (
     <div className="space-y-6">
+      {/* Delete Confirmation Modal */}
       {showDeleteRoleModal && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-          onClick={cancelDeleteRole}
-          data-testid="modal-delete-role"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98, y: 8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.15 }}
-            className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden"
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]" onClick={() => setShowDeleteRoleModal(false)}>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl p-6 w-full max-w-sm shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-start justify-between px-6 py-5 border-b border-slate-200">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900" data-testid="title-delete-role">Delete Role</h3>
-                <p className="text-sm text-slate-500 mt-1" data-testid="text-delete-role">해당 role을 삭제하시겠습니까?</p>
-              </div>
-              <button
-                onClick={cancelDeleteRole}
-                className="p-2 rounded-lg hover:bg-slate-100 text-slate-600"
-                data-testid="button-close-delete-role"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="px-6 py-5">
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4" data-testid="card-delete-role-summary">
-                <p className="text-sm text-slate-700">
-                  Role: <span className="font-semibold" data-testid="text-delete-role-name">{deleteRoleName}</span>
-                </p>
-              </div>
-              <p className="text-xs text-slate-500 mt-3" data-testid="text-delete-role-warning">
-                This action cannot be undone.
-              </p>
-            </div>
-
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
-              <Button
-                variant="outline"
-                className="bg-white text-slate-700 hover:bg-slate-50 border-slate-300 shadow-sm"
-                onClick={cancelDeleteRole}
-                data-testid="button-cancel-delete-role"
-              >
-                Cancel
-              </Button>
-              <Button className="bg-red-600 hover:bg-red-700" onClick={confirmDeleteRole} data-testid="button-confirm-delete-role">
-                Delete
-              </Button>
+            <h3 className="text-lg font-semibold text-slate-800 mb-2">Delete Role</h3>
+            <p className="text-sm text-slate-600 mb-6">
+              Are you sure you want to delete <span className="font-bold">{deleteRoleName}</span> role?
+              This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setShowDeleteRoleModal(false)}>Cancel</Button>
+              <Button variant="destructive" onClick={confirmDeleteRole}>Delete</Button>
             </div>
           </motion.div>
         </div>
       )}
 
+      {/* Role Edit/Add Modal */}
       {showRoleModal && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-          onClick={closeRoleModal}
-          data-testid="modal-role"
-        >
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowRoleModal(false)}>
           <motion.div
-            initial={{ opacity: 0, scale: 0.98, y: 8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.15 }}
-            className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900" data-testid="title-role-modal">
-                  {roleModalMode === "add" ? "Add Role" : "Edit Role"}
-                </h3>
-                <p className="text-sm text-slate-500 mt-0.5" data-testid="text-role-modal-hint">
-                  {roleModalMode === "add"
-                    ? "Name the role and choose permissions."
-                    : "Update permissions for this role."}
-                </p>
-              </div>
-              <button
-                onClick={closeRoleModal}
-                className="p-2 rounded-lg hover:bg-slate-100 text-slate-600"
-                data-testid="button-close-role-modal"
-              >
-                <X className="w-5 h-5" />
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <h3 className="text-lg font-semibold text-slate-900">
+                {roleModalMode === "add" ? "Create New Role" : "Edit Role Permissions"}
+              </h3>
+              <button onClick={() => setShowRoleModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                <X className="w-5 h-5 text-slate-500" />
               </button>
             </div>
-
-            <div className="p-6 space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Role Name</label>
-                {roleModalMode === "add" ? (
-                  <Input
-                    value={roleName}
+            
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Role Name</label>
+                  <Input 
+                    value={roleName} 
                     onChange={(e) => setRoleName(e.target.value)}
-                    placeholder="e.g., QA Lead"
-                    className="border-slate-200"
-                    data-testid="input-role-name"
+                    placeholder="e.g. Content Manager"
+                    className="max-w-md"
                   />
-                ) : (
-                  <div
-                    className="h-10 px-3 border border-slate-200 rounded-lg bg-slate-50 flex items-center"
-                    data-testid="text-role-name-readonly"
-                  >
-                    <span className="text-sm font-medium text-slate-800">{roleName}</span>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <label className="block text-sm font-medium text-slate-700">Permissions</label>
-                  <span className="text-xs text-slate-500" data-testid="text-role-perms-count">
-                    {selectedPerms.length} selected
-                  </span>
                 </div>
-                <div className="flex flex-wrap gap-2" data-testid="wrap-role-perms">
-                  {permissionOptions.map((p) => {
-                    const active = selectedPerms.includes(p);
-                    return (
-                      <button
-                        key={p}
-                        onClick={() => togglePerm(p)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                          active
-                            ? roleColorClasses[p]
-                            : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
-                        }`}
-                        data-testid={`tag-perm-${p}`}
-                        type="button"
-                      >
-                        {p}
-                      </button>
-                    );
-                  })}
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-4">Module Permissions</label>
+                  <div className="border border-slate-200 rounded-xl overflow-hidden">
+                    <table className="w-full text-sm text-left">
+                      <thead className="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                          <th className="px-4 py-3 font-medium text-slate-600">Module</th>
+                          {permissionTypes.map(type => (
+                            <th key={type} className="px-4 py-3 font-medium text-slate-600 text-center w-24">{type}</th>
+                          ))}
+                          <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {modules.map(mod => (
+                          <tr key={mod.id} className="hover:bg-slate-50/50">
+                            <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
+                            {permissionTypes.map(type => {
+                              const isSelected = (selectedPerms[mod.id] || []).includes(type);
+                              return (
+                                <td key={type} className="px-4 py-3 text-center">
+                                  <button
+                                    onClick={() => togglePermission(mod.id, type)}
+                                    className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                      isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                    }`}
+                                  >
+                                    {isSelected && <Check className="w-3 h-3" />}
+                                  </button>
+                                </td>
+                              );
+                            })}
+                            <td className="px-4 py-3 text-center">
+                              <button
+                                onClick={() => toggleAllInModule(mod.id)}
+                                className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                              >
+                                Toggle
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
-              <Button
-                variant="outline"
-                className="bg-white text-slate-700 hover:bg-slate-50 border-slate-300 shadow-sm"
-                onClick={closeRoleModal}
-                data-testid="button-cancel-role-modal"
-              >
-                Cancel
-              </Button>
-              <Button
-                className="bg-blue-600 hover:bg-blue-700"
-                onClick={saveRole}
-                disabled={roleModalMode === "add" && !roleName.trim()}
-                data-testid="button-save-role-modal"
-              >
-                Save
-              </Button>
+            <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setShowRoleModal(false)}>Cancel</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleSaveRole}>Save Role</Button>
             </div>
           </motion.div>
         </div>
@@ -806,11 +745,7 @@ function PermissionsTab() {
       <div className="chart-container-light">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-slate-800">Permission Management</h3>
-          <Button
-            className="gap-2 bg-blue-600 hover:bg-blue-700"
-            onClick={openAddRole}
-            data-testid="add-role"
-          >
+          <Button className="gap-2 bg-blue-600 hover:bg-blue-700" onClick={openAddRole}>
             <Plus className="w-4 h-4" />
             Add Role
           </Button>
@@ -819,14 +754,14 @@ function PermissionsTab() {
           {roles.map((perm) => (
             <div
               key={perm.id}
-              className="border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors"
+              className="border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors bg-white shadow-sm"
               data-testid={`permission-${perm.id}`}
             >
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start justify-between mb-1">
                 <div>
                   <div className="flex items-center gap-3">
                     <h4 className="text-lg font-semibold text-slate-800" data-testid={`text-role-${perm.id}`}>{perm.role}</h4>
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600" data-testid={`text-role-users-${perm.id}`}>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600" data-testid={`text-role-users-${perm.id}`}>
                       {perm.users} users
                     </span>
                   </div>
@@ -872,16 +807,21 @@ function PermissionsTab() {
                   </div>
                 )}
               </div>
-              <div className="flex flex-wrap gap-2" data-testid={`wrap-role-tags-${perm.id}`}>
-                {perm.permissions.map((p) => (
-                  <span
-                    key={p}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium ${roleColorClasses[p] || "bg-slate-50 text-slate-600 border border-slate-100"}`}
-                    data-testid={`tag-role-${perm.id}-${p}`}
-                  >
-                    {p}
-                  </span>
-                ))}
+              <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 mt-3 pt-3 border-t border-slate-50" data-testid={`wrap-role-tags-${perm.id}`}>
+                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-slate-600 text-xs font-medium">
+                    <Server className="w-3.5 h-3.5 text-slate-400" />
+                    {Object.keys(perm.permissions).length} modules
+                 </div>
+                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-slate-600 text-xs font-medium">
+                    <Shield className="w-3.5 h-3.5 text-slate-400" />
+                    {getPermissionCount(perm.permissions)} permissions
+                 </div>
+                 <button 
+                   onClick={() => openEditRole(perm.id)}
+                   className="ml-auto text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                 >
+                   View Details
+                 </button>
               </div>
             </div>
           ))}

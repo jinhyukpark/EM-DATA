@@ -233,9 +233,9 @@ export default function FinanceData() {
       case "venture":
         return [
           { value: "all", label: "All Fields" },
-          { value: "company_nm", label: "벤처기업 이름" },
-          { value: "biz_no", label: "사업자 번호" },
-          { value: "year", label: "년도" },
+          { value: "company_nm", label: "Company Name" },
+          { value: "biz_no", label: "Business Number" },
+          { value: "year", label: "Year" },
         ];
       case "audit":
         return [
@@ -913,53 +913,53 @@ export default function FinanceData() {
                         {activeTab === "venture" && (
                           <>
                             {(visibleColumns["company_nm"] !== false) && (
-                              <ResizableHeader id="company_nm" label="벤처기업 이름">
-                                {renderColumnConfig("company_nm", "벤처기업 이름")}
+                              <ResizableHeader id="company_nm" label="Company Name">
+                                {renderColumnConfig("company_nm", "Company Name")}
                               </ResizableHeader>
                             )}
                             {(visibleColumns["biz_no"] !== false) && (
-                              <ResizableHeader id="biz_no" label="사업자 번호">
-                                {renderColumnConfig("biz_no", "사업자 번호")}
+                              <ResizableHeader id="biz_no" label="Business Number">
+                                {renderColumnConfig("bizNum", "Business Number")}
                               </ResizableHeader>
                             )}
                             {(visibleColumns["year"] !== false) && (
-                              <ResizableHeader id="year" label="년도">
-                                {renderColumnConfig("year", "년도")}
+                              <ResizableHeader id="year" label="Year">
+                                {renderColumnConfig("year", "Year")}
                               </ResizableHeader>
                             )}
                             {(visibleColumns["total_revenue"] !== false) && (
-                              <ResizableHeader id="total_revenue" label="매출액">
-                                {renderColumnConfig("total_revenue", "매출액")}
+                              <ResizableHeader id="total_revenue" label="Total Revenue">
+                                {renderColumnConfig("total_revenue", "Total Revenue")}
                               </ResizableHeader>
                             )}
                             {(visibleColumns["operating_income"] !== false) && (
-                              <ResizableHeader id="operating_income" label="영업손익">
-                                {renderColumnConfig("operating_income", "영업손익")}
+                              <ResizableHeader id="operating_income" label="Operating Income">
+                                {renderColumnConfig("operating_income", "Operating Income")}
                               </ResizableHeader>
                             )}
                             {(visibleColumns["net_income"] !== false) && (
-                              <ResizableHeader id="net_income" label="당기순이익">
-                                {renderColumnConfig("net_income", "당기순이익")}
+                              <ResizableHeader id="net_income" label="Net Income">
+                                {renderColumnConfig("net_income", "Net Income")}
                               </ResizableHeader>
                             )}
                             {(visibleColumns["total_assets"] !== false) && (
-                              <ResizableHeader id="total_assets" label="자산총계">
-                                {renderColumnConfig("total_assets", "자산총계")}
+                              <ResizableHeader id="total_assets" label="Total Assets">
+                                {renderColumnConfig("total_assets", "Total Assets")}
                               </ResizableHeader>
                             )}
                             {(visibleColumns["total_liabilities"] !== false) && (
-                              <ResizableHeader id="total_liabilities" label="부채총계">
-                                {renderColumnConfig("total_liabilities", "부채총계")}
+                              <ResizableHeader id="total_liabilities" label="Total Liabilities">
+                                {renderColumnConfig("total_liabilities", "Total Liabilities")}
                               </ResizableHeader>
                             )}
                             {(visibleColumns["total_equity"] !== false) && (
-                              <ResizableHeader id="total_equity" label="자본총계">
-                                {renderColumnConfig("total_equity", "자본총계")}
+                              <ResizableHeader id="total_equity" label="Total Equity">
+                                {renderColumnConfig("total_equity", "Total Equity")}
                               </ResizableHeader>
                             )}
                             {(visibleColumns["create_date"] !== false) && (
-                              <ResizableHeader id="create_date" label="생성 날짜">
-                                {renderColumnConfig("create_date", "생성 날짜")}
+                              <ResizableHeader id="create_date" label="Create Date">
+                                {renderColumnConfig("create_date", "Create Date")}
                               </ResizableHeader>
                             )}
                           </>

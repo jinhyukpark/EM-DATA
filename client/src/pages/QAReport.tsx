@@ -70,7 +70,33 @@ export default function QAReport() {
     procedureName: "",
   });
   const [testItems, setTestItems] = useState<TestItem[]>([]);
-  const [nextItemId, setNextItemId] = useState(1);
+  const [servicesList, setServicesList] = useState(services);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteName, setDeleteName] = useState("");
+  const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
+
+  const confirmDelete = () => {
+    if (deleteId) {
+      setServicesList(servicesList.filter(s => s.id !== deleteId));
+      setShowDeleteModal(false);
+      setDeleteId(null);
+      setDeleteName("");
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setDeleteId(null);
+    setDeleteName("");
+  };
+
+  const requestDelete = (id: number, name: string) => {
+    setDeleteId(id);
+    setDeleteName(name);
+    setShowDeleteModal(true);
+    setMenuOpenId(null);
+  };
 
   const addTestItem = (type: TestItemType) => {
     setTestItems([...testItems, { id: nextItemId, type, question: "", options: type === "multiple_choice" ? ["", "", "", ""] : undefined }]);
@@ -267,7 +293,7 @@ export default function QAReport() {
                       </tr>
                     </thead>
                     <tbody>
-                      {services.filter(service => {
+                      {servicesList.filter(service => {
                           if (filterTestName && service.testName !== filterTestName) return false;
                           if (filterDateFrom || filterDateTo) {
                             const lastDate = new Date(service.lastInspection);
@@ -354,11 +380,38 @@ export default function QAReport() {
                           </td>
                           <td className="py-4 px-4 text-sm text-slate-600">{service.nextInspection}</td>
                           <td className="py-4 px-4 text-right">
-                            <Link href={`/qa-report/test/${service.id}`}>
-                              <button className="p-2 hover:bg-slate-100 rounded-lg">
+                            <div className="relative">
+                              <button 
+                                className="p-2 hover:bg-slate-100 rounded-lg"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setMenuOpenId(menuOpenId === service.id ? null : service.id);
+                                }}
+                              >
                                 <MoreHorizontal className="w-4 h-4 text-slate-400" />
                               </button>
-                            </Link>
+                              
+                              {menuOpenId === service.id && (
+                                <>
+                                  <div className="fixed inset-0 z-10" onClick={() => setMenuOpenId(null)} />
+                                  <div className="absolute right-0 mt-2 w-32 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-20">
+                                    <Link href={`/qa-report/test/${service.id}`}>
+                                      <button className="w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2 text-left">
+                                        <FileCheck className="w-4 h-4 text-slate-400" />
+                                        Detail
+                                      </button>
+                                    </Link>
+                                    <button 
+                                      className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 text-left"
+                                      onClick={() => requestDelete(service.id, service.testName)}
+                                    >
+                                      <Trash2 className="w-4 h-4 text-red-500" />
+                                      Delete
+                                    </button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -416,6 +469,31 @@ export default function QAReport() {
           </motion.section>
         </main>
       </div>
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={cancelDelete}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                <AlertCircle className="w-6 h-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">Delete Test Procedure</h3>
+              <p className="text-sm text-slate-600 mb-4">
+                Are you sure you want to delete <span className="font-semibold text-slate-900">{deleteName}</span>? This action cannot be undone.
+              </p>
+              <div className="flex items-center justify-end gap-3 mt-6">
+                <Button variant="outline" onClick={cancelDelete}>Cancel</Button>
+                <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={confirmDelete}>Delete</Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={resetModal}>

@@ -1,15 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import React from "react";
 import {
   Search,
-  Filter,
   Download,
-  DollarSign,
   Menu,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Palette,
   Plus,
   Trash2,
@@ -17,9 +12,11 @@ import {
   Columns,
   RefreshCw,
   FileText,
-  Activity,
   TrendingUp,
   Clock,
+  DollarSign,
+  Activity,
+  Building2
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
@@ -62,25 +59,37 @@ type ColumnStyle = {
 
 export default function FinanceData() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("aws");
+  const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [columnStyles, setColumnStyles] = useState<Record<string, ColumnStyle>>({});
   const [showColumnSelector, setShowColumnSelector] = useState(false);
 
   const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({
-    companyName: true,
-    bizNum: true,
+    company_nm: true,
+    biz_no: true,
     year: true,
-    amount: true,
-    status: true,
-    revenue: true,
-    profit: true,
-    funding: true,
-    valuation: true,
-    auditor: true,
-    opinion: true,
+    total_revenue: true,
+    operating_income: true,
+    net_income: true,
+    total_assets: true,
+    total_liabilities: true,
+    total_equity: true,
+    create_date: true,
   });
+
+  const columnLabels: Record<string, string> = {
+    company_nm: "벤처기업 이름",
+    biz_no: "사업자 번호",
+    year: "년도",
+    total_revenue: "매출액",
+    operating_income: "영업손익",
+    net_income: "당기순이익",
+    total_assets: "자산총계",
+    total_liabilities: "부채총계",
+    total_equity: "자본총계",
+    create_date: "생성 날짜",
+  };
 
   const toggleColumn = (columnId: string) => {
     setVisibleColumns(prev => ({
@@ -89,51 +98,19 @@ export default function FinanceData() {
     }));
   };
 
-  // Mock data for different finance categories
-  const financeData = {
-    aws: [
-      { id: 1, companyName: "TechCorp", bizNum: "123-45-67890", year: "2024", amount: "$150,000", status: "Paid" },
-      { id: 2, companyName: "StartUp Inc", bizNum: "222-33-44444", year: "2024", amount: "$45,000", status: "Pending" },
-      { id: 3, companyName: "CloudSolutions", bizNum: "987-65-43210", year: "2023", amount: "$210,000", status: "Paid" },
-      { id: 4, companyName: "DataFlow Systems", bizNum: "456-78-90123", year: "2024", amount: "$89,000", status: "Paid" },
-      { id: 5, companyName: "NetSecure", bizNum: "789-01-23456", year: "2024", amount: "$12,500", status: "Overdue" },
-      { id: 6, companyName: "AppWorks", bizNum: "321-65-49870", year: "2023", amount: "$230,000", status: "Paid" },
-      { id: 7, companyName: "MobileFirst", bizNum: "147-25-83690", year: "2024", amount: "$67,000", status: "Pending" },
-      { id: 8, companyName: "WebScale", bizNum: "963-85-27410", year: "2023", amount: "$180,000", status: "Paid" },
-      { id: 9, companyName: "ComputeNodes", bizNum: "159-35-72846", year: "2024", amount: "$42,000", status: "Pending" },
-      { id: 10, companyName: "StorageBox", bizNum: "753-95-12468", year: "2024", amount: "$15,000", status: "Paid" },
-      { id: 11, companyName: "AI Labs", bizNum: "852-45-63917", year: "2024", amount: "$320,000", status: "Pending" },
-      { id: 12, companyName: "GameServer", bizNum: "951-75-32864", year: "2023", amount: "$56,000", status: "Paid" },
-    ],
-    dart: [
-      { id: 1, companyName: "Samsung Electronics", year: "2024", revenue: "250T KRW", profit: "40T KRW" },
-      { id: 2, companyName: "LG Electronics", year: "2024", revenue: "80T KRW", profit: "3T KRW" },
-      { id: 3, companyName: "SK Hynix", year: "2023", revenue: "30T KRW", profit: "-2T KRW" },
-      { id: 4, companyName: "Hyundai Motor", year: "2024", revenue: "142T KRW", profit: "11T KRW" },
-      { id: 5, companyName: "KIA", year: "2024", revenue: "98T KRW", profit: "8T KRW" },
-      { id: 6, companyName: "POSCO Holdings", year: "2023", revenue: "85T KRW", profit: "4T KRW" },
-      { id: 7, companyName: "NAVER", year: "2024", revenue: "10T KRW", profit: "1.5T KRW" },
-      { id: 8, companyName: "Kakao", year: "2024", revenue: "8T KRW", profit: "0.5T KRW" },
-    ],
-    venture: [
-      { id: 1, companyName: "NextBigThing", bizNum: "555-55-55555", year: "2024", funding: "Series A", valuation: "$10M" },
-      { id: 2, companyName: "GreenEnergy", bizNum: "777-88-99999", year: "2024", funding: "Seed", valuation: "$2M" },
-      { id: 3, companyName: "AI Innovate", bizNum: "111-22-33333", year: "2023", funding: "Series B", valuation: "$50M" },
-      { id: 4, companyName: "BlockChainX", bizNum: "444-55-66666", year: "2024", funding: "Series A", valuation: "$15M" },
-      { id: 5, companyName: "BioHealth", bizNum: "888-99-00000", year: "2024", funding: "Series C", valuation: "$120M" },
-      { id: 6, companyName: "FinTechPro", bizNum: "222-33-44444", year: "2023", funding: "Series B", valuation: "$80M" },
-      { id: 7, companyName: "EdTechSolution", bizNum: "666-77-88888", year: "2024", funding: "Seed", valuation: "$3M" },
-    ],
-    audit: [
-      { id: 1, companyName: "Global Trade", year: "2024", auditor: "PwC", opinion: "Unqualified" },
-      { id: 2, companyName: "Construction Co", year: "2024", auditor: "KPMG", opinion: "Qualified" },
-      { id: 3, companyName: "Retail Giant", year: "2023", auditor: "Deloitte", opinion: "Unqualified" },
-      { id: 4, companyName: "Tech Services", year: "2024", auditor: "EY", opinion: "Unqualified" },
-      { id: 5, companyName: "Food & Bev Inc", year: "2024", auditor: "PwC", opinion: "Adverse" },
-      { id: 6, companyName: "AutoParts Ltd", year: "2023", auditor: "KPMG", opinion: "Unqualified" },
-      { id: 7, companyName: "PharmaGroup", year: "2024", auditor: "Deloitte", opinion: "Disclaimer" },
-    ],
-  };
+  // Mock data for finance records
+  const financeData = [
+    { id: 1, company_nm: "TechCorp", biz_no: "123-45-67890", year: "2024", total_revenue: "15,000,000", operating_income: "2,500,000", net_income: "1,800,000", total_assets: "50,000,000", total_liabilities: "20,000,000", total_equity: "30,000,000", create_date: "2024-01-15" },
+    { id: 2, company_nm: "StartUp Inc", biz_no: "222-33-44444", year: "2024", total_revenue: "5,000,000", operating_income: "-500,000", net_income: "-450,000", total_assets: "8,000,000", total_liabilities: "3,000,000", total_equity: "5,000,000", create_date: "2024-02-10" },
+    { id: 3, company_nm: "CloudSolutions", biz_no: "987-65-43210", year: "2023", total_revenue: "28,000,000", operating_income: "4,200,000", net_income: "3,100,000", total_assets: "80,000,000", total_liabilities: "35,000,000", total_equity: "45,000,000", create_date: "2023-12-20" },
+    { id: 4, company_nm: "DataFlow Systems", biz_no: "456-78-90123", year: "2024", total_revenue: "9,500,000", operating_income: "1,200,000", net_income: "950,000", total_assets: "25,000,000", total_liabilities: "10,000,000", total_equity: "15,000,000", create_date: "2024-03-05" },
+    { id: 5, company_nm: "NetSecure", biz_no: "789-01-23456", year: "2024", total_revenue: "12,500,000", operating_income: "1,800,000", net_income: "1,400,000", total_assets: "40,000,000", total_liabilities: "15,000,000", total_equity: "25,000,000", create_date: "2024-01-25" },
+    { id: 6, company_nm: "AppWorks", biz_no: "321-65-49870", year: "2023", total_revenue: "35,000,000", operating_income: "6,500,000", net_income: "5,200,000", total_assets: "120,000,000", total_liabilities: "40,000,000", total_equity: "80,000,000", create_date: "2023-11-15" },
+    { id: 7, company_nm: "MobileFirst", biz_no: "147-25-83690", year: "2024", total_revenue: "7,800,000", operating_income: "900,000", net_income: "750,000", total_assets: "18,000,000", total_liabilities: "6,000,000", total_equity: "12,000,000", create_date: "2024-04-01" },
+    { id: 8, company_nm: "WebScale", biz_no: "963-85-27410", year: "2023", total_revenue: "22,000,000", operating_income: "3,500,000", net_income: "2,800,000", total_assets: "65,000,000", total_liabilities: "25,000,000", total_equity: "40,000,000", create_date: "2023-10-30" },
+    { id: 9, company_nm: "ComputeNodes", biz_no: "159-35-72846", year: "2024", total_revenue: "4,500,000", operating_income: "-200,000", net_income: "-150,000", total_assets: "12,000,000", total_liabilities: "5,000,000", total_equity: "7,000,000", create_date: "2024-02-28" },
+    { id: 10, company_nm: "StorageBox", biz_no: "753-95-12468", year: "2024", total_revenue: "18,000,000", operating_income: "2,900,000", net_income: "2,200,000", total_assets: "55,000,000", total_liabilities: "22,000,000", total_equity: "33,000,000", create_date: "2024-01-10" },
+  ];
 
   const [searchParams, setSearchParams] = useState({
     searchField: "all",
@@ -144,38 +121,12 @@ export default function FinanceData() {
     setSearchParams(prev => ({ ...prev, [field]: value }));
   };
 
-  const getSearchFields = (tab: string) => {
-    switch (tab) {
-      case "aws":
-        return [
-          { value: "all", label: "All Fields" },
-          { value: "companyName", label: "Company Name" },
-          { value: "bizNum", label: "Business Number" },
-          { value: "year", label: "Year" },
-        ];
-      case "dart":
-        return [
-          { value: "all", label: "All Fields" },
-          { value: "companyName", label: "Company Name" },
-          { value: "year", label: "Year" },
-        ];
-      case "venture":
-        return [
-          { value: "all", label: "All Fields" },
-          { value: "companyName", label: "Company Name" },
-          { value: "bizNum", label: "Business Number" },
-          { value: "year", label: "Year" },
-        ];
-      case "audit":
-        return [
-          { value: "all", label: "All Fields" },
-          { value: "companyName", label: "Company Name" },
-          { value: "year", label: "Year" },
-        ];
-      default:
-        return [{ value: "all", label: "All Fields" }];
-    }
-  };
+  const searchFields = [
+    { value: "all", label: "All Fields" },
+    { value: "company_nm", label: "Company Name" },
+    { value: "biz_no", label: "Business Number" },
+    { value: "year", label: "Year" },
+  ];
 
   const colorOptions = [
     { name: "Default", value: "" },
@@ -193,17 +144,16 @@ export default function FinanceData() {
   ];
 
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({
-    companyName: 200,
-    bizNum: 150,
+    company_nm: 200,
+    biz_no: 150,
     year: 100,
-    amount: 150,
-    status: 120,
-    revenue: 150,
-    profit: 150,
-    funding: 150,
-    valuation: 150,
-    auditor: 150,
-    opinion: 150,
+    total_revenue: 150,
+    operating_income: 150,
+    net_income: 150,
+    total_assets: 150,
+    total_liabilities: 150,
+    total_equity: 150,
+    create_date: 120,
   });
 
   const handleResize = (columnId: string, width: number) => {
@@ -553,20 +503,8 @@ export default function FinanceData() {
     );
   };
 
-  const getApiEndpoint = (tab: string) => {
-    switch (tab) {
-      case "aws": return "/internal/data/finance/aws/list";
-      case "dart": return "/internal/data/finance/dart/list";
-      case "venture": return "/internal/data/finance/venture/list";
-      case "audit": return "/internal/data/finance/audit/list";
-      default: return "";
-    }
-  };
-
-  const currentData = financeData[activeTab as keyof typeof financeData] || [];
-  
   // Filtering
-  const filteredData = currentData.filter((item: any) => {
+  const filteredData = financeData.filter((item: any) => {
     const term = searchParams.searchValue.toLowerCase();
     if (!term) return true;
 
@@ -580,12 +518,10 @@ export default function FinanceData() {
     return String(value).toLowerCase().includes(term);
   });
 
-  // Pagination logic
+  // Pagination
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="h-screen flex bg-slate-50 overflow-hidden">
@@ -614,366 +550,258 @@ export default function FinanceData() {
                   <Menu className="w-5 h-5" />
                 </button>
                 <div className="min-w-0">
-                  <h1 className="text-lg md:text-xl font-semibold tracking-tight text-slate-800 truncate">Finance Data</h1>
-                  <p className="text-xs md:text-sm text-slate-500 mt-0.5 hidden sm:block">Financial data management and tracking</p>
+                  <h1 className="text-lg md:text-xl font-semibold tracking-tight text-slate-800 truncate">Finance Records</h1>
+                  <p className="text-xs md:text-sm text-slate-500 mt-0.5 hidden sm:block">Financial statements and performance records</p>
                 </div>
               </div>
-              <Button variant="outline" size="sm" className="gap-2 border-slate-200 hover:bg-slate-50 text-slate-700" data-testid="export-button">
+              <Button variant="outline" className="gap-2 hidden sm:flex">
                 <Download className="w-4 h-4" />
-                <span className="hidden sm:inline">Export</span>
+                Export
               </Button>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-6 bg-slate-50/50 overflow-y-auto overflow-x-hidden">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-            <div className="mb-4">
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => { setActiveTab("aws"); setCurrentPage(1); }}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    activeTab === "aws"
-                      ? "bg-blue-500 text-white"
-                      : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"
-                  }`}
-                >
-                  AWS Finance
-                </button>
-                <button
-                  onClick={() => { setActiveTab("dart"); setCurrentPage(1); }}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    activeTab === "dart"
-                      ? "bg-blue-500 text-white"
-                      : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"
-                  }`}
-                >
-                  DART Finance
-                </button>
-                <button
-                  onClick={() => { setActiveTab("venture"); setCurrentPage(1); }}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    activeTab === "venture"
-                      ? "bg-blue-500 text-white"
-                      : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"
-                  }`}
-                >
-                  Venture Finance
-                </button>
-                <button
-                  onClick={() => { setActiveTab("audit"); setCurrentPage(1); }}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    activeTab === "audit"
-                      ? "bg-blue-500 text-white"
-                      : "text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-200"
-                  }`}
-                >
-                  Audit Finance
-                </button>
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <div className="flex items-center gap-8 py-4 px-6 bg-white rounded-xl border border-slate-100">
-                <div className="flex items-center gap-3">
-                  <FileText className="w-5 h-5 text-purple-500" />
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto bg-slate-50/50">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="space-y-6">
+            
+            {/* Stats Cards */}
+            <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.05 }} className="mb-6">
+              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 py-4 px-6 bg-white rounded-xl border border-slate-100">
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <FileText className="w-5 h-5 text-blue-500" />
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Total Records</p>
-                    <p className="text-xl font-bold text-slate-800">{filteredData.length * 12}</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">TOTAL RECORDS</p>
+                    <p className="text-xl font-bold text-slate-800">1,250</p>
                   </div>
                 </div>
-                <div className="w-px h-10 bg-slate-200" />
-                <div className="flex items-center gap-3">
-                  <Activity className="w-5 h-5 text-emerald-500" />
+                <div className="hidden sm:block w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <DollarSign className="w-5 h-5 text-emerald-500" />
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Verified</p>
-                    <p className="text-xl font-bold text-emerald-600">{Math.floor(filteredData.length * 8.5)}</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">TOTAL REVENUE</p>
+                    <p className="text-xl font-bold text-emerald-600">$125M</p>
                   </div>
                 </div>
-                <div className="w-px h-10 bg-slate-200" />
-                <div className="flex items-center gap-3">
-                  <TrendingUp className="w-5 h-5 text-blue-500" />
+                <div className="hidden sm:block w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <TrendingUp className="w-5 h-5 text-indigo-500" />
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Monthly Growth</p>
-                    <p className="text-xl font-bold text-blue-600">+12.5%</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">GROWTH (YoY)</p>
+                    <p className="text-xl font-bold text-indigo-600">+15.4%</p>
                   </div>
                 </div>
-                <div className="w-px h-10 bg-slate-200" />
-                <div className="flex items-center gap-3">
-                  <Clock className="w-5 h-5 text-cyan-500" />
+                <div className="hidden sm:block w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <Clock className="w-5 h-5 text-amber-500" />
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wide">Update Cycle</p>
-                    <p className="text-xl font-bold text-slate-800">Daily</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">UPDATE CYCLE</p>
+                    <p className="text-xl font-bold text-slate-800">Quarterly</p>
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.section>
 
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-              <div className="flex items-center justify-between gap-3 p-4 border-b border-slate-100">
-                <div>
-                  <h2 className="text-lg font-semibold text-slate-900">Finance Records</h2>
-                </div>
-                <div className="flex items-center gap-3">
+            {/* Main Content */}
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <h2 className="text-lg font-semibold text-slate-800">Financial Statements</h2>
+                <div className="flex flex-col sm:flex-row gap-3">
                   <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
-                    <select
-                      value={searchParams.searchField}
+                    <select 
+                      value={searchParams.searchField} 
                       onChange={(e) => handleSearchChange("searchField", e.target.value)}
                       className="h-full pl-3 pr-8 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-32 rounded-none appearance-none"
                       style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
                     >
-                      {getSearchFields(activeTab).map(field => (
-                        <option key={field.value} value={field.value}>{field.label}</option>
+                      {searchFields.map(opt => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
                       ))}
                     </select>
                     <div className="relative flex items-center flex-1 h-full min-w-[200px]">
                       <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
                       <Input 
                         placeholder="Search..." 
-                        value={searchParams.searchValue} 
-                        onChange={(e) => handleSearchChange("searchValue", e.target.value)} 
-                        className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none" 
+                        value={searchParams.searchValue}
+                        onChange={(e) => handleSearchChange("searchValue", e.target.value)}
+                        className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none"
                       />
                     </div>
                   </div>
                   <div className="relative">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                         <button
-                          className="flex items-center gap-2 px-3 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
-                        >
-                          <Columns className="w-4 h-4" />
-                          Fields
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-56 p-0 bg-slate-950 border-slate-800" align="end">
-                        <div className="p-3 border-b border-slate-800 bg-slate-900/50">
-                           <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-sm text-slate-100">Columns</h4>
-                            <span className="text-xs text-slate-400">{getSearchFields(activeTab).filter(f => f.value !== 'all').length} fields</span>
-                          </div>
-                        </div>
-                        <div className="p-1.5 space-y-0.5 max-h-[300px] overflow-y-auto custom-scrollbar">
-                          {getSearchFields(activeTab).filter(f => f.value !== 'all').map((field) => (
-                            <div 
-                              key={field.value} 
-                              className="flex items-center gap-2.5 px-2.5 py-2 hover:bg-slate-800/50 rounded-md cursor-pointer transition-colors group" 
-                              onClick={() => toggleColumn(field.value)}
-                            >
-                              <div className={`w-4 h-4 rounded flex items-center justify-center transition-all ${visibleColumns[field.value] !== false ? 'bg-blue-600 shadow-sm shadow-blue-500/20' : 'border-2 border-slate-600 bg-transparent group-hover:border-slate-500'}`}>
-                                {visibleColumns[field.value] !== false && <Check className="w-3 h-3 text-white stroke-[3]" />}
-                              </div>
-                              <span className={`text-sm ${visibleColumns[field.value] !== false ? 'text-slate-200 font-medium' : 'text-slate-400'}`}>{field.label}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
+                    <button
+                      onClick={() => setShowColumnSelector(!showColumnSelector)}
+                      className="flex items-center gap-2 px-3 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
+                    >
+                      <Columns className="w-4 h-4" />
+                      Fields
+                    </button>
+                    {showColumnSelector && (
+                      <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-10 max-h-80 overflow-y-auto">
+                        {Object.entries(columnLabels).map(([key, label]) => (
+                          <button
+                            key={key}
+                            onClick={() => toggleColumn(key)}
+                            className="flex items-center justify-between w-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+                          >
+                            <span>{label}</span>
+                            {visibleColumns[key] && (
+                              <Check className="w-4 h-4 text-blue-500" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
 
               <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-slate-50/50 border-b border-slate-100">
-                      <tr>
-                        {activeTab === "aws" && (
-                          <>
-                            {(visibleColumns["companyName"] !== false) && (
-                              <ResizableHeader id="companyName" label="Company Name">
-                                {renderColumnConfig("companyName", "Company Name")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["bizNum"] !== false) && (
-                              <ResizableHeader id="bizNum" label="Business Number">
-                                {renderColumnConfig("bizNum", "Business Number")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["year"] !== false) && (
-                              <ResizableHeader id="year" label="Year">
-                                {renderColumnConfig("year", "Year")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["amount"] !== false) && (
-                              <ResizableHeader id="amount" label="Amount">
-                                {renderColumnConfig("amount", "Amount")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["status"] !== false) && (
-                              <ResizableHeader id="status" label="Status">
-                                {renderColumnConfig("status", "Status")}
-                              </ResizableHeader>
-                            )}
-                          </>
-                        )}
-                        {activeTab === "dart" && (
-                          <>
-                            {(visibleColumns["companyName"] !== false) && (
-                              <ResizableHeader id="companyName" label="Company Name">
-                                {renderColumnConfig("companyName", "Company Name")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["year"] !== false) && (
-                              <ResizableHeader id="year" label="Year">
-                                {renderColumnConfig("year", "Year")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["revenue"] !== false) && (
-                              <ResizableHeader id="revenue" label="Revenue">
-                                {renderColumnConfig("revenue", "Revenue")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["profit"] !== false) && (
-                              <ResizableHeader id="profit" label="Profit">
-                                {renderColumnConfig("profit", "Profit")}
-                              </ResizableHeader>
-                            )}
-                          </>
-                        )}
-                        {activeTab === "venture" && (
-                          <>
-                            {(visibleColumns["companyName"] !== false) && (
-                              <ResizableHeader id="companyName" label="Company Name">
-                                {renderColumnConfig("companyName", "Company Name")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["bizNum"] !== false) && (
-                              <ResizableHeader id="bizNum" label="Business Number">
-                                {renderColumnConfig("bizNum", "Business Number")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["year"] !== false) && (
-                              <ResizableHeader id="year" label="Year">
-                                {renderColumnConfig("year", "Year")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["funding"] !== false) && (
-                              <ResizableHeader id="funding" label="Funding Stage">
-                                {renderColumnConfig("funding", "Funding Stage")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["valuation"] !== false) && (
-                              <ResizableHeader id="valuation" label="Valuation">
-                                {renderColumnConfig("valuation", "Valuation")}
-                              </ResizableHeader>
-                            )}
-                          </>
-                        )}
-                        {activeTab === "audit" && (
-                          <>
-                            {(visibleColumns["companyName"] !== false) && (
-                              <ResizableHeader id="companyName" label="Company Name">
-                                {renderColumnConfig("companyName", "Company Name")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["year"] !== false) && (
-                              <ResizableHeader id="year" label="Year">
-                                {renderColumnConfig("year", "Year")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["auditor"] !== false) && (
-                              <ResizableHeader id="auditor" label="Auditor">
-                                {renderColumnConfig("auditor", "Auditor")}
-                              </ResizableHeader>
-                            )}
-                            {(visibleColumns["opinion"] !== false) && (
-                              <ResizableHeader id="opinion" label="Opinion">
-                                {renderColumnConfig("opinion", "Opinion")}
-                              </ResizableHeader>
-                            )}
-                          </>
-                        )}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {paginatedData.length > 0 ? (
-                        paginatedData.map((row: any) => (
-                          <tr key={row.id} className="hover:bg-slate-50/50 transition-colors group">
-                            {Object.keys(row).filter(k => k !== 'id' && visibleColumns[k] !== false).map((key) => {
-                               const style = getCellStyle(key, row[key]);
-                               return (
-                                <td 
-                                  key={key} 
-                                  className="px-4 py-3 text-sm text-slate-600 truncate relative"
-                                  style={{ 
-                                    maxWidth: columnWidths[key],
-                                    color: style.color,
-                                    backgroundColor: style.backgroundColor
-                                  }}
-                                >
-                                  {style.isTextOnly && style.rawBgColor && (
-                                     <div 
-                                       className="absolute inset-0 opacity-100 pointer-events-none" 
-                                       style={{ backgroundColor: style.rawBgColor }} 
-                                     />
-                                  )}
-                                  <span className="relative z-10">{row[key]}</span>
-                                </td>
-                               );
-                            })}
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={10} className="px-6 py-12 text-center text-slate-500">
-                            <div className="flex flex-col items-center gap-2">
-                              <Search className="w-8 h-8 text-slate-300" />
-                              <p>No finance data found matching your criteria.</p>
-                            </div>
-                          </td>
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                      {visibleColumns.company_nm && <ResizableHeader id="company_nm" label="벤처기업 이름" align="left">{renderColumnConfig('company_nm', '벤처기업 이름')}</ResizableHeader>}
+                      {visibleColumns.biz_no && <ResizableHeader id="biz_no" label="사업자 번호" align="left">{renderColumnConfig('biz_no', '사업자 번호')}</ResizableHeader>}
+                      {visibleColumns.year && <ResizableHeader id="year" label="년도" align="center">{renderColumnConfig('year', '년도')}</ResizableHeader>}
+                      {visibleColumns.total_revenue && <ResizableHeader id="total_revenue" label="매출액" align="right">{renderColumnConfig('total_revenue', '매출액')}</ResizableHeader>}
+                      {visibleColumns.operating_income && <ResizableHeader id="operating_income" label="영업손익" align="right">{renderColumnConfig('operating_income', '영업손익')}</ResizableHeader>}
+                      {visibleColumns.net_income && <ResizableHeader id="net_income" label="당기순이익" align="right">{renderColumnConfig('net_income', '당기순이익')}</ResizableHeader>}
+                      {visibleColumns.total_assets && <ResizableHeader id="total_assets" label="자산총계" align="right">{renderColumnConfig('total_assets', '자산총계')}</ResizableHeader>}
+                      {visibleColumns.total_liabilities && <ResizableHeader id="total_liabilities" label="부채총계" align="right">{renderColumnConfig('total_liabilities', '부채총계')}</ResizableHeader>}
+                      {visibleColumns.total_equity && <ResizableHeader id="total_equity" label="자본총계" align="right">{renderColumnConfig('total_equity', '자본총계')}</ResizableHeader>}
+                      {visibleColumns.create_date && <ResizableHeader id="create_date" label="생성 날짜" align="center">{renderColumnConfig('create_date', '생성 날짜')}</ResizableHeader>}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {paginatedData.length > 0 ? (
+                      paginatedData.map((item: any) => (
+                        <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                          {visibleColumns.company_nm && (
+                            <td className="px-4 py-3 text-slate-900 font-medium" style={getCellStyle('company_nm', item.company_nm)}>
+                              {item.company_nm}
+                            </td>
+                          )}
+                          {visibleColumns.biz_no && (
+                            <td className="px-4 py-3 text-slate-600 font-mono text-xs" style={getCellStyle('biz_no', item.biz_no)}>
+                              {item.biz_no}
+                            </td>
+                          )}
+                          {visibleColumns.year && (
+                            <td className="px-4 py-3 text-center text-slate-600" style={getCellStyle('year', item.year)}>
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">
+                                {item.year}
+                              </span>
+                            </td>
+                          )}
+                          {visibleColumns.total_revenue && (
+                            <td className="px-4 py-3 text-right text-slate-700 font-mono" style={getCellStyle('total_revenue', item.total_revenue)}>
+                              {item.total_revenue}
+                            </td>
+                          )}
+                          {visibleColumns.operating_income && (
+                            <td className="px-4 py-3 text-right font-mono" style={getCellStyle('operating_income', item.operating_income)}>
+                              <span className={`${String(item.operating_income).startsWith('-') ? 'text-red-600' : 'text-blue-600'}`}>
+                                {item.operating_income}
+                              </span>
+                            </td>
+                          )}
+                          {visibleColumns.net_income && (
+                            <td className="px-4 py-3 text-right font-mono" style={getCellStyle('net_income', item.net_income)}>
+                              <span className={`${String(item.net_income).startsWith('-') ? 'text-red-600' : 'text-emerald-600'}`}>
+                                {item.net_income}
+                              </span>
+                            </td>
+                          )}
+                          {visibleColumns.total_assets && (
+                            <td className="px-4 py-3 text-right text-slate-600 font-mono" style={getCellStyle('total_assets', item.total_assets)}>
+                              {item.total_assets}
+                            </td>
+                          )}
+                          {visibleColumns.total_liabilities && (
+                            <td className="px-4 py-3 text-right text-slate-600 font-mono" style={getCellStyle('total_liabilities', item.total_liabilities)}>
+                              {item.total_liabilities}
+                            </td>
+                          )}
+                          {visibleColumns.total_equity && (
+                            <td className="px-4 py-3 text-right text-slate-600 font-mono" style={getCellStyle('total_equity', item.total_equity)}>
+                              {item.total_equity}
+                            </td>
+                          )}
+                          {visibleColumns.create_date && (
+                            <td className="px-4 py-3 text-center text-slate-500 text-xs" style={getCellStyle('create_date', item.create_date)}>
+                              {item.create_date}
+                            </td>
+                          )}
                         </tr>
-                      )}
-                    </tbody>
-                  </table>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={10} className="px-6 py-8 text-center text-slate-500">
+                          No financial records found matching your criteria.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
 
-              <div className="p-4 border-t border-slate-200 bg-white flex items-center justify-between text-xs text-slate-500">
-                <div>
-                   Showing {((currentPage - 1) * itemsPerPage) + 1} of {filteredData.length} records
+              <div className="p-4 border-t border-slate-200 flex items-center justify-between bg-slate-50">
+                <div className="text-xs text-slate-500">
+                  Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredData.length)} of {filteredData.length} records
                 </div>
                 <div className="flex items-center gap-2">
-                    <span>Show</span>
-                    <Select
-                      value={String(itemsPerPage)}
+                  <div className="flex items-center gap-2 mr-4">
+                    <span className="text-xs text-slate-500">Show</span>
+                    <Select 
+                      value={String(itemsPerPage)} 
                       onValueChange={(val) => {
                         setItemsPerPage(Number(val));
                         setCurrentPage(1);
                       }}
                     >
-                      <SelectTrigger className="w-[60px] h-7 text-xs bg-white border-slate-200">
-                        <SelectValue />
+                      <SelectTrigger className="h-8 w-[70px] text-xs text-slate-700 bg-white border-slate-200">
+                        <SelectValue placeholder={String(itemsPerPage)} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="10">10</SelectItem>
-                        <SelectItem value="20">20</SelectItem>
-                        <SelectItem value="50">50</SelectItem>
-                        <SelectItem value="100">100</SelectItem>
+                        <SelectItem value="10" className="text-slate-700">10</SelectItem>
+                        <SelectItem value="20" className="text-slate-700">20</SelectItem>
+                        <SelectItem value="50" className="text-slate-700">50</SelectItem>
                       </SelectContent>
                     </Select>
-                    <span>per page</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="w-3.5 h-3.5" />
-                  </Button>
-                  <div className="w-7 h-7 flex items-center justify-center bg-slate-900 text-white rounded-lg text-xs font-medium">
-                    {currentPage}
+                    <span className="text-xs text-slate-500">per page</span>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages || totalPages === 0}
-                  >
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Button>
+                  
+                  <div className="flex gap-1">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    <div className="flex items-center px-2">
+                      <span className="text-xs font-medium text-slate-700">
+                        {currentPage}
+                      </span>
+                      <span className="text-xs text-slate-400 mx-1">/</span>
+                      <span className="text-xs text-slate-500">
+                        {totalPages || 1}
+                      </span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages || totalPages === 0}
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

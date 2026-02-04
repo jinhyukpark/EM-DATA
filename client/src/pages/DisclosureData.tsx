@@ -14,52 +14,13 @@ import {
   List,
   Clock,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Check,
+  Palette
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-function StatCard({ item, index }: { item: any, index: number }) {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }} 
-      animate={{ opacity: 1, y: 0 }} 
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group"
-    >
-      <div className={`absolute inset-0 bg-gradient-to-br ${item.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-      
-      <div className="relative z-10">
-        <div className="flex items-start justify-between mb-4">
-          <div className="p-3 rounded-lg" style={{ backgroundColor: `${item.color}15` }}>
-            <item.icon className="w-6 h-6" style={{ color: item.color }} strokeWidth={1.5} />
-          </div>
-          {item.change && (
-            <div className={`flex items-center gap-1 text-sm font-medium ${item.isPositive ? "text-emerald-600" : "text-red-500"}`}>
-              {item.isPositive ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
-              <span>{item.change}</span>
-            </div>
-          )}
-        </div>
-        
-        <h3 className="text-slate-500 text-sm font-medium mb-1">{item.label}</h3>
-        <p className="text-3xl font-semibold tracking-tight text-slate-800 mb-1">{item.value}</p>
-        
-        {item.subValue && (
-           <p className="text-sm text-slate-400 mt-1">{item.subValue}</p>
-        )}
-      </div>
-    </motion.div>
-  );
-}
 
 export default function DisclosureData() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -67,42 +28,29 @@ export default function DisclosureData() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchField, setSearchField] = useState("all");
+  const [showColumnSelector, setShowColumnSelector] = useState(false);
+  
+  const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({
+    corpCode: true,
+    corpName: true,
+    reportNm: true,
+    rceptNo: true,
+    flrNm: true,
+    rceptDt: true,
+  });
 
-  const stats = [
-    { 
-      label: "TOTAL COMPANIES", 
-      value: "1.52M", 
-      icon: FileText, 
-      color: "#3b82f6", 
-      bgGradient: "from-blue-500/15 to-blue-600/5",
-      change: "+12.5%",
-      isPositive: true
-    },
-    { 
-      label: "TODAY", 
-      value: "0", 
-      icon: RefreshCw, 
-      color: "#10b981", 
-      bgGradient: "from-emerald-500/15 to-emerald-600/5",
-      subValue: "Updates received"
-    },
-    { 
-      label: "YESTERDAY", 
-      value: "0", 
-      icon: LayoutGrid, 
-      color: "#6366f1", 
-      bgGradient: "from-indigo-500/15 to-indigo-600/5",
-      subValue: "Updates processed"
-    },
-    { 
-      label: "UPDATE CYCLE", 
-      value: "Daily", 
-      icon: Clock, 
-      color: "#f59e0b", 
-      bgGradient: "from-amber-500/15 to-amber-600/5",
-      subValue: "Next update: 18:00" 
-    }
-  ];
+  const columnLabels: Record<string, string> = {
+    corpCode: "CORP CODE",
+    corpName: "CORP NAME",
+    reportNm: "REPORT NAME",
+    rceptNo: "RECEIPT NO",
+    flrNm: "FILER NAME",
+    rceptDt: "RECEIPT DATE",
+  };
+
+  const toggleColumn = (col: string) => {
+    setVisibleColumns(prev => ({ ...prev, [col]: !prev[col] }));
+  };
 
   // Mock data matching the user's request
   const disclosureData = [
@@ -192,44 +140,95 @@ export default function DisclosureData() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="space-y-6">
             
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {stats.map((stat, index) => (
-                <StatCard key={index} item={stat} index={index} />
-              ))}
-            </div>
+            <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.05 }} className="mb-6">
+              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 py-4 px-6 bg-white rounded-xl border border-slate-100">
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <FileText className="w-5 h-5 text-blue-500" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">TOTAL COMPANIES</p>
+                    <p className="text-xl font-bold text-slate-800">1.52M</p>
+                  </div>
+                </div>
+                <div className="hidden sm:block w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <RefreshCw className="w-5 h-5 text-emerald-500" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">TODAY</p>
+                    <p className="text-xl font-bold text-emerald-600">0</p>
+                  </div>
+                </div>
+                <div className="hidden sm:block w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <LayoutGrid className="w-5 h-5 text-indigo-500" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">YESTERDAY</p>
+                    <p className="text-xl font-bold text-indigo-600">0</p>
+                  </div>
+                </div>
+                <div className="hidden sm:block w-px h-10 bg-slate-200" />
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <Clock className="w-5 h-5 text-amber-500" />
+                  <div>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">UPDATE CYCLE</p>
+                    <p className="text-xl font-bold text-slate-800">Daily</p>
+                  </div>
+                </div>
+              </div>
+            </motion.section>
 
             {/* Main Content */}
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
               <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h2 className="text-lg font-semibold text-slate-800">Disclosure Records</h2>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="flex items-center gap-2">
-                    <Select value={searchField} onValueChange={setSearchField}>
-                      <SelectTrigger className="w-[140px] h-9 text-xs text-slate-700 bg-white border-slate-200">
-                        <SelectValue placeholder="Select field" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {searchOptions.map(opt => (
-                          <SelectItem key={opt.value} value={opt.value} className="text-slate-700">
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <div className="flex items-center h-9 border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
+                    <select 
+                      value={searchField} 
+                      onChange={(e) => setSearchField(e.target.value)}
+                      className="h-full pl-3 pr-8 text-xs bg-slate-50 border-r border-slate-200 text-slate-600 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors w-32 rounded-none appearance-none"
+                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
+                    >
+                      {searchOptions.map(opt => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="relative flex items-center flex-1 h-full min-w-[200px]">
+                      <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
                       <Input 
                         placeholder="Search..." 
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-9 h-9 text-xs w-[200px] text-slate-700 bg-white border-slate-200"
+                        className="pl-9 w-full border-none focus-visible:ring-0 text-sm h-full rounded-none"
                       />
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-2 h-9 text-slate-700 bg-white border-slate-200 hover:bg-slate-50">
-                    <Columns className="w-4 h-4" />
-                    Fields
-                  </Button>
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowColumnSelector(!showColumnSelector)}
+                      className="flex items-center gap-2 px-3 h-9 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
+                    >
+                      <Columns className="w-4 h-4" />
+                      Fields
+                    </button>
+                    {showColumnSelector && (
+                      <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-10">
+                        {Object.entries(columnLabels).map(([key, label]) => (
+                          <button
+                            key={key}
+                            onClick={() => toggleColumn(key)}
+                            className="flex items-center justify-between w-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+                          >
+                            <span>{label}</span>
+                            {visibleColumns[key] && (
+                              <Check className="w-4 h-4 text-blue-500" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -237,24 +236,24 @@ export default function DisclosureData() {
                 <table className="w-full text-sm text-left">
                   <thead className="bg-slate-50 border-b border-slate-200">
                     <tr>
-                      <th className="px-6 py-3 font-medium text-slate-500 uppercase tracking-wider text-xs">CORP CODE</th>
-                      <th className="px-6 py-3 font-medium text-slate-500 uppercase tracking-wider text-xs">CORP NAME</th>
-                      <th className="px-6 py-3 font-medium text-slate-500 uppercase tracking-wider text-xs">REPORT NAME</th>
-                      <th className="px-6 py-3 font-medium text-slate-500 uppercase tracking-wider text-xs">RECEIPT NO</th>
-                      <th className="px-6 py-3 font-medium text-slate-500 uppercase tracking-wider text-xs">FILER NAME</th>
-                      <th className="px-6 py-3 font-medium text-slate-500 uppercase tracking-wider text-xs">RECEIPT DATE</th>
+                      {visibleColumns.corpCode && <th className="px-6 py-3 font-medium text-slate-500 uppercase tracking-wider text-xs">CORP CODE</th>}
+                      {visibleColumns.corpName && <th className="px-6 py-3 font-medium text-slate-500 uppercase tracking-wider text-xs">CORP NAME</th>}
+                      {visibleColumns.reportNm && <th className="px-6 py-3 font-medium text-slate-500 uppercase tracking-wider text-xs">REPORT NAME</th>}
+                      {visibleColumns.rceptNo && <th className="px-6 py-3 font-medium text-slate-500 uppercase tracking-wider text-xs">RECEIPT NO</th>}
+                      {visibleColumns.flrNm && <th className="px-6 py-3 font-medium text-slate-500 uppercase tracking-wider text-xs">FILER NAME</th>}
+                      {visibleColumns.rceptDt && <th className="px-6 py-3 font-medium text-slate-500 uppercase tracking-wider text-xs">RECEIPT DATE</th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {paginatedData.length > 0 ? (
                       paginatedData.map((item) => (
                         <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="px-6 py-4 text-slate-600 font-mono">{item.corpCode}</td>
-                          <td className="px-6 py-4 text-slate-900 font-medium">{item.corpName}</td>
-                          <td className="px-6 py-4 text-slate-600">{item.reportNm}</td>
-                          <td className="px-6 py-4 text-slate-500 font-mono">{item.rceptNo}</td>
-                          <td className="px-6 py-4 text-slate-600">{item.flrNm}</td>
-                          <td className="px-6 py-4 text-slate-500">{item.rceptDt}</td>
+                          {visibleColumns.corpCode && <td className="px-6 py-4 text-slate-600 font-mono">{item.corpCode}</td>}
+                          {visibleColumns.corpName && <td className="px-6 py-4 text-slate-900 font-medium">{item.corpName}</td>}
+                          {visibleColumns.reportNm && <td className="px-6 py-4 text-slate-600">{item.reportNm}</td>}
+                          {visibleColumns.rceptNo && <td className="px-6 py-4 text-slate-500 font-mono">{item.rceptNo}</td>}
+                          {visibleColumns.flrNm && <td className="px-6 py-4 text-slate-600">{item.flrNm}</td>}
+                          {visibleColumns.rceptDt && <td className="px-6 py-4 text-slate-500">{item.rceptDt}</td>}
                         </tr>
                       ))
                     ) : (

@@ -16,7 +16,9 @@ import {
   Clock,
   DollarSign,
   Activity,
-  Building2
+  Building2,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";

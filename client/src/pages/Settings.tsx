@@ -924,16 +924,18 @@ function PermissionsTab() {
                   </div>
                 )}
               </div>
-              <div className="flex flex-wrap gap-2 text-sm text-slate-600" data-testid={`wrap-role-tags-${role.id}`}>
-                 <span className="bg-slate-50 px-3 py-1 rounded-md border border-slate-200">
-                    {Object.keys(role.permissions).length} modules configured
-                 </span>
-                 <span className="bg-slate-50 px-3 py-1 rounded-md border border-slate-200">
-                    {getPermissionCount(role.permissions)} data permissions
-                 </span>
+              <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 mt-2" data-testid={`wrap-role-tags-${role.id}`}>
+                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-slate-600 text-xs font-medium">
+                    <Server className="w-3.5 h-3.5 text-slate-400" />
+                    {Object.keys(role.permissions).length} modules
+                 </div>
+                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-slate-600 text-xs font-medium">
+                    <Shield className="w-3.5 h-3.5 text-slate-400" />
+                    {getPermissionCount(role.permissions)} permissions
+                 </div>
                  <button 
                    onClick={() => openEditRole(role.id)}
-                   className="text-blue-600 hover:text-blue-700 hover:underline px-2 font-medium text-xs"
+                   className="ml-auto text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
                  >
                    View Details
                  </button>

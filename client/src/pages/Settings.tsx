@@ -52,12 +52,6 @@ interface ModuleConfig {
   name: string;
 }
 
-interface SettingsPermissions {
-  userManagement: boolean;
-  permissionManagement: boolean;
-  emailNotifications: boolean;
-}
-
 interface Role {
   id: number;
   role: string;
@@ -65,7 +59,6 @@ interface Role {
   users: number;
   // Map module ID to list of allowed permissions
   permissions: Record<string, PermissionType[]>;
-  settingsPermissions: SettingsPermissions;
 }
 
 const modules: ModuleConfig[] = [
@@ -95,12 +88,7 @@ const initialRoles: Role[] = [
     permissions: modules.reduce((acc, mod) => ({
       ...acc,
       [mod.id]: permissionTypes // Admin has all permissions for all modules
-    }), {} as Record<string, PermissionType[]>),
-    settingsPermissions: {
-      userManagement: true,
-      permissionManagement: true,
-      emailNotifications: true
-    }
+    }), {} as Record<string, PermissionType[]>)
   },
   { 
     id: 2, 
@@ -111,12 +99,7 @@ const initialRoles: Role[] = [
       // Editor permissions logic
       if (mod.id === "qa-report") return { ...acc, [mod.id]: ["View", "Create", "Edit", "Export"] };
       return { ...acc, [mod.id]: ["View", "Create", "Edit", "Export"] };
-    }, {} as Record<string, PermissionType[]>),
-    settingsPermissions: {
-      userManagement: false,
-      permissionManagement: false,
-      emailNotifications: false
-    }
+    }, {} as Record<string, PermissionType[]>)
   },
   { 
     id: 3, 
@@ -126,12 +109,7 @@ const initialRoles: Role[] = [
     permissions: modules.reduce((acc, mod) => ({
       ...acc,
       [mod.id]: ["View"] // Viewer only has View
-    }), {} as Record<string, PermissionType[]>),
-    settingsPermissions: {
-      userManagement: false,
-      permissionManagement: false,
-      emailNotifications: false
-    }
+    }), {} as Record<string, PermissionType[]>)
   },
 ];
 
@@ -558,11 +536,6 @@ function PermissionsTab() {
   const [roleName, setRoleName] = useState("");
   // Selected permissions state: Map of ModuleID -> PermissionType[]
   const [selectedPerms, setSelectedPerms] = useState<Record<string, PermissionType[]>>({});
-  const [selectedSettingsPerms, setSelectedSettingsPerms] = useState<SettingsPermissions>({
-    userManagement: false,
-    permissionManagement: false,
-    emailNotifications: false
-  });
   
   const [editRoleId, setEditRoleId] = useState<number | null>(null);
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
@@ -578,11 +551,6 @@ function PermissionsTab() {
     const defaultPerms: Record<string, PermissionType[]> = {};
     modules.forEach(m => defaultPerms[m.id] = ["View"]);
     setSelectedPerms(defaultPerms);
-    setSelectedSettingsPerms({
-      userManagement: false,
-      permissionManagement: false,
-      emailNotifications: false
-    });
     setShowRoleModal(true);
   };
 
@@ -593,7 +561,6 @@ function PermissionsTab() {
     setEditRoleId(id);
     setRoleName(r.role);
     setSelectedPerms(r.permissions);
-    setSelectedSettingsPerms(r.settingsPermissions);
     setShowRoleModal(true);
     setMenuOpenId(null);
   };
@@ -622,13 +589,6 @@ function PermissionsTab() {
     });
   };
 
-  const toggleSettingsPerm = (key: keyof SettingsPermissions) => {
-    setSelectedSettingsPerms(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
-  };
-
   const toggleAllInModule = (moduleId: string, check: boolean) => {
     setSelectedPerms(prev => ({
       ...prev,
@@ -647,7 +607,6 @@ function PermissionsTab() {
           description: "Custom role",
           users: 0,
           permissions: selectedPerms,
-          settingsPermissions: selectedSettingsPerms,
         },
       ]);
       setShowRoleModal(false);
@@ -662,7 +621,6 @@ function PermissionsTab() {
               ...r,
               role: r.role,
               permissions: selectedPerms,
-              settingsPermissions: selectedSettingsPerms,
             }
           : r
       )
@@ -872,55 +830,6 @@ function PermissionsTab() {
                     </tbody>
                   </table>
                 </div>
-
-                <div className="mb-3">
-                   <h4 className="text-sm font-medium text-slate-700 mb-3">Settings Access</h4>
-                   <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
-                      <table className="w-full text-sm text-left">
-                        <thead className="bg-slate-50 border-b border-slate-200">
-                           <tr>
-                              <th className="px-4 py-3 font-medium text-slate-700 text-center border-r border-slate-100 last:border-r-0">User Management</th>
-                              <th className="px-4 py-3 font-medium text-slate-700 text-center border-r border-slate-100 last:border-r-0">Permission Management</th>
-                              <th className="px-4 py-3 font-medium text-slate-700 text-center border-r border-slate-100 last:border-r-0">Email Notifications</th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                           <tr>
-                              <td className="p-4 text-center border-r border-slate-100 last:border-r-0">
-                                 <label className="inline-flex items-center justify-center cursor-pointer p-1">
-                                    <input
-                                      type="checkbox"
-                                      className="w-5 h-5 rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                                      checked={selectedSettingsPerms.userManagement}
-                                      onChange={() => toggleSettingsPerm("userManagement")}
-                                    />
-                                 </label>
-                              </td>
-                              <td className="p-4 text-center border-r border-slate-100 last:border-r-0">
-                                 <label className="inline-flex items-center justify-center cursor-pointer p-1">
-                                    <input
-                                      type="checkbox"
-                                      className="w-5 h-5 rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                                      checked={selectedSettingsPerms.permissionManagement}
-                                      onChange={() => toggleSettingsPerm("permissionManagement")}
-                                    />
-                                 </label>
-                              </td>
-                              <td className="p-4 text-center border-r border-slate-100 last:border-r-0">
-                                 <label className="inline-flex items-center justify-center cursor-pointer p-1">
-                                    <input
-                                      type="checkbox"
-                                      className="w-5 h-5 rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                                      checked={selectedSettingsPerms.emailNotifications}
-                                      onChange={() => toggleSettingsPerm("emailNotifications")}
-                                    />
-                                 </label>
-                              </td>
-                           </tr>
-                        </tbody>
-                      </table>
-                   </div>
-                </div>
               </div>
             </div>
 
@@ -1022,15 +931,6 @@ function PermissionsTab() {
                  <span className="bg-slate-50 px-3 py-1 rounded-md border border-slate-200">
                     {getPermissionCount(role.permissions)} data permissions
                  </span>
-                 {role.settingsPermissions.userManagement && (
-                    <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-md border border-purple-200 text-xs font-medium">User Mgmt</span>
-                 )}
-                 {role.settingsPermissions.permissionManagement && (
-                    <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-md border border-purple-200 text-xs font-medium">Perm Mgmt</span>
-                 )}
-                 {role.settingsPermissions.emailNotifications && (
-                    <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-md border border-purple-200 text-xs font-medium">Email Notif</span>
-                 )}
                  <button 
                    onClick={() => openEditRole(role.id)}
                    className="text-blue-600 hover:text-blue-700 hover:underline px-2 font-medium text-xs"

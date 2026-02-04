@@ -69,9 +69,17 @@ export default function FinanceData() {
   const [showColumnSelector, setShowColumnSelector] = useState(false);
 
   const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({
-    companyName: true,
-    bizNum: true,
+    company_nm: true,
+    biz_no: true,
     year: true,
+    total_revenue: true,
+    operating_income: true,
+    net_income: true,
+    total_assets: true,
+    total_liabilities: true,
+    total_equity: true,
+    create_date: true,
+    // Keep AWS fields for now as they might be used in other tabs or just in case
     amount: true,
     status: true,
     revenue: true,
@@ -94,44 +102,107 @@ export default function FinanceData() {
     aws: [
       { id: 1, companyName: "TechCorp", bizNum: "123-45-67890", year: "2024", amount: "$150,000", status: "Paid" },
       { id: 2, companyName: "StartUp Inc", bizNum: "222-33-44444", year: "2024", amount: "$45,000", status: "Pending" },
-      { id: 3, companyName: "CloudSolutions", bizNum: "987-65-43210", year: "2023", amount: "$210,000", status: "Paid" },
-      { id: 4, companyName: "DataFlow Systems", bizNum: "456-78-90123", year: "2024", amount: "$89,000", status: "Paid" },
-      { id: 5, companyName: "NetSecure", bizNum: "789-01-23456", year: "2024", amount: "$12,500", status: "Overdue" },
-      { id: 6, companyName: "AppWorks", bizNum: "321-65-49870", year: "2023", amount: "$230,000", status: "Paid" },
-      { id: 7, companyName: "MobileFirst", bizNum: "147-25-83690", year: "2024", amount: "$67,000", status: "Pending" },
-      { id: 8, companyName: "WebScale", bizNum: "963-85-27410", year: "2023", amount: "$180,000", status: "Paid" },
-      { id: 9, companyName: "ComputeNodes", bizNum: "159-35-72846", year: "2024", amount: "$42,000", status: "Pending" },
-      { id: 10, companyName: "StorageBox", bizNum: "753-95-12468", year: "2024", amount: "$15,000", status: "Paid" },
-      { id: 11, companyName: "AI Labs", bizNum: "852-45-63917", year: "2024", amount: "$320,000", status: "Pending" },
-      { id: 12, companyName: "GameServer", bizNum: "951-75-32864", year: "2023", amount: "$56,000", status: "Paid" },
     ],
     dart: [
       { id: 1, companyName: "Samsung Electronics", year: "2024", revenue: "250T KRW", profit: "40T KRW" },
       { id: 2, companyName: "LG Electronics", year: "2024", revenue: "80T KRW", profit: "3T KRW" },
-      { id: 3, companyName: "SK Hynix", year: "2023", revenue: "30T KRW", profit: "-2T KRW" },
-      { id: 4, companyName: "Hyundai Motor", year: "2024", revenue: "142T KRW", profit: "11T KRW" },
-      { id: 5, companyName: "KIA", year: "2024", revenue: "98T KRW", profit: "8T KRW" },
-      { id: 6, companyName: "POSCO Holdings", year: "2023", revenue: "85T KRW", profit: "4T KRW" },
-      { id: 7, companyName: "NAVER", year: "2024", revenue: "10T KRW", profit: "1.5T KRW" },
-      { id: 8, companyName: "Kakao", year: "2024", revenue: "8T KRW", profit: "0.5T KRW" },
     ],
     venture: [
-      { id: 1, companyName: "NextBigThing", bizNum: "555-55-55555", year: "2024", funding: "Series A", valuation: "$10M" },
-      { id: 2, companyName: "GreenEnergy", bizNum: "777-88-99999", year: "2024", funding: "Seed", valuation: "$2M" },
-      { id: 3, companyName: "AI Innovate", bizNum: "111-22-33333", year: "2023", funding: "Series B", valuation: "$50M" },
-      { id: 4, companyName: "BlockChainX", bizNum: "444-55-66666", year: "2024", funding: "Series A", valuation: "$15M" },
-      { id: 5, companyName: "BioHealth", bizNum: "888-99-00000", year: "2024", funding: "Series C", valuation: "$120M" },
-      { id: 6, companyName: "FinTechPro", bizNum: "222-33-44444", year: "2023", funding: "Series B", valuation: "$80M" },
-      { id: 7, companyName: "EdTechSolution", bizNum: "666-77-88888", year: "2024", funding: "Seed", valuation: "$3M" },
+      { 
+        id: 1, 
+        company_nm: "NextBigThing", 
+        biz_no: "555-55-55555", 
+        year: "2024", 
+        total_revenue: "10,000", 
+        operating_income: "1,500", 
+        net_income: "1,200", 
+        total_assets: "50,000", 
+        total_liabilities: "20,000", 
+        total_equity: "30,000", 
+        create_date: "2024-01-15" 
+      },
+      { 
+        id: 2, 
+        company_nm: "GreenEnergy", 
+        biz_no: "777-88-99999", 
+        year: "2024", 
+        total_revenue: "5,000", 
+        operating_income: "-500", 
+        net_income: "-400", 
+        total_assets: "15,000", 
+        total_liabilities: "5,000", 
+        total_equity: "10,000", 
+        create_date: "2024-02-20" 
+      },
+      { 
+        id: 3, 
+        company_nm: "AI Innovate", 
+        biz_no: "111-22-33333", 
+        year: "2023", 
+        total_revenue: "25,000", 
+        operating_income: "5,000", 
+        net_income: "4,200", 
+        total_assets: "100,000", 
+        total_liabilities: "40,000", 
+        total_equity: "60,000", 
+        create_date: "2023-11-10" 
+      },
+      { 
+        id: 4, 
+        company_nm: "BlockChainX", 
+        biz_no: "444-55-66666", 
+        year: "2024", 
+        total_revenue: "8,000", 
+        operating_income: "1,000", 
+        net_income: "800", 
+        total_assets: "30,000", 
+        total_liabilities: "10,000", 
+        total_equity: "20,000", 
+        create_date: "2024-03-05" 
+      },
+      { 
+        id: 5, 
+        company_nm: "BioHealth", 
+        biz_no: "888-99-00000", 
+        year: "2024", 
+        total_revenue: "45,000", 
+        operating_income: "8,000", 
+        net_income: "6,500", 
+        total_assets: "200,000", 
+        total_liabilities: "50,000", 
+        total_equity: "150,000", 
+        create_date: "2024-01-30" 
+      },
+      { 
+        id: 6, 
+        company_nm: "FinTechPro", 
+        biz_no: "222-33-44444", 
+        year: "2023", 
+        total_revenue: "12,000", 
+        operating_income: "2,500", 
+        net_income: "2,000", 
+        total_assets: "60,000", 
+        total_liabilities: "25,000", 
+        total_equity: "35,000", 
+        create_date: "2023-12-15" 
+      },
+      { 
+        id: 7, 
+        company_nm: "EdTechSolution", 
+        biz_no: "666-77-88888", 
+        year: "2024", 
+        total_revenue: "3,000", 
+        operating_income: "-200", 
+        net_income: "-150", 
+        total_assets: "8,000", 
+        total_liabilities: "2,000", 
+        total_equity: "6,000", 
+        create_date: "2024-04-01" 
+      },
     ],
     audit: [
       { id: 1, companyName: "Global Trade", year: "2024", auditor: "PwC", opinion: "Unqualified" },
       { id: 2, companyName: "Construction Co", year: "2024", auditor: "KPMG", opinion: "Qualified" },
-      { id: 3, companyName: "Retail Giant", year: "2023", auditor: "Deloitte", opinion: "Unqualified" },
-      { id: 4, companyName: "Tech Services", year: "2024", auditor: "EY", opinion: "Unqualified" },
-      { id: 5, companyName: "Food & Bev Inc", year: "2024", auditor: "PwC", opinion: "Adverse" },
-      { id: 6, companyName: "AutoParts Ltd", year: "2023", auditor: "KPMG", opinion: "Unqualified" },
-      { id: 7, companyName: "PharmaGroup", year: "2024", auditor: "Deloitte", opinion: "Disclaimer" },
     ],
   };
 
@@ -162,9 +233,9 @@ export default function FinanceData() {
       case "venture":
         return [
           { value: "all", label: "All Fields" },
-          { value: "companyName", label: "Company Name" },
-          { value: "bizNum", label: "Business Number" },
-          { value: "year", label: "Year" },
+          { value: "company_nm", label: "벤처기업 이름" },
+          { value: "biz_no", label: "사업자 번호" },
+          { value: "year", label: "년도" },
         ];
       case "audit":
         return [
@@ -204,6 +275,15 @@ export default function FinanceData() {
     valuation: 150,
     auditor: 150,
     opinion: 150,
+    company_nm: 200,
+    biz_no: 150,
+    total_revenue: 150,
+    operating_income: 150,
+    net_income: 150,
+    total_assets: 150,
+    total_liabilities: 150,
+    total_equity: 150,
+    create_date: 120,
   });
 
   const handleResize = (columnId: string, width: number) => {
@@ -832,29 +912,54 @@ export default function FinanceData() {
                         )}
                         {activeTab === "venture" && (
                           <>
-                            {(visibleColumns["companyName"] !== false) && (
-                              <ResizableHeader id="companyName" label="Company Name">
-                                {renderColumnConfig("companyName", "Company Name")}
+                            {(visibleColumns["company_nm"] !== false) && (
+                              <ResizableHeader id="company_nm" label="벤처기업 이름">
+                                {renderColumnConfig("company_nm", "벤처기업 이름")}
                               </ResizableHeader>
                             )}
-                            {(visibleColumns["bizNum"] !== false) && (
-                              <ResizableHeader id="bizNum" label="Business Number">
-                                {renderColumnConfig("bizNum", "Business Number")}
+                            {(visibleColumns["biz_no"] !== false) && (
+                              <ResizableHeader id="biz_no" label="사업자 번호">
+                                {renderColumnConfig("biz_no", "사업자 번호")}
                               </ResizableHeader>
                             )}
                             {(visibleColumns["year"] !== false) && (
-                              <ResizableHeader id="year" label="Year">
-                                {renderColumnConfig("year", "Year")}
+                              <ResizableHeader id="year" label="년도">
+                                {renderColumnConfig("year", "년도")}
                               </ResizableHeader>
                             )}
-                            {(visibleColumns["funding"] !== false) && (
-                              <ResizableHeader id="funding" label="Funding Stage">
-                                {renderColumnConfig("funding", "Funding Stage")}
+                            {(visibleColumns["total_revenue"] !== false) && (
+                              <ResizableHeader id="total_revenue" label="매출액">
+                                {renderColumnConfig("total_revenue", "매출액")}
                               </ResizableHeader>
                             )}
-                            {(visibleColumns["valuation"] !== false) && (
-                              <ResizableHeader id="valuation" label="Valuation">
-                                {renderColumnConfig("valuation", "Valuation")}
+                            {(visibleColumns["operating_income"] !== false) && (
+                              <ResizableHeader id="operating_income" label="영업손익">
+                                {renderColumnConfig("operating_income", "영업손익")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["net_income"] !== false) && (
+                              <ResizableHeader id="net_income" label="당기순이익">
+                                {renderColumnConfig("net_income", "당기순이익")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["total_assets"] !== false) && (
+                              <ResizableHeader id="total_assets" label="자산총계">
+                                {renderColumnConfig("total_assets", "자산총계")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["total_liabilities"] !== false) && (
+                              <ResizableHeader id="total_liabilities" label="부채총계">
+                                {renderColumnConfig("total_liabilities", "부채총계")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["total_equity"] !== false) && (
+                              <ResizableHeader id="total_equity" label="자본총계">
+                                {renderColumnConfig("total_equity", "자본총계")}
+                              </ResizableHeader>
+                            )}
+                            {(visibleColumns["create_date"] !== false) && (
+                              <ResizableHeader id="create_date" label="생성 날짜">
+                                {renderColumnConfig("create_date", "생성 날짜")}
                               </ResizableHeader>
                             )}
                           </>

@@ -18,6 +18,7 @@ import NewsData from "@/pages/NewsData";
 import FinanceData from "@/pages/FinanceData";
 import EmploymentData from "@/pages/EmploymentData";
 import PaperData from "@/pages/PaperData";
+import DisclosureData from "@/pages/DisclosureData";
 import AddTestProcedure from "@/pages/AddTestProcedure";
 import TestDetail from "@/pages/TestDetail";
 
@@ -33,6 +34,7 @@ function AppRouter() {
         <Route path="/data/company" component={CompanyData} />
         <Route path="/data/patent" component={PatentData} />
         <Route path="/data/paper" component={PaperData} />
+        <Route path="/data/disclosure" component={DisclosureData} />
         <Route path="/data/stock" component={StockData} />
         <Route path="/data/news" component={NewsData} />
         <Route path="/data/finance" component={FinanceData} />

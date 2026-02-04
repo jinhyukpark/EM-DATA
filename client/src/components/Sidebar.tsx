@@ -24,6 +24,7 @@ const menuItems = [
 
 const dataMenuItems = [
   { id: "company-data", name: "Company Data", icon: Building2, path: "/data/company", status: "normal" },
+  { id: "disclosure-data", name: "Disclosure Data", icon: FileText, path: "/data/disclosure", status: "normal" },
   { id: "patent-data", name: "Patent Data", icon: FileText, path: "/data/patent", status: "normal" },
   { id: "paper-data", name: "Paper Data", icon: FileText, path: "/data/paper", status: "stopped" },
   { id: "stock-data", name: "Stock Data", icon: TrendingUp, path: "/data/stock", status: "normal" },

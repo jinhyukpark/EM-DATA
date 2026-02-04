@@ -43,11 +43,55 @@ const testProcedures = [
 ];
 
 const inspectors = [
-  { id: 1, name: "John Kim", role: "Senior Engineer", avatar: "JK", assignedTests: ["Data Integrity Check", "Data Accuracy Test"], schedule: "Mon, Wed, Fri 09:00-12:00" },
-  { id: 2, name: "Sarah Lee", role: "QA Lead", avatar: "SL", assignedTests: ["API Response Validation", "Data Integrity Check"], schedule: "Tue, Thu 10:00-15:00" },
-  { id: 3, name: "Mike Park", role: "DevOps Engineer", avatar: "MP", assignedTests: ["Performance Benchmark"], schedule: "Mon-Fri 14:00-18:00" },
-  { id: 4, name: "Emily Choi", role: "Data Engineer", avatar: "EC", assignedTests: ["Security Audit", "Performance Benchmark"], schedule: "Wed, Fri 09:00-17:00" },
-  { id: 5, name: "David Jung", role: "Backend Developer", avatar: "DJ", assignedTests: ["Data Accuracy Test", "Performance Benchmark"], schedule: "Mon, Tue 10:00-14:00" },
+  { 
+    id: 1, 
+    name: "John Kim", 
+    role: "Senior Engineer", 
+    avatar: "JK", 
+    assignedTests: [
+      { name: "Data Integrity Check", schedule: "Mon, Wed, Fri 09:00-12:00" },
+      { name: "Data Accuracy Test", schedule: "Tue, Thu 14:00-16:00" }
+    ]
+  },
+  { 
+    id: 2, 
+    name: "Sarah Lee", 
+    role: "QA Lead", 
+    avatar: "SL", 
+    assignedTests: [
+      { name: "API Response Validation", schedule: "Tue, Thu 10:00-15:00" },
+      { name: "Data Integrity Check", schedule: "Mon, Fri 13:00-16:00" }
+    ]
+  },
+  { 
+    id: 3, 
+    name: "Mike Park", 
+    role: "DevOps Engineer", 
+    avatar: "MP", 
+    assignedTests: [
+      { name: "Performance Benchmark", schedule: "Mon-Fri 14:00-18:00" }
+    ]
+  },
+  { 
+    id: 4, 
+    name: "Emily Choi", 
+    role: "Data Engineer", 
+    avatar: "EC", 
+    assignedTests: [
+      { name: "Security Audit", schedule: "Wed, Fri 09:00-12:00" },
+      { name: "Performance Benchmark", schedule: "Mon, Tue 13:00-17:00" }
+    ]
+  },
+  { 
+    id: 5, 
+    name: "David Jung", 
+    role: "Backend Developer", 
+    avatar: "DJ", 
+    assignedTests: [
+      { name: "Data Accuracy Test", schedule: "Mon, Tue 10:00-14:00" },
+      { name: "Performance Benchmark", schedule: "Thu, Fri 15:00-18:00" }
+    ]
+  },
 ];
 
 type TestItemType = "multiple_choice" | "short_answer" | "ox" | "remarks";
@@ -77,6 +121,7 @@ export default function QAReport() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleteName, setDeleteName] = useState("");
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
+  const [selectedTestByInspector, setSelectedTestByInspector] = useState<Record<number, string>>({});
 
   const confirmDelete = () => {
     if (deleteId) {
@@ -425,46 +470,64 @@ export default function QAReport() {
 
               {activeTab === "inspectors" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {inspectors.map((inspector) => (
-                    <div key={inspector.id} className="border border-slate-200 rounded-xl p-4 hover:border-blue-200 hover:bg-blue-50/30 transition-colors cursor-pointer" data-testid={`inspector-${inspector.id}`}>
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
-                          {inspector.avatar}
-                        </div>
-                        <div>
-                          <p className="font-medium text-slate-800">{inspector.name}</p>
-                          <p className="text-sm text-slate-500">{inspector.role}</p>
-                        </div>
-                      </div>
-                      <div className="mt-4 pt-3 border-t border-slate-100">
-                        <div className="flex items-start gap-2 mb-2">
-                          <ClipboardCheck className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  {inspectors.map((inspector) => {
+                    const selectedTestName = selectedTestByInspector[inspector.id] || inspector.assignedTests[0].name;
+                    const currentSchedule = inspector.assignedTests.find(t => t.name === selectedTestName)?.schedule;
+
+                    return (
+                      <div key={inspector.id} className="border border-slate-200 rounded-xl p-4 hover:border-blue-200 hover:bg-blue-50/30 transition-colors cursor-pointer" data-testid={`inspector-${inspector.id}`}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
+                            {inspector.avatar}
+                          </div>
                           <div>
-                            <p className="text-xs font-medium text-slate-600 mb-1">Assigned Tests</p>
-                            <div className="flex flex-wrap gap-1">
-                              {inspector.assignedTests.map((test, idx) => (
-                                <span key={idx} className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{test}</span>
-                              ))}
+                            <p className="font-medium text-slate-800">{inspector.name}</p>
+                            <p className="text-sm text-slate-500">{inspector.role}</p>
+                          </div>
+                        </div>
+                        <div className="mt-4 pt-3 border-t border-slate-100">
+                          <div className="flex items-start gap-2 mb-2">
+                            <ClipboardCheck className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="text-xs font-medium text-slate-600 mb-1">Assigned Tests</p>
+                              <div className="flex flex-wrap gap-1">
+                                {inspector.assignedTests.map((test, idx) => (
+                                  <button
+                                    key={idx}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedTestByInspector(prev => ({ ...prev, [inspector.id]: test.name }));
+                                    }}
+                                    className={`text-xs px-2 py-0.5 rounded-full transition-colors ${
+                                      selectedTestName === test.name 
+                                        ? "bg-blue-600 text-white" 
+                                        : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                                    }`}
+                                  >
+                                    {test.name}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 mt-3">
+                            <Clock className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                            <div>
+                              <p className="text-xs font-medium text-slate-600">Schedule</p>
+                              <p className="text-xs text-slate-500">{currentSchedule}</p>
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 mt-3">
-                          <Clock className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                          <div>
-                            <p className="text-xs font-medium text-slate-600">Schedule</p>
-                            <p className="text-xs text-slate-500">{inspector.schedule}</p>
+                        <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <UserCheck className="w-4 h-4 text-emerald-500" />
+                            <span className="text-sm text-slate-600">Available</span>
                           </div>
+                          <Button variant="outline" size="sm" className="text-xs">Assign</Button>
                         </div>
                       </div>
-                      <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <UserCheck className="w-4 h-4 text-emerald-500" />
-                          <span className="text-sm text-slate-600">Available</span>
-                        </div>
-                        <Button variant="outline" size="sm" className="text-xs">Assign</Button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

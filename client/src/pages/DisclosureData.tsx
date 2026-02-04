@@ -12,7 +12,9 @@ import {
   RefreshCw,
   LayoutGrid,
   List,
-  Clock
+  Clock,
+  ArrowUpRight,
+  ArrowDownRight
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
@@ -25,12 +27,82 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+function StatCard({ item, index }: { item: any, index: number }) {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+      className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group"
+    >
+      <div className={`absolute inset-0 bg-gradient-to-br ${item.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+      
+      <div className="relative z-10">
+        <div className="flex items-start justify-between mb-4">
+          <div className="p-3 rounded-lg" style={{ backgroundColor: `${item.color}15` }}>
+            <item.icon className="w-6 h-6" style={{ color: item.color }} strokeWidth={1.5} />
+          </div>
+          {item.change && (
+            <div className={`flex items-center gap-1 text-sm font-medium ${item.isPositive ? "text-emerald-600" : "text-red-500"}`}>
+              {item.isPositive ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+              <span>{item.change}</span>
+            </div>
+          )}
+        </div>
+        
+        <h3 className="text-slate-500 text-sm font-medium mb-1">{item.label}</h3>
+        <p className="text-3xl font-semibold tracking-tight text-slate-800 mb-1">{item.value}</p>
+        
+        {item.subValue && (
+           <p className="text-sm text-slate-400 mt-1">{item.subValue}</p>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 export default function DisclosureData() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchField, setSearchField] = useState("all");
+
+  const stats = [
+    { 
+      label: "TOTAL COMPANIES", 
+      value: "1.52M", 
+      icon: FileText, 
+      color: "#3b82f6", 
+      bgGradient: "from-blue-500/15 to-blue-600/5",
+      change: "+12.5%",
+      isPositive: true
+    },
+    { 
+      label: "TODAY", 
+      value: "0", 
+      icon: RefreshCw, 
+      color: "#10b981", 
+      bgGradient: "from-emerald-500/15 to-emerald-600/5",
+      subValue: "Updates received"
+    },
+    { 
+      label: "YESTERDAY", 
+      value: "0", 
+      icon: LayoutGrid, 
+      color: "#6366f1", 
+      bgGradient: "from-indigo-500/15 to-indigo-600/5",
+      subValue: "Updates processed"
+    },
+    { 
+      label: "UPDATE CYCLE", 
+      value: "Daily", 
+      icon: Clock, 
+      color: "#f59e0b", 
+      bgGradient: "from-amber-500/15 to-amber-600/5",
+      subValue: "Next update: 18:00" 
+    }
+  ];
 
   // Mock data matching the user's request
   const disclosureData = [
@@ -121,45 +193,9 @@ export default function DisclosureData() {
             
             {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <span className="text-sm font-medium text-slate-500">TOTAL COMPANIES</span>
-                </div>
-                <div className="text-2xl font-bold text-slate-800">1.52M</div>
-              </div>
-              
-              <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
-                    <RefreshCw className="w-5 h-5" />
-                  </div>
-                  <span className="text-sm font-medium text-slate-500">TODAY</span>
-                </div>
-                <div className="text-2xl font-bold text-emerald-600">0</div>
-              </div>
-
-              <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
-                    <LayoutGrid className="w-5 h-5" />
-                  </div>
-                  <span className="text-sm font-medium text-slate-500">YESTERDAY</span>
-                </div>
-                <div className="text-2xl font-bold text-indigo-600">0</div>
-              </div>
-
-              <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-amber-50 rounded-lg text-amber-600">
-                    <Clock className="w-5 h-5" />
-                  </div>
-                  <span className="text-sm font-medium text-slate-500">UPDATE CYCLE</span>
-                </div>
-                <div className="text-2xl font-bold text-slate-800">Daily</div>
-              </div>
+              {stats.map((stat, index) => (
+                <StatCard key={index} item={stat} index={index} />
+              ))}
             </div>
 
             {/* Main Content */}
@@ -169,12 +205,14 @@ export default function DisclosureData() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <div className="flex items-center gap-2">
                     <Select value={searchField} onValueChange={setSearchField}>
-                      <SelectTrigger className="w-[140px] h-9 text-xs">
+                      <SelectTrigger className="w-[140px] h-9 text-xs text-slate-700 bg-white border-slate-200">
                         <SelectValue placeholder="Select field" />
                       </SelectTrigger>
                       <SelectContent>
                         {searchOptions.map(opt => (
-                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                          <SelectItem key={opt.value} value={opt.value} className="text-slate-700">
+                            {opt.label}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -184,11 +222,11 @@ export default function DisclosureData() {
                         placeholder="Search..." 
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-9 h-9 text-xs w-[200px]"
+                        className="pl-9 h-9 text-xs w-[200px] text-slate-700 bg-white border-slate-200"
                       />
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-2 h-9">
+                  <Button variant="outline" size="sm" className="gap-2 h-9 text-slate-700 bg-white border-slate-200 hover:bg-slate-50">
                     <Columns className="w-4 h-4" />
                     Fields
                   </Button>
@@ -244,13 +282,13 @@ export default function DisclosureData() {
                         setCurrentPage(1);
                       }}
                     >
-                      <SelectTrigger className="h-8 w-[70px] text-xs">
-                        <SelectValue />
+                      <SelectTrigger className="h-8 w-[70px] text-xs text-slate-700 bg-white border-slate-200">
+                        <SelectValue placeholder={String(itemsPerPage)} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="10">10</SelectItem>
-                        <SelectItem value="20">20</SelectItem>
-                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="10" className="text-slate-700">10</SelectItem>
+                        <SelectItem value="20" className="text-slate-700">20</SelectItem>
+                        <SelectItem value="50" className="text-slate-700">50</SelectItem>
                       </SelectContent>
                     </Select>
                     <span className="text-xs text-slate-500">per page</span>

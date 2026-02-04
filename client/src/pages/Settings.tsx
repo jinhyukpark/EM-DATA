@@ -44,11 +44,78 @@ const users = [
   { id: 5, name: "David Jung", email: "david.jung@company.com", role: "Viewer", status: "Active", lastLogin: "2025-01-09 10:00" },
 ];
 
-const permissions = [
-  { id: 1, role: "Admin", description: "Full access to all features", users: 2, permissions: ["View", "Create", "Edit", "Delete", "Export", "Settings"] },
-  { id: 2, role: "Editor", description: "Can view and edit data", users: 5, permissions: ["View", "Create", "Edit", "Export"] },
-  { id: 3, role: "Viewer", description: "Read-only access", users: 12, permissions: ["View"] },
+// Types
+type PermissionType = "View" | "Create" | "Edit" | "Delete" | "Export";
+
+interface ModuleConfig {
+  id: string;
+  name: string;
+}
+
+interface Role {
+  id: number;
+  role: string;
+  description: string;
+  users: number;
+  // Map module ID to list of allowed permissions
+  permissions: Record<string, PermissionType[]>;
+}
+
+const modules: ModuleConfig[] = [
+  { id: "qa-report", name: "QA Report" },
+  { id: "company-data", name: "Company Data" },
+  { id: "disclosure-data", name: "Disclosure Data" },
+  { id: "patent-data", name: "Patent Data" },
+  { id: "paper-data", name: "Paper Data" },
+  { id: "stock-data", name: "Stock Data" },
+  { id: "news-data", name: "News Data" },
+  { id: "finance-data", name: "Finance Data" },
+  { id: "employment-data", name: "Employment Data" },
+  { id: "aws", name: "Server (AWS)" },
+  { id: "gcp", name: "Server (GCP)" },
+  { id: "idc", name: "Server (IDC)" },
 ];
+
+const permissionTypes: PermissionType[] = ["View", "Create", "Edit", "Delete", "Export"];
+
+// Initial data with updated structure
+const initialRoles: Role[] = [
+  { 
+    id: 1, 
+    role: "Admin", 
+    description: "Full access to all features", 
+    users: 2, 
+    permissions: modules.reduce((acc, mod) => ({
+      ...acc,
+      [mod.id]: permissionTypes // Admin has all permissions for all modules
+    }), {} as Record<string, PermissionType[]>)
+  },
+  { 
+    id: 2, 
+    role: "Editor", 
+    description: "Can view and edit data", 
+    users: 5, 
+    permissions: modules.reduce((acc, mod) => {
+      // Editor permissions logic
+      if (mod.id === "qa-report") return { ...acc, [mod.id]: ["View", "Create", "Edit", "Export"] };
+      return { ...acc, [mod.id]: ["View", "Create", "Edit", "Export"] };
+    }, {} as Record<string, PermissionType[]>)
+  },
+  { 
+    id: 3, 
+    role: "Viewer", 
+    description: "Read-only access", 
+    users: 12, 
+    permissions: modules.reduce((acc, mod) => ({
+      ...acc,
+      [mod.id]: ["View"] // Viewer only has View
+    }), {} as Record<string, PermissionType[]>)
+  },
+];
+
+const getPermissionCount = (perms: Record<string, PermissionType[]>) => {
+  return Object.values(perms).reduce((acc, curr) => acc + curr.length, 0);
+};
 
 const notificationCategories = [
   { id: "company", name: "Company Data", icon: Building2, description: "Alerts for company data updates and errors" },

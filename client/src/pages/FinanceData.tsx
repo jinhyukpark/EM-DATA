@@ -73,10 +73,6 @@ export default function FinanceData() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [columnStyles, setColumnStyles] = useState<Record<string, ColumnStyle>>({});
@@ -306,6 +302,10 @@ export default function FinanceData() {
       [columnId]: Math.max(width, 50)
     }));
   };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   const ResizableHeader = ({ id, label, align = "left", children }: { id: string, label: string, align?: "left" | "center" | "right", children?: React.ReactNode }) => {
     return (

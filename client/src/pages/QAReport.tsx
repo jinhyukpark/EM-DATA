@@ -114,10 +114,6 @@ export default function QAReport() {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
-
-  if (isLoading) {
-    return <Loading />;
-  }
   
   const [filterTestName, setFilterTestName] = useState("");
   const [filterDateFrom, setFilterDateFrom] = useState("");
@@ -190,6 +186,10 @@ export default function QAReport() {
   };
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="h-screen flex bg-slate-50 overflow-hidden">

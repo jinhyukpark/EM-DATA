@@ -15,26 +15,52 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { 
   ChevronLeft, 
   ChevronRight, 
   Calendar as CalendarIcon, 
   Search,
   Filter,
-  Download
+  Download,
+  Users
 } from "lucide-react";
 import { format } from "date-fns";
 
 // Mock History Data
-const mockHistory = Array.from({ length: 50 }).map((_, i) => ({
-  id: `log-${i + 1}`,
-  timestamp: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
-  recipient: i % 2 === 0 ? "John Kim" : "Sarah Lee",
-  email: i % 2 === 0 ? "john.kim@company.com" : "sarah.lee@company.com",
-  subject: i % 3 === 0 ? "Daily Stock Data Check Alert" : "Server Warning: AWS High Load",
-  status: "Sent",
-  trigger: i % 3 === 0 ? "[Stock Data > Today] EQUALS 0" : "[AWS > Warning] GREATER THAN 80"
-})).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+const mockHistory = Array.from({ length: 50 }).map((_, i) => {
+  // Simulate multiple recipients for some entries
+  const isMultiRecipient = i % 4 === 0;
+  const recipientCount = isMultiRecipient ? Math.floor(Math.random() * 5) + 2 : 1;
+  
+  const allRecipients = [
+    { name: "John Kim", email: "john.kim@company.com" },
+    { name: "Sarah Lee", email: "sarah.lee@company.com" },
+    { name: "Mike Park", email: "mike.park@company.com" },
+    { name: "Emily Choi", email: "emily.choi@company.com" },
+    { name: "David Wilson", email: "david.wilson@company.com" },
+    { name: "Jessica Jung", email: "jessica.jung@company.com" }
+  ];
+
+  // Shuffle and pick recipients
+  const recipients = isMultiRecipient 
+    ? [...allRecipients].sort(() => 0.5 - Math.random()).slice(0, recipientCount)
+    : [i % 2 === 0 ? allRecipients[0] : allRecipients[1]];
+
+  return {
+    id: `log-${i + 1}`,
+    timestamp: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
+    recipients: recipients,
+    subject: i % 3 === 0 ? "Daily Stock Data Check Alert" : "Server Warning: AWS High Load",
+    status: "Sent",
+    trigger: i % 3 === 0 ? "[Stock Data > Today] EQUALS 0" : "[AWS > Warning] GREATER THAN 80"
+  };
+}).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
 export default function NotificationHistory() {
   const [date, setDate] = useState<Date | undefined>(undefined);
@@ -45,8 +71,9 @@ export default function NotificationHistory() {
   
   // Filter logic
   const filteredHistory = mockHistory.filter(item => {
+    // Search in any of the recipients or subject
     const matchesSearch = 
-      item.recipient.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      item.recipients.some(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()) || r.email.toLowerCase().includes(searchTerm.toLowerCase())) || 
       item.subject.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesDate = date 
@@ -148,8 +175,37 @@ export default function NotificationHistory() {
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-slate-800">{log.recipient}</span>
-                      <span className="text-xs text-slate-500">{log.email}</span>
+                      {log.recipients.length === 1 ? (
+                        <>
+                          <span className="text-sm font-medium text-slate-800">{log.recipients[0].name}</span>
+                          <span className="text-xs text-slate-500">{log.recipients[0].email}</span>
+                        </>
+                      ) : (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-sm font-medium text-slate-800">{log.recipients[0].name}</span>
+                          <TooltipProvider delayDuration={0}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="flex items-center gap-1.5 w-fit cursor-pointer hover:bg-slate-100 rounded px-1.5 py-0.5 -ml-1.5 transition-colors">
+                                  <Users className="w-3 h-3 text-slate-400" />
+                                  <span className="text-xs text-blue-600 font-medium">+ {log.recipients.length - 1} others</span>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent className="p-3 bg-white border border-slate-200 shadow-lg">
+                                <div className="flex flex-col gap-2">
+                                  <span className="text-xs font-semibold text-slate-500 mb-1">Recipients ({log.recipients.length})</span>
+                                  {log.recipients.map((r, idx) => (
+                                    <div key={idx} className="flex flex-col">
+                                      <span className="text-sm font-medium text-slate-800">{r.name}</span>
+                                      <span className="text-xs text-slate-500">{r.email}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>

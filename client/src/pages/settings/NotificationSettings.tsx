@@ -10,6 +10,7 @@ import {
   AlertCircle,
   Eye,
   Clock,
+  Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 // Categories Definition
 const categories = [
@@ -580,20 +594,60 @@ export default function NotificationSettings() {
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-2">Recipients</label>
               <div className="flex flex-wrap gap-2">
-                {users.map(user => (
-                    <button
+                {formRecipients.map(userId => {
+                  const user = users.find(u => u.id === userId);
+                  if (!user) return null;
+                  
+                  return (
+                    <div
                         key={user.id}
-                        onClick={() => toggleRecipient(user.id)}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium transition-all ${
-                            formRecipients.includes(user.id) 
-                                ? "bg-slate-800 border-slate-800 text-white shadow-md ring-2 ring-slate-200" 
-                                : "bg-white border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50"
-                        }`}
+                        className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full border border-slate-200 bg-white text-sm font-medium text-slate-700 shadow-sm"
                     >
-                        {formRecipients.includes(user.id) && <Check className="w-3.5 h-3.5" />}
-                        {user.name}
-                    </button>
-                ))}
+                        <span>{user.name}</span>
+                        <button 
+                          onClick={() => toggleRecipient(user.id)}
+                          className="p-0.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
+                  );
+                })}
+                
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="rounded-full gap-1.5 h-9 px-3 border-dashed border-slate-300 text-slate-500 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50">
+                      <Plus className="w-3.5 h-3.5" />
+                      Add Recipient
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="Search member..." />
+                      <CommandList>
+                        <CommandEmpty>No member found.</CommandEmpty>
+                        <CommandGroup>
+                          {users.map((user) => {
+                            const isSelected = formRecipients.includes(user.id);
+                            return (
+                              <CommandItem
+                                key={user.id}
+                                value={user.name}
+                                onSelect={() => toggleRecipient(user.id)}
+                              >
+                                <div className={`mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary ${isSelected ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible"}`}>
+                                  <Check className="h-3 w-3" />
+                                </div>
+                                <span>{user.name}</span>
+                                <span className="ml-2 text-xs text-muted-foreground truncate max-w-[120px]">{user.email}</span>
+                              </CommandItem>
+                            );
+                          })}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
           </div>

@@ -35,6 +35,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Sidebar from "@/components/Sidebar";
+import EmailNotifications from "./settings/EmailNotifications";
 
 const users = [
   { id: 1, name: "John Kim", email: "john.kim@company.com", role: "Admin", status: "Active", lastLogin: "2025-01-09 14:32" },
@@ -1040,7 +1041,7 @@ export default function Settings() {
                 <PermissionsTab />
               </TabsContent>
               <TabsContent value="notifications">
-                <NotificationsTab />
+                <EmailNotifications />
               </TabsContent>
             </Tabs>
           </motion.div>

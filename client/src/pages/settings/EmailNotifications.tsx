@@ -1,0 +1,423 @@
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Bell,
+  Plus,
+  Trash2,
+  Edit2,
+  Check,
+  X,
+  AlertCircle,
+  Eye,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+// Mock Data for Fields
+const availableFields = [
+  { value: "total_revenue", label: "Total Revenue", type: "number", unit: "KRW" },
+  { value: "operating_income", label: "Operating Income", type: "number", unit: "KRW" },
+  { value: "net_income", label: "Net Income", type: "number", unit: "KRW" },
+  { value: "stock_price", label: "Stock Price", type: "number", unit: "KRW" },
+  { value: "visitors", label: "Monthly Visitors", type: "number", unit: "Users" },
+  { value: "company_nm", label: "Company Name", type: "string" },
+  { value: "sector", label: "Sector", type: "string" },
+];
+
+const operators = [
+  { value: "gt", label: "Greater than (>)", types: ["number"] },
+  { value: "lt", label: "Less than (<)", types: ["number"] },
+  { value: "eq", label: "Equals (=)", types: ["number", "string"] },
+  { value: "neq", label: "Not Equals (!=)", types: ["number", "string"] },
+  { value: "contains", label: "Contains", types: ["string"] },
+  { value: "starts_with", label: "Starts with", types: ["string"] },
+];
+
+// Mock Users
+const users = [
+  { id: 1, name: "John Kim", email: "john.kim@company.com" },
+  { id: 2, name: "Sarah Lee", email: "sarah.lee@company.com" },
+  { id: 3, name: "Mike Park", email: "mike.park@company.com" },
+  { id: 4, name: "Emily Choi", email: "emily.choi@company.com" },
+];
+
+type Condition = {
+  id: string;
+  field: string;
+  operator: string;
+  value: string;
+  logic: "AND" | "OR";
+};
+
+type NotificationConfig = {
+  id: string;
+  name: string;
+  isActive: boolean;
+  conditions: Condition[];
+  recipients: number[]; // User IDs
+};
+
+const initialNotifications: NotificationConfig[] = [
+  {
+    id: "1",
+    name: "High Revenue Alert",
+    isActive: true,
+    conditions: [
+      { id: "c1", field: "total_revenue", operator: "gt", value: "100000000", logic: "AND" },
+    ],
+    recipients: [1, 2],
+  },
+  {
+    id: "2",
+    name: "Critical Stock Drop",
+    isActive: true,
+    conditions: [
+      { id: "c2", field: "stock_price", operator: "lt", value: "50000", logic: "AND" },
+      { id: "c3", field: "sector", operator: "eq", value: "Technology", logic: "AND" },
+    ],
+    recipients: [1, 3],
+  },
+];
+
+export default function EmailNotifications() {
+  const [notifications, setNotifications] = useState<NotificationConfig[]>(initialNotifications);
+  const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  // Form State
+  const [formName, setFormName] = useState("");
+  const [formConditions, setFormConditions] = useState<Condition[]>([]);
+  const [formRecipients, setFormRecipients] = useState<number[]>([]);
+
+  // Preview State
+  const [previewText, setPreviewText] = useState("");
+
+  useEffect(() => {
+    updatePreview();
+  }, [formConditions, formName]);
+
+  const updatePreview = () => {
+    if (formConditions.length === 0) {
+      setPreviewText("Please add at least one condition.");
+      return;
+    }
+
+    const conditionsText = formConditions.map((cond, index) => {
+      const field = availableFields.find(f => f.value === cond.field)?.label || cond.field;
+      const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim() || cond.operator;
+      const logic = index > 0 ? ` ${cond.logic} ` : "";
+      return `${logic}"${field}" is ${op} "${cond.value}"`;
+    }).join("");
+
+    setPreviewText(`Send alert when ${conditionsText}.`);
+  };
+
+  const openAddModal = () => {
+    setEditingId(null);
+    setFormName("");
+    setFormConditions([
+      { id: Math.random().toString(36).substr(2, 9), field: "total_revenue", operator: "gt", value: "", logic: "AND" }
+    ]);
+    setFormRecipients([]);
+    setShowModal(true);
+  };
+
+  const openEditModal = (notification: NotificationConfig) => {
+    setEditingId(notification.id);
+    setFormName(notification.name);
+    setFormConditions([...notification.conditions]);
+    setFormRecipients([...notification.recipients]);
+    setShowModal(true);
+  };
+
+  const handleSave = () => {
+    if (!formName || formConditions.length === 0) return;
+
+    if (editingId) {
+      setNotifications(prev => prev.map(n => n.id === editingId ? {
+        ...n,
+        name: formName,
+        conditions: formConditions,
+        recipients: formRecipients
+      } : n));
+    } else {
+      const newNotification: NotificationConfig = {
+        id: Math.random().toString(36).substr(2, 9),
+        name: formName,
+        isActive: true,
+        conditions: formConditions,
+        recipients: formRecipients
+      };
+      setNotifications([...notifications, newNotification]);
+    }
+    setShowModal(false);
+  };
+
+  const deleteNotification = (id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const toggleNotification = (id: string) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, isActive: !n.isActive } : n));
+  };
+
+  const addCondition = () => {
+    setFormConditions([
+      ...formConditions,
+      { id: Math.random().toString(36).substr(2, 9), field: "total_revenue", operator: "gt", value: "", logic: "AND" }
+    ]);
+  };
+
+  const removeCondition = (id: string) => {
+    if (formConditions.length > 1) {
+      setFormConditions(formConditions.filter(c => c.id !== id));
+    }
+  };
+
+  const updateCondition = (id: string, field: keyof Condition, value: string) => {
+    setFormConditions(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
+  };
+
+  const toggleRecipient = (userId: number) => {
+    setFormRecipients(prev => 
+      prev.includes(userId) ? prev.filter(id => id !== userId) : [...prev, userId]
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-800">Email Notifications</h3>
+          <p className="text-sm text-slate-500 mt-1">Manage custom alert conditions and recipients</p>
+        </div>
+        <Button onClick={openAddModal} className="gap-2 bg-blue-600 hover:bg-blue-700">
+          <Plus className="w-4 h-4" />
+          Add Notification
+        </Button>
+      </div>
+
+      <div className="grid gap-4">
+        {notifications.map(notification => (
+          <div key={notification.id} className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h4 className="font-medium text-slate-900 text-lg">{notification.name}</h4>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${notification.isActive ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}>
+                    {notification.isActive ? "Active" : "Inactive"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-slate-600 mb-3 bg-slate-50 p-2 rounded-lg border border-slate-100 inline-block">
+                  <Eye className="w-4 h-4 text-blue-500" />
+                  <span>
+                    {notification.conditions.map((cond, idx) => {
+                      const field = availableFields.find(f => f.value === cond.field)?.label;
+                      const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim();
+                      return `${idx > 0 ? ` ${cond.logic} ` : ""}${field} ${op} ${cond.value}`;
+                    })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400 font-medium uppercase tracking-wide">Recipients:</span>
+                  <div className="flex -space-x-2">
+                    {notification.recipients.map(userId => {
+                      const user = users.find(u => u.id === userId);
+                      return user ? (
+                        <div key={userId} className="w-6 h-6 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-xs font-bold text-blue-600" title={user.name}>
+                          {user.name.charAt(0)}
+                        </div>
+                      ) : null;
+                    })}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Switch 
+                  checked={notification.isActive}
+                  onCheckedChange={() => toggleNotification(notification.id)}
+                  className="data-[state=checked]:bg-emerald-500"
+                />
+                <div className="h-6 w-px bg-slate-200 mx-2" />
+                <Button variant="ghost" size="icon" onClick={() => openEditModal(notification)}>
+                  <Edit2 className="w-4 h-4 text-slate-500" />
+                </Button>
+                <Button variant="ghost" size="icon" className="hover:text-red-600 hover:bg-red-50" onClick={() => deleteNotification(notification.id)}>
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        ))}
+        
+        {notifications.length === 0 && (
+            <div className="text-center py-12 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+                <Bell className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                <h3 className="text-sm font-medium text-slate-900">No notifications configured</h3>
+                <p className="text-xs text-slate-500 mt-1">Create your first alert condition to get started</p>
+            </div>
+        )}
+      </div>
+
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{editingId ? "Edit Notification" : "New Notification"}</DialogTitle>
+            <DialogDescription>
+              Configure the conditions that trigger this email alert.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {/* Name Input */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Notification Name</label>
+              <Input 
+                value={formName} 
+                onChange={(e) => setFormName(e.target.value)} 
+                placeholder="e.g., High Value Transaction Alert"
+                className="font-medium"
+              />
+            </div>
+
+            {/* Conditions Builder */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Conditions</label>
+              <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                {formConditions.map((condition, index) => (
+                  <div key={condition.id} className="flex items-start gap-2 animate-in slide-in-from-left-2 duration-200">
+                    {index > 0 && (
+                      <div className="w-20 pt-1">
+                         <Select 
+                            value={condition.logic} 
+                            onValueChange={(val: "AND" | "OR") => updateCondition(condition.id, "logic", val)}
+                         >
+                            <SelectTrigger className="h-9 bg-white border-slate-200 text-xs font-bold text-slate-600">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="AND">AND</SelectItem>
+                                <SelectItem value="OR">OR</SelectItem>
+                            </SelectContent>
+                         </Select>
+                      </div>
+                    )}
+                    <div className="flex-1 grid grid-cols-12 gap-2">
+                        <div className="col-span-4">
+                            <Select 
+                                value={condition.field} 
+                                onValueChange={(val) => {
+                                    updateCondition(condition.id, "field", val);
+                                    updateCondition(condition.id, "value", ""); // Reset value on field change
+                                }}
+                            >
+                                <SelectTrigger className="h-9 bg-white border-slate-200 text-sm">
+                                    <SelectValue placeholder="Select Field" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {availableFields.map(f => (
+                                        <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="col-span-4">
+                            <Select 
+                                value={condition.operator} 
+                                onValueChange={(val) => updateCondition(condition.id, "operator", val)}
+                            >
+                                <SelectTrigger className="h-9 bg-white border-slate-200 text-sm">
+                                    <SelectValue placeholder="Operator" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {operators.map(op => (
+                                        <SelectItem key={op.value} value={op.value}>{op.label}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="col-span-4 relative">
+                            <Input 
+                                value={condition.value}
+                                onChange={(e) => updateCondition(condition.id, "value", e.target.value)}
+                                placeholder="Value"
+                                className="h-9 bg-white border-slate-200 text-sm"
+                            />
+                        </div>
+                    </div>
+                    {formConditions.length > 1 && (
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-9 w-9 text-slate-400 hover:text-red-500 hover:bg-red-50 flex-shrink-0"
+                            onClick={() => removeCondition(condition.id)}
+                        >
+                            <X className="w-4 h-4" />
+                        </Button>
+                    )}
+                  </div>
+                ))}
+                
+                <Button variant="outline" size="sm" onClick={addCondition} className="mt-2 text-xs gap-1 border-dashed border-slate-300 text-slate-500 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50">
+                    <Plus className="w-3 h-3" /> Add Condition
+                </Button>
+              </div>
+            </div>
+
+            {/* Preview Section */}
+            <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div>
+                    <h5 className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-1">Preview Logic</h5>
+                    <p className="text-sm text-blue-800 font-medium">"{previewText}"</p>
+                </div>
+            </div>
+
+            {/* Recipients */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Recipients</label>
+              <div className="flex flex-wrap gap-2">
+                {users.map(user => (
+                    <button
+                        key={user.id}
+                        onClick={() => toggleRecipient(user.id)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm transition-all ${
+                            formRecipients.includes(user.id) 
+                                ? "bg-slate-800 border-slate-800 text-white shadow-md" 
+                                : "bg-white border-slate-200 text-slate-600 hover:border-slate-300"
+                        }`}
+                    >
+                        {formRecipients.includes(user.id) && <Check className="w-3.5 h-3.5" />}
+                        {user.name}
+                    </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowModal(false)}>Cancel</Button>
+            <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">Save Notification</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

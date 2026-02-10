@@ -3,51 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Data Check Notification</title>
+    <title>System Notification</title>
     <style>
-        /* Base Reset */
-        body { margin: 0; padding: 0; min-width: 100%; width: 100% !important; height: 100% !important; background-color: #f1f5f9; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+        /* Reset & Base */
+        body { margin: 0; padding: 0; min-width: 100%; width: 100% !important; height: 100% !important; background-color: #F8FAFC; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; color: #0F172A; line-height: 1.5; -webkit-font-smoothing: antialiased; }
         table { border-spacing: 0; border-collapse: collapse; }
-        td { word-break: break-word; -webkit-hyphens: auto; -moz-hyphens: auto; hyphens: auto; border-collapse: collapse !important; }
-        img { -ms-interpolation-mode: bicubic; }
+        td { padding: 0; }
+        img { border: 0; }
         
         /* Layout */
-        .wrapper { width: 100%; table-layout: fixed; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #f1f5f9; }
-        .container { margin: 0 auto; width: 600px; max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .wrapper { width: 100%; table-layout: fixed; background-color: #F8FAFC; padding: 40px 0; }
+        .container { margin: 0 auto; width: 600px; max-width: 600px; background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0; overflow: hidden; }
         
         /* Header */
-        .header { background-color: #2563eb; padding: 30px 40px; text-align: center; }
-        .header-title { color: #ffffff; font-size: 24px; font-weight: bold; margin: 0; letter-spacing: 0.5px; }
+        .header { padding: 32px 40px; border-bottom: 1px solid #F1F5F9; background-color: #FFFFFF; }
+        .logo { color: #0F172A; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; }
         
         /* Content */
         .content { padding: 40px; }
-        .status-badge { background-color: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: bold; display: inline-block; margin-bottom: 20px; }
-        .message-title { color: #1e293b; font-size: 20px; font-weight: bold; margin: 0 0 10px 0; }
-        .message-body { color: #475569; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0; }
+        .badge { display: inline-block; padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600; letter-spacing: 0.025em; text-transform: uppercase; margin-bottom: 24px; }
+        .badge-critical { background-color: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+        .badge-info { background-color: #EFF6FF; color: #2563EB; border: 1px solid #DBEAFE; }
         
-        /* Info Box */
-        .info-box { background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 16px; margin-bottom: 24px; border-radius: 0 4px 4px 0; }
-        .info-text { color: #334155; font-size: 15px; margin: 0; line-height: 1.5; }
+        .title { margin: 0 0 16px; font-size: 24px; font-weight: 700; color: #0F172A; letter-spacing: -0.5px; }
+        .text { margin: 0 0 24px; font-size: 16px; color: #475569; line-height: 1.6; }
         
-        /* Details Table */
-        .details-table { width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; margin-bottom: 30px; }
-        .details-header { background-color: #f1f5f9; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 12px 16px; text-align: left; }
-        .details-cell { padding: 14px 16px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-size: 14px; }
-        .details-cell-last { border-bottom: none; }
+        /* Data Card */
+        .data-card { background-color: #F8FAFC; border-radius: 8px; border: 1px solid #E2E8F0; padding: 24px; margin-bottom: 32px; }
+        .data-row { margin-bottom: 12px; }
+        .data-row:last-child { margin-bottom: 0; }
+        .data-label { font-size: 13px; color: #64748B; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em; display: block; margin-bottom: 4px; }
+        .data-value { font-size: 16px; color: #0F172A; font-weight: 500; font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace; }
+        .data-value-highlight { color: #DC2626; font-weight: 700; }
         
         /* Button */
-        .btn-container { text-align: center; margin-top: 10px; }
-        .btn { background-color: #2563eb; color: #ffffff; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block; }
+        .btn { display: inline-block; background-color: #0F172A; color: #FFFFFF; padding: 14px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; text-decoration: none; text-align: center; }
+        .btn:hover { background-color: #1E293B; }
         
         /* Footer */
-        .footer { background-color: #f8fafc; padding: 24px 40px; text-align: center; border-top: 1px solid #e2e8f0; }
-        .footer-text { color: #94a3b8; font-size: 12px; line-height: 1.5; margin: 0; }
+        .footer { padding: 32px 40px; background-color: #F8FAFC; border-top: 1px solid #E2E8F0; text-align: center; }
+        .footer-text { margin: 0; font-size: 13px; color: #94A3B8; line-height: 1.5; }
+        .footer-link { color: #64748B; text-decoration: underline; }
         
-        /* Mobile Responsive */
         @media screen and (max-width: 600px) {
-            .container { width: 100% !important; border-radius: 0 !important; }
-            .header { padding: 20px !important; }
-            .content { padding: 20px !important; }
+            .wrapper { padding: 20px 10px; }
+            .container { width: 100% !important; }
+            .header, .content, .footer { padding: 24px !important; }
         }
     </style>
 </head>
@@ -59,58 +60,50 @@
                     <!-- Header -->
                     <tr>
                         <td class="header">
-                            <h1 class="header-title">Daily Data Report</h1>
+                            <span class="logo">System Notification</span>
                         </td>
                     </tr>
                     
                     <!-- Content -->
                     <tr>
                         <td class="content">
-                            <div style="text-align: center;">
-                                <span class="status-badge">Check Complete</span>
-                            </div>
-                            <h2 class="message-title">Data Validation Summary</h2>
-                            <p class="message-body">
-                                The daily data validation process has completed. Please review the details below for any anomalies or missing data points detected during the scheduled check.
+                            <span class="badge badge-info">Daily Report</span>
+                            <h1 class="title">Daily Data Check Summary</h1>
+                            <p class="text">
+                                The automated daily data validation process has completed successfully. Below is a summary of the data integrity check for today.
                             </p>
                             
-                            <div class="info-box">
-                                <p class="info-text">
-                                    <strong>Summary:</strong> 1 potential issue found in Stock Data module.
-                                </p>
+                            <!-- Data Visualization -->
+                            <div class="data-card">
+                                <table width="100%" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td style="padding-bottom: 16px; border-bottom: 1px solid #E2E8F0;">
+                                            <span class="data-label">Stock Data Module</span>
+                                            <span class="data-value" style="color: #DC2626;">⚠ 1 Anomaly Detected</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 16px 0; border-bottom: 1px solid #E2E8F0;">
+                                            <span class="data-label">Company Data Module</span>
+                                            <span class="data-value" style="color: #10B981;">✓ Normal</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-top: 16px;">
+                                            <span class="data-label">Finance Data Module</span>
+                                            <span class="data-value" style="color: #10B981;">✓ Normal</span>
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
                             
-                            <!-- Detailed Table -->
-                            <table class="details-table" cellspacing="0" cellpadding="0">
-                                <thead>
-                                    <tr>
-                                        <th class="details-header">Module</th>
-                                        <th class="details-header">Metric</th>
-                                        <th class="details-header">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="details-cell">Company Data</td>
-                                        <td class="details-cell">Today's Entries</td>
-                                        <td class="details-cell" style="color: #10b981; font-weight: 600;">Normal</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="details-cell">Stock Data</td>
-                                        <td class="details-cell">Today's Volume</td>
-                                        <td class="details-cell" style="color: #ef4444; font-weight: 600;">Alert (Value: 0)</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="details-cell details-cell-last">Finance Data</td>
-                                        <td class="details-cell details-cell-last">Updates</td>
-                                        <td class="details-cell details-cell-last" style="color: #10b981; font-weight: 600;">Normal</td>
-                                    </tr>
-                                </tbody>
+                            <table width="100%" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td align="center">
+                                        <a href="#" class="btn">View Full Report</a>
+                                    </td>
+                                </tr>
                             </table>
-                            
-                            <div class="btn-container">
-                                <a href="#" class="btn">View Full Report</a>
-                            </div>
                         </td>
                     </tr>
                     
@@ -118,7 +111,7 @@
                     <tr>
                         <td class="footer">
                             <p class="footer-text">
-                                This is an automated report sent based on your notification settings.<br>
+                                Sent via Notification System • <a href="#" class="footer-link">Unsubscribe</a><br>
                                 © 2026 Company Name. All rights reserved.
                             </p>
                         </td>

@@ -320,16 +320,35 @@ export default function EmailNotifications() {
                       : `${notification.schedule.startTime} - ${notification.schedule.endTime}`}
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-slate-600 mb-3 bg-slate-50 p-2 rounded-lg border border-slate-100 inline-block">
-                  <Eye className="w-4 h-4 text-blue-500" />
-                  <span>
-                    {notification.conditions.map((cond, idx) => {
-                      const subCatLabel = subCategories[cond.categoryGroup].find(s => s.value === cond.subCategory)?.label;
-                      const metricLabel = metrics[cond.categoryGroup].find(m => m.value === cond.metric)?.label;
-                      const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim();
-                      return `${idx > 0 ? ` ${cond.logic} ` : ""}[${subCatLabel} > ${metricLabel}] ${op} ${cond.value}`;
-                    })}
-                  </span>
+                <div className="flex flex-col gap-2 text-sm text-slate-600 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                  {notification.conditions.map((cond, idx) => {
+                    const subCatLabel = subCategories[cond.categoryGroup].find(s => s.value === cond.subCategory)?.label;
+                    const metricLabel = metrics[cond.categoryGroup].find(m => m.value === cond.metric)?.label;
+                    const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim();
+                    
+                    return (
+                      <div key={cond.id} className="flex flex-col">
+                        {idx > 0 && (
+                          <div className="flex items-center gap-2 py-1.5">
+                            <div className="h-px bg-slate-200 flex-1" />
+                            <span className="text-xs font-bold text-slate-400 uppercase bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                              {cond.logic}
+                            </span>
+                            <div className="h-px bg-slate-200 flex-1" />
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-md border border-slate-200 shadow-sm">
+                          <span className="font-semibold text-slate-700">
+                            [{subCatLabel} &gt; {metricLabel}]
+                          </span>
+                          <span className="text-slate-500 text-xs uppercase font-medium">{op}</span>
+                          <span className="font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-xs">
+                            {cond.value}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-slate-400 font-medium uppercase tracking-wide">Recipients:</span>

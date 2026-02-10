@@ -9,6 +9,7 @@ import {
   X,
   AlertCircle,
   Eye,
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,24 +30,50 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-// Mock Data for Fields
-const availableFields = [
-  { value: "total_revenue", label: "Total Revenue", type: "number", unit: "KRW" },
-  { value: "operating_income", label: "Operating Income", type: "number", unit: "KRW" },
-  { value: "net_income", label: "Net Income", type: "number", unit: "KRW" },
-  { value: "stock_price", label: "Stock Price", type: "number", unit: "KRW" },
-  { value: "visitors", label: "Monthly Visitors", type: "number", unit: "Users" },
-  { value: "company_nm", label: "Company Name", type: "string" },
-  { value: "sector", label: "Sector", type: "string" },
+// Categories Definition
+const categories = [
+  { value: "internal", label: "Internal Data", type: "group" },
+  { value: "server", label: "Server Management", type: "group" },
 ];
 
+const subCategories = {
+  internal: [
+    { value: "company_data", label: "Company Data" },
+    { value: "patent_data", label: "Patent Data" },
+    { value: "paper_data", label: "Paper Data" },
+    { value: "disclosure_data", label: "Disclosure Data" },
+    { value: "stock_data", label: "Stock Data" },
+    { value: "news_data", label: "News Data" },
+    { value: "finance_data", label: "Finance Data" },
+    { value: "employment_data", label: "Employment Data" },
+  ],
+  server: [
+    { value: "aws", label: "AWS" },
+    { value: "gcp", label: "GCP" },
+    { value: "idc", label: "IDC" },
+  ],
+};
+
+const metrics = {
+  internal: [
+    { value: "today", label: "Today" },
+    { value: "yesterday", label: "Yesterday" },
+  ],
+  server: [
+    { value: "total", label: "Total" },
+    { value: "running", label: "Running" },
+    { value: "warning", label: "Warning" },
+    { value: "stopped", label: "Stopped" },
+  ],
+};
+
 const operators = [
-  { value: "gt", label: "Greater than (>)", types: ["number"] },
-  { value: "lt", label: "Less than (<)", types: ["number"] },
-  { value: "eq", label: "Equals (=)", types: ["number", "string"] },
-  { value: "neq", label: "Not Equals (!=)", types: ["number", "string"] },
-  { value: "contains", label: "Contains", types: ["string"] },
-  { value: "starts_with", label: "Starts with", types: ["string"] },
+  { value: "gt", label: "Greater than (>)" },
+  { value: "lt", label: "Less than (<)" },
+  { value: "eq", label: "Equals (=)" },
+  { value: "neq", label: "Not Equals (!=)" },
+  { value: "gte", label: "Greater/Equal (>=)" },
+  { value: "lte", label: "Less/Equal (<=)" },
 ];
 
 // Mock Users
@@ -59,7 +86,9 @@ const users = [
 
 type Condition = {
   id: string;
-  field: string;
+  categoryGroup: "internal" | "server";
+  subCategory: string; // The specific page/service
+  metric: string; // today/yesterday OR total/running/etc
   operator: string;
   value: string;
   logic: "AND" | "OR";
@@ -71,27 +100,48 @@ type NotificationConfig = {
   isActive: boolean;
   conditions: Condition[];
   recipients: number[]; // User IDs
+  schedule: {
+    isRealtime: boolean;
+    checkTime: string; // "09:00"
+  };
 };
 
 const initialNotifications: NotificationConfig[] = [
   {
     id: "1",
-    name: "High Revenue Alert",
+    name: "Server Warning Alert",
     isActive: true,
     conditions: [
-      { id: "c1", field: "total_revenue", operator: "gt", value: "100000000", logic: "AND" },
+      { 
+        id: "c1", 
+        categoryGroup: "server", 
+        subCategory: "aws", 
+        metric: "warning", 
+        operator: "gt", 
+        value: "0", 
+        logic: "AND" 
+      },
     ],
-    recipients: [1, 2],
+    recipients: [1, 3],
+    schedule: { isRealtime: true, checkTime: "09:00" }
   },
   {
     id: "2",
-    name: "Critical Stock Drop",
+    name: "Daily Stock Data Check",
     isActive: true,
     conditions: [
-      { id: "c2", field: "stock_price", operator: "lt", value: "50000", logic: "AND" },
-      { id: "c3", field: "sector", operator: "eq", value: "Technology", logic: "AND" },
+      { 
+        id: "c2", 
+        categoryGroup: "internal", 
+        subCategory: "stock_data", 
+        metric: "today", 
+        operator: "eq", 
+        value: "0", 
+        logic: "AND" 
+      },
     ],
-    recipients: [1, 3],
+    recipients: [1, 2],
+    schedule: { isRealtime: false, checkTime: "18:00" }
   },
 ];
 
@@ -104,13 +154,14 @@ export default function EmailNotifications() {
   const [formName, setFormName] = useState("");
   const [formConditions, setFormConditions] = useState<Condition[]>([]);
   const [formRecipients, setFormRecipients] = useState<number[]>([]);
+  const [formSchedule, setFormSchedule] = useState({ isRealtime: false, checkTime: "09:00" });
 
   // Preview State
   const [previewText, setPreviewText] = useState("");
 
   useEffect(() => {
     updatePreview();
-  }, [formConditions, formName]);
+  }, [formConditions, formName, formSchedule]);
 
   const updatePreview = () => {
     if (formConditions.length === 0) {
@@ -119,22 +170,36 @@ export default function EmailNotifications() {
     }
 
     const conditionsText = formConditions.map((cond, index) => {
-      const field = availableFields.find(f => f.value === cond.field)?.label || cond.field;
+      const subCatLabel = subCategories[cond.categoryGroup].find(s => s.value === cond.subCategory)?.label || cond.subCategory;
+      const metricLabel = metrics[cond.categoryGroup].find(m => m.value === cond.metric)?.label || cond.metric;
       const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim() || cond.operator;
       const logic = index > 0 ? ` ${cond.logic} ` : "";
-      return `${logic}"${field}" is ${op} "${cond.value}"`;
+      return `${logic}[${subCatLabel} > ${metricLabel}] is ${op} "${cond.value}"`;
     }).join("");
 
-    setPreviewText(`Send alert when ${conditionsText}.`);
+    const scheduleText = formSchedule.isRealtime 
+      ? "immediately whenever conditions are met" 
+      : `daily at ${formSchedule.checkTime}`;
+
+    setPreviewText(`Send alert ${scheduleText} if ${conditionsText}.`);
   };
 
   const openAddModal = () => {
     setEditingId(null);
     setFormName("");
     setFormConditions([
-      { id: Math.random().toString(36).substr(2, 9), field: "total_revenue", operator: "gt", value: "", logic: "AND" }
+      { 
+        id: Math.random().toString(36).substr(2, 9), 
+        categoryGroup: "internal", 
+        subCategory: "company_data", 
+        metric: "today", 
+        operator: "gt", 
+        value: "", 
+        logic: "AND" 
+      }
     ]);
     setFormRecipients([]);
+    setFormSchedule({ isRealtime: false, checkTime: "09:00" });
     setShowModal(true);
   };
 
@@ -143,6 +208,7 @@ export default function EmailNotifications() {
     setFormName(notification.name);
     setFormConditions([...notification.conditions]);
     setFormRecipients([...notification.recipients]);
+    setFormSchedule({ ...notification.schedule });
     setShowModal(true);
   };
 
@@ -154,7 +220,8 @@ export default function EmailNotifications() {
         ...n,
         name: formName,
         conditions: formConditions,
-        recipients: formRecipients
+        recipients: formRecipients,
+        schedule: formSchedule
       } : n));
     } else {
       const newNotification: NotificationConfig = {
@@ -162,7 +229,8 @@ export default function EmailNotifications() {
         name: formName,
         isActive: true,
         conditions: formConditions,
-        recipients: formRecipients
+        recipients: formRecipients,
+        schedule: formSchedule
       };
       setNotifications([...notifications, newNotification]);
     }
@@ -180,7 +248,15 @@ export default function EmailNotifications() {
   const addCondition = () => {
     setFormConditions([
       ...formConditions,
-      { id: Math.random().toString(36).substr(2, 9), field: "total_revenue", operator: "gt", value: "", logic: "AND" }
+      { 
+        id: Math.random().toString(36).substr(2, 9), 
+        categoryGroup: "internal", 
+        subCategory: "company_data", 
+        metric: "today", 
+        operator: "gt", 
+        value: "", 
+        logic: "AND" 
+      }
     ]);
   };
 
@@ -190,8 +266,21 @@ export default function EmailNotifications() {
     }
   };
 
-  const updateCondition = (id: string, field: keyof Condition, value: string) => {
-    setFormConditions(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
+  const updateCondition = (id: string, field: keyof Condition, value: any) => {
+    setFormConditions(prev => prev.map(c => {
+      if (c.id !== id) return c;
+      
+      const updated = { ...c, [field]: value };
+      
+      // Reset dependent fields when category group changes
+      if (field === "categoryGroup") {
+        updated.subCategory = subCategories[value as "internal" | "server"][0].value;
+        updated.metric = metrics[value as "internal" | "server"][0].value;
+        updated.value = "";
+      }
+      
+      return updated;
+    }));
   };
 
   const toggleRecipient = (userId: number) => {
@@ -223,14 +312,19 @@ export default function EmailNotifications() {
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${notification.isActive ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}>
                     {notification.isActive ? "Active" : "Inactive"}
                   </span>
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-50 border border-slate-100 text-xs text-slate-600">
+                    <Clock className="w-3 h-3 text-slate-400" />
+                    {notification.schedule.isRealtime ? "Real-time" : notification.schedule.checkTime}
+                  </div>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-slate-600 mb-3 bg-slate-50 p-2 rounded-lg border border-slate-100 inline-block">
                   <Eye className="w-4 h-4 text-blue-500" />
                   <span>
                     {notification.conditions.map((cond, idx) => {
-                      const field = availableFields.find(f => f.value === cond.field)?.label;
+                      const subCatLabel = subCategories[cond.categoryGroup].find(s => s.value === cond.subCategory)?.label;
+                      const metricLabel = metrics[cond.categoryGroup].find(m => m.value === cond.metric)?.label;
                       const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim();
-                      return `${idx > 0 ? ` ${cond.logic} ` : ""}${field} ${op} ${cond.value}`;
+                      return `${idx > 0 ? ` ${cond.logic} ` : ""}[${subCatLabel} > ${metricLabel}] ${op} ${cond.value}`;
                     })}
                   </span>
                 </div>
@@ -277,7 +371,7 @@ export default function EmailNotifications() {
       </div>
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle>{editingId ? "Edit Notification" : "New Notification"}</DialogTitle>
             <DialogDescription>
@@ -292,7 +386,7 @@ export default function EmailNotifications() {
               <Input 
                 value={formName} 
                 onChange={(e) => setFormName(e.target.value)} 
-                placeholder="e.g., High Value Transaction Alert"
+                placeholder="e.g., Daily Data Check"
                 className="font-medium"
               />
             </div>
@@ -320,25 +414,52 @@ export default function EmailNotifications() {
                       </div>
                     )}
                     <div className="flex-1 grid grid-cols-12 gap-2">
-                        <div className="col-span-4">
+                        {/* 1. Sub Category Selection (Page) */}
+                        <div className="col-span-3">
                             <Select 
-                                value={condition.field} 
+                                value={condition.subCategory} 
                                 onValueChange={(val) => {
-                                    updateCondition(condition.id, "field", val);
-                                    updateCondition(condition.id, "value", ""); // Reset value on field change
+                                  // Find which group this value belongs to
+                                  const group = subCategories.internal.some(s => s.value === val) ? "internal" : "server";
+                                  updateCondition(condition.id, "categoryGroup", group);
+                                  updateCondition(condition.id, "subCategory", val);
                                 }}
                             >
                                 <SelectTrigger className="h-9 bg-white border-slate-200 text-sm">
-                                    <SelectValue placeholder="Select Field" />
+                                    <SelectValue placeholder="Page" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {availableFields.map(f => (
-                                        <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                                    <div className="mb-1 px-2 text-xs font-semibold text-slate-500">Internal Data</div>
+                                    {subCategories.internal.map(s => (
+                                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                                    ))}
+                                    <div className="mt-2 mb-1 px-2 text-xs font-semibold text-slate-500">Server Management</div>
+                                    {subCategories.server.map(s => (
+                                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="col-span-4">
+
+                        {/* 2. Metric Selection (Today/Total/etc) */}
+                        <div className="col-span-3">
+                            <Select 
+                                value={condition.metric} 
+                                onValueChange={(val) => updateCondition(condition.id, "metric", val)}
+                            >
+                                <SelectTrigger className="h-9 bg-white border-slate-200 text-sm">
+                                    <SelectValue placeholder="Metric" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {metrics[condition.categoryGroup].map(m => (
+                                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        {/* 3. Operator */}
+                        <div className="col-span-3">
                             <Select 
                                 value={condition.operator} 
                                 onValueChange={(val) => updateCondition(condition.id, "operator", val)}
@@ -353,7 +474,9 @@ export default function EmailNotifications() {
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="col-span-4 relative">
+
+                        {/* 4. Value */}
+                        <div className="col-span-3 relative">
                             <Input 
                                 value={condition.value}
                                 onChange={(e) => updateCondition(condition.id, "value", e.target.value)}
@@ -378,6 +501,33 @@ export default function EmailNotifications() {
                 <Button variant="outline" size="sm" onClick={addCondition} className="mt-2 text-xs gap-1 border-dashed border-slate-300 text-slate-500 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50">
                     <Plus className="w-3 h-3" /> Add Condition
                 </Button>
+              </div>
+            </div>
+
+            {/* Reference Time Setting */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Check Schedule</label>
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <Switch 
+                    checked={formSchedule.isRealtime}
+                    onCheckedChange={(checked) => setFormSchedule({ ...formSchedule, isRealtime: checked })}
+                    className="data-[state=checked]:bg-blue-600"
+                  />
+                  <span className="text-sm font-medium text-slate-700">Real-time / Always On</span>
+                </div>
+                
+                {!formSchedule.isRealtime && (
+                  <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2">
+                    <span className="text-sm text-slate-500">Check daily at:</span>
+                    <Input 
+                      type="time" 
+                      value={formSchedule.checkTime}
+                      onChange={(e) => setFormSchedule({ ...formSchedule, checkTime: e.target.value })}
+                      className="w-32 h-9 bg-white border-slate-200"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

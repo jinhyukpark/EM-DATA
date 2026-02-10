@@ -21,6 +21,7 @@ import PaperData from "@/pages/PaperData";
 import DisclosureData from "@/pages/DisclosureData";
 import AddTestProcedure from "@/pages/AddTestProcedure";
 import TestDetail from "@/pages/TestDetail";
+import EmailTemplates from "@/pages/EmailTemplates";
 
 const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, '') || '';
 
@@ -50,6 +51,7 @@ function AppRouter() {
         <Route path="/servers/aws" component={AWSServers} />
         <Route path="/servers/gcp" component={GCPServers} />
         <Route path="/servers/idc" component={IDCServers} />
+        <Route path="/email-templates" component={EmailTemplates} />
         <Route component={NotFound} />
       </Switch>
     </Router>

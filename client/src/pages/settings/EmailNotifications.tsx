@@ -102,7 +102,8 @@ type NotificationConfig = {
   recipients: number[]; // User IDs
   schedule: {
     isRealtime: boolean;
-    checkTime: string; // "09:00"
+    startTime: string; // "09:00"
+    endTime: string;   // "10:00"
   };
 };
 
@@ -123,7 +124,7 @@ const initialNotifications: NotificationConfig[] = [
       },
     ],
     recipients: [1, 3],
-    schedule: { isRealtime: true, checkTime: "09:00" }
+    schedule: { isRealtime: true, startTime: "09:00", endTime: "18:00" }
   },
   {
     id: "2",
@@ -141,7 +142,7 @@ const initialNotifications: NotificationConfig[] = [
       },
     ],
     recipients: [1, 2],
-    schedule: { isRealtime: false, checkTime: "18:00" }
+    schedule: { isRealtime: false, startTime: "17:00", endTime: "18:00" }
   },
 ];
 
@@ -154,7 +155,7 @@ export default function EmailNotifications() {
   const [formName, setFormName] = useState("");
   const [formConditions, setFormConditions] = useState<Condition[]>([]);
   const [formRecipients, setFormRecipients] = useState<number[]>([]);
-  const [formSchedule, setFormSchedule] = useState({ isRealtime: false, checkTime: "09:00" });
+  const [formSchedule, setFormSchedule] = useState({ isRealtime: false, startTime: "09:00", endTime: "18:00" });
 
   // Preview State
   const [previewText, setPreviewText] = useState("");
@@ -179,7 +180,7 @@ export default function EmailNotifications() {
 
     const scheduleText = formSchedule.isRealtime 
       ? "immediately whenever conditions are met" 
-      : `daily at ${formSchedule.checkTime}`;
+      : `daily between ${formSchedule.startTime} and ${formSchedule.endTime}`;
 
     setPreviewText(`Send alert ${scheduleText} if ${conditionsText}.`);
   };
@@ -199,7 +200,7 @@ export default function EmailNotifications() {
       }
     ]);
     setFormRecipients([]);
-    setFormSchedule({ isRealtime: false, checkTime: "09:00" });
+    setFormSchedule({ isRealtime: false, startTime: "09:00", endTime: "18:00" });
     setShowModal(true);
   };
 
@@ -314,7 +315,9 @@ export default function EmailNotifications() {
                   </span>
                   <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-50 border border-slate-100 text-xs text-slate-600">
                     <Clock className="w-3 h-3 text-slate-400" />
-                    {notification.schedule.isRealtime ? "Real-time" : notification.schedule.checkTime}
+                    {notification.schedule.isRealtime 
+                      ? "Real-time" 
+                      : `${notification.schedule.startTime} - ${notification.schedule.endTime}`}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-slate-600 mb-3 bg-slate-50 p-2 rounded-lg border border-slate-100 inline-block">
@@ -382,18 +385,18 @@ export default function EmailNotifications() {
           <div className="space-y-6 py-4">
             {/* Name Input */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Notification Name</label>
+              <label className="block text-sm font-semibold text-slate-900 mb-1.5">Notification Name</label>
               <Input 
                 value={formName} 
                 onChange={(e) => setFormName(e.target.value)} 
                 placeholder="e.g., Daily Data Check"
-                className="font-medium"
+                className="font-medium border-slate-300 focus:border-blue-500"
               />
             </div>
 
             {/* Conditions Builder */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Conditions</label>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">Conditions</label>
               <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
                 {formConditions.map((condition, index) => (
                   <div key={condition.id} className="flex items-start gap-2 animate-in slide-in-from-left-2 duration-200">
@@ -403,7 +406,7 @@ export default function EmailNotifications() {
                             value={condition.logic} 
                             onValueChange={(val: "AND" | "OR") => updateCondition(condition.id, "logic", val)}
                          >
-                            <SelectTrigger className="h-9 bg-white border-slate-200 text-xs font-bold text-slate-600">
+                            <SelectTrigger className="h-9 bg-white border-slate-300 text-xs font-bold text-slate-700">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -425,7 +428,7 @@ export default function EmailNotifications() {
                                   updateCondition(condition.id, "subCategory", val);
                                 }}
                             >
-                                <SelectTrigger className="h-9 bg-white border-slate-200 text-sm">
+                                <SelectTrigger className="h-9 bg-white border-slate-300 text-sm text-slate-700 font-medium">
                                     <SelectValue placeholder="Page" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -447,7 +450,7 @@ export default function EmailNotifications() {
                                 value={condition.metric} 
                                 onValueChange={(val) => updateCondition(condition.id, "metric", val)}
                             >
-                                <SelectTrigger className="h-9 bg-white border-slate-200 text-sm">
+                                <SelectTrigger className="h-9 bg-white border-slate-300 text-sm text-slate-700">
                                     <SelectValue placeholder="Metric" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -464,7 +467,7 @@ export default function EmailNotifications() {
                                 value={condition.operator} 
                                 onValueChange={(val) => updateCondition(condition.id, "operator", val)}
                             >
-                                <SelectTrigger className="h-9 bg-white border-slate-200 text-sm">
+                                <SelectTrigger className="h-9 bg-white border-slate-300 text-sm text-slate-700">
                                     <SelectValue placeholder="Operator" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -481,7 +484,7 @@ export default function EmailNotifications() {
                                 value={condition.value}
                                 onChange={(e) => updateCondition(condition.id, "value", e.target.value)}
                                 placeholder="Value"
-                                className="h-9 bg-white border-slate-200 text-sm"
+                                className="h-9 bg-white border-slate-300 text-sm text-slate-900 placeholder:text-slate-400"
                             />
                         </div>
                     </div>
@@ -511,7 +514,7 @@ export default function EmailNotifications() {
 
             {/* Reference Time Setting */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Check Schedule</label>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">Check Schedule</label>
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center gap-6">
                 <div className="flex items-center gap-2">
                   <Switch 
@@ -523,25 +526,34 @@ export default function EmailNotifications() {
                 </div>
                 
                 {!formSchedule.isRealtime && (
-                  <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2">
-                    <span className="text-sm text-slate-500">Check daily at:</span>
-                    <Input 
-                      type="time" 
-                      value={formSchedule.checkTime}
-                      onChange={(e) => setFormSchedule({ ...formSchedule, checkTime: e.target.value })}
-                      className="w-32 h-9 bg-white border-slate-200"
-                    />
+                  <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2">
+                    <span className="text-sm text-slate-600 font-medium">Check between:</span>
+                    <div className="flex items-center gap-2">
+                        <Input 
+                          type="time" 
+                          value={formSchedule.startTime}
+                          onChange={(e) => setFormSchedule({ ...formSchedule, startTime: e.target.value })}
+                          className="w-32 h-9 bg-white border-slate-300 text-slate-900"
+                        />
+                        <span className="text-slate-400">-</span>
+                        <Input 
+                          type="time" 
+                          value={formSchedule.endTime}
+                          onChange={(e) => setFormSchedule({ ...formSchedule, endTime: e.target.value })}
+                          className="w-32 h-9 bg-white border-slate-300 text-slate-900"
+                        />
+                    </div>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Preview Section */}
-            <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex items-start gap-3">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 shadow-sm">
                 <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div>
                     <h5 className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-1">Preview Logic</h5>
-                    <p className="text-sm text-blue-800 font-medium">"{previewText}"</p>
+                    <p className="text-sm text-slate-900 font-medium leading-relaxed">"{previewText}"</p>
                 </div>
             </div>
 

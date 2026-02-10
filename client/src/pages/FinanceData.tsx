@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import React from "react";
+import Loading from "@/components/Loading";
 import {
   Search,
   Filter,
@@ -61,8 +62,17 @@ type ColumnStyle = {
 };
 
 export default function FinanceData() {
+  const [isLoading, setIsLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("aws");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [columnStyles, setColumnStyles] = useState<Record<string, ColumnStyle>>({});
@@ -292,6 +302,10 @@ export default function FinanceData() {
       [columnId]: Math.max(width, 50)
     }));
   };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   const ResizableHeader = ({ id, label, align = "left", children }: { id: string, label: string, align?: "left" | "center" | "right", children?: React.ReactNode }) => {
     return (

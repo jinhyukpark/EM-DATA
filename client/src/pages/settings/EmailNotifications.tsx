@@ -14,12 +14,18 @@ export default function EmailNotifications() {
       </div>
 
       <Tabs defaultValue="settings" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 max-w-[400px] mb-6">
-          <TabsTrigger value="settings" className="gap-2">
+        <TabsList className="grid w-full grid-cols-2 max-w-[400px] mb-6 bg-slate-100 p-1 rounded-xl">
+          <TabsTrigger 
+            value="settings" 
+            className="gap-2 rounded-lg data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm text-slate-500 font-medium transition-all"
+          >
             <Settings2 className="w-4 h-4" />
             Configuration
           </TabsTrigger>
-          <TabsTrigger value="history" className="gap-2">
+          <TabsTrigger 
+            value="history" 
+            className="gap-2 rounded-lg data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm text-slate-500 font-medium transition-all"
+          >
             <History className="w-4 h-4" />
             Sent History
           </TabsTrigger>

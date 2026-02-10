@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Data Check Notification</title>
+    <style>
+        /* Base Reset */
+        body { margin: 0; padding: 0; min-width: 100%; width: 100% !important; height: 100% !important; background-color: #f1f5f9; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+        table { border-spacing: 0; border-collapse: collapse; }
+        td { word-break: break-word; -webkit-hyphens: auto; -moz-hyphens: auto; hyphens: auto; border-collapse: collapse !important; }
+        img { -ms-interpolation-mode: bicubic; }
+        
+        /* Layout */
+        .wrapper { width: 100%; table-layout: fixed; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #f1f5f9; }
+        .container { margin: 0 auto; width: 600px; max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        
+        /* Header */
+        .header { background-color: #2563eb; padding: 30px 40px; text-align: center; }
+        .header-title { color: #ffffff; font-size: 24px; font-weight: bold; margin: 0; letter-spacing: 0.5px; }
+        
+        /* Content */
+        .content { padding: 40px; }
+        .status-badge { background-color: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: bold; display: inline-block; margin-bottom: 20px; }
+        .message-title { color: #1e293b; font-size: 20px; font-weight: bold; margin: 0 0 10px 0; }
+        .message-body { color: #475569; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0; }
+        
+        /* Info Box */
+        .info-box { background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 16px; margin-bottom: 24px; border-radius: 0 4px 4px 0; }
+        .info-text { color: #334155; font-size: 15px; margin: 0; line-height: 1.5; }
+        
+        /* Details Table */
+        .details-table { width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; margin-bottom: 30px; }
+        .details-header { background-color: #f1f5f9; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 12px 16px; text-align: left; }
+        .details-cell { padding: 14px 16px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-size: 14px; }
+        .details-cell-last { border-bottom: none; }
+        
+        /* Button */
+        .btn-container { text-align: center; margin-top: 10px; }
+        .btn { background-color: #2563eb; color: #ffffff; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block; }
+        
+        /* Footer */
+        .footer { background-color: #f8fafc; padding: 24px 40px; text-align: center; border-top: 1px solid #e2e8f0; }
+        .footer-text { color: #94a3b8; font-size: 12px; line-height: 1.5; margin: 0; }
+        
+        /* Mobile Responsive */
+        @media screen and (max-width: 600px) {
+            .container { width: 100% !important; border-radius: 0 !important; }
+            .header { padding: 20px !important; }
+            .content { padding: 20px !important; }
+        }
+    </style>
+</head>
+<body>
+    <table class="wrapper" role="presentation" cellspacing="0" cellpadding="0">
+        <tr>
+            <td align="center">
+                <table class="container" role="presentation" cellspacing="0" cellpadding="0">
+                    <!-- Header -->
+                    <tr>
+                        <td class="header">
+                            <h1 class="header-title">Daily Data Report</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td class="content">
+                            <div style="text-align: center;">
+                                <span class="status-badge">Check Complete</span>
+                            </div>
+                            <h2 class="message-title">Data Validation Summary</h2>
+                            <p class="message-body">
+                                The daily data validation process has completed. Please review the details below for any anomalies or missing data points detected during the scheduled check.
+                            </p>
+                            
+                            <div class="info-box">
+                                <p class="info-text">
+                                    <strong>Summary:</strong> 1 potential issue found in Stock Data module.
+                                </p>
+                            </div>
+                            
+                            <!-- Detailed Table -->
+                            <table class="details-table" cellspacing="0" cellpadding="0">
+                                <thead>
+                                    <tr>
+                                        <th class="details-header">Module</th>
+                                        <th class="details-header">Metric</th>
+                                        <th class="details-header">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="details-cell">Company Data</td>
+                                        <td class="details-cell">Today's Entries</td>
+                                        <td class="details-cell" style="color: #10b981; font-weight: 600;">Normal</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="details-cell">Stock Data</td>
+                                        <td class="details-cell">Today's Volume</td>
+                                        <td class="details-cell" style="color: #ef4444; font-weight: 600;">Alert (Value: 0)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="details-cell details-cell-last">Finance Data</td>
+                                        <td class="details-cell details-cell-last">Updates</td>
+                                        <td class="details-cell details-cell-last" style="color: #10b981; font-weight: 600;">Normal</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <div class="btn-container">
+                                <a href="#" class="btn">View Full Report</a>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td class="footer">
+                            <p class="footer-text">
+                                This is an automated report sent based on your notification settings.<br>
+                                © 2026 Company Name. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Alert Notification</title>
+    <style>
+        /* Base Reset */
+        body { margin: 0; padding: 0; min-width: 100%; width: 100% !important; height: 100% !important; background-color: #f1f5f9; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+        table { border-spacing: 0; border-collapse: collapse; }
+        td { word-break: break-word; -webkit-hyphens: auto; -moz-hyphens: auto; hyphens: auto; border-collapse: collapse !important; }
+        img { -ms-interpolation-mode: bicubic; }
+        
+        /* Layout */
+        .wrapper { width: 100%; table-layout: fixed; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #f1f5f9; }
+        .container { margin: 0 auto; width: 600px; max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        
+        /* Content */
+        .header { background-color: #dc2626; padding: 30px 40px; text-align: center; }
+        .header-title { color: #ffffff; font-size: 24px; font-weight: bold; margin: 0; letter-spacing: 0.5px; }
+        .content { padding: 40px; }
+        .alert-badge { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: bold; display: inline-block; margin-bottom: 20px; }
+        .message-title { color: #1e293b; font-size: 20px; font-weight: bold; margin: 0 0 10px 0; }
+        .message-body { color: #475569; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0; }
+        
+        /* Data Table */
+        .data-table { width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; margin-bottom: 30px; }
+        .data-table td { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; }
+        .data-label { background-color: #f8fafc; color: #64748b; font-size: 14px; font-weight: 600; width: 40%; }
+        .data-value { color: #0f172a; font-size: 14px; font-weight: 500; }
+        .highlight-value { color: #dc2626; font-weight: bold; }
+        
+        /* Button */
+        .btn-container { text-align: center; margin-top: 10px; }
+        .btn { background-color: #dc2626; color: #ffffff; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block; }
+        
+        /* Footer */
+        .footer { background-color: #f8fafc; padding: 24px 40px; text-align: center; border-top: 1px solid #e2e8f0; }
+        .footer-text { color: #94a3b8; font-size: 12px; line-height: 1.5; margin: 0; }
+        
+        /* Mobile Responsive */
+        @media screen and (max-width: 600px) {
+            .container { width: 100% !important; border-radius: 0 !important; }
+            .header { padding: 20px !important; }
+            .content { padding: 20px !important; }
+            .header-title { font-size: 20px !important; }
+        }
+    </style>
+</head>
+<body>
+    <table class="wrapper" role="presentation" cellspacing="0" cellpadding="0">
+        <tr>
+            <td align="center">
+                <table class="container" role="presentation" cellspacing="0" cellpadding="0">
+                    <!-- Header -->
+                    <tr>
+                        <td class="header">
+                            <h1 class="header-title">CRITICAL ALERT</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td class="content">
+                            <div style="text-align: center;">
+                                <span class="alert-badge">Server Warning</span>
+                            </div>
+                            <h2 class="message-title">Threshold Exceeded Detected</h2>
+                            <p class="message-body">
+                                The monitoring system has detected a metric that exceeds your configured threshold. Immediate attention may be required to prevent service interruption.
+                            </p>
+                            
+                            <!-- Detail Table -->
+                            <table class="data-table" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td class="data-label">Trigger Condition</td>
+                                    <td class="data-value">[AWS &gt; Warning]</td>
+                                </tr>
+                                <tr>
+                                    <td class="data-label">Threshold</td>
+                                    <td class="data-value">Greater than 80</td>
+                                </tr>
+                                <tr>
+                                    <td class="data-label">Current Value</td>
+                                    <td class="data-value highlight-value">85 (Critical)</td>
+                                </tr>
+                                <tr>
+                                    <td class="data-label">Detected At</td>
+                                    <td class="data-value">Feb 10, 2026 14:32:05</td>
+                                </tr>
+                            </table>
+                            
+                            <div class="btn-container">
+                                <a href="#" class="btn">View Server Dashboard</a>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td class="footer">
+                            <p class="footer-text">
+                                This email was sent automatically by the Monitoring System.<br>
+                                © 2026 Company Name. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

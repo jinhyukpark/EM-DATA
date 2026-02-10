@@ -75,7 +75,9 @@ const modules: ModuleConfig[] = [
   { id: "aws", name: "Server (AWS)" },
   { id: "gcp", name: "Server (GCP)" },
   { id: "idc", name: "Server (IDC)" },
-  { id: "settings", name: "Settings" },
+  { id: "user-management", name: "User Management" },
+  { id: "permission-management", name: "Permission Management" },
+  { id: "email-notifications", name: "Email Notifications" },
 ];
 
 const permissionTypes: PermissionType[] = ["View", "Create", "Edit", "Delete", "Export"];

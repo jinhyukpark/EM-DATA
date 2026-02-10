@@ -371,9 +371,9 @@ export default function EmailNotifications() {
       </div>
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-4xl bg-white text-slate-900">
           <DialogHeader>
-            <DialogTitle>{editingId ? "Edit Notification" : "New Notification"}</DialogTitle>
+            <DialogTitle className="text-xl">{editingId ? "Edit Notification" : "New Notification"}</DialogTitle>
             <DialogDescription>
               Configure the conditions that trigger this email alert.
             </DialogDescription>

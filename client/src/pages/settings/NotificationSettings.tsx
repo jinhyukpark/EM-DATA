@@ -593,27 +593,7 @@ export default function NotificationSettings() {
             {/* Recipients */}
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-2">Recipients</label>
-              <div className="flex flex-wrap gap-2">
-                {formRecipients.map(userId => {
-                  const user = users.find(u => u.id === userId);
-                  if (!user) return null;
-                  
-                  return (
-                    <div
-                        key={user.id}
-                        className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full border border-slate-200 bg-white text-sm font-medium text-slate-700 shadow-sm"
-                    >
-                        <span>{user.name}</span>
-                        <button 
-                          onClick={() => toggleRecipient(user.id)}
-                          className="p-0.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                    </div>
-                  );
-                })}
-                
+              <div className="flex flex-wrap gap-2 items-center">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="outline" size="sm" className="rounded-full gap-1.5 h-9 px-3 border-dashed border-slate-300 text-slate-500 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50">
@@ -648,6 +628,26 @@ export default function NotificationSettings() {
                     </Command>
                   </PopoverContent>
                 </Popover>
+
+                {formRecipients.map(userId => {
+                  const user = users.find(u => u.id === userId);
+                  if (!user) return null;
+                  
+                  return (
+                    <div
+                        key={user.id}
+                        className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full border border-slate-200 bg-white text-sm font-medium text-slate-700 shadow-sm animate-in fade-in zoom-in-50 duration-200"
+                    >
+                        <span>{user.name}</span>
+                        <button 
+                          onClick={() => toggleRecipient(user.id)}
+                          className="p-0.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

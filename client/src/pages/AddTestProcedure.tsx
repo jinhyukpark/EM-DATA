@@ -923,18 +923,6 @@ export default function AddTestProcedure() {
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-semibold text-slate-800">Test Items</h2>
                   <div className="flex gap-2">
-                    {selectedTemplateId && (
-                      <Button 
-                        onClick={saveToSelectedTemplate} 
-                        variant="outline" 
-                        className={`gap-2 ${templateModified && testItems.length > 0 ? 'border-blue-300 text-blue-600 hover:bg-blue-50' : 'border-slate-200 text-slate-400'}`}
-                        disabled={!templateModified || testItems.length === 0}
-                        data-testid="save-to-template"
-                      >
-                        <Save className="w-4 h-4" />
-                        Save to Template
-                      </Button>
-                    )}
                     <Button onClick={addTestItem} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-item">
                       <Plus className="w-4 h-4" />
                       Add Test Item

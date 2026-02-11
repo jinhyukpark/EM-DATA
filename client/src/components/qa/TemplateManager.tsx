@@ -235,10 +235,11 @@ export default function TemplateManager({ isOpen, onClose }: TemplateManagerProp
                                 <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
                             </div>
                         )}
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="absolute top-2 right-2">
                             <button 
                                 onClick={(e) => handleDelete(template.id, e)}
-                                className="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-500"
+                                className="p-1.5 rounded hover:bg-red-100 text-slate-400 hover:text-red-600 transition-colors"
+                                title="Delete Template"
                             >
                                 <Trash2 className="w-4 h-4" />
                             </button>

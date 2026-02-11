@@ -118,6 +118,7 @@ type NotificationConfig = {
     isRealtime: boolean;
     startTime: string; // "09:00"
     endTime: string;   // "10:00"
+    daysOfWeek: number[]; // 0=Sun, 1=Mon, ..., 6=Sat
   };
 };
 
@@ -138,7 +139,7 @@ const initialNotifications: NotificationConfig[] = [
       },
     ],
     recipients: [1, 3],
-    schedule: { isRealtime: true, startTime: "09:00", endTime: "18:00" }
+    schedule: { isRealtime: true, startTime: "09:00", endTime: "18:00", daysOfWeek: [0, 1, 2, 3, 4, 5, 6] }
   },
   {
     id: "2",
@@ -156,7 +157,7 @@ const initialNotifications: NotificationConfig[] = [
       },
     ],
     recipients: [1, 2],
-    schedule: { isRealtime: false, startTime: "17:00", endTime: "18:00" }
+    schedule: { isRealtime: false, startTime: "17:00", endTime: "18:00", daysOfWeek: [1, 2, 3, 4, 5] }
   },
 ];
 
@@ -169,10 +170,12 @@ export default function NotificationSettings() {
   const [formName, setFormName] = useState("");
   const [formConditions, setFormConditions] = useState<Condition[]>([]);
   const [formRecipients, setFormRecipients] = useState<number[]>([]);
-  const [formSchedule, setFormSchedule] = useState({ isRealtime: false, startTime: "09:00", endTime: "18:00" });
+  const [formSchedule, setFormSchedule] = useState({ isRealtime: false, startTime: "09:00", endTime: "18:00", daysOfWeek: [1, 2, 3, 4, 5] });
 
   // Preview State
   const [previewText, setPreviewText] = useState("");
+
+  const daysOfWeekLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   useEffect(() => {
     updatePreview();
@@ -192,9 +195,21 @@ export default function NotificationSettings() {
       return `${logic}[${subCatLabel} > ${metricLabel}] is ${op} "${cond.value}"`;
     }).join("");
 
-    const scheduleText = formSchedule.isRealtime 
-      ? "immediately whenever conditions are met" 
-      : `daily between ${formSchedule.startTime} and ${formSchedule.endTime}`;
+    let scheduleText = "";
+    if (formSchedule.isRealtime) {
+        scheduleText = "immediately whenever conditions are met";
+    } else {
+        const selectedDays = formSchedule.daysOfWeek.sort((a, b) => a - b).map(d => daysOfWeekLabels[d]).join(", ");
+        const timeRange = `${formSchedule.startTime} and ${formSchedule.endTime}`;
+        
+        if (formSchedule.daysOfWeek.length === 7) {
+            scheduleText = `daily between ${timeRange}`;
+        } else if (formSchedule.daysOfWeek.length > 0) {
+             scheduleText = `on ${selectedDays} between ${timeRange}`;
+        } else {
+             scheduleText = `(select at least one day) between ${timeRange}`;
+        }
+    }
 
     setPreviewText(`Send alert ${scheduleText} if ${conditionsText}.`);
   };
@@ -214,7 +229,7 @@ export default function NotificationSettings() {
       }
     ]);
     setFormRecipients([]);
-    setFormSchedule({ isRealtime: false, startTime: "09:00", endTime: "18:00" });
+    setFormSchedule({ isRealtime: false, startTime: "09:00", endTime: "18:00", daysOfWeek: [1, 2, 3, 4, 5] });
     setShowModal(true);
   };
 
@@ -304,6 +319,15 @@ export default function NotificationSettings() {
     );
   };
 
+  const toggleDay = (dayIndex: number) => {
+    setFormSchedule(prev => {
+        const newDays = prev.daysOfWeek.includes(dayIndex)
+            ? prev.daysOfWeek.filter(d => d !== dayIndex)
+            : [...prev.daysOfWeek, dayIndex];
+        return { ...prev, daysOfWeek: newDays };
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-6">
@@ -331,7 +355,20 @@ export default function NotificationSettings() {
                     <Clock className="w-3 h-3 text-slate-400" />
                     {notification.schedule.isRealtime 
                       ? "Real-time" 
-                      : `${notification.schedule.startTime} - ${notification.schedule.endTime}`}
+                      : (
+                        <span className="flex items-center gap-1">
+                          {notification.schedule.daysOfWeek?.length === 7 ? (
+                            <span className="font-semibold text-slate-700">Daily</span>
+                          ) : (
+                             <span className="font-semibold text-slate-700">
+                               {notification.schedule.daysOfWeek?.sort((a,b)=>a-b).map(d => daysOfWeekLabels[d]).join(", ")}
+                             </span>
+                          )}
+                          <span className="text-slate-400">|</span>
+                          <span>{notification.schedule.startTime} - {notification.schedule.endTime}</span>
+                        </span>
+                      )
+                    }
                   </div>
                 </div>
                 <div className="flex flex-col gap-2 text-sm text-slate-600 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
@@ -560,6 +597,23 @@ export default function NotificationSettings() {
                 
                 {!formSchedule.isRealtime && (
                   <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2">
+                    <div className="flex items-center gap-1 border-r border-slate-200 pr-4 mr-2">
+                         {daysOfWeekLabels.map((day, index) => (
+                             <button
+                                 key={day}
+                                 onClick={() => toggleDay(index)}
+                                 className={`
+                                     w-7 h-7 rounded-full text-xs font-bold transition-all
+                                     ${formSchedule.daysOfWeek.includes(index) 
+                                         ? "bg-slate-800 text-white shadow-sm ring-2 ring-slate-100" 
+                                         : "bg-white text-slate-400 hover:bg-slate-100 hover:text-slate-600 border border-slate-200"}
+                                 `}
+                             >
+                                 {day.charAt(0)}
+                             </button>
+                         ))}
+                    </div>
+
                     <span className="text-sm text-slate-600 font-medium">Check between:</span>
                     <div className="flex items-center gap-2">
                         <Input 

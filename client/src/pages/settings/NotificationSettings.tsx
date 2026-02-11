@@ -197,7 +197,7 @@ export default function NotificationSettings() {
 
     let scheduleText = "";
     if (formSchedule.isRealtime) {
-        scheduleText = "immediately";
+        scheduleText = "immediately whenever conditions are met";
     } else {
         const selectedDays = formSchedule.daysOfWeek.sort((a, b) => a - b).map(d => daysOfWeekLabels[d]).join(", ");
         const timeRange = `${formSchedule.startTime} and ${formSchedule.endTime}`;
@@ -211,7 +211,7 @@ export default function NotificationSettings() {
         }
     }
 
-    setPreviewText(`Receive email ${scheduleText} if ${conditionsText}.`);
+    setPreviewText(`Send alert ${scheduleText} if ${conditionsText}.`);
   };
 
   const openAddModal = () => {
@@ -584,7 +584,7 @@ export default function NotificationSettings() {
 
             {/* Reference Time Setting */}
             <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">Email Receiving Schedule</label>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">Check Schedule</label>
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center gap-6">
                 <div className="flex items-center gap-2">
                   <Switch 
@@ -592,7 +592,7 @@ export default function NotificationSettings() {
                     onCheckedChange={(checked) => setFormSchedule({ ...formSchedule, isRealtime: checked })}
                     className="data-[state=checked]:bg-blue-600"
                   />
-                  <span className="text-sm font-medium text-slate-700">Receive Anytime</span>
+                  <span className="text-sm font-medium text-slate-700">Real-time / Always On</span>
                 </div>
                 
                 {!formSchedule.isRealtime && (
@@ -614,7 +614,7 @@ export default function NotificationSettings() {
                          ))}
                     </div>
 
-                    <span className="text-sm text-slate-600 font-medium">Receive between:</span>
+                    <span className="text-sm text-slate-600 font-medium">Check between:</span>
                     <div className="flex items-center gap-2">
                         <Input 
                           type="time" 

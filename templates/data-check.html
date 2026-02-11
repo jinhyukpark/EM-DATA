@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Notification</title>
+    <style>
+        /* Reset & Base */
+        body { margin: 0; padding: 0; min-width: 100%; width: 100% !important; height: 100% !important; background-color: #F8FAFC; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; color: #0F172A; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+        table { border-spacing: 0; border-collapse: collapse; }
+        td { padding: 0; }
+        img { border: 0; }
+        
+        /* Layout */
+        .wrapper { width: 100%; table-layout: fixed; background-color: #F8FAFC; padding: 40px 0; }
+        .container { margin: 0 auto; width: 600px; max-width: 600px; background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0; overflow: hidden; }
+        
+        /* Header */
+        .header { padding: 32px 40px; border-bottom: 1px solid #F1F5F9; background-color: #FFFFFF; }
+        .logo { color: #0F172A; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; }
+        
+        /* Content */
+        .content { padding: 40px; }
+        .badge { display: inline-block; padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600; letter-spacing: 0.025em; text-transform: uppercase; margin-bottom: 24px; }
+        .badge-critical { background-color: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+        .badge-info { background-color: #EFF6FF; color: #2563EB; border: 1px solid #DBEAFE; }
+        
+        .title { margin: 0 0 16px; font-size: 24px; font-weight: 700; color: #0F172A; letter-spacing: -0.5px; }
+        .text { margin: 0 0 24px; font-size: 16px; color: #475569; line-height: 1.6; }
+        
+        /* Data Card */
+        .data-card { background-color: #F8FAFC; border-radius: 8px; border: 1px solid #E2E8F0; padding: 24px; margin-bottom: 32px; }
+        .data-row { margin-bottom: 12px; }
+        .data-row:last-child { margin-bottom: 0; }
+        .data-label { font-size: 13px; color: #64748B; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em; display: block; margin-bottom: 4px; }
+        .data-value { font-size: 16px; color: #0F172A; font-weight: 500; font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace; }
+        .data-value-highlight { color: #DC2626; font-weight: 700; }
+        
+        /* Button */
+        .btn { display: inline-block; background-color: #0F172A; color: #FFFFFF; padding: 14px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; text-decoration: none; text-align: center; }
+        .btn:hover { background-color: #1E293B; }
+        
+        /* Footer */
+        .footer { padding: 32px 40px; background-color: #F8FAFC; border-top: 1px solid #E2E8F0; text-align: center; }
+        .footer-text { margin: 0; font-size: 13px; color: #94A3B8; line-height: 1.5; }
+        .footer-link { color: #64748B; text-decoration: underline; }
+        
+        @media screen and (max-width: 600px) {
+            .wrapper { padding: 20px 10px; }
+            .container { width: 100% !important; }
+            .header, .content, .footer { padding: 24px !important; }
+        }
+    </style>
+</head>
+<body>
+    <table class="wrapper" role="presentation" cellspacing="0" cellpadding="0">
+        <tr>
+            <td align="center">
+                <table class="container" role="presentation" cellspacing="0" cellpadding="0">
+                    <!-- Header -->
+                    <tr>
+                        <td class="header">
+                            <span class="logo">Mail Notification</span>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td class="content">
+                            <span class="badge badge-info">Daily Report</span>
+                            <h1 class="title">{Notification Name}</h1>
+                            <p class="text">
+                                The data status has reached the notification criteria set by the user. Please refer to the details below.
+                            </p>
+                            
+                            <!-- Data Visualization -->
+                            <div class="data-card">
+                                <table width="100%" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td style="padding-bottom: 16px; border-bottom: 1px solid #E2E8F0;">
+                                            <span class="data-label">Stock Data Module</span>
+                                            <span class="data-value" style="color: #DC2626;">⚠ 1 Anomaly Detected</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 16px 0; border-bottom: 1px solid #E2E8F0;">
+                                            <span class="data-label">Company Data Module</span>
+                                            <span class="data-value" style="color: #10B981;">✓ Normal</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-top: 16px;">
+                                            <span class="data-label">Finance Data Module</span>
+                                            <span class="data-value" style="color: #10B981;">✓ Normal</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            
+                            <table width="100%" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td align="center">
+                                        <a href="#" class="btn">View Full Report</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td class="footer">
+                            <p class="footer-text">
+                                Sent via Notification System • <a href="#" class="footer-link">Unsubscribe</a><br>
+                                © 2026 Company Name. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -413,7 +413,7 @@ export default function TemplateManager({ isOpen, onClose }: TemplateManagerProp
       </DialogContent>
 
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white">
           <AlertDialogHeader>
             <AlertDialogTitle>Load Template?</AlertDialogTitle>
             <AlertDialogDescription>

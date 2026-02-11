@@ -912,7 +912,7 @@ export default function AddTestProcedure() {
 
                 {/* Reload Confirmation Dialog - Replaced with AlertDialog */}
                 <AlertDialog open={showReloadConfirm} onOpenChange={setShowReloadConfirm}>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="bg-white">
                     <AlertDialogHeader>
                       <AlertDialogTitle>Load Template?</AlertDialogTitle>
                       <AlertDialogDescription>

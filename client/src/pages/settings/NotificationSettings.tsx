@@ -355,7 +355,20 @@ export default function NotificationSettings() {
                     <Clock className="w-3 h-3 text-slate-400" />
                     {notification.schedule.isRealtime 
                       ? "Real-time" 
-                      : `${notification.schedule.startTime} - ${notification.schedule.endTime}`}
+                      : (
+                        <span className="flex items-center gap-1">
+                          {notification.schedule.daysOfWeek?.length === 7 ? (
+                            <span className="font-semibold text-slate-700">Daily</span>
+                          ) : (
+                             <span className="font-semibold text-slate-700">
+                               {notification.schedule.daysOfWeek?.sort((a,b)=>a-b).map(d => daysOfWeekLabels[d]).join(", ")}
+                             </span>
+                          )}
+                          <span className="text-slate-400">|</span>
+                          <span>{notification.schedule.startTime} - {notification.schedule.endTime}</span>
+                        </span>
+                      )
+                    }
                   </div>
                 </div>
                 <div className="flex flex-col gap-2 text-sm text-slate-600 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-100">

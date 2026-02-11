@@ -914,14 +914,14 @@ export default function AddTestProcedure() {
                 <AlertDialog open={showReloadConfirm} onOpenChange={setShowReloadConfirm}>
                   <AlertDialogContent className="bg-white">
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Load Template?</AlertDialogTitle>
-                      <AlertDialogDescription>
+                      <AlertDialogTitle className="text-slate-900">Load Template?</AlertDialogTitle>
+                      <AlertDialogDescription className="text-slate-500">
                         템플릿을 불러오시겠습니까? 변경사항이 초기화됩니다.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel onClick={cancelReload}>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={confirmReload} className="bg-blue-600 hover:bg-blue-700">Load Template</AlertDialogAction>
+                      <AlertDialogCancel onClick={cancelReload} className="text-slate-700 border-slate-200 hover:bg-slate-100 hover:text-slate-900">Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={confirmReload} className="bg-blue-600 hover:bg-blue-700 text-white">Load Template</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

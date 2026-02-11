@@ -153,6 +153,8 @@ const existingTests: Record<string, {
   }
 };
 
+import { useTemplates, Template } from "@/hooks/useTemplates";
+
 export default function AddTestProcedure() {
   const params = useParams();
   const editId = params.id;
@@ -184,79 +186,36 @@ export default function AddTestProcedure() {
   const [serviceSearchQuery, setServiceSearchQuery] = useState("");
 
   // Template state
-  const [templates, setTemplates] = useState<{id: number; name: string; isDefault: boolean; items: TestItem[]}[]>([
-    { id: 1, name: "Basic QA Check", isDefault: true, items: [
-      { id: 1, question: "Is the service responding correctly?", answerType: "ox", options: [] },
-      { id: 2, question: "Are all endpoints accessible?", answerType: "ox", options: [] },
-    ]},
-    { id: 2, name: "Performance Review", isDefault: false, items: [
-      { id: 1, question: "Response time within SLA?", answerType: "ox", options: [] },
-      { id: 2, question: "Performance rating:", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }] },
-      { id: 3, question: "Additional notes:", answerType: "text", options: [] },
-    ]},
-    { id: 3, name: "Data Validation", isDefault: false, items: [
-      { id: 1, question: "Data format is correct?", answerType: "ox", options: [] },
-      { id: 2, question: "All required fields present?", answerType: "ox", options: [] },
-      { id: 3, question: "Data quality score:", answerType: "multiple_choice", options: [{ text: "100%", isNormal: true }, { text: "90-99%", isNormal: true }, { text: "80-89%", isNormal: false }, { text: "Below 80%", isNormal: false }] },
-    ]},
-  ]);
-  const [showTemplateModal, setShowTemplateModal] = useState(false);
-  const [newTemplateName, setNewTemplateName] = useState("");
-  const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
+  const { templates } = useTemplates();
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
   const [templateModified, setTemplateModified] = useState(false);
-  const [templateItems, setTemplateItems] = useState<TestItem[]>([]);
-  const [templateNextId, setTemplateNextId] = useState(1);
-
-  const addTemplateItem = () => {
-    setTemplateItems([...templateItems, { id: templateNextId, question: "", answerType: "text", options: [{ text: "", isNormal: true }, { text: "", isNormal: false }, { text: "", isNormal: false }, { text: "", isNormal: false }] }]);
-    setTemplateNextId(templateNextId + 1);
-  };
-
-  const updateTemplateItem = (id: number, field: string, value: string) => {
-    setTemplateItems(templateItems.map(item => item.id === id ? { ...item, [field]: value } : item));
-  };
-
-  const removeTemplateItem = (id: number) => {
-    setTemplateItems(templateItems.filter(item => item.id !== id));
-  };
-
-  const saveNewTemplate = () => {
-    if (newTemplateName.trim() && templateItems.length > 0) {
-      const newTemplate = {
-        id: templates.length + 1,
-        name: newTemplateName.trim(),
-        isDefault: false,
-        items: templateItems.map(item => ({ ...item })),
-      };
-      setTemplates([...templates, newTemplate]);
-      setNewTemplateName("");
-      setTemplateItems([]);
-      setTemplateNextId(1);
-      setShowTemplateModal(false);
-    }
-  };
-
-  const saveAsTemplate = () => {
-    if (newTemplateName.trim()) {
-      const newId = templates.length + 1;
-      const newTemplate = {
-        id: newId,
-        name: newTemplateName.trim(),
-        isDefault: false,
-        items: [],
-      };
-      setTemplates([...templates, newTemplate]);
-      setSelectedTemplateId(newId);
-      setTestItems([]);
-      setNextId(1);
-      setTemplateModified(false);
-      setNewTemplateName("");
-      setShowTemplateModal(false);
-    }
-  };
+  const [showReloadConfirm, setShowReloadConfirm] = useState(false);
+  const [pendingTemplateId, setPendingTemplateId] = useState<number | null>(null);
 
   const loadTemplate = (templateId: number) => {
+    // If dirty (modified), show confirm
+    if (selectedTemplateId && templateModified) {
+        setPendingTemplateId(templateId);
+        setShowReloadConfirm(true);
+        return;
+    }
+    applyTemplate(templateId);
+  };
+
+  const confirmReload = () => {
+    if (pendingTemplateId) {
+        applyTemplate(pendingTemplateId);
+        setShowReloadConfirm(false);
+        setPendingTemplateId(null);
+    }
+  };
+
+  const cancelReload = () => {
+    setShowReloadConfirm(false);
+    setPendingTemplateId(null);
+  };
+
+  const applyTemplate = (templateId: number) => {
     const template = templates.find(t => t.id === templateId);
     if (template) {
       setTestItems(template.items.map((item, idx) => ({ ...item, id: idx + 1 })));
@@ -264,29 +223,17 @@ export default function AddTestProcedure() {
       setSelectedTemplateId(templateId);
       setTemplateModified(false);
     }
-    setShowTemplateDropdown(false);
   };
 
-  const setDefaultTemplate = (templateId: number) => {
-    setTemplates(templates.map(t => ({ ...t, isDefault: t.id === templateId })));
-  };
-
-  const deleteTemplate = (templateId: number) => {
-    setTemplates(templates.filter(t => t.id !== templateId));
-    if (selectedTemplateId === templateId) {
-      setSelectedTemplateId(null);
-    }
-  };
-
-  const saveToSelectedTemplate = () => {
-    if (selectedTemplateId && testItems.length > 0) {
-      setTemplates(templates.map(t => 
-        t.id === selectedTemplateId 
-          ? { ...t, items: testItems.map(item => ({ ...item })) }
-          : t
-      ));
-      setTemplateModified(false);
-    }
+  const handleTestItemChange = () => {
+     if (selectedTemplateId) {
+         setTemplateModified(true);
+         // If modified, user might want to visually see it's "detached" or just dirty
+         // Requirement: "template toggle is released" -> deselect template visually if modified?
+         // User said: "template toggle is released"
+         setSelectedTemplateId(null); 
+         setTemplateModified(false); // Reset modified since we detached
+     }
   };
 
   const toggleDayInspector = (dayId: string, inspectorName: string) => {
@@ -336,7 +283,7 @@ export default function AddTestProcedure() {
       },
     ]);
     setNextId(nextId + 1);
-    if (selectedTemplateId) setTemplateModified(true);
+    handleTestItemChange();
   };
 
   const updateTestItem = (id: number, field: keyof TestItem, value: any) => {
@@ -345,7 +292,7 @@ export default function AddTestProcedure() {
         item.id === id ? { ...item, [field]: value } : item
       )
     );
-    if (selectedTemplateId) setTemplateModified(true);
+    handleTestItemChange();
   };
 
   const updateOption = (itemId: number, optionIndex: number, value: string) => {
@@ -359,7 +306,7 @@ export default function AddTestProcedure() {
         return item;
       })
     );
-    if (selectedTemplateId) setTemplateModified(true);
+    handleTestItemChange();
   };
 
   const toggleOptionNormal = (itemId: number, optionIndex: number) => {
@@ -376,12 +323,12 @@ export default function AddTestProcedure() {
         return item;
       })
     );
-    if (selectedTemplateId) setTemplateModified(true);
+    handleTestItemChange();
   };
 
   const removeTestItem = (id: number) => {
     setTestItems(testItems.filter((item) => item.id !== id));
-    if (selectedTemplateId) setTemplateModified(true);
+    handleTestItemChange();
   };
 
   const addOption = (itemId: number) => {
@@ -393,7 +340,7 @@ export default function AddTestProcedure() {
         return item;
       })
     );
-    if (selectedTemplateId) setTemplateModified(true);
+    handleTestItemChange();
   };
 
   const removeOption = (itemId: number, optionIndex: number) => {
@@ -406,7 +353,7 @@ export default function AddTestProcedure() {
         return item;
       })
     );
-    if (selectedTemplateId) setTemplateModified(true);
+    handleTestItemChange();
   };
 
   const handleSave = () => {
@@ -926,7 +873,7 @@ export default function AddTestProcedure() {
                       <div
                         key={template.id}
                         className={`relative p-4 pt-8 bg-white rounded-lg border-2 transition-all cursor-pointer hover:shadow-md group min-h-[100px] ${
-                          selectedTemplateId === template.id 
+                          selectedTemplateId === template.id && !templateModified
                             ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200" 
                             : template.isDefault 
                               ? "border-blue-300 bg-blue-50/30" 
@@ -939,22 +886,8 @@ export default function AddTestProcedure() {
                             <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
                           </div>
                         )}
-                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 rounded p-0.5">
-                          <button
-                            onClick={(e) => { e.stopPropagation(); setDefaultTemplate(template.id); }}
-                            className={`p-1.5 rounded hover:bg-slate-100 ${template.isDefault ? 'text-amber-500' : 'text-slate-400'}`}
-                            title="Set as default"
-                          >
-                            <Star className={`w-4 h-4 ${template.isDefault ? 'fill-amber-500' : ''}`} />
-                          </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); deleteTemplate(template.id); }}
-                            className="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-500"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
+                        {/* Only show default star, removed delete/edit actions */}
+                        
                         <div className="flex items-center gap-2 mb-2">
                           <FileStack className="w-4 h-4 text-blue-500 flex-shrink-0" />
                           <span className="font-medium text-sm text-slate-800 truncate">{template.name}</span>
@@ -963,57 +896,25 @@ export default function AddTestProcedure() {
                       </div>
                     ))}
                     
-                    {/* Add New Template Button */}
-                    <button
-                      onClick={() => setShowTemplateModal(true)}
-                      className="p-4 bg-white rounded-lg border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-2 min-h-[100px]"
-                      data-testid="add-template-btn"
-                    >
-                      <Plus className="w-6 h-6 text-blue-500" />
-                      <span className="text-xs font-medium text-slate-600">New Template</span>
-                    </button>
+                    {/* Add New Template Button - Removed */}
                   </div>
                 </div>
 
-                {/* Create Template Modal */}
-                {showTemplateModal && (
+                {/* Reload Confirmation Dialog */}
+                {showReloadConfirm && (
                   <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="bg-white rounded-xl w-full max-w-md shadow-xl"
+                      className="bg-white rounded-xl w-full max-w-sm shadow-xl p-6"
                     >
-                      <div className="p-6 border-b border-slate-200">
-                        <h3 className="text-lg font-semibold text-slate-800">Create New Template</h3>
-                        <p className="text-sm text-slate-500 mt-1">Save current test items as a reusable template</p>
-                      </div>
-                      
-                      <div className="p-6">
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Template Name</label>
-                        <Input
-                          value={newTemplateName}
-                          onChange={(e) => setNewTemplateName(e.target.value)}
-                          placeholder="e.g., Basic QA Checklist"
-                          data-testid="template-name-input"
-                        />
-                        {testItems.length > 0 && (
-                          <p className="text-xs text-slate-500 mt-2">
-                            This will save {testItems.length} test item(s) from below as a template.
-                          </p>
-                        )}
-                      </div>
-                      
-                      <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50 rounded-b-xl">
-                        <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" onClick={() => { setShowTemplateModal(false); setNewTemplateName(""); }}>
-                          Cancel
-                        </Button>
-                        <Button 
-                          onClick={saveAsTemplate} 
-                          className="bg-blue-600 hover:bg-blue-700" 
-                          disabled={!newTemplateName.trim()}
-                        >
-                          Save Template
-                        </Button>
+                      <h3 className="text-lg font-semibold text-slate-800 mb-2">Reload Template?</h3>
+                      <p className="text-sm text-slate-600 mb-6">
+                        You have unsaved changes. Reloading the template will discard your current changes.
+                      </p>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={cancelReload}>Cancel</Button>
+                        <Button onClick={confirmReload} className="bg-blue-600 hover:bg-blue-700">Reload</Button>
                       </div>
                     </motion.div>
                   </div>

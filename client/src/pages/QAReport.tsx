@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import Loading from "@/components/Loading";
+import TemplateManager from "@/components/qa/TemplateManager";
 import {
   Plus,
   Calendar,
@@ -119,6 +120,7 @@ export default function QAReport() {
   const [filterDateFrom, setFilterDateFrom] = useState("");
   const [filterDateTo, setFilterDateTo] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showTemplateManager, setShowTemplateManager] = useState(false);
   const [newProcedure, setNewProcedure] = useState({
     serviceName: "",
     procedureName: "",
@@ -229,11 +231,20 @@ export default function QAReport() {
                   <span className="sm:hidden">Add</span>
                 </Button>
               </Link>
+              <Button 
+                variant="outline" 
+                className="gap-2 border-slate-300 text-slate-700 hover:bg-slate-50" 
+                onClick={() => setShowTemplateManager(true)}
+              >
+                <FileCheck className="w-4 h-4" />
+                <span className="hidden sm:inline">Templates</span>
+              </Button>
             </div>
           </div>
         </header>
 
         <main className="flex-1 p-4 md:p-6 lg:p-8 bg-white overflow-y-auto overflow-x-hidden">
+          <TemplateManager isOpen={showTemplateManager} onClose={() => setShowTemplateManager(false)} />
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="chart-container-light">

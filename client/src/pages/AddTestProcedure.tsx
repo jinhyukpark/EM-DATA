@@ -36,6 +36,7 @@ import {
   Save,
   FileStack,
   MoreVertical,
+  Copy,
 } from "lucide-react";
 import {
   Popover,
@@ -287,6 +288,41 @@ export default function AddTestProcedure() {
       ));
       setTemplateModified(false);
     }
+  };
+
+  const handleDuplicateTemplate = () => {
+    if (selectedTemplateId && testItems.length > 0) {
+        // 1. Save current changes to the existing template
+        const updatedTemplates = templates.map(t => 
+            t.id === selectedTemplateId 
+                ? { ...t, items: testItems.map(item => ({ ...item })) }
+                : t
+        );
+        
+        // 2. Create new duplicate template
+        const originalTemplate = updatedTemplates.find(t => t.id === selectedTemplateId);
+        if (originalTemplate) {
+            const newId = Math.max(...updatedTemplates.map(t => t.id)) + 1;
+            const newTemplate = {
+                ...originalTemplate,
+                id: newId,
+                name: `${originalTemplate.name} (Copy)`,
+                isDefault: false,
+                items: testItems.map(item => ({ ...item }))
+            };
+            
+            setTemplates([...updatedTemplates, newTemplate]);
+            setSelectedTemplateId(newId);
+            setTemplateModified(false);
+        }
+    }
+  };
+
+  const handleItemSettingsSave = () => {
+    if (selectedTemplateId && templateModified) {
+        saveToSelectedTemplate();
+    }
+    setItemSettingsOpen(false);
   };
 
   const toggleDayInspector = (dayId: string, inspectorName: string) => {
@@ -906,7 +942,7 @@ export default function AddTestProcedure() {
                       </Button>
                       <Button
                         className="bg-blue-600 hover:bg-blue-700"
-                        onClick={() => setItemSettingsOpen(false)}
+                        onClick={handleItemSettingsSave}
                         data-testid="button-item-settings-save"
                       >
                         Save
@@ -1024,14 +1060,14 @@ export default function AddTestProcedure() {
                   <div className="flex gap-2">
                     {selectedTemplateId && (
                       <Button 
-                        onClick={saveToSelectedTemplate} 
+                        onClick={handleDuplicateTemplate} 
                         variant="outline" 
-                        className={`gap-2 ${templateModified && testItems.length > 0 ? 'border-blue-300 text-blue-600 hover:bg-blue-50' : 'border-slate-200 text-slate-400'}`}
-                        disabled={!templateModified || testItems.length === 0}
-                        data-testid="save-to-template"
+                        className="gap-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-blue-600"
+                        disabled={testItems.length === 0}
+                        data-testid="duplicate-template"
                       >
-                        <Save className="w-4 h-4" />
-                        Save to Template
+                        <Copy className="w-4 h-4" />
+                        Duplicate
                       </Button>
                     )}
                     <Button onClick={addTestItem} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-item">

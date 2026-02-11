@@ -42,6 +42,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Sidebar from "@/components/Sidebar";
@@ -193,8 +203,8 @@ export default function AddTestProcedure() {
   const [pendingTemplateId, setPendingTemplateId] = useState<number | null>(null);
 
   const loadTemplate = (templateId: number) => {
-    // If dirty (modified), show confirm
-    if (selectedTemplateId && templateModified) {
+    // If there are existing items (modified or created from scratch), show confirm
+    if (testItems.length > 0) {
         setPendingTemplateId(templateId);
         setShowReloadConfirm(true);
         return;
@@ -900,25 +910,21 @@ export default function AddTestProcedure() {
                   </div>
                 </div>
 
-                {/* Reload Confirmation Dialog */}
-                {showReloadConfirm && (
-                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="bg-white rounded-xl w-full max-w-sm shadow-xl p-6"
-                    >
-                      <h3 className="text-lg font-semibold text-slate-800 mb-2">Reload Template?</h3>
-                      <p className="text-sm text-slate-600 mb-6">
-                        You have unsaved changes. Reloading the template will discard your current changes.
-                      </p>
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={cancelReload}>Cancel</Button>
-                        <Button onClick={confirmReload} className="bg-blue-600 hover:bg-blue-700">Reload</Button>
-                      </div>
-                    </motion.div>
-                  </div>
-                )}
+                {/* Reload Confirmation Dialog - Replaced with AlertDialog */}
+                <AlertDialog open={showReloadConfirm} onOpenChange={setShowReloadConfirm}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Load Template?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        템플릿을 불러오시겠습니까? 변경사항이 초기화됩니다.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel onClick={cancelReload}>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={confirmReload} className="bg-blue-600 hover:bg-blue-700">Load Template</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
 
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-semibold text-slate-800">Test Items</h2>

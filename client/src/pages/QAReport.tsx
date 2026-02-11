@@ -224,21 +224,23 @@ export default function QAReport() {
                   <p className="text-xs md:text-sm text-slate-500 mt-0.5 hidden sm:block">Service operation status and quality assurance management</p>
                 </div>
               </div>
-              <Link href="/qa-report/add">
-                <Button variant="outline" className="gap-2 border-blue-600 text-blue-600 hover:bg-blue-50" data-testid="add-test-button">
-                  <Plus className="w-4 h-4" />
-                  <span className="hidden sm:inline">Add Test Procedure</span>
-                  <span className="sm:hidden">Add</span>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  className="gap-2 border-slate-300 text-slate-700 hover:bg-slate-50" 
+                  onClick={() => setShowTemplateManager(true)}
+                >
+                  <FileCheck className="w-4 h-4" />
+                  <span className="hidden sm:inline">Templates</span>
                 </Button>
-              </Link>
-              <Button 
-                variant="outline" 
-                className="gap-2 border-slate-300 text-slate-700 hover:bg-slate-50" 
-                onClick={() => setShowTemplateManager(true)}
-              >
-                <FileCheck className="w-4 h-4" />
-                <span className="hidden sm:inline">Templates</span>
-              </Button>
+                <Link href="/qa-report/add">
+                  <Button variant="outline" className="gap-2 border-blue-600 text-blue-600 hover:bg-blue-50" data-testid="add-test-button">
+                    <Plus className="w-4 h-4" />
+                    <span className="hidden sm:inline">Add Test Procedure</span>
+                    <span className="sm:hidden">Add</span>
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </header>

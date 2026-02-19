@@ -548,6 +548,7 @@ function PermissionsTab() {
   const [editRoleId, setEditRoleId] = useState<number | null>(null);
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
   const [showDeleteRoleModal, setShowDeleteRoleModal] = useState(false);
+  const [showCannotDeleteModal, setShowCannotDeleteModal] = useState(false);
   const [deleteRoleId, setDeleteRoleId] = useState<number | null>(null);
   const [deleteRoleName, setDeleteRoleName] = useState(" ");
 
@@ -596,9 +597,14 @@ function PermissionsTab() {
   const requestDeleteRole = (id: number) => {
     const role = roles.find(r => r.id === id);
     if (role) {
-      setDeleteRoleId(id);
-      setDeleteRoleName(role.role);
-      setShowDeleteRoleModal(true);
+      if (role.users > 0) {
+        setDeleteRoleName(role.role);
+        setShowCannotDeleteModal(true);
+      } else {
+        setDeleteRoleId(id);
+        setDeleteRoleName(role.role);
+        setShowDeleteRoleModal(true);
+      }
       setMenuOpenId(null);
     }
   };
@@ -637,6 +643,31 @@ function PermissionsTab() {
 
   return (
     <div className="space-y-6">
+      {/* Cannot Delete Role Modal */}
+      {showCannotDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]" onClick={() => setShowCannotDeleteModal(false)}>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl p-6 w-full max-w-sm shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-2 text-red-600">
+                <Shield className="w-5 h-5" />
+                <h3 className="text-lg font-semibold text-slate-800">Cannot Delete Role</h3>
+            </div>
+            <p className="text-sm text-slate-600 mb-6">
+              The <span className="font-bold text-slate-800">{deleteRoleName}</span> role cannot be deleted because there are users currently assigned to it.
+              <br/><br/>
+              Please reassign these users to a different role before deleting.
+            </p>
+            <div className="flex justify-end">
+              <Button onClick={() => setShowCannotDeleteModal(false)}>Close</Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {/* Delete Confirmation Modal */}
       {showDeleteRoleModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]" onClick={() => setShowDeleteRoleModal(false)}>

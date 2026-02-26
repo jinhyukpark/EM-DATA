@@ -443,10 +443,10 @@ const cloudServers = [
     bgColor: "bg-orange-50",
     borderColor: "border-orange-200",
     servers: [
-      { name: "EC2 - Data Collector", status: "running", cpu: 45, memory: 62, region: "ap-northeast-2" },
-      { name: "EC2 - API Server", status: "running", cpu: 32, memory: 48, region: "ap-northeast-2" },
-      { name: "RDS - PostgreSQL", status: "running", cpu: 28, memory: 71, region: "ap-northeast-2" },
-      { name: "Lambda - Scheduler", status: "running", cpu: 12, memory: 24, region: "ap-northeast-2" },
+      { name: "EC2 - Data Collector", status: "running", cpu: 45, memory: 62, disk: 30, region: "ap-northeast-2" },
+      { name: "EC2 - API Server", status: "running", cpu: 32, memory: 48, disk: 55, region: "ap-northeast-2" },
+      { name: "RDS - PostgreSQL", status: "running", cpu: 28, memory: 71, disk: 82, region: "ap-northeast-2" },
+      { name: "Lambda - Scheduler", status: "running", cpu: 12, memory: 24, disk: 5, region: "ap-northeast-2" },
     ],
   },
   {
@@ -456,9 +456,9 @@ const cloudServers = [
     bgColor: "bg-blue-50",
     borderColor: "border-blue-200",
     servers: [
-      { name: "GCE - ML Pipeline", status: "running", cpu: 78, memory: 85, region: "asia-northeast3" },
-      { name: "Cloud SQL", status: "running", cpu: 35, memory: 52, region: "asia-northeast3" },
-      { name: "Cloud Run - API", status: "warning", cpu: 92, memory: 88, region: "asia-northeast3" },
+      { name: "GCE - ML Pipeline", status: "running", cpu: 78, memory: 85, disk: 60, region: "asia-northeast3" },
+      { name: "Cloud SQL", status: "running", cpu: 35, memory: 52, disk: 45, region: "asia-northeast3" },
+      { name: "Cloud Run - API", status: "warning", cpu: 92, memory: 88, disk: 15, region: "asia-northeast3" },
     ],
   },
   {
@@ -468,9 +468,9 @@ const cloudServers = [
     bgColor: "bg-green-50",
     borderColor: "border-green-200",
     servers: [
-      { name: "Server - Backup", status: "running", cpu: 15, memory: 34, region: "KR-1" },
-      { name: "Server - Archive", status: "stopped", cpu: 0, memory: 0, region: "KR-1" },
-      { name: "Cloud DB", status: "running", cpu: 22, memory: 45, region: "KR-2" },
+      { name: "Server - Backup", status: "running", cpu: 15, memory: 34, disk: 95, region: "KR-1" },
+      { name: "Server - Archive", status: "stopped", cpu: 0, memory: 0, disk: 80, region: "KR-1" },
+      { name: "Cloud DB", status: "running", cpu: 22, memory: 45, disk: 40, region: "KR-2" },
     ],
   },
 ];
@@ -574,44 +574,66 @@ function ServerStatusSection() {
                   </div>
                   <div className="text-xs text-slate-400 mb-2">{server.region}</div>
                   {server.status !== "stopped" && (
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="text-slate-500">CPU</span>
-                          <span className={`font-medium ${server.cpu > 80 ? "text-red-500" : "text-slate-700"}`}>
-                            {server.cpu}%
-                          </span>
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span className="text-slate-500">CPU</span>
+                            <span className={`font-medium ${server.cpu > 80 ? "text-red-500" : "text-slate-700"}`}>
+                              {server.cpu}%
+                            </span>
+                          </div>
+                          <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${
+                                server.cpu > 80
+                                  ? "bg-red-500"
+                                  : server.cpu > 60
+                                  ? "bg-amber-500"
+                                  : "bg-emerald-500"
+                              }`}
+                              style={{ width: `${server.cpu}%` }}
+                            />
+                          </div>
                         </div>
-                        <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all ${
-                              server.cpu > 80
-                                ? "bg-red-500"
-                                : server.cpu > 60
-                                ? "bg-amber-500"
-                                : "bg-emerald-500"
-                            }`}
-                            style={{ width: `${server.cpu}%` }}
-                          />
+                        <div>
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span className="text-slate-500">Memory</span>
+                            <span className={`font-medium ${server.memory > 80 ? "text-red-500" : "text-slate-700"}`}>
+                              {server.memory}%
+                            </span>
+                          </div>
+                          <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${
+                                server.memory > 80
+                                  ? "bg-red-500"
+                                  : server.memory > 60
+                                  ? "bg-amber-500"
+                                  : "bg-emerald-500"
+                              }`}
+                              style={{ width: `${server.memory}%` }}
+                            />
+                          </div>
                         </div>
                       </div>
                       <div>
                         <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="text-slate-500">Memory</span>
-                          <span className={`font-medium ${server.memory > 80 ? "text-red-500" : "text-slate-700"}`}>
-                            {server.memory}%
+                          <span className="text-slate-500">Disk</span>
+                          <span className={`font-medium ${server.disk > 80 ? "text-red-500" : "text-slate-700"}`}>
+                            {server.disk}%
                           </span>
                         </div>
                         <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all ${
-                              server.memory > 80
+                              server.disk > 80
                                 ? "bg-red-500"
-                                : server.memory > 60
+                                : server.disk > 60
                                 ? "bg-amber-500"
                                 : "bg-emerald-500"
                             }`}
-                            style={{ width: `${server.memory}%` }}
+                            style={{ width: `${server.disk}%` }}
                           />
                         </div>
                       </div>

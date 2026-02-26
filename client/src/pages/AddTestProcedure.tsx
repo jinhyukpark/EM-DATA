@@ -629,31 +629,24 @@ export default function AddTestProcedure() {
                       </div>
                     )}
                     {assignedInspectors.length > 0 && (
-                      <div className="flex items-center gap-3 mt-3 p-3 bg-slate-50 rounded-lg">
-                        <div className="flex -space-x-2">
-                          {assignedInspectors.map((name) => {
-                            const inspector = inspectors.find(i => i.name === name);
-                            return (
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {assignedInspectors.map((name) => {
+                          const inspector = inspectors.find(i => i.name === name);
+                          return (
+                            <div key={name} className="flex items-center gap-2 p-1.5 pr-3 bg-slate-50 border border-slate-200 rounded-full">
                               <div
-                                key={name}
-                                className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-medium text-white border-2 border-white"
+                                className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-medium text-white shadow-sm"
                                 title={name}
                               >
                                 {inspector?.avatar || name.split(" ").map(n => n[0]).join("")}
                               </div>
-                            );
-                          })}
-                        </div>
-                        <div className="flex flex-wrap gap-1 flex-1">
-                          {assignedInspectors.map((name) => (
-                            <span key={name} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
-                              {name}
-                              <button onClick={() => toggleInspector(name)} className="hover:text-blue-900">
+                              <span className="text-xs font-medium text-slate-700">{name}</span>
+                              <button onClick={() => toggleInspector(name)} className="ml-1 text-slate-400 hover:text-slate-600 focus:outline-none">
                                 <X className="w-3 h-3" />
                               </button>
-                            </span>
-                          ))}
-                        </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>

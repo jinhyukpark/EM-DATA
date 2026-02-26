@@ -622,20 +622,24 @@ export default function TestDetail() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 mt-1">
                   <p className="text-sm text-slate-500">Inspectors:</p>
-                  <div className="flex -space-x-2">
-                    {test.inspectors.map((inspector, idx) => (
-                      <div
-                        key={idx}
-                        className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-medium text-white border-2 border-white"
-                        title={inspector}
-                      >
-                        {inspector.split(" ").map(n => n[0]).join("")}
-                      </div>
-                    ))}
+                  <div className="flex flex-wrap gap-2">
+                    {test.inspectors.map((inspectorName, idx) => {
+                       const inspectorData = inspectors.find(i => i.name === inspectorName);
+                       return (
+                         <div key={idx} className="flex items-center gap-2 py-1 px-2 bg-slate-50 rounded-full border border-slate-100">
+                           <div
+                             className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-medium text-white shadow-sm"
+                             title={inspectorName}
+                           >
+                             {inspectorData?.avatar || inspectorName.split(" ").map(n => n[0]).join("")}
+                           </div>
+                           <span className="text-xs font-medium text-slate-700">{inspectorName}</span>
+                         </div>
+                       );
+                    })}
                   </div>
-                  <span className="text-sm text-slate-600">{test.inspectors.join(", ")}</span>
                 </div>
               </div>
 

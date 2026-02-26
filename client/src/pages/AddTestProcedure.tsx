@@ -684,16 +684,16 @@ export default function AddTestProcedure() {
                   <div className="flex items-center gap-3 mb-4">
                     <button
                       onClick={() => setIsRepeating(!isRepeating)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
-                        isRepeating
-                          ? "border-blue-500 bg-blue-50 text-blue-700"
-                          : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                      className={`relative w-11 h-6 rounded-full transition-colors ${
+                        isRepeating ? "bg-blue-600" : "bg-slate-200"
                       }`}
                       data-testid="toggle-repeat"
                     >
-                      <Repeat className="w-4 h-4" />
-                      <span className="text-sm font-medium">Repeating Task</span>
+                      <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                        isRepeating ? "translate-x-5" : ""
+                      }`} />
                     </button>
+                    <span className="text-sm font-medium text-slate-700">Repeating Task</span>
                   </div>
 
                   {isRepeating && (
@@ -723,22 +723,6 @@ export default function AddTestProcedure() {
                         
                         {selectedDays.length > 0 && (
                           <div className="mt-4 space-y-3">
-                            <div className="flex items-center gap-3">
-                              <button
-                                onClick={() => setAssignPerDay(!assignPerDay)}
-                                className={`relative w-11 h-6 rounded-full transition-colors ${
-                                  assignPerDay ? "bg-blue-600" : "bg-slate-200"
-                                }`}
-                                data-testid="toggle-assign-per-day"
-                              >
-                                <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                                  assignPerDay ? "translate-x-5" : ""
-                                }`} />
-                              </button>
-                              <span className="text-sm font-medium text-slate-600">Assign Inspectors per Day</span>
-                            </div>
-                            
-                            {assignPerDay && (
                             <div className="grid gap-2">
                               {selectedDays.map((dayId) => {
                                 const day = weekDays.find(d => d.id === dayId);
@@ -812,7 +796,6 @@ export default function AddTestProcedure() {
                                 );
                               })}
                             </div>
-                            )}
                           </div>
                         )}
                       </div>

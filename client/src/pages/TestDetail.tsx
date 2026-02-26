@@ -57,6 +57,14 @@ const stabilityData = [
   { date: "2025-01-10", normal: 51, abnormal: 0 },
 ];
 
+const inspectors = [
+  { id: 1, name: "John Kim", role: "Senior Engineer", avatar: "JK" },
+  { id: 2, name: "Sarah Lee", role: "QA Lead", avatar: "SL" },
+  { id: 3, name: "Mike Park", role: "DevOps Engineer", avatar: "MP" },
+  { id: 4, name: "Emily Choi", role: "Data Engineer", avatar: "EC" },
+  { id: 5, name: "David Jung", role: "Backend Developer", avatar: "DJ" },
+];
+
 type TestItemResult = {
   id: number;
   question: string;
@@ -462,7 +470,7 @@ export default function TestDetail() {
     if (currentSchedule?.testResults && !editedScheduleResults[selectedSchedule]) {
       setEditedScheduleResults(prev => ({
         ...prev,
-        [selectedSchedule]: [...currentSchedule.testResults]
+        [selectedSchedule]: [...(currentSchedule.testResults || [])]
       }));
     }
     setIsEditing(true);

@@ -43,6 +43,16 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // Categories Definition
 const categories = [
@@ -188,6 +198,10 @@ export default function NotificationSettings() {
 
   // Preview State
   const [previewText, setPreviewText] = useState("");
+  
+  // Alert Dialog State
+  const [showTypeChangeAlert, setShowTypeChangeAlert] = useState(false);
+  const [pendingTypeChange, setPendingTypeChange] = useState<"basic" | "custom" | null>(null);
 
   const daysOfWeekLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -231,6 +245,48 @@ export default function NotificationSettings() {
     }
 
     setPreviewText(`If ${conditionsText}, send alert ${scheduleText}.`);
+  };
+
+  const handleTypeChangeRequest = (newType: "basic" | "custom") => {
+    if (newType === formType) return;
+
+    let hasExistingData = false;
+    if (formType === "basic") {
+      hasExistingData = formConditions.length > 1 || formConditions.some(c => c.value !== "");
+    } else {
+      hasExistingData = formCustomCurl.trim() !== "";
+    }
+
+    if (hasExistingData) {
+      setPendingTypeChange(newType);
+      setShowTypeChangeAlert(true);
+    } else {
+      setFormType(newType);
+    }
+  };
+
+  const confirmTypeChange = () => {
+    if (pendingTypeChange) {
+      setFormType(pendingTypeChange);
+      if (pendingTypeChange === "basic") {
+        setFormConditions([
+          { 
+            id: Math.random().toString(36).substr(2, 9), 
+            categoryGroup: "internal", 
+            subCategory: "company_data", 
+            metric: "today", 
+            operator: "gt", 
+            value: "", 
+            logic: "AND" 
+          }
+        ]);
+        setFormSchedule({ isRealtime: false, startTime: "09:00", endTime: "18:00", daysOfWeek: [1, 2, 3, 4, 5] });
+      } else {
+        setFormCustomCurl("");
+      }
+    }
+    setShowTypeChangeAlert(false);
+    setPendingTypeChange(null);
   };
 
   const openAddModal = () => {
@@ -495,7 +551,7 @@ export default function NotificationSettings() {
             {/* Type Selection */}
             <div className="flex gap-4 p-1 bg-slate-100 rounded-lg w-fit">
                 <button 
-                  onClick={() => setFormType("basic")}
+                  onClick={() => handleTypeChangeRequest("basic")}
                   className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${formType === "basic" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                 >
                   <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${formType === "basic" ? "border-blue-600" : "border-slate-400"}`}>
@@ -504,7 +560,7 @@ export default function NotificationSettings() {
                   Basic Notification
                 </button>
                 <button 
-                  onClick={() => setFormType("custom")}
+                  onClick={() => handleTypeChangeRequest("custom")}
                   className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${formType === "custom" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                 >
                   <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${formType === "custom" ? "border-blue-600" : "border-slate-400"}`}>
@@ -791,6 +847,27 @@ export default function NotificationSettings() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={showTypeChangeAlert} onOpenChange={setShowTypeChangeAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Change Notification Type?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Changing the notification type will reset your current {formType === "basic" ? "conditions and schedule" : "webhook cURL"} settings. 
+              Are you sure you want to change it to {pendingTypeChange === "basic" ? "Basic" : "Custom"}?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setShowTypeChangeAlert(false);
+              setPendingTypeChange(null);
+            }}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmTypeChange} className="bg-blue-600 hover:bg-blue-700">
+              Change Type
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

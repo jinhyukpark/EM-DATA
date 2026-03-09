@@ -565,26 +565,28 @@ export default function NotificationSettings() {
 
           <div className="space-y-6 py-4">
             {/* Type Selection */}
-            <div className="flex gap-4 p-1 bg-slate-100 rounded-lg w-fit">
-                <button 
-                  onClick={() => handleTypeChangeRequest("basic")}
-                  className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${formType === "basic" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
-                >
-                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${formType === "basic" ? "border-blue-600" : "border-slate-400"}`}>
-                    {formType === "basic" && <div className="w-2 h-2 rounded-full bg-blue-600" />}
-                  </div>
-                  Basic Notification
-                </button>
-                <button 
-                  onClick={() => handleTypeChangeRequest("custom")}
-                  className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${formType === "custom" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
-                >
-                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${formType === "custom" ? "border-blue-600" : "border-slate-400"}`}>
-                    {formType === "custom" && <div className="w-2 h-2 rounded-full bg-blue-600" />}
-                  </div>
-                  Custom (cURL)
-                </button>
-            </div>
+            {!editingId && (
+              <div className="flex gap-4 p-1 bg-slate-100 rounded-lg w-fit">
+                  <button 
+                    onClick={() => handleTypeChangeRequest("basic")}
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${formType === "basic" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                  >
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${formType === "basic" ? "border-blue-600" : "border-slate-400"}`}>
+                      {formType === "basic" && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                    </div>
+                    Basic Notification
+                  </button>
+                  <button 
+                    onClick={() => handleTypeChangeRequest("custom")}
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${formType === "custom" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                  >
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${formType === "custom" ? "border-blue-600" : "border-slate-400"}`}>
+                      {formType === "custom" && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                    </div>
+                    Custom (cURL)
+                  </button>
+              </div>
+            )}
 
             {/* Name Input */}
             <div>

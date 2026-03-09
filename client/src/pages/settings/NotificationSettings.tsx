@@ -255,7 +255,19 @@ export default function NotificationSettings() {
       // Always warn when changing type of an already saved notification
       hasExistingData = true;
     } else if (formType === "basic") {
-      hasExistingData = formConditions.length > 1 || formConditions.some(c => c.value !== "");
+      const isDefaultCondition = formConditions.length === 1 && 
+        formConditions[0].categoryGroup === "internal" &&
+        formConditions[0].subCategory === "company_data" &&
+        formConditions[0].metric === "today" &&
+        formConditions[0].operator === "gt" &&
+        formConditions[0].value === "";
+        
+      const isDefaultSchedule = formSchedule.isRealtime === false &&
+        formSchedule.startTime === "09:00" &&
+        formSchedule.endTime === "18:00" &&
+        formSchedule.daysOfWeek.length === 5;
+
+      hasExistingData = !isDefaultCondition || !isDefaultSchedule;
     } else {
       hasExistingData = formCustomCurl.trim() !== "";
     }

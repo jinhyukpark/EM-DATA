@@ -43,6 +43,16 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // Categories Definition
 const categories = [
@@ -112,9 +122,11 @@ type NotificationConfig = {
   id: string;
   name: string;
   isActive: boolean;
-  conditions: Condition[];
+  type: "basic" | "custom";
+  conditions?: Condition[];
+  customCurl?: string;
   recipients: number[]; // User IDs
-  schedule: {
+  schedule?: {
     isRealtime: boolean;
     startTime: string; // "09:00"
     endTime: string;   // "10:00"
@@ -127,6 +139,7 @@ const initialNotifications: NotificationConfig[] = [
     id: "1",
     name: "Server Warning Alert",
     isActive: true,
+    type: "basic",
     conditions: [
       { 
         id: "c1", 
@@ -145,6 +158,7 @@ const initialNotifications: NotificationConfig[] = [
     id: "2",
     name: "Daily Stock Data Check",
     isActive: true,
+    type: "basic",
     conditions: [
       { 
         id: "c2", 
@@ -159,6 +173,14 @@ const initialNotifications: NotificationConfig[] = [
     recipients: [1, 2],
     schedule: { isRealtime: false, startTime: "17:00", endTime: "18:00", daysOfWeek: [1, 2, 3, 4, 5] }
   },
+  {
+    id: "3",
+    name: "Manual DB Sync Alert",
+    isActive: false,
+    type: "custom",
+    customCurl: "curl -X POST https://api.example.com/sync",
+    recipients: [4],
+  },
 ];
 
 export default function NotificationSettings() {
@@ -168,20 +190,31 @@ export default function NotificationSettings() {
 
   // Form State
   const [formName, setFormName] = useState("");
+  const [formType, setFormType] = useState<"basic" | "custom">("basic");
   const [formConditions, setFormConditions] = useState<Condition[]>([]);
+  const [formCustomCurl, setFormCustomCurl] = useState("");
   const [formRecipients, setFormRecipients] = useState<number[]>([]);
   const [formSchedule, setFormSchedule] = useState({ isRealtime: false, startTime: "09:00", endTime: "18:00", daysOfWeek: [1, 2, 3, 4, 5] });
 
   // Preview State
   const [previewText, setPreviewText] = useState("");
+  
+  // Alert Dialog State
+  const [showTypeChangeAlert, setShowTypeChangeAlert] = useState(false);
+  const [pendingTypeChange, setPendingTypeChange] = useState<"basic" | "custom" | null>(null);
 
   const daysOfWeekLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   useEffect(() => {
     updatePreview();
-  }, [formConditions, formName, formSchedule]);
+  }, [formConditions, formName, formSchedule, formType]);
 
   const updatePreview = () => {
+    if (formType === "custom") {
+      setPreviewText("Custom notification triggered manually via cURL.");
+      return;
+    }
+
     if (formConditions.length === 0) {
       setPreviewText("Please add at least one condition.");
       return;
@@ -214,9 +247,69 @@ export default function NotificationSettings() {
     setPreviewText(`If ${conditionsText}, send alert ${scheduleText}.`);
   };
 
+  const handleTypeChangeRequest = (newType: "basic" | "custom") => {
+    if (newType === formType) return;
+
+    let hasExistingData = false;
+    if (editingId) {
+      // Always warn when changing type of an already saved notification
+      hasExistingData = true;
+    } else if (formType === "basic") {
+      const isDefaultCondition = formConditions.length === 1 && 
+        formConditions[0].categoryGroup === "internal" &&
+        formConditions[0].subCategory === "company_data" &&
+        formConditions[0].metric === "today" &&
+        formConditions[0].operator === "gt" &&
+        formConditions[0].value === "";
+        
+      const isDefaultSchedule = formSchedule.isRealtime === false &&
+        formSchedule.startTime === "09:00" &&
+        formSchedule.endTime === "18:00" &&
+        formSchedule.daysOfWeek.length === 5;
+
+      hasExistingData = !isDefaultCondition || !isDefaultSchedule;
+    } else {
+      hasExistingData = formCustomCurl.trim() !== "";
+    }
+
+    if (hasExistingData) {
+      setPendingTypeChange(newType);
+      setShowTypeChangeAlert(true);
+    } else {
+      setFormType(newType);
+    }
+  };
+
+  const confirmTypeChange = () => {
+    if (pendingTypeChange) {
+      // Reset the data of the type we are leaving
+      if (formType === "basic") {
+        setFormConditions([
+          { 
+            id: Math.random().toString(36).substr(2, 9), 
+            categoryGroup: "internal", 
+            subCategory: "company_data", 
+            metric: "today", 
+            operator: "gt", 
+            value: "", 
+            logic: "AND" 
+          }
+        ]);
+        setFormSchedule({ isRealtime: false, startTime: "09:00", endTime: "18:00", daysOfWeek: [1, 2, 3, 4, 5] });
+      } else {
+        setFormCustomCurl("");
+      }
+      setFormType(pendingTypeChange);
+    }
+    setShowTypeChangeAlert(false);
+    setPendingTypeChange(null);
+  };
+
   const openAddModal = () => {
     setEditingId(null);
     setFormName("");
+    setFormType("basic");
+    setFormCustomCurl("");
     setFormConditions([
       { 
         id: Math.random().toString(36).substr(2, 9), 
@@ -236,31 +329,38 @@ export default function NotificationSettings() {
   const openEditModal = (notification: NotificationConfig) => {
     setEditingId(notification.id);
     setFormName(notification.name);
-    setFormConditions([...notification.conditions]);
+    setFormType(notification.type);
+    setFormCustomCurl(notification.customCurl || "");
+    setFormConditions(notification.conditions ? [...notification.conditions] : []);
     setFormRecipients([...notification.recipients]);
-    setFormSchedule({ ...notification.schedule });
+    setFormSchedule(notification.schedule ? { ...notification.schedule } : { isRealtime: false, startTime: "09:00", endTime: "18:00", daysOfWeek: [1, 2, 3, 4, 5] });
     setShowModal(true);
   };
 
   const handleSave = () => {
-    if (!formName || formConditions.length === 0) return;
+    if (!formName) return;
+    if (formType === "basic" && formConditions.length === 0) return;
 
     if (editingId) {
       setNotifications(prev => prev.map(n => n.id === editingId ? {
         ...n,
         name: formName,
-        conditions: formConditions,
+        type: formType,
+        conditions: formType === "basic" ? formConditions : undefined,
+        customCurl: formType === "custom" ? formCustomCurl : undefined,
         recipients: formRecipients,
-        schedule: formSchedule
+        schedule: formType === "basic" ? formSchedule : undefined
       } : n));
     } else {
       const newNotification: NotificationConfig = {
         id: Math.random().toString(36).substr(2, 9),
         name: formName,
         isActive: true,
-        conditions: formConditions,
+        type: formType,
+        conditions: formType === "basic" ? formConditions : undefined,
+        customCurl: formType === "custom" ? formCustomCurl : undefined,
         recipients: formRecipients,
-        schedule: formSchedule
+        schedule: formType === "basic" ? formSchedule : undefined
       };
       setNotifications([...notifications, newNotification]);
     }
@@ -351,56 +451,67 @@ export default function NotificationSettings() {
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${notification.isActive ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}>
                     {notification.isActive ? "Active" : "Inactive"}
                   </span>
-                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-50 border border-slate-100 text-xs text-slate-600">
-                    <Clock className="w-3 h-3 text-slate-400" />
-                    {notification.schedule.isRealtime 
-                      ? "Real-time" 
-                      : (
-                        <span className="flex items-center gap-1">
-                          {notification.schedule.daysOfWeek?.length === 7 ? (
-                            <span className="font-semibold text-slate-700">Daily</span>
-                          ) : (
-                             <span className="font-semibold text-slate-700">
-                               {notification.schedule.daysOfWeek?.sort((a,b)=>a-b).map(d => daysOfWeekLabels[d]).join(", ")}
-                             </span>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${notification.type === "custom" ? "bg-purple-50 text-purple-600 border-purple-100" : "bg-blue-50 text-blue-600 border-blue-100"}`}>
+                    {notification.type === "custom" ? "Custom" : "Basic"}
+                  </span>
+                  {notification.type === "basic" && notification.schedule && (
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-50 border border-slate-100 text-xs text-slate-600">
+                      <Clock className="w-3 h-3 text-slate-400" />
+                      {notification.schedule.isRealtime 
+                        ? "Real-time" 
+                        : (
+                          <span className="flex items-center gap-1">
+                            {notification.schedule.daysOfWeek?.length === 7 ? (
+                              <span className="font-semibold text-slate-700">Daily</span>
+                            ) : (
+                               <span className="font-semibold text-slate-700">
+                                 {notification.schedule.daysOfWeek?.sort((a,b)=>a-b).map(d => daysOfWeekLabels[d]).join(", ")}
+                               </span>
+                            )}
+                            <span className="text-slate-400">|</span>
+                            <span>{notification.schedule.startTime} - {notification.schedule.endTime}</span>
+                          </span>
+                        )
+                      }
+                    </div>
+                  )}
+                </div>
+                {notification.type === "basic" && notification.conditions ? (
+                  <div className="flex flex-col gap-2 text-sm text-slate-600 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                    {notification.conditions.map((cond, idx) => {
+                      const subCatLabel = subCategories[cond.categoryGroup].find(s => s.value === cond.subCategory)?.label;
+                      const metricLabel = metrics[cond.categoryGroup].find(m => m.value === cond.metric)?.label;
+                      const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim();
+                      
+                      return (
+                        <div key={cond.id} className="flex flex-col">
+                          {idx > 0 && (
+                            <div className="flex items-center gap-2 py-1.5">
+                              <div className="h-px bg-slate-200 flex-1" />
+                              <span className="text-xs font-bold text-slate-400 uppercase bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                                {cond.logic}
+                              </span>
+                              <div className="h-px bg-slate-200 flex-1" />
+                            </div>
                           )}
-                          <span className="text-slate-400">|</span>
-                          <span>{notification.schedule.startTime} - {notification.schedule.endTime}</span>
-                        </span>
-                      )
-                    }
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2 text-sm text-slate-600 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                  {notification.conditions.map((cond, idx) => {
-                    const subCatLabel = subCategories[cond.categoryGroup].find(s => s.value === cond.subCategory)?.label;
-                    const metricLabel = metrics[cond.categoryGroup].find(m => m.value === cond.metric)?.label;
-                    const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim();
-                    
-                    return (
-                      <div key={cond.id} className="flex flex-col">
-                        {idx > 0 && (
-                          <div className="flex items-center gap-2 py-1.5">
-                            <div className="h-px bg-slate-200 flex-1" />
-                            <span className="text-xs font-bold text-slate-400 uppercase bg-white px-2 py-0.5 rounded-full border border-slate-200">
-                              {cond.logic}
+                          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-md border border-slate-200 shadow-sm">
+                            <span className="font-semibold text-slate-700">
+                              [{subCatLabel} &gt; {metricLabel}]
                             </span>
-                            <div className="h-px bg-slate-200 flex-1" />
+                            <span className="text-slate-500 text-xs uppercase font-medium">{op}</span>
+                            <span className="font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-xs">
+                              {cond.value}
+                            </span>
                           </div>
-                        )}
-                        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-md border border-slate-200 shadow-sm">
-                          <span className="font-semibold text-slate-700">
-                            [{subCatLabel} &gt; {metricLabel}]
-                          </span>
-                          <span className="text-slate-500 text-xs uppercase font-medium">{op}</span>
-                          <span className="font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-xs">
-                            {cond.value}
-                          </span>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="mb-3 bg-slate-50 p-3 rounded-lg border border-slate-100 font-mono text-xs text-slate-600 overflow-x-auto">
+                    {notification.customCurl}
+                  </div>
+                )}
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-slate-400 font-medium uppercase tracking-wide">Recipients:</span>
                   <div className="flex -space-x-2">
@@ -453,6 +564,30 @@ export default function NotificationSettings() {
           </DialogHeader>
 
           <div className="space-y-6 py-4">
+            {/* Type Selection */}
+            {!editingId && (
+              <div className="flex gap-4 p-1 bg-slate-100 rounded-lg w-fit">
+                  <button 
+                    onClick={() => handleTypeChangeRequest("basic")}
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${formType === "basic" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                  >
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${formType === "basic" ? "border-blue-600" : "border-slate-400"}`}>
+                      {formType === "basic" && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                    </div>
+                    Basic Notification
+                  </button>
+                  <button 
+                    onClick={() => handleTypeChangeRequest("custom")}
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${formType === "custom" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                  >
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${formType === "custom" ? "border-blue-600" : "border-slate-400"}`}>
+                      {formType === "custom" && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                    </div>
+                    Custom (cURL)
+                  </button>
+              </div>
+            )}
+
             {/* Name Input */}
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-1.5">Notification Name</label>
@@ -464,185 +599,203 @@ export default function NotificationSettings() {
               />
             </div>
 
-            {/* Conditions Builder */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">Conditions</label>
-              <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                {formConditions.map((condition, index) => (
-                  <div key={condition.id} className="flex items-start gap-2 animate-in slide-in-from-left-2 duration-200">
-                    {index > 0 && (
-                      <div className="w-20 pt-1">
-                         <Select 
-                            value={condition.logic} 
-                            onValueChange={(val: "AND" | "OR") => updateCondition(condition.id, "logic", val)}
-                         >
-                            <SelectTrigger className="h-9 bg-white border-slate-300 text-xs font-bold text-slate-700">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="AND">AND</SelectItem>
-                                <SelectItem value="OR">OR</SelectItem>
-                            </SelectContent>
-                         </Select>
+            {formType === "basic" ? (
+              <>
+                {/* Conditions Builder */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-900 mb-2">Conditions</label>
+                  <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    {formConditions.map((condition, index) => (
+                      <div key={condition.id} className="flex items-start gap-2 animate-in slide-in-from-left-2 duration-200">
+                        {index > 0 && (
+                          <div className="w-20 pt-1">
+                             <Select 
+                                value={condition.logic} 
+                                onValueChange={(val: "AND" | "OR") => updateCondition(condition.id, "logic", val)}
+                             >
+                                <SelectTrigger className="h-9 bg-white border-slate-300 text-xs font-bold text-slate-700">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="AND">AND</SelectItem>
+                                    <SelectItem value="OR">OR</SelectItem>
+                                </SelectContent>
+                             </Select>
+                          </div>
+                        )}
+                        <div className="flex-1 grid grid-cols-12 gap-2">
+                            {/* 1. Sub Category Selection (Page) */}
+                            <div className="col-span-3">
+                                <Select 
+                                    value={condition.subCategory} 
+                                    onValueChange={(val) => {
+                                      // Find which group this value belongs to
+                                      const group = subCategories.internal.some(s => s.value === val) ? "internal" : "server";
+                                      updateCondition(condition.id, "categoryGroup", group);
+                                      updateCondition(condition.id, "subCategory", val);
+                                    }}
+                                >
+                                    <SelectTrigger className="h-9 bg-white border-slate-300 text-sm text-slate-700 font-medium">
+                                        <SelectValue placeholder="Page" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <div className="mb-1 px-2 text-xs font-semibold text-slate-500">Internal Data</div>
+                                        {subCategories.internal.map(s => (
+                                            <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                                        ))}
+                                        <div className="mt-2 mb-1 px-2 text-xs font-semibold text-slate-500">Server Management</div>
+                                        {subCategories.server.map(s => (
+                                            <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* 2. Metric Selection (Today/Total/etc) */}
+                            <div className="col-span-3">
+                                <Select 
+                                    value={condition.metric} 
+                                    onValueChange={(val) => updateCondition(condition.id, "metric", val)}
+                                >
+                                    <SelectTrigger className="h-9 bg-white border-slate-300 text-sm text-slate-700">
+                                        <SelectValue placeholder="Metric" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {metrics[condition.categoryGroup].map(m => (
+                                            <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* 3. Operator */}
+                            <div className="col-span-3">
+                                <Select 
+                                    value={condition.operator} 
+                                    onValueChange={(val) => updateCondition(condition.id, "operator", val)}
+                                >
+                                    <SelectTrigger className="h-9 bg-white border-slate-300 text-sm text-slate-700">
+                                        <SelectValue placeholder="Operator" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {operators.map(op => (
+                                            <SelectItem key={op.value} value={op.value}>{op.label}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* 4. Value */}
+                            <div className="col-span-3 relative">
+                                <Input 
+                                    value={condition.value}
+                                    onChange={(e) => updateCondition(condition.id, "value", e.target.value)}
+                                    placeholder="Value"
+                                    className="h-9 bg-white border-slate-300 text-sm text-slate-900 placeholder:text-slate-400"
+                                />
+                            </div>
+                        </div>
+                        {formConditions.length > 1 && (
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-9 w-9 text-slate-400 hover:text-red-600 hover:bg-red-50 flex-shrink-0"
+                                onClick={() => removeCondition(condition.id)}
+                            >
+                                <X className="w-5 h-5" />
+                            </Button>
+                        )}
                       </div>
-                    )}
-                    <div className="flex-1 grid grid-cols-12 gap-2">
-                        {/* 1. Sub Category Selection (Page) */}
-                        <div className="col-span-3">
-                            <Select 
-                                value={condition.subCategory} 
-                                onValueChange={(val) => {
-                                  // Find which group this value belongs to
-                                  const group = subCategories.internal.some(s => s.value === val) ? "internal" : "server";
-                                  updateCondition(condition.id, "categoryGroup", group);
-                                  updateCondition(condition.id, "subCategory", val);
-                                }}
-                            >
-                                <SelectTrigger className="h-9 bg-white border-slate-300 text-sm text-slate-700 font-medium">
-                                    <SelectValue placeholder="Page" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <div className="mb-1 px-2 text-xs font-semibold text-slate-500">Internal Data</div>
-                                    {subCategories.internal.map(s => (
-                                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                                    ))}
-                                    <div className="mt-2 mb-1 px-2 text-xs font-semibold text-slate-500">Server Management</div>
-                                    {subCategories.server.map(s => (
-                                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                    ))}
+                    
+                    <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={addCondition} 
+                        className="mt-2 text-sm gap-2 border-slate-300 text-slate-700 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 w-full justify-center bg-white shadow-sm"
+                    >
+                        <Plus className="w-4 h-4" /> Add Another Condition
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Reference Time Setting */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-900 mb-2">Email Receiving Schedule</label>
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                      <Switch 
+                        checked={formSchedule.isRealtime}
+                        onCheckedChange={(checked) => setFormSchedule({ ...formSchedule, isRealtime: checked })}
+                        className="data-[state=checked]:bg-blue-600"
+                      />
+                      <span className="text-sm font-medium text-slate-700">Always Active (24/7)</span>
+                    </div>
+                    
+                    {!formSchedule.isRealtime && (
+                      <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2">
+                        <div className="flex items-center gap-1 border-r border-slate-200 pr-4 mr-2">
+                             {daysOfWeekLabels.map((day, index) => (
+                                 <button
+                                     key={day}
+                                     onClick={() => toggleDay(index)}
+                                     className={`
+                                         w-7 h-7 rounded-full text-xs font-bold transition-all
+                                         ${formSchedule.daysOfWeek.includes(index) 
+                                             ? "bg-slate-800 text-white shadow-sm ring-2 ring-slate-100" 
+                                             : "bg-white text-slate-400 hover:bg-slate-100 hover:text-slate-600 border border-slate-200"}
+                                     `}
+                                 >
+                                     {day.charAt(0)}
+                                 </button>
+                             ))}
                         </div>
 
-                        {/* 2. Metric Selection (Today/Total/etc) */}
-                        <div className="col-span-3">
-                            <Select 
-                                value={condition.metric} 
-                                onValueChange={(val) => updateCondition(condition.id, "metric", val)}
-                            >
-                                <SelectTrigger className="h-9 bg-white border-slate-300 text-sm text-slate-700">
-                                    <SelectValue placeholder="Metric" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {metrics[condition.categoryGroup].map(m => (
-                                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* 3. Operator */}
-                        <div className="col-span-3">
-                            <Select 
-                                value={condition.operator} 
-                                onValueChange={(val) => updateCondition(condition.id, "operator", val)}
-                            >
-                                <SelectTrigger className="h-9 bg-white border-slate-300 text-sm text-slate-700">
-                                    <SelectValue placeholder="Operator" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {operators.map(op => (
-                                        <SelectItem key={op.value} value={op.value}>{op.label}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* 4. Value */}
-                        <div className="col-span-3 relative">
+                        <span className="text-sm text-slate-600 font-medium">Active between:</span>
+                        <div className="flex items-center gap-2">
                             <Input 
-                                value={condition.value}
-                                onChange={(e) => updateCondition(condition.id, "value", e.target.value)}
-                                placeholder="Value"
-                                className="h-9 bg-white border-slate-300 text-sm text-slate-900 placeholder:text-slate-400"
+                              type="time" 
+                              value={formSchedule.startTime}
+                              onChange={(e) => setFormSchedule({ ...formSchedule, startTime: e.target.value })}
+                              className="w-32 h-9 bg-white border-slate-300 text-slate-900"
+                            />
+                            <span className="text-slate-400">-</span>
+                            <Input 
+                              type="time" 
+                              value={formSchedule.endTime}
+                              onChange={(e) => setFormSchedule({ ...formSchedule, endTime: e.target.value })}
+                              className="w-32 h-9 bg-white border-slate-300 text-slate-900"
                             />
                         </div>
-                    </div>
-                    {formConditions.length > 1 && (
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-9 w-9 text-slate-400 hover:text-red-600 hover:bg-red-50 flex-shrink-0"
-                            onClick={() => removeCondition(condition.id)}
-                        >
-                            <X className="w-5 h-5" />
-                        </Button>
+                      </div>
                     )}
                   </div>
-                ))}
-                
-                <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={addCondition} 
-                    className="mt-2 text-sm gap-2 border-slate-300 text-slate-700 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 w-full justify-center bg-white shadow-sm"
-                >
-                    <Plus className="w-4 h-4" /> Add Another Condition
-                </Button>
-              </div>
-            </div>
-
-            {/* Reference Time Setting */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">Email Receiving Schedule</label>
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center gap-6">
-                <div className="flex items-center gap-2">
-                  <Switch 
-                    checked={formSchedule.isRealtime}
-                    onCheckedChange={(checked) => setFormSchedule({ ...formSchedule, isRealtime: checked })}
-                    className="data-[state=checked]:bg-blue-600"
-                  />
-                  <span className="text-sm font-medium text-slate-700">Always Active (24/7)</span>
                 </div>
-                
-                {!formSchedule.isRealtime && (
-                  <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2">
-                    <div className="flex items-center gap-1 border-r border-slate-200 pr-4 mr-2">
-                         {daysOfWeekLabels.map((day, index) => (
-                             <button
-                                 key={day}
-                                 onClick={() => toggleDay(index)}
-                                 className={`
-                                     w-7 h-7 rounded-full text-xs font-bold transition-all
-                                     ${formSchedule.daysOfWeek.includes(index) 
-                                         ? "bg-slate-800 text-white shadow-sm ring-2 ring-slate-100" 
-                                         : "bg-white text-slate-400 hover:bg-slate-100 hover:text-slate-600 border border-slate-200"}
-                                 `}
-                             >
-                                 {day.charAt(0)}
-                             </button>
-                         ))}
-                    </div>
 
-                    <span className="text-sm text-slate-600 font-medium">Active between:</span>
-                    <div className="flex items-center gap-2">
-                        <Input 
-                          type="time" 
-                          value={formSchedule.startTime}
-                          onChange={(e) => setFormSchedule({ ...formSchedule, startTime: e.target.value })}
-                          className="w-32 h-9 bg-white border-slate-300 text-slate-900"
-                        />
-                        <span className="text-slate-400">-</span>
-                        <Input 
-                          type="time" 
-                          value={formSchedule.endTime}
-                          onChange={(e) => setFormSchedule({ ...formSchedule, endTime: e.target.value })}
-                          className="w-32 h-9 bg-white border-slate-300 text-slate-900"
-                        />
+                {/* Preview Section */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 shadow-sm">
+                    <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <h5 className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-1">Preview Logic</h5>
+                        <p className="text-sm text-slate-900 font-medium leading-relaxed">"{previewText}"</p>
                     </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Preview Section */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 shadow-sm">
-                <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Custom cURL Input */}
                 <div>
-                    <h5 className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-1">Preview Logic</h5>
-                    <p className="text-sm text-slate-900 font-medium leading-relaxed">"{previewText}"</p>
+                  <label className="block text-sm font-semibold text-slate-900 mb-1.5">Webhook cURL</label>
+                  <p className="text-xs text-slate-500 mb-2">Enter the custom cURL command to trigger this notification manually.</p>
+                  <textarea 
+                    value={formCustomCurl} 
+                    onChange={(e) => setFormCustomCurl(e.target.value)} 
+                    placeholder="curl -X POST https://api.example.com/webhook..."
+                    className="w-full min-h-[120px] p-3 font-mono text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                  />
                 </div>
-            </div>
+              </>
+            )}
 
             {/* Recipients */}
             <div>
@@ -712,6 +865,26 @@ export default function NotificationSettings() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={showTypeChangeAlert} onOpenChange={setShowTypeChangeAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>알림 옵션 변경</AlertDialogTitle>
+            <AlertDialogDescription>
+              알림 옵션 변경 시 기존 설정이 초기화됩니다. 옵션을 변경하시겠습니까?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setShowTypeChangeAlert(false);
+              setPendingTypeChange(null);
+            }}>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmTypeChange} className="bg-blue-600 hover:bg-blue-700">
+              변경하기
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

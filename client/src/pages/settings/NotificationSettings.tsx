@@ -251,7 +251,10 @@ export default function NotificationSettings() {
     if (newType === formType) return;
 
     let hasExistingData = false;
-    if (formType === "basic") {
+    if (editingId) {
+      // Always warn when changing type of an already saved notification
+      hasExistingData = true;
+    } else if (formType === "basic") {
       hasExistingData = formConditions.length > 1 || formConditions.some(c => c.value !== "");
     } else {
       hasExistingData = formCustomCurl.trim() !== "";
@@ -267,8 +270,8 @@ export default function NotificationSettings() {
 
   const confirmTypeChange = () => {
     if (pendingTypeChange) {
-      setFormType(pendingTypeChange);
-      if (pendingTypeChange === "basic") {
+      // Reset the data of the type we are leaving
+      if (formType === "basic") {
         setFormConditions([
           { 
             id: Math.random().toString(36).substr(2, 9), 
@@ -284,6 +287,7 @@ export default function NotificationSettings() {
       } else {
         setFormCustomCurl("");
       }
+      setFormType(pendingTypeChange);
     }
     setShowTypeChangeAlert(false);
     setPendingTypeChange(null);
@@ -851,19 +855,18 @@ export default function NotificationSettings() {
       <AlertDialog open={showTypeChangeAlert} onOpenChange={setShowTypeChangeAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Change Notification Type?</AlertDialogTitle>
+            <AlertDialogTitle>알림 옵션 변경</AlertDialogTitle>
             <AlertDialogDescription>
-              Changing the notification type will reset your current {formType === "basic" ? "conditions and schedule" : "webhook cURL"} settings. 
-              Are you sure you want to change it to {pendingTypeChange === "basic" ? "Basic" : "Custom"}?
+              알림 옵션 변경 시 기존 설정이 초기화됩니다. 옵션을 변경하시겠습니까?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => {
               setShowTypeChangeAlert(false);
               setPendingTypeChange(null);
-            }}>Cancel</AlertDialogCancel>
+            }}>취소</AlertDialogCancel>
             <AlertDialogAction onClick={confirmTypeChange} className="bg-blue-600 hover:bg-blue-700">
-              Change Type
+              변경하기
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

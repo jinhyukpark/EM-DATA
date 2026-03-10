@@ -243,7 +243,7 @@ export default function GCPServers() {
                       <DropdownMenuSeparator />
                       <DropdownMenuGroup>
                         <DropdownMenuLabel className="text-xs text-slate-500 font-medium">일</DropdownMenuLabel>
-                        {["1일", "3일", "6일"].map(t => (
+                        {["1일", "2일", "4일", "6일"].map(t => (
                           <DropdownMenuItem key={t} onClick={() => setTimeRange(t)} className={`text-xs ${timeRange === t ? 'bg-slate-100 font-medium' : ''}`}>
                             {t}
                           </DropdownMenuItem>

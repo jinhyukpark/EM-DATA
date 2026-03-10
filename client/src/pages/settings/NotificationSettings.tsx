@@ -443,7 +443,6 @@ export default function NotificationSettings() {
           Add Notification
         </Button>
       </div>
-
       <div className="grid gap-4">
         {notifications.map(notification => (
           <div key={notification.id} className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
@@ -556,7 +555,6 @@ export default function NotificationSettings() {
             </div>
         )}
       </div>
-
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="max-w-4xl bg-white text-slate-900">
           <DialogHeader>
@@ -882,11 +880,10 @@ export default function NotificationSettings() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
       <AlertDialog open={showTypeChangeAlert} onOpenChange={setShowTypeChangeAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>알림 옵션 변경</AlertDialogTitle>
+            <AlertDialogTitle>Notification Option Change</AlertDialogTitle>
             <AlertDialogDescription>
               알림 옵션 변경 시 기존 설정이 초기화됩니다. 옵션을 변경하시겠습니까?
             </AlertDialogDescription>

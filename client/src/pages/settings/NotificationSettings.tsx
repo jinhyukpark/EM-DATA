@@ -794,7 +794,7 @@ export default function NotificationSettings() {
 {`curl -X POST \\
      -H "api-key: 111111111111111111" \\
      -H "Content-Type: application/json" \\
-     -d '{"text": "테크스톰 배포를 시작합니다."}'   https://url`}</pre>
+     -d '{"text": "메시지를 입력해주세요."}'   https://url`}</pre>
                     <Button 
                       variant="ghost" 
                       size="icon" 
@@ -803,7 +803,7 @@ export default function NotificationSettings() {
                         navigator.clipboard.writeText(`curl -X POST \\
      -H "api-key: 111111111111111111" \\
      -H "Content-Type: application/json" \\
-     -d '{"text": "테크스톰 배포를 시작합니다."}'   https://url`);
+     -d '{"text": "메시지를 입력해주세요."}'   https://url`);
                       }}
                       className="absolute top-2 right-2 h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700/50 bg-slate-800/50 backdrop-blur-sm transition-all"
                       title="Copy to clipboard"

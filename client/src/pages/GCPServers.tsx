@@ -81,33 +81,55 @@ export default function GCPServers() {
   const [timeRange, setTimeRange] = useState("1주");
 
   const statusData = useMemo(() => {
-    let points = 7;
-    let labelGen = (i: number) => `${i}`;
+    let points = 12;
+    let intervalMs = 5 * 60 * 1000;
+    let format = "time";
     
     if (timeRange.includes("시간")) {
-      points = 6;
       const hours = parseInt(timeRange);
-      const step = (hours * 60) / 5;
-      labelGen = (i) => `-${Math.round((5 - i) * step)}분`;
+      intervalMs = 5 * 60 * 1000; // 5 mins
+      points = hours * 12 + 1; 
+      format = "time";
     } else if (timeRange.includes("일")) {
       const days = parseInt(timeRange);
-      points = 6;
-      labelGen = (i) => days === 1 ? `-${(5-i)*4}시간` : `-${(5-i)*Math.ceil(days/5)}일`;
+      if (days === 1) { points = 25; intervalMs = 60 * 60 * 1000; }
+      else if (days === 3) { points = 25; intervalMs = 3 * 60 * 60 * 1000; }
+      else if (days === 6) { points = 25; intervalMs = 6 * 60 * 60 * 1000; }
+      format = "datetime";
     } else if (timeRange.includes("주")) {
       const weeks = parseInt(timeRange);
-      points = weeks >= 4 ? weeks : 7;
-      labelGen = (i) => weeks >= 4 ? `-${points-i-1}주` : `-${points-i-1}일`;
+      if (weeks === 1) { points = 15; intervalMs = 12 * 60 * 60 * 1000; }
+      else { points = weeks * 7 + 1; intervalMs = 24 * 60 * 60 * 1000; }
+      format = "date";
     }
 
-    return Array.from({ length: points }).map((_, i) => {
-      const isLast = i === points - 1;
-      return {
-        date: isLast ? '현재' : labelGen(i),
+    const now = new Date();
+    // Snap to nearest 5 minutes
+    now.setMinutes(Math.floor(now.getMinutes() / 5) * 5);
+    now.setSeconds(0);
+    now.setMilliseconds(0);
+
+    const data = [];
+    for (let i = points - 1; i >= 0; i--) {
+      const d = new Date(now.getTime() - i * intervalMs);
+      const mo = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const h = String(d.getHours()).padStart(2, '0');
+      const m = String(d.getMinutes()).padStart(2, '0');
+      
+      let dateLabel = "";
+      if (format === "time") dateLabel = `${h}:${m}`;
+      else if (format === "datetime") dateLabel = `${mo}/${day} ${h}:${m}`;
+      else if (format === "date") dateLabel = `${mo}/${day}`;
+
+      data.push({
+        date: dateLabel,
         success: Math.floor(Math.random() * 5) + 8,
         warning: Math.floor(Math.random() * 2),
         error: Math.floor(Math.random() * 2),
-      };
-    });
+      });
+    }
+    return data;
   }, [timeRange]);
 
   return (
@@ -258,7 +280,7 @@ export default function GCPServers() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={statusData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} minTickGap={30} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
                     <Tooltip
                       contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}

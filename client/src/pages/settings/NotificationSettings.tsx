@@ -885,16 +885,16 @@ export default function NotificationSettings() {
           <AlertDialogHeader>
             <AlertDialogTitle>Notification Option Change</AlertDialogTitle>
             <AlertDialogDescription>
-              알림 옵션 변경 시 기존 설정이 초기화됩니다. 옵션을 변경하시겠습니까?
+              Changing notification options will reset your existing settings. Would you like to change the options?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => {
               setShowTypeChangeAlert(false);
               setPendingTypeChange(null);
-            }}>취소</AlertDialogCancel>
+            }}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={confirmTypeChange} className="bg-blue-600 hover:bg-blue-700">
-              변경하기
+              Change
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -11,6 +11,8 @@ import {
   Eye,
   Clock,
   Search,
+  Copy,
+  CheckCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -783,16 +785,32 @@ export default function NotificationSettings() {
               </>
             ) : (
               <>
-                {/* Custom cURL Input */}
+                {/* Custom cURL Text (Read-only) */}
                 <div>
                   <label className="block text-sm font-semibold text-slate-900 mb-1.5">Webhook cURL</label>
-                  <p className="text-xs text-slate-500 mb-2">Enter the custom cURL command to trigger this notification manually.</p>
-                  <textarea 
-                    value={formCustomCurl} 
-                    onChange={(e) => setFormCustomCurl(e.target.value)} 
-                    placeholder="curl -X POST https://api.example.com/webhook..."
-                    className="w-full min-h-[120px] p-3 font-mono text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                  />
+                  <p className="text-xs text-slate-500 mb-2">아래의 cURL 코드를 복사하여 서버에서 수동으로 알림을 발생시키세요.</p>
+                  <div className="relative group">
+                    <pre className="w-full min-h-[120px] p-4 pr-12 font-mono text-sm bg-slate-900 text-slate-50 rounded-lg overflow-x-auto whitespace-pre-wrap leading-relaxed shadow-sm">
+{`curl -X POST \\
+     -H "api-key: 111111111111111111" \\
+     -H "Content-Type: application/json" \\
+     -d '{"text": "메시지를 입력해주세요."}'   https://url`}</pre>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigator.clipboard.writeText(`curl -X POST \\
+     -H "api-key: 111111111111111111" \\
+     -H "Content-Type: application/json" \\
+     -d '{"text": "메시지를 입력해주세요."}'   https://url`);
+                      }}
+                      className="absolute top-2 right-2 h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700/50 bg-slate-800/50 backdrop-blur-sm transition-all"
+                      title="Copy to clipboard"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </>
             )}

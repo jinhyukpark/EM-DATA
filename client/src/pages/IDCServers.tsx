@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Activity,
@@ -11,6 +11,7 @@ import {
   Cloud,
   Server,
   Globe,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Sidebar from "@/components/Sidebar";
@@ -23,6 +24,15 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const dailyStatusData = [
   { date: "01/06", success: 7, warning: 1, error: 1 },
@@ -69,6 +79,59 @@ export default function IDCServers() {
   const warningCount = idcServices.filter(s => s.status === "warning").length;
   const stoppedCount = idcServices.filter(s => s.status === "stopped").length;
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [timeRange, setTimeRange] = useState("1주");
+
+  const statusData = useMemo(() => {
+    let points = 12;
+    let intervalMs = 5 * 60 * 1000;
+    let format = "time";
+    
+    if (timeRange.includes("시간")) {
+      const hours = parseInt(timeRange);
+      intervalMs = 5 * 60 * 1000; // 5 mins
+      points = hours * 12 + 1; 
+      format = "time";
+    } else if (timeRange.includes("일")) {
+      const days = parseInt(timeRange);
+      if (days === 1) { points = 25; intervalMs = 60 * 60 * 1000; }
+      else if (days === 3) { points = 25; intervalMs = 3 * 60 * 60 * 1000; }
+      else if (days === 6) { points = 25; intervalMs = 6 * 60 * 60 * 1000; }
+      format = "datetime";
+    } else if (timeRange.includes("주")) {
+      const weeks = parseInt(timeRange);
+      if (weeks === 1) { points = 15; intervalMs = 12 * 60 * 60 * 1000; }
+      else { points = weeks * 7 + 1; intervalMs = 24 * 60 * 60 * 1000; }
+      format = "date";
+    }
+
+    const now = new Date();
+    // Snap to nearest 5 minutes
+    now.setMinutes(Math.floor(now.getMinutes() / 5) * 5);
+    now.setSeconds(0);
+    now.setMilliseconds(0);
+
+    const data = [];
+    for (let i = points - 1; i >= 0; i--) {
+      const d = new Date(now.getTime() - i * intervalMs);
+      const mo = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const h = String(d.getHours()).padStart(2, '0');
+      const m = String(d.getMinutes()).padStart(2, '0');
+      
+      let dateLabel = "";
+      if (format === "time") dateLabel = `${h}:${m}`;
+      else if (format === "datetime") dateLabel = `${mo}/${day} ${h}:${m}`;
+      else if (format === "date") dateLabel = `${mo}/${day}`;
+
+      data.push({
+        date: dateLabel,
+        success: Math.floor(Math.random() * 5) + 8,
+        warning: Math.floor(Math.random() * 2),
+        error: Math.floor(Math.random() * 2),
+      });
+    }
+    return data;
+  }, [timeRange]);
 
   return (
     <div className="h-screen flex bg-slate-50 overflow-hidden">
@@ -160,7 +223,45 @@ export default function IDCServers() {
           <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.3 }} className="mb-6">
             <div className="bg-white rounded-xl border border-slate-100 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-medium text-slate-800">Daily Status Overview</h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-medium text-slate-800">Status Overview</h2>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-7 text-xs gap-1 px-2 border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600">
+                        {timeRange}
+                        <ChevronDown className="w-3 h-3 text-slate-400" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-40">
+                      <DropdownMenuGroup>
+                        <DropdownMenuLabel className="text-xs text-slate-500 font-medium">시간</DropdownMenuLabel>
+                        {["1시간", "2시간", "3시간", "4시간"].map(t => (
+                          <DropdownMenuItem key={t} onClick={() => setTimeRange(t)} className={`text-xs ${timeRange === t ? 'bg-slate-100 font-medium' : ''}`}>
+                            {t}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuGroup>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuGroup>
+                        <DropdownMenuLabel className="text-xs text-slate-500 font-medium">일</DropdownMenuLabel>
+                        {["1일", "2일", "4일", "6일"].map(t => (
+                          <DropdownMenuItem key={t} onClick={() => setTimeRange(t)} className={`text-xs ${timeRange === t ? 'bg-slate-100 font-medium' : ''}`}>
+                            {t}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuGroup>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuGroup>
+                        <DropdownMenuLabel className="text-xs text-slate-500 font-medium">주</DropdownMenuLabel>
+                        {["1주", "2주", "4주", "6주", "8주"].map(t => (
+                          <DropdownMenuItem key={t} onClick={() => setTimeRange(t)} className={`text-xs ${timeRange === t ? 'bg-slate-100 font-medium' : ''}`}>
+                            {t}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
                 <div className="flex items-center gap-4 text-xs">
                   <div className="flex items-center gap-1.5">
                     <span className="w-3 h-3 rounded-sm bg-emerald-500" />
@@ -178,9 +279,9 @@ export default function IDCServers() {
               </div>
               <div className="h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={dailyStatusData}>
+                  <LineChart data={statusData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} minTickGap={30} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
                     <Tooltip
                       contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}

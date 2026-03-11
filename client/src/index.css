@@ -262,4 +262,30 @@
     border: 1px solid rgba(0,0,0,0.06);
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
+
+  .time-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+  .time-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .time-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .time-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+  }
+  .time-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }

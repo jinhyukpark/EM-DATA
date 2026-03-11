@@ -154,6 +154,8 @@ const existingTests: Record<string, {
   }
 };
 
+import { TimePicker } from "@/components/ui/time-picker";
+
 export default function AddTestProcedure() {
   const params = useParams();
   const editId = params.id;
@@ -859,13 +861,13 @@ export default function AddTestProcedure() {
                         )}
 
                         {timeOption === "specific" && (
-                          <input
-                            type="time"
-                            value={specificTime}
-                            onChange={(e) => setSpecificTime(e.target.value)}
-                            className="h-9 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            data-testid="input-specific-time"
-                          />
+                          <div data-testid="input-specific-time">
+                            <TimePicker
+                              value={specificTime}
+                              onChange={(value) => setSpecificTime(value)}
+                              className="h-9 w-[140px]"
+                            />
+                          </div>
                         )}
                       </div>
                     </motion.div>

@@ -37,6 +37,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { TimePicker } from "@/components/ui/time-picker";
 import {
   Command,
   CommandEmpty,
@@ -755,18 +756,16 @@ export default function NotificationSettings() {
 
                         <span className="text-sm text-slate-600 font-medium">Active between:</span>
                         <div className="flex items-center gap-2">
-                            <Input 
-                              type="time" 
+                            <TimePicker 
                               value={formSchedule.startTime}
-                              onChange={(e) => setFormSchedule({ ...formSchedule, startTime: e.target.value })}
-                              className="w-32 h-9 bg-white border-slate-300 text-slate-900"
+                              onChange={(value) => setFormSchedule({ ...formSchedule, startTime: value })}
+                              className="w-[140px]"
                             />
                             <span className="text-slate-400">-</span>
-                            <Input 
-                              type="time" 
+                            <TimePicker 
                               value={formSchedule.endTime}
-                              onChange={(e) => setFormSchedule({ ...formSchedule, endTime: e.target.value })}
-                              className="w-32 h-9 bg-white border-slate-300 text-slate-900"
+                              onChange={(value) => setFormSchedule({ ...formSchedule, endTime: value })}
+                              className="w-[140px]"
                             />
                         </div>
                       </div>

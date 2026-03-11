@@ -82,56 +82,56 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-3" align="start">
-        <div className="flex gap-2 h-[200px]">
+      <PopoverContent className="w-auto p-1 bg-white border border-slate-100 shadow-xl rounded-2xl" align="start">
+        <div className="flex h-[200px]">
           {/* AM/PM Column */}
-          <div className="flex flex-col gap-1 w-[60px] overflow-hidden">
-            <Button 
-              variant="ghost" 
-              className={cn("h-10", time.ampm === "AM" ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground" : "hover:bg-slate-100")}
+          <div className="flex flex-col gap-1 w-[60px] p-1">
+            <button 
+              className={cn("flex-1 flex items-center justify-center rounded-xl text-sm transition-all", time.ampm === "AM" ? "bg-slate-100 text-slate-900 font-semibold shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-700")}
               onClick={() => updateTime({ ampm: "AM" })}
             >
               오전
-            </Button>
-            <Button 
-              variant="ghost" 
-              className={cn("h-10", time.ampm === "PM" ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground" : "hover:bg-slate-100")}
+            </button>
+            <button 
+              className={cn("flex-1 flex items-center justify-center rounded-xl text-sm transition-all", time.ampm === "PM" ? "bg-slate-100 text-slate-900 font-semibold shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-700")}
               onClick={() => updateTime({ ampm: "PM" })}
             >
               오후
-            </Button>
+            </button>
           </div>
           
-          <div className="w-px bg-border" />
+          <div className="w-px bg-slate-100 my-2" />
           
           {/* Hours Column */}
-          <div className="flex flex-col w-[60px] overflow-y-auto no-scrollbar scroll-smooth snap-y pr-1">
-            {hours.map((h) => (
-              <Button
-                key={h}
-                variant="ghost"
-                className={cn("min-h-10 h-10 w-full shrink-0", time.hour === h ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground" : "hover:bg-slate-100")}
-                onClick={() => updateTime({ hour: h })}
-              >
-                {h}
-              </Button>
-            ))}
+          <div className="flex flex-col w-[60px] p-1 overflow-y-auto scroll-smooth snap-y [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex flex-col gap-1 pb-[160px]">
+              {hours.map((h) => (
+                <button
+                  key={h}
+                  className={cn("h-10 flex items-center justify-center w-full shrink-0 text-sm rounded-xl transition-all snap-start", time.hour === h ? "bg-blue-50 text-blue-600 font-semibold shadow-sm" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900")}
+                  onClick={() => updateTime({ hour: h })}
+                >
+                  {h}
+                </button>
+              ))}
+            </div>
           </div>
           
-          <div className="w-px bg-border" />
+          <div className="w-px bg-slate-100 my-2" />
           
           {/* Minutes Column */}
-          <div className="flex flex-col w-[60px] overflow-y-auto no-scrollbar scroll-smooth snap-y pr-1">
-            {minutes.map((m) => (
-              <Button
-                key={m}
-                variant="ghost"
-                className={cn("min-h-10 h-10 w-full shrink-0", time.minute === m ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground" : "hover:bg-slate-100")}
-                onClick={() => updateTime({ minute: m })}
-              >
-                {m}
-              </Button>
-            ))}
+          <div className="flex flex-col w-[60px] p-1 overflow-y-auto scroll-smooth snap-y [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex flex-col gap-1 pb-[160px]">
+              {minutes.map((m) => (
+                <button
+                  key={m}
+                  className={cn("h-10 flex items-center justify-center w-full shrink-0 text-sm rounded-xl transition-all snap-start", time.minute === m ? "bg-blue-50 text-blue-600 font-semibold shadow-sm" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900")}
+                  onClick={() => updateTime({ minute: m })}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </PopoverContent>

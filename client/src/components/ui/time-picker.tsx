@@ -53,7 +53,7 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
       if (newTime.ampm === "PM" && hourNum < 12) hourNum += 12;
       if (newTime.ampm === "AM" && hourNum === 12) hourNum = 0;
       
-      const formattedValue = \`\${hourNum.toString().padStart(2, "0")}:\${newTime.minute}\`;
+      const formattedValue = `${hourNum.toString().padStart(2, "0")}:${newTime.minute}`;
       onChange(formattedValue);
     }
   };

@@ -53,7 +53,7 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
       if (newTime.ampm === "PM" && hourNum < 12) hourNum += 12;
       if (newTime.ampm === "AM" && hourNum === 12) hourNum = 0;
       
-      const formattedValue = `${hourNum.toString().padStart(2, "0")}:${newTime.minute}`;
+      const formattedValue = \`\${hourNum.toString().padStart(2, "0")}:\${newTime.minute}\`;
       onChange(formattedValue);
     }
   };
@@ -62,7 +62,7 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
   const minutes = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, "0"));
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen} modal={false}>
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}
@@ -82,19 +82,19 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-1 bg-white border border-slate-100 shadow-xl rounded-2xl" align="start">
+      <PopoverContent className="w-auto p-1 bg-white border border-slate-200 shadow-none rounded-xl" align="start">
         <div className="flex h-[200px]">
           {/* AM/PM Column */}
           <div className="flex flex-col gap-1 w-[60px] p-1">
             <button 
-              className={cn("flex-1 flex items-center justify-center rounded-xl text-sm transition-all", time.ampm === "AM" ? "bg-slate-100 text-slate-900 font-semibold shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-700")}
-              onClick={() => updateTime({ ampm: "AM" })}
+              className={cn("flex-1 flex items-center justify-center rounded-lg text-sm transition-all", time.ampm === "AM" ? "bg-slate-100 text-slate-900 font-semibold" : "text-slate-500 hover:bg-slate-50 hover:text-slate-700")}
+              onClick={(e) => { e.preventDefault(); updateTime({ ampm: "AM" }); }}
             >
               오전
             </button>
             <button 
-              className={cn("flex-1 flex items-center justify-center rounded-xl text-sm transition-all", time.ampm === "PM" ? "bg-slate-100 text-slate-900 font-semibold shadow-sm" : "text-slate-500 hover:bg-slate-50 hover:text-slate-700")}
-              onClick={() => updateTime({ ampm: "PM" })}
+              className={cn("flex-1 flex items-center justify-center rounded-lg text-sm transition-all", time.ampm === "PM" ? "bg-slate-100 text-slate-900 font-semibold" : "text-slate-500 hover:bg-slate-50 hover:text-slate-700")}
+              onClick={(e) => { e.preventDefault(); updateTime({ ampm: "PM" }); }}
             >
               오후
             </button>
@@ -103,13 +103,13 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
           <div className="w-px bg-slate-100 my-2" />
           
           {/* Hours Column */}
-          <div className="flex flex-col w-[60px] p-1 overflow-y-auto scroll-smooth snap-y [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="flex flex-col w-[60px] h-full p-1 overflow-y-auto scrollbar-hide">
             <div className="flex flex-col gap-1 pb-[160px]">
               {hours.map((h) => (
                 <button
                   key={h}
-                  className={cn("h-10 flex items-center justify-center w-full shrink-0 text-sm rounded-xl transition-all snap-start", time.hour === h ? "bg-blue-50 text-blue-600 font-semibold shadow-sm" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900")}
-                  onClick={() => updateTime({ hour: h })}
+                  className={cn("min-h-10 h-10 flex items-center justify-center w-full shrink-0 text-sm rounded-lg transition-all", time.hour === h ? "bg-blue-50 text-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900")}
+                  onClick={(e) => { e.preventDefault(); updateTime({ hour: h }); }}
                 >
                   {h}
                 </button>
@@ -120,13 +120,13 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
           <div className="w-px bg-slate-100 my-2" />
           
           {/* Minutes Column */}
-          <div className="flex flex-col w-[60px] p-1 overflow-y-auto scroll-smooth snap-y [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="flex flex-col w-[60px] h-full p-1 overflow-y-auto scrollbar-hide">
             <div className="flex flex-col gap-1 pb-[160px]">
               {minutes.map((m) => (
                 <button
                   key={m}
-                  className={cn("h-10 flex items-center justify-center w-full shrink-0 text-sm rounded-xl transition-all snap-start", time.minute === m ? "bg-blue-50 text-blue-600 font-semibold shadow-sm" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900")}
-                  onClick={() => updateTime({ minute: m })}
+                  className={cn("min-h-10 h-10 flex items-center justify-center w-full shrink-0 text-sm rounded-lg transition-all", time.minute === m ? "bg-blue-50 text-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900")}
+                  onClick={(e) => { e.preventDefault(); updateTime({ minute: m }); }}
                 >
                   {m}
                 </button>

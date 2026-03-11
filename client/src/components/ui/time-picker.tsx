@@ -2,6 +2,7 @@ import * as React from "react";
 import { Clock } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Button } from "./button";
+import { ScrollArea } from "./scroll-area";
 import { cn } from "@/lib/utils";
 
 export interface TimePickerProps {
@@ -103,11 +104,16 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
           <div className="w-px bg-slate-100 my-2" />
           
           {/* Hours Column */}
-          <div className="flex flex-col w-[60px] h-full p-1 overflow-y-auto scrollbar-hide">
-            <div className="flex flex-col gap-1 pb-[160px]">
+          <div 
+            className="w-[60px] h-full overflow-y-auto scrollbar-hide" 
+            style={{ WebkitOverflowScrolling: 'touch' }}
+            onWheel={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col gap-1 p-1 pb-[160px]">
               {hours.map((h) => (
                 <button
                   key={h}
+                  type="button"
                   className={cn("min-h-10 h-10 flex items-center justify-center w-full shrink-0 text-sm rounded-lg transition-all", time.hour === h ? "bg-blue-50 text-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900")}
                   onClick={(e) => { e.preventDefault(); updateTime({ hour: h }); }}
                 >
@@ -120,11 +126,16 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
           <div className="w-px bg-slate-100 my-2" />
           
           {/* Minutes Column */}
-          <div className="flex flex-col w-[60px] h-full p-1 overflow-y-auto scrollbar-hide">
-            <div className="flex flex-col gap-1 pb-[160px]">
+          <div 
+            className="w-[60px] h-full overflow-y-auto scrollbar-hide" 
+            style={{ WebkitOverflowScrolling: 'touch' }}
+            onWheel={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col gap-1 p-1 pb-[160px]">
               {minutes.map((m) => (
                 <button
                   key={m}
+                  type="button"
                   className={cn("min-h-10 h-10 flex items-center justify-center w-full shrink-0 text-sm rounded-lg transition-all", time.minute === m ? "bg-blue-50 text-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900")}
                   onClick={(e) => { e.preventDefault(); updateTime({ minute: m }); }}
                 >

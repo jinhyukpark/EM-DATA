@@ -31,7 +31,7 @@ export default function WhitelistSettings() {
         <div className="space-y-4">
           <div className="space-y-1">
             <h4 className="text-base font-semibold text-slate-900">Authorized URIs</h4>
-            <p className="text-sm text-slate-500">For use with requests from a web server</p>
+            <p className="text-sm text-slate-500">For use with Email Notifications requests from a web server</p>
           </div>
           
           <div className="space-y-3">
@@ -70,7 +70,6 @@ export default function WhitelistSettings() {
           </Button>
         </div>
       </div>
-      
       <div className="flex justify-end">
         <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6">
           Save Changes

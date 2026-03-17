@@ -1,7 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings2, History } from "lucide-react";
+import { Settings2, History, ShieldCheck } from "lucide-react";
 import NotificationSettings from "./NotificationSettings";
 import NotificationHistory from "./NotificationHistory";
+import WhitelistSettings from "./WhitelistSettings";
 
 export default function EmailNotifications() {
   return (
@@ -14,13 +15,20 @@ export default function EmailNotifications() {
       </div>
 
       <Tabs defaultValue="settings" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 max-w-[400px] mb-6 bg-slate-100 p-1 rounded-xl">
+        <TabsList className="grid w-full grid-cols-3 max-w-[500px] mb-6 bg-slate-100 p-1 rounded-xl">
           <TabsTrigger 
             value="settings" 
             className="gap-2 rounded-lg data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm text-slate-500 font-medium transition-all"
           >
             <Settings2 className="w-4 h-4" />
             Configuration
+          </TabsTrigger>
+          <TabsTrigger 
+            value="whitelist" 
+            className="gap-2 rounded-lg data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm text-slate-500 font-medium transition-all"
+          >
+            <ShieldCheck className="w-4 h-4" />
+            Whitelist
           </TabsTrigger>
           <TabsTrigger 
             value="history" 
@@ -33,6 +41,10 @@ export default function EmailNotifications() {
         
         <TabsContent value="settings" className="animate-in fade-in-50 duration-300">
           <NotificationSettings />
+        </TabsContent>
+
+        <TabsContent value="whitelist" className="animate-in fade-in-50 duration-300">
+          <WhitelistSettings />
         </TabsContent>
         
         <TabsContent value="history" className="animate-in fade-in-50 duration-300">

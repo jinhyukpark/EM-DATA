@@ -44,7 +44,7 @@ export default function WhitelistSettings() {
                   <Input 
                     value={uri.value}
                     onChange={(e) => updateUri(uri.id, e.target.value)}
-                    placeholder="https://"
+                    placeholder="e.g., https://example.com, http://localhost, 192.168.1.1"
                     className="h-11 pt-1.5 border-slate-300 focus-visible:ring-blue-500" 
                   />
                 </div>

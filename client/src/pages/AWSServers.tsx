@@ -89,23 +89,6 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-const CustomXAxisTick = ({ x, y, payload, onClick }: any) => {
-  return (
-    <g transform={`translate(${x},${y})`}>
-      <text 
-        x={0} y={0} dy={16} 
-        textAnchor="middle" 
-        fill="#94a3b8" 
-        fontSize={12} 
-        className="cursor-pointer hover:fill-blue-600 hover:font-medium transition-all" 
-        onClick={() => onClick(payload.value)}
-      >
-        {payload.value}
-      </text>
-    </g>
-  );
-};
-
 export default function AWSServers() {
   const runningCount = awsServices.filter(s => s.status === "running").length;
   const warningCount = awsServices.filter(s => s.status === "warning").length;
@@ -332,15 +315,15 @@ export default function AWSServers() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={statusData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={<CustomXAxisTick onClick={(val: string) => setSelectedDate(val)} />} minTickGap={30} />
+                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} minTickGap={30} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
                     <Tooltip
                       contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                       labelStyle={{ color: '#334155', fontWeight: 600, marginBottom: 4 }}
                     />
-                    <Line type="monotone" dataKey="success" name="Success" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
-                    <Line type="monotone" dataKey="warning" name="Warning" stroke="#f59e0b" strokeWidth={2} dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
-                    <Line type="monotone" dataKey="error" name="Error" stroke="#ef4444" strokeWidth={2} dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="success" name="Success" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', strokeWidth: 2, r: 4, cursor: 'pointer', onClick: (e: any) => setSelectedDate(e.payload.date) }} activeDot={{ r: 6, cursor: 'pointer', onClick: (e: any) => setSelectedDate(e.payload.date) }} />
+                    <Line type="monotone" dataKey="warning" name="Warning" stroke="#f59e0b" strokeWidth={2} dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4, cursor: 'pointer', onClick: (e: any) => setSelectedDate(e.payload.date) }} activeDot={{ r: 6, cursor: 'pointer', onClick: (e: any) => setSelectedDate(e.payload.date) }} />
+                    <Line type="monotone" dataKey="error" name="Error" stroke="#ef4444" strokeWidth={2} dot={{ fill: '#ef4444', strokeWidth: 2, r: 4, cursor: 'pointer', onClick: (e: any) => setSelectedDate(e.payload.date) }} activeDot={{ r: 6, cursor: 'pointer', onClick: (e: any) => setSelectedDate(e.payload.date) }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>

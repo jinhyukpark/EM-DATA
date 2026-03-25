@@ -33,6 +33,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const dailyStatusData = [
   { date: "01/06", success: 6, warning: 1, error: 1 },
@@ -73,12 +79,30 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+const CustomXAxisTick = ({ x, y, payload, onClick }: any) => {
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text 
+        x={0} y={0} dy={16} 
+        textAnchor="middle" 
+        fill="#94a3b8" 
+        fontSize={12} 
+        className="cursor-pointer hover:fill-blue-600 hover:font-medium transition-all" 
+        onClick={() => onClick(payload.value)}
+      >
+        {payload.value}
+      </text>
+    </g>
+  );
+};
+
 export default function GCPServers() {
   const runningCount = gcpServices.filter(s => s.status === "running").length;
   const warningCount = gcpServices.filter(s => s.status === "warning").length;
   const stoppedCount = gcpServices.filter(s => s.status === "stopped").length;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [timeRange, setTimeRange] = useState("1주");
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const statusData = useMemo(() => {
     let points = 12;
@@ -131,6 +155,24 @@ export default function GCPServers() {
     }
     return data;
   }, [timeRange]);
+
+  const selectedDateDetails = useMemo(() => {
+    if (!selectedDate) return [];
+    
+    const types = ["warning", "error"];
+    const numItems = Math.floor(Math.random() * 3) + 1; 
+    
+    return Array.from({ length: numItems }).map((_, i) => {
+      const service = gcpServices[Math.floor(Math.random() * gcpServices.length)];
+      return {
+        id: i,
+        date: selectedDate,
+        type: types[Math.floor(Math.random() * types.length)],
+        serviceName: service.name,
+        instanceId: service.instanceId
+      };
+    });
+  }, [selectedDate]);
 
   return (
     <div className="h-screen flex bg-slate-50 overflow-hidden">
@@ -280,7 +322,7 @@ export default function GCPServers() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={statusData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} minTickGap={30} />
+                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={<CustomXAxisTick onClick={(val: string) => setSelectedDate(val)} />} minTickGap={30} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
                     <Tooltip
                       contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
@@ -366,6 +408,48 @@ export default function GCPServers() {
               </div>
             </div>
           </motion.section>
+
+          <Dialog open={!!selectedDate} onOpenChange={(open) => !open && setSelectedDate(null)}>
+            <DialogContent className="max-w-3xl bg-white">
+              <DialogHeader>
+                <DialogTitle className="text-lg font-semibold text-slate-800">오류 상세 내역 - {selectedDate}</DialogTitle>
+              </DialogHeader>
+              <div className="mt-4 border rounded-lg overflow-hidden">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                      <th className="py-3 px-4 font-medium text-slate-600">일자</th>
+                      <th className="py-3 px-4 font-medium text-slate-600">오류 종류</th>
+                      <th className="py-3 px-4 font-medium text-slate-600">Service Name</th>
+                      <th className="py-3 px-4 font-medium text-slate-600">Instance ID</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {selectedDateDetails.length > 0 ? (
+                      selectedDateDetails.map((detail) => (
+                        <tr key={detail.id} className="hover:bg-slate-50/50">
+                          <td className="py-3 px-4 text-slate-600">{detail.date}</td>
+                          <td className="py-3 px-4">
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              detail.type === 'error' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'
+                            }`}>
+                              {detail.type.toUpperCase()}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 font-medium text-slate-800">{detail.serviceName}</td>
+                          <td className="py-3 px-4 font-mono text-slate-500">{detail.instanceId}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={4} className="py-8 text-center text-slate-500">해당 일자에 오류 내역이 없습니다.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </DialogContent>
+          </Dialog>
         </main>
       </div>
     </div>

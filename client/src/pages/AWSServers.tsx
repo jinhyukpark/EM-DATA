@@ -321,9 +321,9 @@ export default function AWSServers() {
                       contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                       labelStyle={{ color: '#334155', fontWeight: 600, marginBottom: 4 }}
                     />
-                    <Line type="monotone" dataKey="success" name="Success" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', strokeWidth: 2, r: 4, cursor: 'pointer', onClick: (e: any) => setSelectedDate(e.payload.date) }} activeDot={{ r: 6, cursor: 'pointer', onClick: (e: any) => setSelectedDate(e.payload.date) }} />
-                    <Line type="monotone" dataKey="warning" name="Warning" stroke="#f59e0b" strokeWidth={2} dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4, cursor: 'pointer', onClick: (e: any) => setSelectedDate(e.payload.date) }} activeDot={{ r: 6, cursor: 'pointer', onClick: (e: any) => setSelectedDate(e.payload.date) }} />
-                    <Line type="monotone" dataKey="error" name="Error" stroke="#ef4444" strokeWidth={2} dot={{ fill: '#ef4444', strokeWidth: 2, r: 4, cursor: 'pointer', onClick: (e: any) => setSelectedDate(e.payload.date) }} activeDot={{ r: 6, cursor: 'pointer', onClick: (e: any) => setSelectedDate(e.payload.date) }} />
+                    <Line type="monotone" dataKey="success" name="Success" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', strokeWidth: 2, r: 4, cursor: 'pointer', onClick: (e: any) => e?.payload?.date && setSelectedDate(e.payload.date) }} activeDot={{ r: 6, cursor: 'pointer', onClick: (e: any) => e?.payload?.date && setSelectedDate(e.payload.date) }} />
+                    <Line type="monotone" dataKey="warning" name="Warning" stroke="#f59e0b" strokeWidth={2} dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4, cursor: 'pointer', onClick: (e: any) => e?.payload?.date && setSelectedDate(e.payload.date) }} activeDot={{ r: 6, cursor: 'pointer', onClick: (e: any) => e?.payload?.date && setSelectedDate(e.payload.date) }} />
+                    <Line type="monotone" dataKey="error" name="Error" stroke="#ef4444" strokeWidth={2} dot={{ fill: '#ef4444', strokeWidth: 2, r: 4, cursor: 'pointer', onClick: (e: any) => e?.payload?.date && setSelectedDate(e.payload.date) }} activeDot={{ r: 6, cursor: 'pointer', onClick: (e: any) => e?.payload?.date && setSelectedDate(e.payload.date) }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>

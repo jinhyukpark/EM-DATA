@@ -160,7 +160,7 @@ export default function GCPServers() {
     if (!selectedDate) return [];
     
     const types = ["warning", "error"];
-    const numItems = Math.floor(Math.random() * 3) + 1; 
+    const numItems = Math.floor(Math.random() * 25) + 1; 
     
     return Array.from({ length: numItems }).map((_, i) => {
       const service = gcpServices[Math.floor(Math.random() * gcpServices.length)];
@@ -172,6 +172,21 @@ export default function GCPServers() {
         instanceId: service.instanceId
       };
     });
+  }, [selectedDate]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const paginatedDetails = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return selectedDateDetails.slice(startIndex, startIndex + itemsPerPage);
+  }, [selectedDateDetails, currentPage]);
+
+  const totalPages = Math.ceil(selectedDateDetails.length / itemsPerPage);
+
+  // Reset page when date changes
+  React.useEffect(() => {
+    setCurrentPage(1);
   }, [selectedDate]);
 
   return (
@@ -427,8 +442,8 @@ export default function GCPServers() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {selectedDateDetails.length > 0 ? (
-                      selectedDateDetails.map((detail) => (
+                    {paginatedDetails.length > 0 ? (
+                      paginatedDetails.map((detail) => (
                         <tr key={detail.id} className="hover:bg-slate-50/50">
                           <td className="py-3 px-4">
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
@@ -449,6 +464,33 @@ export default function GCPServers() {
                   </tbody>
                 </table>
               </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                  <div className="text-sm text-slate-500">
+                    Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, selectedDateDetails.length)} of {selectedDateDetails.length} entries
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="px-3 py-1 text-sm border border-slate-200 rounded-md text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Previous
+                    </button>
+                    <span className="text-sm font-medium text-slate-700">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="px-3 py-1 text-sm border border-slate-200 rounded-md text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
             </DialogContent>
           </Dialog>
         </main>

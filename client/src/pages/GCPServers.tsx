@@ -320,17 +320,17 @@ export default function GCPServers() {
               </div>
               <div className="h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={statusData}>
+                  <LineChart data={statusData} onClick={(state: any) => { if (state && state.activeLabel) setSelectedDate(state.activeLabel); }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={<CustomXAxisTick onClick={(val: string) => setSelectedDate(val)} />} minTickGap={30} />
+                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} minTickGap={30} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
                     <Tooltip
                       contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                       labelStyle={{ color: '#334155', fontWeight: 600, marginBottom: 4 }}
                     />
-                    <Line type="monotone" dataKey="success" name="Success" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
-                    <Line type="monotone" dataKey="warning" name="Warning" stroke="#f59e0b" strokeWidth={2} dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
-                    <Line type="monotone" dataKey="error" name="Error" stroke="#ef4444" strokeWidth={2} dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="success" name="Success" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }} activeDot={{ r: 6, onClick: (e: any, payload: any) => setSelectedDate(payload?.payload?.date) }} />
+                    <Line type="monotone" dataKey="warning" name="Warning" stroke="#f59e0b" strokeWidth={2} dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }} activeDot={{ r: 6, onClick: (e: any, payload: any) => setSelectedDate(payload?.payload?.date) }} />
+                    <Line type="monotone" dataKey="error" name="Error" stroke="#ef4444" strokeWidth={2} dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }} activeDot={{ r: 6, onClick: (e: any, payload: any) => setSelectedDate(payload?.payload?.date) }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -412,14 +412,16 @@ export default function GCPServers() {
           <Dialog open={!!selectedDate} onOpenChange={(open) => !open && setSelectedDate(null)}>
             <DialogContent className="max-w-3xl bg-white">
               <DialogHeader>
-                <DialogTitle className="text-lg font-semibold text-slate-800">오류 상세 내역 - {selectedDate}</DialogTitle>
+                <div className="flex items-center gap-3">
+                  <DialogTitle className="text-lg font-semibold text-slate-800">Status Overview</DialogTitle>
+                  <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-sm font-medium">{selectedDate}</span>
+                </div>
               </DialogHeader>
               <div className="mt-4 border rounded-lg overflow-hidden">
                 <table className="w-full text-sm text-left">
                   <thead className="bg-slate-50 border-b border-slate-200">
                     <tr>
-                      <th className="py-3 px-4 font-medium text-slate-600">일자</th>
-                      <th className="py-3 px-4 font-medium text-slate-600">오류 종류</th>
+                      <th className="py-3 px-4 font-medium text-slate-600">Status</th>
                       <th className="py-3 px-4 font-medium text-slate-600">Service Name</th>
                       <th className="py-3 px-4 font-medium text-slate-600">Instance ID</th>
                     </tr>
@@ -428,7 +430,6 @@ export default function GCPServers() {
                     {selectedDateDetails.length > 0 ? (
                       selectedDateDetails.map((detail) => (
                         <tr key={detail.id} className="hover:bg-slate-50/50">
-                          <td className="py-3 px-4 text-slate-600">{detail.date}</td>
                           <td className="py-3 px-4">
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                               detail.type === 'error' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'
@@ -442,7 +443,7 @@ export default function GCPServers() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={4} className="py-8 text-center text-slate-500">해당 일자에 오류 내역이 없습니다.</td>
+                        <td colSpan={3} className="py-8 text-center text-slate-500">No records found for this date.</td>
                       </tr>
                     )}
                   </tbody>

@@ -630,7 +630,9 @@ export default function AddTestProcedure() {
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      toggleType(type);
+                                      if (window.confirm("이 타입을 삭제하시겠습니까?")) {
+                                        toggleType(type);
+                                      }
                                     }}
                                     className="hover:text-blue-900 focus:outline-none"
                                   >
@@ -674,9 +676,11 @@ export default function AddTestProcedure() {
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            setAvailableTypes(availableTypes.filter(type => type.id !== t.id));
-                                            if (selectedTypes.includes(t.name)) {
-                                                setSelectedTypes(selectedTypes.filter(st => st !== t.name));
+                                            if (window.confirm("이 타입을 삭제하시겠습니까?")) {
+                                              setAvailableTypes(availableTypes.filter(type => type.id !== t.id));
+                                              if (selectedTypes.includes(t.name)) {
+                                                  setSelectedTypes(selectedTypes.filter(st => st !== t.name));
+                                              }
                                             }
                                         }}
                                         className="p-0.5 text-black hover:text-red-600 hover:bg-red-50 rounded transition-all ml-1 flex-shrink-0"

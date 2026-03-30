@@ -204,6 +204,7 @@ export default function AddTestProcedure() {
   const [presetTime, setPresetTime] = useState(existingData?.presetTime || "");
   const [activeTab, setActiveTab] = useState<"basic">("basic");
   const [itemSettingsOpen, setItemSettingsOpen] = useState(false);
+  const [typeToDelete, setTypeToDelete] = useState<{name: string, id?: number} | null>(null);
   
   const [serviceSearchOpen, setServiceSearchOpen] = useState(false);
   const [serviceSearchQuery, setServiceSearchQuery] = useState("");
@@ -630,9 +631,7 @@ export default function AddTestProcedure() {
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      if (window.confirm("이 타입을 삭제하시겠습니까?")) {
-                                        toggleType(type);
-                                      }
+                                      setTypeToDelete({ name: type });
                                     }}
                                     className="hover:text-blue-900 focus:outline-none"
                                   >
@@ -676,12 +675,7 @@ export default function AddTestProcedure() {
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            if (window.confirm("이 타입을 삭제하시겠습니까?")) {
-                                              setAvailableTypes(availableTypes.filter(type => type.id !== t.id));
-                                              if (selectedTypes.includes(t.name)) {
-                                                  setSelectedTypes(selectedTypes.filter(st => st !== t.name));
-                                              }
-                                            }
+                                            setTypeToDelete({ name: t.name, id: t.id });
                                         }}
                                         className="p-0.5 text-black hover:text-red-600 hover:bg-red-50 rounded transition-all ml-1 flex-shrink-0"
                                         title="Remove type"
@@ -1367,6 +1361,45 @@ export default function AddTestProcedure() {
                   {isEditMode ? "Update Procedure" : "Save Procedure"}
                 </Button>
               </div>
+
+              {/* Type Delete Confirmation Modal */}
+              {typeToDelete && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4" onClick={() => setTypeToDelete(null)}>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-white rounded-2xl w-full max-w-sm shadow-xl p-6"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <p className="text-slate-800 mb-8 mt-2 text-[15px]">이 타입을 삭제하시겠습니까?</p>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        className="bg-[#334155] hover:bg-[#1e293b] text-white px-6 rounded-full"
+                        onClick={() => {
+                          if (typeToDelete.id !== undefined) {
+                            setAvailableTypes(availableTypes.filter(type => type.id !== typeToDelete.id));
+                            if (selectedTypes.includes(typeToDelete.name)) {
+                              setSelectedTypes(selectedTypes.filter(st => st !== typeToDelete.name));
+                            }
+                          } else {
+                            toggleType(typeToDelete.name);
+                          }
+                          setTypeToDelete(null);
+                        }}
+                      >
+                        확인
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="bg-[#e2e8f0] text-[#334155] hover:bg-[#cbd5e1] hover:text-[#334155] px-6 rounded-full"
+                        onClick={() => setTypeToDelete(null)}
+                      >
+                        취소
+                      </Button>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
             </motion.div>
           </div>
         </main>

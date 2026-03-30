@@ -28,11 +28,11 @@ import Sidebar from "@/components/Sidebar";
 
 
 const services = [
-  { id: 1, testName: "Data Integrity Check", name: "Company Data Pipeline", type: "Internal", status: "Active", workStatus: "Normal", step: 5, lastInspection: "2025-01-09", inspectors: ["John Kim", "Sarah Lee"], nextInspection: "2025-01-16", normalCount: 12, abnormalCount: 0 },
-  { id: 2, testName: "API Response Validation", name: "Patent Crawler Service", type: "Internal", status: "Active", workStatus: "Normal", step: 3, lastInspection: "2025-01-08", inspectors: ["Sarah Lee"], nextInspection: "2025-01-15", normalCount: 8, abnormalCount: 1 },
-  { id: 3, testName: "Performance Benchmark", name: "News API Integration", type: "External", status: "Warning", workStatus: "Delayed", step: 8, lastInspection: "2025-01-05", inspectors: ["Mike Park", "Emily Choi", "David Jung"], nextInspection: "2025-01-12", normalCount: 5, abnormalCount: 3 },
-  { id: 4, testName: "Security Audit", name: "Stock Data Collector", type: "External", status: "Active", workStatus: "Normal", step: 4, lastInspection: "2025-01-09", inspectors: ["Emily Choi"], nextInspection: "2025-01-16", normalCount: 10, abnormalCount: 0 },
-  { id: 5, testName: "Data Accuracy Test", name: "ML Prediction Service", type: "Internal", status: "Inactive", workStatus: "Stopped", step: 6, lastInspection: "2024-12-20", inspectors: ["David Jung", "John Kim"], nextInspection: "2025-01-20", normalCount: 3, abnormalCount: 2 },
+  { id: 1, testName: "Data Integrity Check", name: "Company Data Pipeline", type: ["Internal", "Database", "Core"], status: "Active", workStatus: "Normal", step: 5, lastInspection: "2025-01-09", inspectors: ["John Kim", "Sarah Lee"], nextInspection: "2025-01-16", normalCount: 12, abnormalCount: 0 },
+  { id: 2, testName: "API Response Validation", name: "Patent Crawler Service", type: ["Internal"], status: "Active", workStatus: "Normal", step: 3, lastInspection: "2025-01-08", inspectors: ["Sarah Lee"], nextInspection: "2025-01-15", normalCount: 8, abnormalCount: 1 },
+  { id: 3, testName: "Performance Benchmark", name: "News API Integration", type: ["External", "API"], status: "Warning", workStatus: "Delayed", step: 8, lastInspection: "2025-01-05", inspectors: ["Mike Park", "Emily Choi", "David Jung"], nextInspection: "2025-01-12", normalCount: 5, abnormalCount: 3 },
+  { id: 4, testName: "Security Audit", name: "Stock Data Collector", type: ["External", "Security"], status: "Active", workStatus: "Normal", step: 4, lastInspection: "2025-01-09", inspectors: ["Emily Choi"], nextInspection: "2025-01-16", normalCount: 10, abnormalCount: 0 },
+  { id: 5, testName: "Data Accuracy Test", name: "ML Prediction Service", type: ["Internal", "ML", "Analytics"], status: "Inactive", workStatus: "Stopped", step: 6, lastInspection: "2024-12-20", inspectors: ["David Jung", "John Kim"], nextInspection: "2025-01-20", normalCount: 3, abnormalCount: 2 },
 ];
 
 const testProcedures = [
@@ -378,9 +378,18 @@ export default function QAReport() {
                             </div>
                           </td>
                           <td className="py-4 px-4">
-                            <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${service.type === "Internal" ? "bg-blue-100 text-blue-700" : "bg-purple-100 text-purple-700"}`}>
-                              {service.type}
-                            </span>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              {service.type.slice(0, 2).map((t, i) => (
+                                <span key={i} className={`px-2.5 py-1 rounded-full text-xs font-medium ${t === "Internal" ? "bg-blue-100 text-blue-700" : t === "External" ? "bg-purple-100 text-purple-700" : "bg-slate-100 text-slate-700"}`}>
+                                  {t}
+                                </span>
+                              ))}
+                              {service.type.length > 2 && (
+                                <span className="px-2 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                                  +{service.type.length - 2}
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="py-4 px-4 text-center">
                             <span className="px-2.5 py-1 rounded bg-slate-100 text-slate-700 text-xs font-mono font-medium">

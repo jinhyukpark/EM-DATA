@@ -555,7 +555,7 @@ export default function AddTestProcedure() {
                           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-2" align="start">
+                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-2 bg-white shadow-md border-slate-200" align="start">
                          <Input
                             placeholder="Search or add new service..."
                             value={serviceSearchQuery}
@@ -644,7 +644,7 @@ export default function AddTestProcedure() {
                           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-2" align="start">
+                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-2 bg-white shadow-md border-slate-200" align="start">
                          <Input
                             placeholder="Search or add new type..."
                             value={typeSearchQuery}

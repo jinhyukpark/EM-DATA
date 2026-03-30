@@ -655,20 +655,35 @@ export default function AddTestProcedure() {
                             {availableTypes
                                 .filter(t => t.name.toLowerCase().includes(typeSearchQuery.toLowerCase()))
                                 .map(t => (
-                                <button
-                                    key={t.id}
-                                    onClick={() => {
-                                        toggleType(t.name);
-                                        if (selectedTypes.length >= 4) {
-                                          setTypeSearchOpen(false);
-                                        }
-                                        setTypeSearchQuery("");
-                                    }}
-                                    className="flex items-center w-full px-2 py-1.5 text-sm rounded-sm hover:bg-slate-100 text-left"
-                                >
-                                    <Check className={`mr-2 h-4 w-4 ${selectedTypes.includes(t.name) ? "opacity-100 text-blue-600" : "opacity-0"}`} />
-                                    {t.name}
-                                </button>
+                                <div key={t.id} className="flex items-center w-full px-2 py-1 text-sm rounded-sm hover:bg-slate-100 group">
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            toggleType(t.name);
+                                            if (selectedTypes.length >= 4 && !selectedTypes.includes(t.name)) {
+                                              setTypeSearchOpen(false);
+                                            }
+                                            setTypeSearchQuery("");
+                                        }}
+                                        className="flex flex-1 items-center text-left"
+                                    >
+                                        <Check className={`mr-2 h-4 w-4 flex-shrink-0 ${selectedTypes.includes(t.name) ? "opacity-100 text-blue-600" : "opacity-0"}`} />
+                                        <span className="truncate">{t.name}</span>
+                                    </button>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setAvailableTypes(availableTypes.filter(type => type.id !== t.id));
+                                            if (selectedTypes.includes(t.name)) {
+                                                setSelectedTypes(selectedTypes.filter(st => st !== t.name));
+                                            }
+                                        }}
+                                        className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-all"
+                                        title="Remove type"
+                                    >
+                                        <X className="h-3.5 w-3.5" />
+                                    </button>
+                                </div>
                             ))}
                             {typeSearchQuery && !availableTypes.some(t => t.name.toLowerCase() === typeSearchQuery.toLowerCase()) && (
                                 <button

@@ -1498,6 +1498,7 @@ export default function TestDetail() {
                             )}
                             <div>
                               <p className="text-sm font-medium text-slate-800">
+                                <span className="text-blue-600 mr-1">#{entry.itemId}</span>
                                 {entry.itemQuestion}
                               </p>
                               <p className="text-xs text-slate-500 mt-0.5">

@@ -577,7 +577,17 @@ export default function TestDetail() {
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
                 <div className="bg-slate-50 rounded-lg p-4">
                   <p className="text-xs text-slate-500 mb-1">Type</p>
-                  <p className="font-medium text-slate-800">{test.type}</p>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {Array.isArray(test.type) ? test.type.map((t, idx) => (
+                      <span key={idx} className="px-2 py-1 bg-white border border-slate-200 rounded-md text-xs font-medium text-slate-700 shadow-sm">
+                        {t}
+                      </span>
+                    )) : (
+                      <span className="px-2 py-1 bg-white border border-slate-200 rounded-md text-xs font-medium text-slate-700 shadow-sm">
+                        {test.type}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="bg-slate-50 rounded-lg p-4">
                   <p className="text-xs text-slate-500 mb-1">Work Status</p>

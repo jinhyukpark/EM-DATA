@@ -165,6 +165,28 @@ export default function AddTestProcedure() {
   const [, setLocation] = useLocation();
   const [serviceName, setServiceName] = useState(existingData?.serviceName || "");
   const [procedureName, setProcedureName] = useState(existingData?.procedureName || "");
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(existingData?.types || []);
+  const [typeSearchOpen, setTypeSearchOpen] = useState(false);
+  const [typeSearchQuery, setTypeSearchQuery] = useState("");
+  
+  const [availableTypes, setAvailableTypes] = useState([
+    { id: 1, name: "Internal" },
+    { id: 2, name: "External" },
+    { id: 3, name: "Security" },
+    { id: 4, name: "Performance" },
+    { id: 5, name: "Data Integrity" },
+  ]);
+
+  const toggleType = (typeName: string) => {
+    if (selectedTypes.includes(typeName)) {
+      setSelectedTypes(selectedTypes.filter(t => t !== typeName));
+    } else {
+      if (selectedTypes.length < 5) {
+        setSelectedTypes([...selectedTypes, typeName]);
+      }
+    }
+  };
+
   const [assignedInspectors, setAssignedInspectors] = useState<string[]>(existingData?.inspectors || []);
   const [showInspectorDropdown, setShowInspectorDropdown] = useState(false);
   const [testItems, setTestItems] = useState<TestItem[]>(existingData?.testItems || []);
@@ -586,6 +608,91 @@ export default function AddTestProcedure() {
                       className="border-slate-200"
                       data-testid="input-procedure-name"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Type (Max 5)</label>
+                    <Popover open={typeSearchOpen} onOpenChange={setTypeSearchOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={typeSearchOpen}
+                          className="w-full justify-between h-auto min-h-10 px-3 py-2 border-slate-200 text-slate-800 font-normal bg-white hover:bg-slate-50"
+                          data-testid="select-type-trigger"
+                          disabled={selectedTypes.length >= 5}
+                        >
+                          <div className="flex flex-wrap gap-1.5 items-center">
+                            {selectedTypes.length > 0 ? (
+                              selectedTypes.map(type => (
+                                <span key={type} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-xs font-medium border border-blue-100">
+                                  {type}
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleType(type);
+                                    }}
+                                    className="hover:text-blue-900 focus:outline-none"
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-slate-500">Select or enter types...</span>
+                            )}
+                          </div>
+                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-2" align="start">
+                         <Input
+                            placeholder="Search or add new type..."
+                            value={typeSearchQuery}
+                            onChange={(e) => setTypeSearchQuery(e.target.value)}
+                            className="mb-2 h-9"
+                         />
+                         <div className="max-h-[200px] overflow-y-auto space-y-1">
+                            {availableTypes
+                                .filter(t => t.name.toLowerCase().includes(typeSearchQuery.toLowerCase()))
+                                .map(t => (
+                                <button
+                                    key={t.id}
+                                    onClick={() => {
+                                        toggleType(t.name);
+                                        if (selectedTypes.length >= 4) {
+                                          setTypeSearchOpen(false);
+                                        }
+                                        setTypeSearchQuery("");
+                                    }}
+                                    className="flex items-center w-full px-2 py-1.5 text-sm rounded-sm hover:bg-slate-100 text-left"
+                                >
+                                    <Check className={`mr-2 h-4 w-4 ${selectedTypes.includes(t.name) ? "opacity-100 text-blue-600" : "opacity-0"}`} />
+                                    {t.name}
+                                </button>
+                            ))}
+                            {typeSearchQuery && !availableTypes.some(t => t.name.toLowerCase() === typeSearchQuery.toLowerCase()) && (
+                                <button
+                                    onClick={() => {
+                                        const newType = { id: Math.max(...availableTypes.map(at => at.id), 0) + 1, name: typeSearchQuery };
+                                        setAvailableTypes([...availableTypes, newType]);
+                                        toggleType(newType.name);
+                                        if (selectedTypes.length >= 4) {
+                                          setTypeSearchOpen(false);
+                                        }
+                                        setTypeSearchQuery("");
+                                    }}
+                                    className="flex items-center w-full px-2 py-1.5 text-sm rounded-sm hover:bg-slate-100 text-left text-blue-600"
+                                >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Create "{typeSearchQuery}"
+                                </button>
+                            )}
+                             {!typeSearchQuery && availableTypes.length === 0 && (
+                                 <p className="text-sm text-slate-500 p-2">No types found.</p>
+                             )}
+                         </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div className="relative">
                     <label className="block text-sm font-medium text-slate-700 mb-2">Assigned Inspector(s)</label>

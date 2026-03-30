@@ -566,18 +566,19 @@ export default function AddTestProcedure() {
                             {services
                                 .filter(s => s.name.toLowerCase().includes(serviceSearchQuery.toLowerCase()))
                                 .map(s => (
-                                <button
-                                    key={s.id}
-                                    onClick={() => {
-                                        setServiceName(s.name);
-                                        setServiceSearchOpen(false);
-                                        setServiceSearchQuery("");
-                                    }}
-                                    className="flex items-center w-full px-2 py-1.5 text-sm rounded-sm hover:bg-slate-100 text-left"
-                                >
-                                    <Check className={`mr-2 h-4 w-4 ${serviceName === s.name ? "opacity-100" : "opacity-0"}`} />
-                                    {s.name}
-                                </button>
+                                <div key={s.id} className="flex items-center w-full px-2 py-1.5 text-sm rounded-sm hover:bg-slate-100 group">
+                                    <button
+                                        onClick={() => {
+                                            setServiceName(s.name);
+                                            setServiceSearchOpen(false);
+                                            setServiceSearchQuery("");
+                                        }}
+                                        className="flex flex-1 items-center text-left"
+                                    >
+                                        <Check className={`mr-2 h-4 w-4 flex-shrink-0 ${serviceName === s.name ? "opacity-100 text-blue-600" : "opacity-0"}`} />
+                                        <span className="truncate">{s.name}</span>
+                                    </button>
+                                </div>
                             ))}
                             {serviceSearchQuery && !services.some(s => s.name.toLowerCase() === serviceSearchQuery.toLowerCase()) && (
                                 <button
@@ -655,7 +656,7 @@ export default function AddTestProcedure() {
                             {availableTypes
                                 .filter(t => t.name.toLowerCase().includes(typeSearchQuery.toLowerCase()))
                                 .map(t => (
-                                <div key={t.id} className="flex items-center w-full px-2 py-1 text-sm rounded-sm hover:bg-slate-100 group">
+                                <div key={t.id} className="flex items-center w-full px-2 py-1 text-sm rounded-sm hover:bg-slate-100">
                                     <button
                                         onClick={(e) => {
                                             e.preventDefault();
@@ -665,7 +666,7 @@ export default function AddTestProcedure() {
                                             }
                                             setTypeSearchQuery("");
                                         }}
-                                        className="flex flex-1 items-center text-left"
+                                        className="flex items-center text-left"
                                     >
                                         <Check className={`mr-2 h-4 w-4 flex-shrink-0 ${selectedTypes.includes(t.name) ? "opacity-100 text-blue-600" : "opacity-0"}`} />
                                         <span className="truncate">{t.name}</span>
@@ -678,7 +679,7 @@ export default function AddTestProcedure() {
                                                 setSelectedTypes(selectedTypes.filter(st => st !== t.name));
                                             }
                                         }}
-                                        className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-all"
+                                        className="p-0.5 text-black hover:text-red-600 hover:bg-red-50 rounded transition-all ml-1 flex-shrink-0"
                                         title="Remove type"
                                     >
                                         <X className="h-3.5 w-3.5" />

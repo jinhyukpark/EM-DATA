@@ -30,7 +30,7 @@ import Sidebar from "@/components/Sidebar";
 const services = [
   { id: 1, testName: "Data Integrity Check", name: "Company Data Pipeline", type: ["Internal", "Database", "Core"], status: "Active", workStatus: "Normal", step: 5, lastInspection: "2025-01-09", inspectors: ["John Kim", "Sarah Lee"], nextInspection: "2025-01-16", normalCount: 12, abnormalCount: 0 },
   { id: 2, testName: "API Response Validation", name: "Patent Crawler Service", type: ["Internal"], status: "Active", workStatus: "Normal", step: 3, lastInspection: "2025-01-08", inspectors: ["Sarah Lee"], nextInspection: "2025-01-15", normalCount: 8, abnormalCount: 1 },
-  { id: 3, testName: "Performance Benchmark", name: "News API Integration", type: ["External", "API"], status: "Warning", workStatus: "Delayed", step: 8, lastInspection: "2025-01-05", inspectors: ["Mike Park", "Emily Choi", "David Jung"], nextInspection: "2025-01-12", normalCount: 5, abnormalCount: 3 },
+  { id: 3, testName: "Performance Benchmark", name: "News API Integration", type: ["External", "API"], status: "Warning", workStatus: "Delayed, Failed", step: 8, lastInspection: "2025-01-05", inspectors: ["Mike Park", "Emily Choi", "David Jung"], nextInspection: "2025-01-12", normalCount: 5, abnormalCount: 3 },
   { id: 4, testName: "Security Audit", name: "Stock Data Collector", type: ["External", "Security"], status: "Active", workStatus: "Normal", step: 4, lastInspection: "2025-01-09", inspectors: ["Emily Choi"], nextInspection: "2025-01-16", normalCount: 10, abnormalCount: 0 },
   { id: 5, testName: "Data Accuracy Test", name: "ML Prediction Service", type: ["Internal", "ML", "Analytics"], status: "Inactive", workStatus: "Stopped", step: 6, lastInspection: "2024-12-20", inspectors: ["David Jung", "John Kim"], nextInspection: "2025-01-20", normalCount: 3, abnormalCount: 2 },
 ];
@@ -397,18 +397,24 @@ export default function QAReport() {
                             </span>
                           </td>
                           <td className="py-4 px-4 text-center">
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                              service.workStatus === "Normal" ? "bg-emerald-50 text-emerald-600" :
-                              service.workStatus === "Delayed" ? "bg-amber-50 text-amber-600" :
-                              "bg-red-50 text-red-600"
-                            }`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${
-                                service.workStatus === "Normal" ? "bg-emerald-500" :
-                                service.workStatus === "Delayed" ? "bg-amber-500 animate-pulse" :
-                                "bg-red-500"
-                              }`} />
-                              {service.workStatus}
-                            </span>
+                            <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                              {service.workStatus.split(', ').map((status, idx) => (
+                                <span key={idx} className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                                  status === "Normal" ? "bg-emerald-50 text-emerald-600" :
+                                  status === "Delayed" ? "bg-amber-50 text-amber-600" :
+                                  status === "Stopped" ? "bg-slate-100 text-slate-600" :
+                                  "bg-red-50 text-red-600"
+                                }`}>
+                                  <span className={`w-1.5 h-1.5 rounded-full ${
+                                    status === "Normal" ? "bg-emerald-500" :
+                                    status === "Delayed" ? "bg-amber-500 animate-pulse" :
+                                    status === "Stopped" ? "bg-slate-400" :
+                                    "bg-red-500"
+                                  }`} />
+                                  {status}
+                                </span>
+                              ))}
+                            </div>
                           </td>
                           <td className="py-4 px-4 text-center">
                             <div className="flex items-center justify-center gap-2">

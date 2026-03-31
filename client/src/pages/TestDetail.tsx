@@ -1513,7 +1513,7 @@ export default function TestDetail() {
                                           <button onClick={() => toggleThread(item.id)} className="text-slate-400 hover:text-slate-600" title="Collapse Thread">
                                             <ChevronDown className="w-4 h-4 transform rotate-180" />
                                           </button>
-                                          <span className="text-sm font-semibold text-slate-700">Notes</span>
+                                          <span className="text-sm font-semibold text-slate-700">Comments</span>
                                         </div>
                                       </div>
                                       
@@ -1567,14 +1567,14 @@ export default function TestDetail() {
                                                               setEditingNoteText(note.text);
                                                             }}
                                                             className="p-1.5 rounded-md bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 shadow-sm"
-                                                            title="Edit note"
+                                                            title="Edit comment"
                                                           >
                                                             <Edit3 className="w-3.5 h-3.5" />
                                                           </button>
                                                           <button 
                                                             onClick={() => handleDeleteResolutionNote(item.id, note.id)}
                                                             className="p-1.5 rounded-md bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-red-600 shadow-sm"
-                                                            title="Delete note"
+                                                            title="Delete comment"
                                                           >
                                                             <Trash2 className="w-3.5 h-3.5" />
                                                           </button>
@@ -1588,7 +1588,7 @@ export default function TestDetail() {
                                           </div>
                                         ) : (
                                           <div className="text-sm text-slate-500 italic text-center py-4 bg-white/50 rounded-lg border border-slate-200 border-dashed">
-                                            No notes added yet.
+                                            No comments added yet.
                                           </div>
                                         )}
   
@@ -1612,7 +1612,7 @@ export default function TestDetail() {
                                                   : "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
                                               }`}
                                             >
-                                              Add Note
+                                              Add Comment
                                             </button>
                                           </div>
                                         )}

@@ -37,6 +37,9 @@ import {
   FileStack,
   MoreVertical,
   Copy,
+  ChevronLeft,
+  ChevronRight,
+  AlertCircle,
 } from "lucide-react";
 import {
   Popover,
@@ -237,6 +240,17 @@ export default function AddTestProcedure() {
   const [templateModified, setTemplateModified] = useState(false);
   const [templateItems, setTemplateItems] = useState<TestItem[]>([]);
   const [templateNextId, setTemplateNextId] = useState(1);
+  const [templateCurrentPage, setTemplateCurrentPage] = useState(1);
+  const TEMPLATES_PER_PAGE = 7; // 7 templates + 1 new button = 8 items per page
+  
+  const [showSaveOptionsModal, setShowSaveOptionsModal] = useState(false);
+  const [saveOption, setSaveOption] = useState<"today" | "next">("today");
+  const [showUpdateAlertModal, setShowUpdateAlertModal] = useState(false);
+  
+  // Track original assigned inspectors and days to detect changes
+  const [originalInspectors, setOriginalInspectors] = useState<string[]>(existingData?.inspectors || []);
+  const [originalDays, setOriginalDays] = useState<string[]>(existingData?.selectedDays || []);
+  const [originalDayInspectors, setOriginalDayInspectors] = useState<Record<string, string[]>>({});
 
   const addTemplateItem = () => {
     setTemplateItems([...templateItems, { id: templateNextId, question: "", answerType: "text", options: [{ text: "", isNormal: true }, { text: "", isNormal: false }, { text: "", isNormal: false }, { text: "", isNormal: false }] }]);
@@ -348,10 +362,44 @@ export default function AddTestProcedure() {
   };
 
   const handleItemSettingsSave = () => {
+    // If we're editing an existing procedure, we show the save options. 
+    // If it's a new procedure, just save immediately.
+    if (isEditMode) {
+      setShowSaveOptionsModal(true);
+    } else {
+      if (selectedTemplateId && templateModified) {
+        saveToSelectedTemplate();
+      }
+      setItemSettingsOpen(false);
+    }
+  };
+
+  const confirmItemSettingsSave = () => {
     if (selectedTemplateId && templateModified) {
         saveToSelectedTemplate();
     }
+    setShowSaveOptionsModal(false);
     setItemSettingsOpen(false);
+  };
+
+  const handleSave = () => {
+    // Check if inspectors or days changed in edit mode
+    const inspectorChanged = JSON.stringify(originalInspectors) !== JSON.stringify(assignedInspectors);
+    const daysChanged = JSON.stringify(originalDays) !== JSON.stringify(selectedDays);
+    const dayInspectorsChanged = JSON.stringify(originalDayInspectors) !== JSON.stringify(dayInspectors);
+
+    if (isEditMode && (inspectorChanged || daysChanged || dayInspectorsChanged)) {
+      setShowUpdateAlertModal(true);
+    } else {
+      console.log({ serviceName, procedureName, testItems });
+      setLocation("/qa-report");
+    }
+  };
+
+  const confirmProcedureSave = () => {
+    setShowUpdateAlertModal(false);
+    console.log({ serviceName, procedureName, testItems, saveOption });
+    setLocation("/qa-report");
   };
 
   const toggleDayInspector = (dayId: string, inspectorName: string) => {
@@ -858,15 +906,26 @@ export default function AddTestProcedure() {
                                     <div className="flex-1 relative">
                                       <button
                                         onClick={() => setActiveDayDropdown(activeDayDropdown === dayId ? null : dayId)}
-                                        className="w-full h-9 px-3 border border-slate-200 rounded-lg text-sm bg-white text-left flex items-center justify-between hover:border-blue-300"
+                                        className="w-full min-h-[36px] py-1.5 px-3 border border-slate-200 rounded-lg text-sm bg-white text-left flex items-center justify-between hover:border-blue-300"
                                       >
-                                        <span className={assignedForDay.length > 0 ? "text-slate-800" : "text-slate-400"}>
-                                          {assignedForDay.length > 0 
-                                            ? `${assignedForDay.length} inspector(s)` 
-                                            : "Select inspectors..."
-                                          }
-                                        </span>
-                                        <ChevronDown className="w-4 h-4 text-slate-400" />
+                                        <div className="flex flex-wrap gap-1 flex-1 pr-2">
+                                          {assignedForDay.length > 0 ? (
+                                            assignedForDay.map(name => {
+                                              const inspector = inspectors.find(i => i.name === name);
+                                              return (
+                                                <div key={name} className="flex items-center gap-1.5 bg-slate-100 px-2 py-0.5 rounded-md">
+                                                  <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[9px] font-medium text-white">
+                                                    {inspector?.avatar}
+                                                  </div>
+                                                  <span className="text-xs text-slate-700">{name}</span>
+                                                </div>
+                                              );
+                                            })
+                                          ) : (
+                                            <span className="text-slate-400">Select inspectors...</span>
+                                          )}
+                                        </div>
+                                        <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />
                                       </button>
                                       {activeDayDropdown === dayId && (
                                         <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
@@ -894,27 +953,6 @@ export default function AddTestProcedure() {
                                         </div>
                                       )}
                                     </div>
-                                    {assignedForDay.length > 0 && (
-                                      <div className="flex -space-x-1">
-                                        {assignedForDay.slice(0, 3).map((name) => {
-                                          const inspector = inspectors.find(i => i.name === name);
-                                          return (
-                                            <div
-                                              key={name}
-                                              className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-medium text-white border-2 border-white"
-                                              title={name}
-                                            >
-                                              {inspector?.avatar}
-                                            </div>
-                                          );
-                                        })}
-                                        {assignedForDay.length > 3 && (
-                                          <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium text-slate-600 border-2 border-white">
-                                            +{assignedForDay.length - 3}
-                                          </div>
-                                        )}
-                                      </div>
-                                    )}
                                   </div>
                                 );
                               })}
@@ -1050,13 +1088,54 @@ export default function AddTestProcedure() {
 
                 {/* Template Section */}
                 <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="flex items-center gap-2 mb-4">
-                    <FileStack className="w-5 h-5 text-blue-600" />
-                    <h3 className="font-medium text-slate-800">Templates</h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <FileStack className="w-5 h-5 text-blue-600" />
+                      <h3 className="font-medium text-slate-800">Templates</h3>
+                    </div>
+                    {templates.length > TEMPLATES_PER_PAGE && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setTemplateCurrentPage(Math.max(1, templateCurrentPage - 1))}
+                          disabled={templateCurrentPage === 1}
+                          className="p-1 rounded-md bg-white border border-slate-200 text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <span className="text-xs text-slate-500 font-medium">
+                          {templateCurrentPage} / {Math.ceil(templates.length / TEMPLATES_PER_PAGE)}
+                        </span>
+                        <button
+                          onClick={() => setTemplateCurrentPage(Math.min(Math.ceil(templates.length / TEMPLATES_PER_PAGE), templateCurrentPage + 1))}
+                          disabled={templateCurrentPage >= Math.ceil(templates.length / TEMPLATES_PER_PAGE)}
+                          className="p-1 rounded-md bg-white border border-slate-200 text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {templates.map((template) => (
+                    {/* Add New Template Button - Always First on First Page */}
+                    {templateCurrentPage === 1 && (
+                      <button
+                        onClick={() => setShowTemplateModal(true)}
+                        className="p-4 bg-white rounded-lg border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-2 min-h-[100px]"
+                        data-testid="add-template-btn"
+                      >
+                        <Plus className="w-6 h-6 text-blue-500" />
+                        <span className="text-xs font-medium text-slate-600">New Template</span>
+                      </button>
+                    )}
+
+                    {/* Template Items */}
+                    {templates
+                      .slice(
+                        templateCurrentPage === 1 ? 0 : (templateCurrentPage - 1) * TEMPLATES_PER_PAGE - 1,
+                        templateCurrentPage === 1 ? TEMPLATES_PER_PAGE : templateCurrentPage * TEMPLATES_PER_PAGE - 1
+                      )
+                      .map((template) => (
                       <div
                         key={template.id}
                         className={`relative p-4 pt-8 bg-white rounded-lg border-2 transition-all cursor-pointer hover:shadow-md group min-h-[100px] ${
@@ -1096,16 +1175,6 @@ export default function AddTestProcedure() {
                         <p className="text-xs text-slate-500">{template.items.length} test items</p>
                       </div>
                     ))}
-                    
-                    {/* Add New Template Button */}
-                    <button
-                      onClick={() => setShowTemplateModal(true)}
-                      className="p-4 bg-white rounded-lg border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-2 min-h-[100px]"
-                      data-testid="add-template-btn"
-                    >
-                      <Plus className="w-6 h-6 text-blue-500" />
-                      <span className="text-xs font-medium text-slate-600">New Template</span>
-                    </button>
                   </div>
                 </div>
 
@@ -1347,6 +1416,84 @@ export default function AddTestProcedure() {
                     ))}
                   </div>
                 )}
+                {/* Save Options Modal */}
+                {showSaveOptionsModal && (
+                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="bg-white rounded-xl w-full max-w-md shadow-xl"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="p-6 border-b border-slate-200">
+                        <h3 className="text-lg font-semibold text-slate-800">Apply Changes</h3>
+                        <p className="text-sm text-slate-500 mt-1">When would you like these changes to take effect?</p>
+                      </div>
+                      
+                      <div className="p-6 space-y-3">
+                        <label 
+                          className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            saveOption === "today" ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:border-blue-300"
+                          }`}
+                        >
+                          <div className="flex h-5 items-center">
+                            <input
+                              type="radio"
+                              name="saveOption"
+                              checked={saveOption === "today"}
+                              onChange={() => setSaveOption("today")}
+                              className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div>
+                            <span className="block text-sm font-medium text-slate-900">Apply from Today</span>
+                            <span className="block text-xs text-slate-500 mt-0.5">
+                              Changes take effect immediately. <span className="text-amber-600 font-medium">Note: Today's progress will be reset.</span>
+                            </span>
+                          </div>
+                        </label>
+
+                        <label 
+                          className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            saveOption === "next" ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:border-blue-300"
+                          }`}
+                        >
+                          <div className="flex h-5 items-center">
+                            <input
+                              type="radio"
+                              name="saveOption"
+                              checked={saveOption === "next"}
+                              onChange={() => setSaveOption("next")}
+                              className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div>
+                            <span className="block text-sm font-medium text-slate-900">Apply from Next Cycle</span>
+                            <span className="block text-xs text-slate-500 mt-0.5">
+                              Changes will take effect from the next scheduled day. Today's progress remains intact.
+                            </span>
+                          </div>
+                        </label>
+                      </div>
+                      
+                      <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50 rounded-b-xl">
+                        <Button 
+                          variant="outline" 
+                          className="border-slate-300 text-slate-700 hover:bg-slate-100" 
+                          onClick={() => setShowSaveOptionsModal(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={confirmItemSettingsSave} 
+                          className="bg-blue-600 hover:bg-blue-700 px-6" 
+                        >
+                          Apply Changes
+                        </Button>
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
               </div>
             </motion.div>
           </div>
@@ -1360,6 +1507,95 @@ export default function AddTestProcedure() {
                   {isEditMode ? "Update Procedure" : "Save Procedure"}
                 </Button>
               </div>
+
+              {/* Inspector/Days Update Alert Modal */}
+              {showUpdateAlertModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden"
+                  >
+                    <div className="bg-amber-50 p-6 flex flex-col items-center text-center border-b border-amber-100">
+                      <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-4">
+                        <AlertCircle className="w-6 h-6 text-amber-600" />
+                      </div>
+                      <h3 className="text-lg font-bold text-amber-900 mb-1">Schedule Changes Detected</h3>
+                      <p className="text-sm text-amber-700/80">
+                        You have modified the inspection days or assigned inspectors.
+                      </p>
+                    </div>
+                    
+                    <div className="p-6">
+                      <p className="text-sm text-slate-600 mb-4">
+                        Please select when these changes should take effect:
+                      </p>
+                      
+                      <div className="space-y-3">
+                        <label 
+                          className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            saveOption === "today" ? "border-amber-500 bg-amber-50/50" : "border-slate-200 hover:border-amber-300"
+                          }`}
+                        >
+                          <div className="flex h-5 items-center">
+                            <input
+                              type="radio"
+                              name="alertSaveOption"
+                              checked={saveOption === "today"}
+                              onChange={() => setSaveOption("today")}
+                              className="w-4 h-4 text-amber-600 focus:ring-amber-500"
+                            />
+                          </div>
+                          <div>
+                            <span className="block text-sm font-medium text-slate-900">Apply from Today</span>
+                            <span className="block text-xs text-amber-600 font-medium mt-1">
+                              Warning: This will reset all current progress for today.
+                            </span>
+                          </div>
+                        </label>
+
+                        <label 
+                          className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            saveOption === "next" ? "border-amber-500 bg-amber-50/50" : "border-slate-200 hover:border-amber-300"
+                          }`}
+                        >
+                          <div className="flex h-5 items-center">
+                            <input
+                              type="radio"
+                              name="alertSaveOption"
+                              checked={saveOption === "next"}
+                              onChange={() => setSaveOption("next")}
+                              className="w-4 h-4 text-amber-600 focus:ring-amber-500"
+                            />
+                          </div>
+                          <div>
+                            <span className="block text-sm font-medium text-slate-900">Apply from Next Cycle</span>
+                            <span className="block text-xs text-slate-500 mt-0.5">
+                              Changes will apply to future dates. Today's progress remains intact.
+                            </span>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 border-t border-slate-100 flex justify-end gap-2 bg-slate-50">
+                      <Button 
+                        variant="outline" 
+                        className="border-slate-300 text-slate-700 hover:bg-slate-100" 
+                        onClick={() => setShowUpdateAlertModal(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        onClick={confirmProcedureSave} 
+                        className="bg-amber-500 hover:bg-amber-600 text-white px-6" 
+                      >
+                        Confirm Changes
+                      </Button>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
 
               {/* Type Delete Confirmation Modal */}
               {typeToDelete && (

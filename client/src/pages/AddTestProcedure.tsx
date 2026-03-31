@@ -90,6 +90,7 @@ const weekDays = [
 const existingTests: Record<string, {
   serviceName: string;
   procedureName: string;
+  types: string[];
   inspectors: string[];
   startDate: string;
   endDate: string;
@@ -103,6 +104,7 @@ const existingTests: Record<string, {
   "1": {
     serviceName: "Company Data Pipeline",
     procedureName: "Data Integrity Check",
+    types: ["Internal", "External"],
     inspectors: ["John Kim", "Sarah Lee"],
     startDate: "2024-12-01",
     endDate: "2025-06-30",
@@ -122,6 +124,7 @@ const existingTests: Record<string, {
   "2": {
     serviceName: "Patent Crawler Service",
     procedureName: "API Response Validation",
+    types: ["Internal"],
     inspectors: ["Sarah Lee"],
     startDate: "2024-11-01",
     endDate: "2025-05-31",
@@ -139,6 +142,7 @@ const existingTests: Record<string, {
   "3": {
     serviceName: "News API Integration",
     procedureName: "Performance Benchmark",
+    types: ["External"],
     inspectors: ["Mike Park", "Emily Choi"],
     startDate: "2024-10-15",
     endDate: "2025-04-15",

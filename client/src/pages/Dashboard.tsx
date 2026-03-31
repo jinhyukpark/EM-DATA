@@ -28,6 +28,7 @@ import {
   UserCog,
   Maximize2,
   Menu,
+  Lightbulb,
 } from "lucide-react";
 import {
   AreaChart,
@@ -416,6 +417,7 @@ const chartColors = {
   Company: "hsl(346, 77%, 50%)",
   Finance: "hsl(45, 93%, 47%)",
   Employment: "hsl(199, 89%, 48%)",
+  RnD: "hsl(28, 89%, 53%)",
 };
 
 const alertMessages = [
@@ -804,7 +806,7 @@ export default function Dashboard() {
   };
 
   const handleDismissAlert = (id: number) => {
-    setDismissedAlerts(prev => new Set([...prev, id]));
+    setDismissedAlerts(prev => new Set(Array.from(prev).concat(id)));
   };
 
   const handleShowAllAlerts = () => {

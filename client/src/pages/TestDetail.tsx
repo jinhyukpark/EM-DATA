@@ -423,15 +423,12 @@ export default function TestDetail() {
   }
 
   const handleAnswerChange = (itemId: number, newAnswer: string) => {
-    const currentSchedule = test.schedule.find(s => s.id === selectedSchedule);
-    if (!currentSchedule?.testResults) return;
-    
-    const currentResults = editedScheduleResults[selectedSchedule] || currentSchedule.testResults;
+    const currentResults = getCurrentTestResults();
     const updatedResults = currentResults.map(item => {
       if (item.id === itemId) {
         // Toggle off if clicking the already selected answer for ox or multiple_choice
         if (item.answer === newAnswer && (item.answerType === 'ox' || item.answerType === 'multiple_choice')) {
-          return { ...item, answer: "", status: "na" };
+          return { ...item, answer: undefined, status: undefined };
         }
 
         let status = item.status;
@@ -458,13 +455,13 @@ export default function TestDetail() {
       ...prev,
       [selectedSchedule]: updatedResults
     }));
+    
+    // Also update editedItems if editing general items
+    setEditedItems(updatedResults);
   };
 
   const handleStatusChange = (itemId: number, newStatus: "pass" | "fail" | "na") => {
-    const currentSchedule = test.schedule.find(s => s.id === selectedSchedule);
-    if (!currentSchedule?.testResults) return;
-    
-    const currentResults = editedScheduleResults[selectedSchedule] || currentSchedule.testResults;
+    const currentResults = getCurrentTestResults();
     const updatedResults = currentResults.map(item => 
       item.id === itemId ? { ...item, status: newStatus } : item
     );
@@ -472,6 +469,7 @@ export default function TestDetail() {
       ...prev,
       [selectedSchedule]: updatedResults
     }));
+    setEditedItems(updatedResults);
   };
 
   const handleSave = () => {

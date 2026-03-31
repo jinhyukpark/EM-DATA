@@ -808,31 +808,27 @@ export default function AddTestProcedure() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 mb-4">
-                    <button
-                      onClick={() => setIsRepeating(!isRepeating)}
-                      className={`relative w-11 h-6 rounded-full transition-colors ${
-                        isRepeating ? "bg-blue-600" : "bg-slate-200"
-                      }`}
-                      data-testid="toggle-repeat"
-                    >
-                      <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                        isRepeating ? "translate-x-5" : ""
-                      }`} />
-                    </button>
-                    <span className="text-sm font-medium text-slate-700">Repeating Task</span>
-                  </div>
-
-                  {isRepeating && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="space-y-4"
-                    >
-                      <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-2">Repeat on Days</label>
-                        <div className="flex gap-2 mb-3">
-                          {weekDays.map((day) => (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-500 mb-2">Repeat on Days</label>
+                      <div className="flex gap-2 mb-3">
+                        <button
+                          onClick={() => {
+                            if (selectedDays.length === weekDays.length) {
+                              setSelectedDays([]);
+                            } else {
+                              setSelectedDays(weekDays.map(d => d.id));
+                            }
+                          }}
+                          className={`w-12 h-10 rounded-lg text-xs font-medium transition-all ${
+                            selectedDays.length === weekDays.length
+                              ? "bg-slate-700 text-white border border-slate-700"
+                              : "bg-white border border-slate-200 text-slate-600 hover:border-blue-300"
+                          }`}
+                        >
+                          전체
+                        </button>
+                        {weekDays.map((day) => (
                             <button
                               key={day.id}
                               onClick={() => toggleDay(day.id)}
@@ -995,8 +991,7 @@ export default function AddTestProcedure() {
                           </div>
                         )}
                       </div>
-                    </motion.div>
-                  )}
+                  </div>
                 </div>
               </div>
 

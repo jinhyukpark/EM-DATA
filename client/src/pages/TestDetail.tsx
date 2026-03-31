@@ -1481,18 +1481,27 @@ export default function TestDetail() {
                                               )}
                                             </div>
                                             
-                                            {/* Edit button (appears on hover) */}
+                                            {/* Edit/Delete buttons */}
                                             {editingNoteId !== note.id && note.author === "Current User" && !item.isResolved && (
-                                              <button 
-                                                onClick={() => {
-                                                  setEditingNoteId(note.id);
-                                                  setEditingNoteText(note.text);
-                                                }}
-                                                className="absolute bottom-2 right-2 p-1.5 rounded-md bg-white border border-amber-200 text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-amber-50 hover:text-amber-700 shadow-sm"
-                                                title="Edit note"
-                                              >
-                                                <Edit3 className="w-3.5 h-3.5" />
-                                              </button>
+                                              <div className="absolute top-3 right-3 flex gap-1">
+                                                <button 
+                                                  onClick={() => {
+                                                    setEditingNoteId(note.id);
+                                                    setEditingNoteText(note.text);
+                                                  }}
+                                                  className="p-1.5 rounded-md bg-white border border-amber-200 text-amber-600 hover:bg-amber-50 hover:text-amber-700 shadow-sm"
+                                                  title="Edit note"
+                                                >
+                                                  <Edit3 className="w-3.5 h-3.5" />
+                                                </button>
+                                                <button 
+                                                  onClick={() => handleDeleteResolutionNote(item.id, note.id)}
+                                                  className="p-1.5 rounded-md bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600 shadow-sm"
+                                                  title="Delete note"
+                                                >
+                                                  <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                              </div>
                                             )}
                                           </div>
                                         ))}

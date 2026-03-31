@@ -44,17 +44,17 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import Sidebar from "@/components/Sidebar";
 
 const stabilityData = [
-  { date: "2024-11-01", normal: 45, abnormal: 3 },
-  { date: "2024-11-08", normal: 42, abnormal: 5 },
-  { date: "2024-11-15", normal: 48, abnormal: 2 },
-  { date: "2024-11-22", normal: 44, abnormal: 4 },
-  { date: "2024-11-29", normal: 40, abnormal: 6 },
-  { date: "2024-12-06", normal: 47, abnormal: 3 },
-  { date: "2024-12-13", normal: 50, abnormal: 1 },
-  { date: "2024-12-20", normal: 43, abnormal: 5 },
-  { date: "2024-12-27", normal: 46, abnormal: 2 },
-  { date: "2025-01-03", normal: 49, abnormal: 1 },
-  { date: "2025-01-10", normal: 51, abnormal: 0 },
+  { date: "2026-01-20", normal: 45, abnormal: 3, resolved: 2 },
+  { date: "2026-01-27", normal: 42, abnormal: 5, resolved: 4 },
+  { date: "2026-02-03", normal: 48, abnormal: 2, resolved: 2 },
+  { date: "2026-02-10", normal: 44, abnormal: 4, resolved: 3 },
+  { date: "2026-02-17", normal: 40, abnormal: 6, resolved: 5 },
+  { date: "2026-02-24", normal: 47, abnormal: 3, resolved: 2 },
+  { date: "2026-03-03", normal: 50, abnormal: 1, resolved: 1 },
+  { date: "2026-03-10", normal: 43, abnormal: 5, resolved: 4 },
+  { date: "2026-03-17", normal: 46, abnormal: 2, resolved: 2 },
+  { date: "2026-03-24", normal: 49, abnormal: 1, resolved: 1 },
+  { date: "2026-03-31", normal: 51, abnormal: 0, resolved: 0 },
 ];
 
 const inspectors = [
@@ -74,6 +74,13 @@ type TestItemResult = {
   status?: "pass" | "fail" | "na";
   isResolved?: boolean;
   actionNote?: string;
+  resolutionNotes?: {
+    id: string;
+    author: string;
+    avatar: string;
+    timestamp: string;
+    text: string;
+  }[];
 };
 
 type ScheduleItem = {
@@ -107,16 +114,7 @@ const testData: Record<string, {
   normalCount: number;
   abnormalCount: number;
   schedule: ScheduleItem[];
-  items: { 
-    id: number; 
-    question: string; 
-    answerType: string; 
-    options?: { text: string; isNormal: boolean }[]; 
-    answer?: string; 
-    status?: "pass" | "fail" | "na";
-    isResolved?: boolean; 
-    actionNote?: string 
-  }[];
+  items: TestItemResult[];
 }> = {
   "1": {
     id: 1,
@@ -343,7 +341,7 @@ export default function TestDetail() {
   const test = testData[testId];
   const [isEditing, setIsEditing] = useState(false);
   const [itemHistoryModal, setItemHistoryModal] = useState(false);
-  const [editedItems, setEditedItems] = useState(test?.items || []);
+  const [editedItems, setEditedItems] = useState<TestItemResult[]>(test?.items || []);
   const [selectedSchedule, setSelectedSchedule] = useState(test?.schedule[0]?.id || 1);
   const [scheduleFilterFrom, setScheduleFilterFrom] = useState("");
   const [scheduleFilterTo, setScheduleFilterTo] = useState("");
@@ -423,12 +421,14 @@ export default function TestDetail() {
   }
 
   const handleAnswerChange = (itemId: number, newAnswer: string) => {
-    const currentSchedule = test.schedule.find(s => s.id === selectedSchedule);
-    if (!currentSchedule?.testResults) return;
-    
-    const currentResults = editedScheduleResults[selectedSchedule] || currentSchedule.testResults;
+    const currentResults = getCurrentTestResults();
     const updatedResults = currentResults.map(item => {
       if (item.id === itemId) {
+        // Toggle off if clicking the already selected answer for ox or multiple_choice
+        if (item.answer === newAnswer && (item.answerType === 'ox' || item.answerType === 'multiple_choice')) {
+          return { ...item, answer: undefined, status: undefined };
+        }
+
         let status = item.status;
         
         // Auto-calculate status for Multiple Choice
@@ -453,13 +453,13 @@ export default function TestDetail() {
       ...prev,
       [selectedSchedule]: updatedResults
     }));
+    
+    // Also update editedItems if editing general items
+    setEditedItems(updatedResults);
   };
 
   const handleStatusChange = (itemId: number, newStatus: "pass" | "fail" | "na") => {
-    const currentSchedule = test.schedule.find(s => s.id === selectedSchedule);
-    if (!currentSchedule?.testResults) return;
-    
-    const currentResults = editedScheduleResults[selectedSchedule] || currentSchedule.testResults;
+    const currentResults = getCurrentTestResults();
     const updatedResults = currentResults.map(item => 
       item.id === itemId ? { ...item, status: newStatus } : item
     );
@@ -467,6 +467,112 @@ export default function TestDetail() {
       ...prev,
       [selectedSchedule]: updatedResults
     }));
+    setEditedItems(updatedResults);
+  };
+
+  const handleResolvedChange = (itemId: number, isResolved: boolean) => {
+    const currentResults = getCurrentTestResults();
+    const updatedResults = currentResults.map(item => 
+      item.id === itemId ? { ...item, isResolved } : item
+    );
+    setEditedScheduleResults(prev => ({
+      ...prev,
+      [selectedSchedule]: updatedResults
+    }));
+    setEditedItems(updatedResults);
+  };
+
+  const handleActionNoteChange = (itemId: number, actionNote: string) => {
+    const currentResults = getCurrentTestResults();
+    const updatedResults = currentResults.map(item => 
+      item.id === itemId ? { ...item, actionNote } : item
+    );
+    setEditedScheduleResults(prev => ({
+      ...prev,
+      [selectedSchedule]: updatedResults
+    }));
+    setEditedItems(updatedResults);
+  };
+
+  const [newNoteText, setNewNoteText] = useState<Record<number, string>>({});
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editingNoteText, setEditingNoteText] = useState<string>("");
+  const [expandedThreads, setExpandedThreads] = useState<Record<number, boolean>>({});
+
+  const toggleThread = (itemId: number) => {
+    setExpandedThreads(prev => ({
+      ...prev,
+      [itemId]: !prev[itemId]
+    }));
+  };
+
+  const handleAddResolutionNote = (itemId: number) => {
+    const text = newNoteText[itemId];
+    if (!text || !text.trim()) return;
+
+    const newNote = {
+      id: Math.random().toString(36).substring(7),
+      author: "Current User", // Mocked user
+      avatar: "CU",
+      timestamp: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      text: text.trim()
+    };
+
+    const currentResults = getCurrentTestResults();
+    const updatedResults = currentResults.map(item => 
+      item.id === itemId ? { 
+        ...item, 
+        resolutionNotes: [...(item.resolutionNotes || []), newNote] 
+      } : item
+    );
+    
+    setEditedScheduleResults(prev => ({
+      ...prev,
+      [selectedSchedule]: updatedResults
+    }));
+    setEditedItems(updatedResults);
+    
+    // Clear input
+    setNewNoteText(prev => ({ ...prev, [itemId]: "" }));
+  };
+
+  const handleEditResolutionNote = (itemId: number, noteId: string, newText: string) => {
+    if (!newText.trim()) return;
+
+    const currentResults = getCurrentTestResults();
+    const updatedResults = currentResults.map(item => {
+      if (item.id !== itemId) return item;
+      
+      const updatedNotes = (item.resolutionNotes || []).map(note => 
+        note.id === noteId ? { ...note, text: newText.trim() } : note
+      );
+      
+      return { ...item, resolutionNotes: updatedNotes };
+    });
+    
+    setEditedScheduleResults(prev => ({
+      ...prev,
+      [selectedSchedule]: updatedResults
+    }));
+    setEditedItems(updatedResults);
+    setEditingNoteId(null);
+  };
+
+  const handleDeleteResolutionNote = (itemId: number, noteId: string) => {
+    const currentResults = getCurrentTestResults();
+    const updatedResults = currentResults.map(item => {
+      if (item.id !== itemId) return item;
+      
+      const updatedNotes = (item.resolutionNotes || []).filter(note => note.id !== noteId);
+      
+      return { ...item, resolutionNotes: updatedNotes };
+    });
+    
+    setEditedScheduleResults(prev => ({
+      ...prev,
+      [selectedSchedule]: updatedResults
+    }));
+    setEditedItems(updatedResults);
   };
 
   const handleSave = () => {
@@ -503,6 +609,27 @@ export default function TestDetail() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeDetailTab, setActiveDetailTab] = useState<"info" | "schedule">("info");
+  const [stabilityPeriod, setStabilityPeriod] = useState<"1w" | "1m" | "3m" | "6m" | "all">("all");
+
+  // Helper to get filtered stability data based on selected period
+  const getFilteredStabilityData = () => {
+    if (stabilityPeriod === "all") return stabilityData;
+    
+    // In a real app, we would use current date. For mockup, we'll use the last date in data.
+    const lastDate = new Date(stabilityData[stabilityData.length - 1].date);
+    const filterDate = new Date(lastDate);
+    
+    switch (stabilityPeriod) {
+      case "1w": filterDate.setDate(lastDate.getDate() - 7); break;
+      case "1m": filterDate.setMonth(lastDate.getMonth() - 1); break;
+      case "3m": filterDate.setMonth(lastDate.getMonth() - 3); break;
+      case "6m": filterDate.setMonth(lastDate.getMonth() - 6); break;
+    }
+    
+    return stabilityData.filter(item => new Date(item.date) >= filterDate);
+  };
+
+  const filteredStabilityData = getFilteredStabilityData();
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden" data-testid="test-detail-page">
@@ -750,24 +877,48 @@ export default function TestDetail() {
               </div>
 
               <div className="border-t border-slate-100 pt-6 mt-4">
-                <h3 className="text-sm font-medium text-slate-700 mb-4">Stability Metrics</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium text-slate-700">Stability Metrics</h3>
+                  <select 
+                    value={stabilityPeriod}
+                    onChange={(e) => setStabilityPeriod(e.target.value as any)}
+                    className="text-xs border border-slate-200 rounded-md px-2 py-1 text-slate-600 focus:outline-none focus:border-blue-500 bg-white"
+                  >
+                    <option value="1w">Last 1 Week</option>
+                    <option value="1m">Last 1 Month</option>
+                    <option value="3m">Last 3 Months</option>
+                    <option value="6m">Last 6 Months</option>
+                    <option value="all">All Time</option>
+                  </select>
+                </div>
                 <div className="grid grid-cols-3 gap-4 mb-4">
                   <div className="bg-emerald-50 rounded-lg p-3">
                     <p className="text-xs text-emerald-600 mb-1">Total Normal</p>
-                    <p className="text-xl font-semibold text-emerald-700">505</p>
+                    <p className="text-xl font-semibold text-emerald-700">
+                      {filteredStabilityData.reduce((sum, item) => sum + item.normal, 0)}
+                    </p>
                   </div>
                   <div className="bg-red-50 rounded-lg p-3">
-                    <p className="text-xs text-red-600 mb-1">Total Abnormal</p>
-                    <p className="text-xl font-semibold text-red-700">32</p>
+                    <p className="text-xs text-red-600 mb-1">Total Resolved / Abnormal</p>
+                    <p className="text-xl font-semibold text-red-700">
+                      {filteredStabilityData.reduce((sum, item) => sum + item.resolved, 0)} / {filteredStabilityData.reduce((sum, item) => sum + item.abnormal, 0)}
+                    </p>
                   </div>
                   <div className="bg-blue-50 rounded-lg p-3">
-                    <p className="text-xs text-blue-600 mb-1">Stability Rate</p>
-                    <p className="text-xl font-semibold text-blue-700">94.0%</p>
+                    <p className="text-xs text-blue-600 mb-1">Normal Rate</p>
+                    <p className="text-xl font-semibold text-blue-700">
+                      {(() => {
+                        const totalNormal = filteredStabilityData.reduce((sum, item) => sum + item.normal, 0);
+                        const totalAbnormal = filteredStabilityData.reduce((sum, item) => sum + item.abnormal, 0);
+                        const total = totalNormal + totalAbnormal;
+                        return total > 0 ? ((totalNormal / total) * 100).toFixed(1) + '%' : '0.0%';
+                      })()}
+                    </p>
                   </div>
                 </div>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={stabilityData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <AreaChart data={filteredStabilityData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorNormal" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
@@ -776,6 +927,10 @@ export default function TestDetail() {
                         <linearGradient id="colorAbnormal" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4}/>
                           <stop offset="95%" stopColor="#ef4444" stopOpacity={0.05}/>
+                        </linearGradient>
+                        <linearGradient id="colorResolved" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4}/>
+                          <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.05}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -801,7 +956,8 @@ export default function TestDetail() {
                         formatter={(value: number, name: string) => {
                           const labels: Record<string, string> = {
                             normal: 'Normal',
-                            abnormal: 'Abnormal'
+                            abnormal: 'Abnormal',
+                            resolved: 'Resolved'
                           };
                           return [`${value} cases`, labels[name] || name];
                         }}
@@ -826,6 +982,14 @@ export default function TestDetail() {
                         fillOpacity={1} 
                         fill="url(#colorAbnormal)" 
                       />
+                      <Area 
+                        type="monotone" 
+                        dataKey="resolved" 
+                        stroke="#f59e0b" 
+                        strokeWidth={2}
+                        fillOpacity={1} 
+                        fill="url(#colorResolved)" 
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -837,6 +1001,10 @@ export default function TestDetail() {
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-red-500" />
                     <span className="text-xs text-slate-600">Abnormal</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-amber-500" />
+                    <span className="text-xs text-slate-600">Resolved</span>
                   </div>
                 </div>
               </div>
@@ -1146,11 +1314,36 @@ export default function TestDetail() {
                           {index + 1}
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-slate-400">{getAnswerIcon(item.answerType)}</span>
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                              {item.answerType === "ox" ? "O/X" : item.answerType === "multiple_choice" ? "Multiple Choice" : "Text"}
-                            </span>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-slate-400">{getAnswerIcon(item.answerType)}</span>
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                                {item.answerType === "ox" ? "O/X" : item.answerType === "multiple_choice" ? "Multiple Choice" : "Text"}
+                              </span>
+                            </div>
+                            
+                            {!isEditing && (item.answerType === "ox" ? item.answer === "X" : item.status === "fail") && (
+                              <div className="flex items-center gap-2">
+                                <button 
+                                  onClick={() => handleResolvedChange(item.id, !item.isResolved)}
+                                  className={`group inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border transition-all hover:shadow-sm ${
+                                    item.isResolved 
+                                      ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100" 
+                                      : "bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  }`}
+                                  title={`Click to mark as ${item.isResolved ? 'unresolved' : 'resolved'}`}
+                                >
+                                  <div className={`relative inline-flex h-3.5 w-6 items-center rounded-full transition-colors ${
+                                    item.isResolved ? 'bg-emerald-500' : 'bg-red-400'
+                                  }`}>
+                                    <span className={`inline-block h-2.5 w-2.5 rounded-full bg-white shadow-sm transform transition-transform ${
+                                      item.isResolved ? 'translate-x-[12px]' : 'translate-x-[2px]'
+                                    }`} />
+                                  </div>
+                                  <span className="pr-1">{item.isResolved ? "Resolved" : "Unresolved"}</span>
+                                </button>
+                              </div>
+                            )}
                           </div>
                           <p className="text-slate-800 font-medium mb-3">{item.question}</p>
                           
@@ -1256,23 +1449,6 @@ export default function TestDetail() {
                                     {item.answer === "O" ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
                                     {item.answer}
                                   </span>
-                                  {item.answer === "X" && (
-                                    <div className="mt-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                                      <div className="flex items-center justify-between mb-3">
-                                        <span className="text-sm font-medium text-amber-800">Error Action Status</span>
-                                        <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
-                                          item.isResolved ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
-                                        }`}>
-                                          {item.isResolved ? <CheckCircle className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
-                                          {item.isResolved ? "Resolved" : "Pending"}
-                                        </span>
-                                      </div>
-                                      <div>
-                                        <p className="text-xs text-amber-600 mb-1">Action Note</p>
-                                        <p className="text-sm text-amber-900">{item.actionNote || "No action note provided."}</p>
-                                      </div>
-                                    </div>
-                                  )}
                                 </div>
                               )}
                               {item.answerType === "multiple_choice" && item.options && (
@@ -1319,6 +1495,131 @@ export default function TestDetail() {
                                     </div>
                                 </div>
                               )}
+                              
+                              {/* Error Action Status for all fail/abnormal items */}
+                              <div className="mt-4">
+                                {!expandedThreads[item.id] ? (
+                                  <button
+                                    onClick={() => toggleThread(item.id)}
+                                    className="text-xs flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors"
+                                  >
+                                    <MessageSquare className="w-3.5 h-3.5" />
+                                    {item.resolutionNotes?.length ? `View Comments (${item.resolutionNotes.length})` : "Create Comments"}
+                                  </button>
+                                ) : (
+                                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="flex items-center gap-2">
+                                          <button onClick={() => toggleThread(item.id)} className="text-slate-400 hover:text-slate-600" title="Collapse Thread">
+                                            <ChevronDown className="w-4 h-4 transform rotate-180" />
+                                          </button>
+                                          <span className="text-sm font-semibold text-slate-700">Comments</span>
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="space-y-4 mt-2">
+                                        {(item.resolutionNotes || []).length > 0 ? (
+                                          <div className="space-y-3">
+                                            {item.resolutionNotes?.map((note) => (
+                                              <div key={note.id} className="flex gap-3 bg-white p-3 rounded-lg border border-slate-200 group relative">
+                                                <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                                                  {note.avatar}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                  <div className="flex items-baseline justify-between mb-1">
+                                                    <span className="text-sm font-medium text-slate-800">{note.author}</span>
+                                                    <span className="text-xs text-slate-500">{note.timestamp}</span>
+                                                  </div>
+                                                  
+                                                  {editingNoteId === note.id ? (
+                                                    <div className="mt-2 flex flex-col gap-2">
+                                                      <textarea 
+                                                        value={editingNoteText}
+                                                        onChange={(e) => setEditingNoteText(e.target.value)}
+                                                        className="w-full border border-slate-300 rounded p-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white min-h-[60px]"
+                                                        rows={2}
+                                                      />
+                                                      <div className="flex justify-end gap-2">
+                                                        <button 
+                                                          onClick={() => setEditingNoteId(null)}
+                                                          className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded transition-colors"
+                                                        >
+                                                          Cancel
+                                                        </button>
+                                                        <button 
+                                                          onClick={() => handleEditResolutionNote(item.id, note.id, editingNoteText)}
+                                                          disabled={!editingNoteText.trim() || editingNoteText.trim() === note.text}
+                                                          className="px-3 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        >
+                                                          Save
+                                                        </button>
+                                                      </div>
+                                                    </div>
+                                                  ) : (
+                                                    <div className="flex flex-col">
+                                                      <p className="text-sm text-slate-700 whitespace-pre-wrap break-words">{note.text}</p>
+                                                      {/* Edit/Delete buttons */}
+                                                      {editingNoteId !== note.id && note.author === "Current User" && !item.isResolved && (
+                                                        <div className="mt-2 flex justify-end gap-1">
+                                                          <button 
+                                                            onClick={() => {
+                                                              setEditingNoteId(note.id);
+                                                              setEditingNoteText(note.text);
+                                                            }}
+                                                            className="p-1.5 rounded-md bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 shadow-sm"
+                                                            title="Edit comment"
+                                                          >
+                                                            <Edit3 className="w-3.5 h-3.5" />
+                                                          </button>
+                                                          <button 
+                                                            onClick={() => handleDeleteResolutionNote(item.id, note.id)}
+                                                            className="p-1.5 rounded-md bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-red-600 shadow-sm"
+                                                            title="Delete comment"
+                                                          >
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                          </button>
+                                                        </div>
+                                                      )}
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        ) : (
+                                          <div className="text-sm text-slate-500 italic text-center py-4 bg-white/50 rounded-lg border border-slate-200 border-dashed">
+                                            No comments added yet.
+                                          </div>
+                                        )}
+  
+                                        {!item.isResolved && (
+                                          <div className="mt-4 flex gap-2">
+                                            <div className="flex-1">
+                                              <textarea 
+                                                value={newNoteText[item.id] || ""}
+                                                onChange={(e) => setNewNoteText(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                                placeholder="Add a comment or update..."
+                                                className="w-full border border-slate-300 rounded-lg p-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white min-h-[44px]"
+                                                rows={2}
+                                              />
+                                            </div>
+                                            <button 
+                                              onClick={() => handleAddResolutionNote(item.id)}
+                                              disabled={!newNoteText[item.id]?.trim()}
+                                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap self-end ${
+                                                newNoteText[item.id]?.trim() 
+                                                  ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                                                  : "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
+                                              }`}
+                                            >
+                                              Add Comment
+                                            </button>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
                             </div>
                           )}
                         </div>

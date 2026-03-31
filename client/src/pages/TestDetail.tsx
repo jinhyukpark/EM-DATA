@@ -429,6 +429,11 @@ export default function TestDetail() {
     const currentResults = editedScheduleResults[selectedSchedule] || currentSchedule.testResults;
     const updatedResults = currentResults.map(item => {
       if (item.id === itemId) {
+        // Toggle off if clicking the already selected answer for ox or multiple_choice
+        if (item.answer === newAnswer && (item.answerType === 'ox' || item.answerType === 'multiple_choice')) {
+          return { ...item, answer: "", status: "na" };
+        }
+
         let status = item.status;
         
         // Auto-calculate status for Multiple Choice

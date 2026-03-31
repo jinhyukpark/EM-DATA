@@ -591,16 +591,24 @@ export default function TestDetail() {
                 </div>
                 <div className="bg-slate-50 rounded-lg p-4">
                   <p className="text-xs text-slate-500 mb-1">Work Status</p>
-                  <span className={`inline-flex items-center gap-1.5 text-sm font-medium ${
-                    test.workStatus === "Normal" ? "text-emerald-600" : 
-                    test.workStatus === "Delayed" ? "text-amber-600" : "text-red-600"
-                  }`}>
-                    <span className={`w-2 h-2 rounded-full ${
-                      test.workStatus === "Normal" ? "bg-emerald-500" : 
-                      test.workStatus === "Delayed" ? "bg-amber-500" : "bg-red-500"
-                    }`} />
-                    {test.workStatus}
-                  </span>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {test.workStatus.split(', ').map((status, idx) => (
+                      <span key={idx} className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                        status === "Normal" ? "bg-emerald-50 text-emerald-600" :
+                        status === "Delayed" ? "bg-amber-50 text-amber-600" :
+                        status === "Stopped" ? "bg-slate-100 text-slate-600" :
+                        "bg-red-50 text-red-600"
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                          status === "Normal" ? "bg-emerald-500" :
+                          status === "Delayed" ? "bg-amber-500 animate-pulse" :
+                          status === "Stopped" ? "bg-slate-400" :
+                          "bg-red-500"
+                        }`} />
+                        {status}
+                      </span>
+                    ))}
+                  </div>
                 </div>
                 <div className="bg-slate-50 rounded-lg p-4">
                   <p className="text-xs text-slate-500 mb-1">Schedule Period</p>

@@ -114,16 +114,7 @@ const testData: Record<string, {
   normalCount: number;
   abnormalCount: number;
   schedule: ScheduleItem[];
-  items: { 
-    id: number; 
-    question: string; 
-    answerType: string; 
-    options?: { text: string; isNormal: boolean }[]; 
-    answer?: string; 
-    status?: "pass" | "fail" | "na";
-    isResolved?: boolean; 
-    actionNote?: string 
-  }[];
+  items: TestItemResult[];
 }> = {
   "1": {
     id: 1,
@@ -350,7 +341,7 @@ export default function TestDetail() {
   const test = testData[testId];
   const [isEditing, setIsEditing] = useState(false);
   const [itemHistoryModal, setItemHistoryModal] = useState(false);
-  const [editedItems, setEditedItems] = useState(test?.items || []);
+  const [editedItems, setEditedItems] = useState<TestItemResult[]>(test?.items || []);
   const [selectedSchedule, setSelectedSchedule] = useState(test?.schedule[0]?.id || 1);
   const [scheduleFilterFrom, setScheduleFilterFrom] = useState("");
   const [scheduleFilterTo, setScheduleFilterTo] = useState("");
@@ -504,6 +495,8 @@ export default function TestDetail() {
   };
 
   const [newNoteText, setNewNoteText] = useState<Record<number, string>>({});
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editingNoteText, setEditingNoteText] = useState<string>("");
 
   const handleAddResolutionNote = (itemId: number) => {
     const text = newNoteText[itemId];
@@ -533,6 +526,45 @@ export default function TestDetail() {
     
     // Clear input
     setNewNoteText(prev => ({ ...prev, [itemId]: "" }));
+  };
+
+  const handleEditResolutionNote = (itemId: number, noteId: string, newText: string) => {
+    if (!newText.trim()) return;
+
+    const currentResults = getCurrentTestResults();
+    const updatedResults = currentResults.map(item => {
+      if (item.id !== itemId) return item;
+      
+      const updatedNotes = (item.resolutionNotes || []).map(note => 
+        note.id === noteId ? { ...note, text: newText.trim() } : note
+      );
+      
+      return { ...item, resolutionNotes: updatedNotes };
+    });
+    
+    setEditedScheduleResults(prev => ({
+      ...prev,
+      [selectedSchedule]: updatedResults
+    }));
+    setEditedItems(updatedResults);
+    setEditingNoteId(null);
+  };
+
+  const handleDeleteResolutionNote = (itemId: number, noteId: string) => {
+    const currentResults = getCurrentTestResults();
+    const updatedResults = currentResults.map(item => {
+      if (item.id !== itemId) return item;
+      
+      const updatedNotes = (item.resolutionNotes || []).filter(note => note.id !== noteId);
+      
+      return { ...item, resolutionNotes: updatedNotes };
+    });
+    
+    setEditedScheduleResults(prev => ({
+      ...prev,
+      [selectedSchedule]: updatedResults
+    }));
+    setEditedItems(updatedResults);
   };
 
   const handleSave = () => {
@@ -1402,17 +1434,58 @@ export default function TestDetail() {
                                     {(item.resolutionNotes || []).length > 0 ? (
                                       <div className="space-y-3">
                                         {item.resolutionNotes?.map((note) => (
-                                          <div key={note.id} className="flex gap-3 bg-white/60 p-3 rounded-lg border border-amber-100">
+                                          <div key={note.id} className="flex gap-3 bg-white/60 p-3 rounded-lg border border-amber-100 group relative">
                                             <div className="w-8 h-8 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center font-bold text-xs flex-shrink-0">
                                               {note.avatar}
                                             </div>
-                                            <div className="flex-1">
+                                            <div className="flex-1 min-w-0">
                                               <div className="flex items-baseline justify-between mb-1">
                                                 <span className="text-sm font-medium text-amber-900">{note.author}</span>
                                                 <span className="text-xs text-amber-600">{note.timestamp}</span>
                                               </div>
-                                              <p className="text-sm text-amber-800 whitespace-pre-wrap">{note.text}</p>
+                                              
+                                              {editingNoteId === note.id ? (
+                                                <div className="mt-2 flex flex-col gap-2">
+                                                  <textarea 
+                                                    value={editingNoteText}
+                                                    onChange={(e) => setEditingNoteText(e.target.value)}
+                                                    className="w-full border border-amber-300 rounded p-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white min-h-[60px]"
+                                                    rows={2}
+                                                  />
+                                                  <div className="flex justify-end gap-2">
+                                                    <button 
+                                                      onClick={() => setEditingNoteId(null)}
+                                                      className="px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100 rounded transition-colors"
+                                                    >
+                                                      Cancel
+                                                    </button>
+                                                    <button 
+                                                      onClick={() => handleEditResolutionNote(item.id, note.id, editingNoteText)}
+                                                      disabled={!editingNoteText.trim() || editingNoteText.trim() === note.text}
+                                                      className="px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    >
+                                                      Save
+                                                    </button>
+                                                  </div>
+                                                </div>
+                                              ) : (
+                                                <p className="text-sm text-amber-800 whitespace-pre-wrap break-words">{note.text}</p>
+                                              )}
                                             </div>
+                                            
+                                            {/* Edit button (appears on hover) */}
+                                            {editingNoteId !== note.id && note.author === "Current User" && !item.isResolved && (
+                                              <button 
+                                                onClick={() => {
+                                                  setEditingNoteId(note.id);
+                                                  setEditingNoteText(note.text);
+                                                }}
+                                                className="absolute bottom-2 right-2 p-1.5 rounded-md bg-white border border-amber-200 text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-amber-50 hover:text-amber-700 shadow-sm"
+                                                title="Edit note"
+                                              >
+                                                <Edit3 className="w-3.5 h-3.5" />
+                                              </button>
+                                            )}
                                           </div>
                                         ))}
                                       </div>

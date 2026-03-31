@@ -1324,12 +1324,16 @@ export default function TestDetail() {
                             
                             {!isEditing && (item.answerType === "ox" ? item.answer === "X" : item.status === "fail") && (
                               <div className="flex items-center gap-2">
-                                <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
-                                  item.isResolved ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
-                                }`}>
+                                <button 
+                                  onClick={() => handleResolvedChange(item.id, !item.isResolved)}
+                                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity ${
+                                    item.isResolved ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+                                  }`}
+                                  title={`Click to mark as ${item.isResolved ? 'unresolved' : 'resolved'}`}
+                                >
                                   {item.isResolved ? <CheckCircle className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
                                   {item.isResolved ? "Resolved" : "Unresolved"}
-                                </span>
+                                </button>
                               </div>
                             )}
                           </div>
@@ -1503,23 +1507,6 @@ export default function TestDetail() {
                                           </button>
                                           <span className="text-sm font-semibold text-slate-700">Thread</span>
                                         </div>
-                                        {!item.isResolved ? (
-                                          <button 
-                                            onClick={() => handleResolvedChange(item.id, true)}
-                                            className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md text-xs font-medium transition-colors flex items-center gap-1 shadow-sm"
-                                          >
-                                            <CheckCircle className="w-3 h-3" />
-                                            Mark as Solved
-                                          </button>
-                                        ) : (
-                                          <button 
-                                            onClick={() => handleResolvedChange(item.id, false)}
-                                            className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 rounded-md text-xs font-medium transition-colors flex items-center gap-1 shadow-sm"
-                                          >
-                                            <AlertCircle className="w-3 h-3" />
-                                            Mark as Unresolved
-                                          </button>
-                                        )}
                                       </div>
                                       
                                       <div className="space-y-4 mt-2">

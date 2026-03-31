@@ -893,7 +893,8 @@ export default function TestDetail() {
                 </div>
                 <div className="grid grid-cols-3 gap-4 mb-4">
                   <div className="bg-emerald-50 rounded-lg p-3">
-                    <p className="text-xs text-emerald-600 mb-1">Total Normal</p>
+                    <p className="text-xs text-emerald-600 mb-1">Total Normal items
+</p>
                     <p className="text-xl font-semibold text-emerald-700">
                       {filteredStabilityData.reduce((sum, item) => sum + item.normal, 0)}
                     </p>

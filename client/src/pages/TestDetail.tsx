@@ -1477,32 +1477,33 @@ export default function TestDetail() {
                                                   </div>
                                                 </div>
                                               ) : (
-                                                <p className="text-sm text-amber-800 whitespace-pre-wrap break-words">{note.text}</p>
+                                                <div className="flex flex-col">
+                                                  <p className="text-sm text-amber-800 whitespace-pre-wrap break-words">{note.text}</p>
+                                                  {/* Edit/Delete buttons */}
+                                                  {editingNoteId !== note.id && note.author === "Current User" && !item.isResolved && (
+                                                    <div className="mt-2 flex justify-end gap-1">
+                                                      <button 
+                                                        onClick={() => {
+                                                          setEditingNoteId(note.id);
+                                                          setEditingNoteText(note.text);
+                                                        }}
+                                                        className="p-1.5 rounded-md bg-white border border-amber-200 text-amber-600 hover:bg-amber-50 hover:text-amber-700 shadow-sm"
+                                                        title="Edit note"
+                                                      >
+                                                        <Edit3 className="w-3.5 h-3.5" />
+                                                      </button>
+                                                      <button 
+                                                        onClick={() => handleDeleteResolutionNote(item.id, note.id)}
+                                                        className="p-1.5 rounded-md bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600 shadow-sm"
+                                                        title="Delete note"
+                                                      >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                      </button>
+                                                    </div>
+                                                  )}
+                                                </div>
                                               )}
                                             </div>
-                                            
-                                            {/* Edit/Delete buttons */}
-                                            {editingNoteId !== note.id && note.author === "Current User" && !item.isResolved && (
-                                              <div className="absolute top-3 right-3 flex gap-1">
-                                                <button 
-                                                  onClick={() => {
-                                                    setEditingNoteId(note.id);
-                                                    setEditingNoteText(note.text);
-                                                  }}
-                                                  className="p-1.5 rounded-md bg-white border border-amber-200 text-amber-600 hover:bg-amber-50 hover:text-amber-700 shadow-sm"
-                                                  title="Edit note"
-                                                >
-                                                  <Edit3 className="w-3.5 h-3.5" />
-                                                </button>
-                                                <button 
-                                                  onClick={() => handleDeleteResolutionNote(item.id, note.id)}
-                                                  className="p-1.5 rounded-md bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600 shadow-sm"
-                                                  title="Delete note"
-                                                >
-                                                  <Trash2 className="w-3.5 h-3.5" />
-                                                </button>
-                                              </div>
-                                            )}
                                           </div>
                                         ))}
                                       </div>

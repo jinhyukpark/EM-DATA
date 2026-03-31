@@ -497,6 +497,14 @@ export default function TestDetail() {
   const [newNoteText, setNewNoteText] = useState<Record<number, string>>({});
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [editingNoteText, setEditingNoteText] = useState<string>("");
+  const [expandedThreads, setExpandedThreads] = useState<Record<number, boolean>>({});
+
+  const toggleThread = (itemId: number) => {
+    setExpandedThreads(prev => ({
+      ...prev,
+      [itemId]: !prev[itemId]
+    }));
+  };
 
   const handleAddResolutionNote = (itemId: number) => {
     const text = newNoteText[itemId];
@@ -1478,128 +1486,145 @@ export default function TestDetail() {
                               
                               {/* Error Action Status for all fail/abnormal items */}
                               {(item.answerType === "ox" ? item.answer === "X" : item.status === "fail") && (
-                                <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                                  <div className="flex items-center justify-between mb-4">
-                                    <span className="text-sm font-semibold text-amber-800">Issue Resolution Thread</span>
-                                    {!item.isResolved ? (
-                                      <button 
-                                        onClick={() => handleResolvedChange(item.id, true)}
-                                        className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md text-xs font-medium transition-colors flex items-center gap-1 shadow-sm"
-                                      >
-                                        <CheckCircle className="w-3 h-3" />
-                                        Mark as Solved
-                                      </button>
-                                    ) : (
-                                      <button 
-                                        onClick={() => handleResolvedChange(item.id, false)}
-                                        className="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300 rounded-md text-xs font-medium transition-colors flex items-center gap-1 shadow-sm"
-                                      >
-                                        <AlertCircle className="w-3 h-3" />
-                                        Mark as Unresolved
-                                      </button>
-                                    )}
-                                  </div>
-                                  
-                                  <div className="space-y-4 mt-2">
-                                    {(item.resolutionNotes || []).length > 0 ? (
-                                      <div className="space-y-3">
-                                        {item.resolutionNotes?.map((note) => (
-                                          <div key={note.id} className="flex gap-3 bg-white/60 p-3 rounded-lg border border-amber-100 group relative">
-                                            <div className="w-8 h-8 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center font-bold text-xs flex-shrink-0">
-                                              {note.avatar}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                              <div className="flex items-baseline justify-between mb-1">
-                                                <span className="text-sm font-medium text-amber-900">{note.author}</span>
-                                                <span className="text-xs text-amber-600">{note.timestamp}</span>
-                                              </div>
-                                              
-                                              {editingNoteId === note.id ? (
-                                                <div className="mt-2 flex flex-col gap-2">
-                                                  <textarea 
-                                                    value={editingNoteText}
-                                                    onChange={(e) => setEditingNoteText(e.target.value)}
-                                                    className="w-full border border-amber-300 rounded p-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white min-h-[60px]"
-                                                    rows={2}
-                                                  />
-                                                  <div className="flex justify-end gap-2">
-                                                    <button 
-                                                      onClick={() => setEditingNoteId(null)}
-                                                      className="px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100 rounded transition-colors"
-                                                    >
-                                                      Cancel
-                                                    </button>
-                                                    <button 
-                                                      onClick={() => handleEditResolutionNote(item.id, note.id, editingNoteText)}
-                                                      disabled={!editingNoteText.trim() || editingNoteText.trim() === note.text}
-                                                      className="px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                                    >
-                                                      Save
-                                                    </button>
-                                                  </div>
+                                <div className="mt-4">
+                                  {!expandedThreads[item.id] ? (
+                                    <button
+                                      onClick={() => toggleThread(item.id)}
+                                      className="text-xs flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors"
+                                    >
+                                      <MessageSquare className="w-3.5 h-3.5" />
+                                      {item.resolutionNotes?.length ? `View Resolution Thread (${item.resolutionNotes.length})` : "Create Resolution Thread"}
+                                    </button>
+                                  ) : (
+                                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                                      <div className="flex items-center justify-between mb-4">
+                                        <div className="flex items-center gap-2">
+                                          <button onClick={() => toggleThread(item.id)} className="text-slate-400 hover:text-slate-600" title="Collapse Thread">
+                                            <ChevronDown className="w-4 h-4 transform rotate-180" />
+                                          </button>
+                                          <span className="text-sm font-semibold text-slate-700">Issue Resolution Thread</span>
+                                        </div>
+                                        {!item.isResolved ? (
+                                          <button 
+                                            onClick={() => handleResolvedChange(item.id, true)}
+                                            className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md text-xs font-medium transition-colors flex items-center gap-1 shadow-sm"
+                                          >
+                                            <CheckCircle className="w-3 h-3" />
+                                            Mark as Solved
+                                          </button>
+                                        ) : (
+                                          <button 
+                                            onClick={() => handleResolvedChange(item.id, false)}
+                                            className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 rounded-md text-xs font-medium transition-colors flex items-center gap-1 shadow-sm"
+                                          >
+                                            <AlertCircle className="w-3 h-3" />
+                                            Mark as Unresolved
+                                          </button>
+                                        )}
+                                      </div>
+                                      
+                                      <div className="space-y-4 mt-2">
+                                        {(item.resolutionNotes || []).length > 0 ? (
+                                          <div className="space-y-3">
+                                            {item.resolutionNotes?.map((note) => (
+                                              <div key={note.id} className="flex gap-3 bg-white p-3 rounded-lg border border-slate-200 group relative">
+                                                <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                                                  {note.avatar}
                                                 </div>
-                                              ) : (
-                                                <div className="flex flex-col">
-                                                  <p className="text-sm text-amber-800 whitespace-pre-wrap break-words">{note.text}</p>
-                                                  {/* Edit/Delete buttons */}
-                                                  {editingNoteId !== note.id && note.author === "Current User" && !item.isResolved && (
-                                                    <div className="mt-2 flex justify-end gap-1">
-                                                      <button 
-                                                        onClick={() => {
-                                                          setEditingNoteId(note.id);
-                                                          setEditingNoteText(note.text);
-                                                        }}
-                                                        className="p-1.5 rounded-md bg-white border border-amber-200 text-amber-600 hover:bg-amber-50 hover:text-amber-700 shadow-sm"
-                                                        title="Edit note"
-                                                      >
-                                                        <Edit3 className="w-3.5 h-3.5" />
-                                                      </button>
-                                                      <button 
-                                                        onClick={() => handleDeleteResolutionNote(item.id, note.id)}
-                                                        className="p-1.5 rounded-md bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600 shadow-sm"
-                                                        title="Delete note"
-                                                      >
-                                                        <Trash2 className="w-3.5 h-3.5" />
-                                                      </button>
+                                                <div className="flex-1 min-w-0">
+                                                  <div className="flex items-baseline justify-between mb-1">
+                                                    <span className="text-sm font-medium text-slate-800">{note.author}</span>
+                                                    <span className="text-xs text-slate-500">{note.timestamp}</span>
+                                                  </div>
+                                                  
+                                                  {editingNoteId === note.id ? (
+                                                    <div className="mt-2 flex flex-col gap-2">
+                                                      <textarea 
+                                                        value={editingNoteText}
+                                                        onChange={(e) => setEditingNoteText(e.target.value)}
+                                                        className="w-full border border-slate-300 rounded p-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white min-h-[60px]"
+                                                        rows={2}
+                                                      />
+                                                      <div className="flex justify-end gap-2">
+                                                        <button 
+                                                          onClick={() => setEditingNoteId(null)}
+                                                          className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded transition-colors"
+                                                        >
+                                                          Cancel
+                                                        </button>
+                                                        <button 
+                                                          onClick={() => handleEditResolutionNote(item.id, note.id, editingNoteText)}
+                                                          disabled={!editingNoteText.trim() || editingNoteText.trim() === note.text}
+                                                          className="px-3 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        >
+                                                          Save
+                                                        </button>
+                                                      </div>
+                                                    </div>
+                                                  ) : (
+                                                    <div className="flex flex-col">
+                                                      <p className="text-sm text-slate-700 whitespace-pre-wrap break-words">{note.text}</p>
+                                                      {/* Edit/Delete buttons */}
+                                                      {editingNoteId !== note.id && note.author === "Current User" && !item.isResolved && (
+                                                        <div className="mt-2 flex justify-end gap-1">
+                                                          <button 
+                                                            onClick={() => {
+                                                              setEditingNoteId(note.id);
+                                                              setEditingNoteText(note.text);
+                                                            }}
+                                                            className="p-1.5 rounded-md bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 shadow-sm"
+                                                            title="Edit note"
+                                                          >
+                                                            <Edit3 className="w-3.5 h-3.5" />
+                                                          </button>
+                                                          <button 
+                                                            onClick={() => handleDeleteResolutionNote(item.id, note.id)}
+                                                            className="p-1.5 rounded-md bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-red-600 shadow-sm"
+                                                            title="Delete note"
+                                                          >
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                          </button>
+                                                        </div>
+                                                      )}
                                                     </div>
                                                   )}
                                                 </div>
-                                              )}
-                                            </div>
+                                              </div>
+                                            ))}
                                           </div>
-                                        ))}
+                                        ) : (
+                                          <div className="text-sm text-slate-500 italic text-center py-4 bg-white/50 rounded-lg border border-slate-200 border-dashed">
+                                            No notes added yet.
+                                          </div>
+                                        )}
+  
+                                        {!item.isResolved && (
+                                          <div className="mt-4 flex gap-2">
+                                            <div className="flex-1">
+                                              <textarea 
+                                                value={newNoteText[item.id] || ""}
+                                                onChange={(e) => setNewNoteText(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                                placeholder="Add a comment or update..."
+                                                className="w-full border border-slate-300 rounded-lg p-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white min-h-[44px]"
+                                                rows={2}
+                                              />
+                                            </div>
+                                            <button 
+                                              onClick={() => handleAddResolutionNote(item.id)}
+                                              disabled={!newNoteText[item.id]?.trim()}
+                                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap self-end ${
+                                                newNoteText[item.id]?.trim() 
+                                                  ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                                                  : "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
+                                              }`}
+                                            >
+                                              Add Note
+                                            </button>
+                                          </div>
+                                        )}
                                       </div>
-                                    ) : (
-                                      <div className="text-sm text-amber-600/70 italic text-center py-4 bg-white/40 rounded-lg border border-amber-100 border-dashed">
-                                        No notes added yet.
-                                      </div>
-                                    )}
-
-                                    {!item.isResolved && (
-                                      <div className="mt-4 flex gap-2">
-                                        <div className="flex-1">
-                                          <textarea 
-                                            value={newNoteText[item.id] || ""}
-                                            onChange={(e) => setNewNoteText(prev => ({ ...prev, [item.id]: e.target.value }))}
-                                            placeholder="Add a comment or update..."
-                                            className="w-full border border-amber-200 rounded-lg p-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white min-h-[44px]"
-                                            rows={2}
-                                          />
-                                        </div>
-                                        <button 
-                                          onClick={() => handleAddResolutionNote(item.id)}
-                                          disabled={!newNoteText[item.id]?.trim()}
-                                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap self-end ${
-                                            newNoteText[item.id]?.trim() 
-                                              ? "bg-amber-600 hover:bg-amber-700 text-white" 
-                                              : "bg-amber-200 text-amber-50 cursor-not-allowed"
-                                          }`}
-                                        >
-                                          Add Note
-                                        </button>
-                                      </div>
-                                    )}
-                                  </div>
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </div>

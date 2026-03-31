@@ -1625,7 +1625,6 @@ export default function TestDetail() {
                                     </div>
                                   )}
                                 </div>
-                              )}
                             </div>
                           )}
                         </div>

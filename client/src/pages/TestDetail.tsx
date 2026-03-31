@@ -900,7 +900,7 @@ export default function TestDetail() {
                     </p>
                   </div>
                   <div className="bg-red-50 rounded-lg p-3">
-                    <p className="text-xs text-red-600 mb-1">Total Resolved / Abnormal</p>
+                    <p className="text-xs text-red-600 mb-1">Total Resolved / Abnormal items</p>
                     <p className="text-xl font-semibold text-red-700">
                       {filteredStabilityData.reduce((sum, item) => sum + item.resolved, 0)} / {filteredStabilityData.reduce((sum, item) => sum + item.abnormal, 0)}
                     </p>

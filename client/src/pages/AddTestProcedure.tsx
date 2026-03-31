@@ -362,16 +362,10 @@ export default function AddTestProcedure() {
   };
 
   const handleItemSettingsSave = () => {
-    // If we're editing an existing procedure, we show the save options. 
-    // If it's a new procedure, just save immediately.
-    if (isEditMode) {
-      setShowSaveOptionsModal(true);
-    } else {
-      if (selectedTemplateId && templateModified) {
-        saveToSelectedTemplate();
-      }
-      setItemSettingsOpen(false);
-    }
+    // Show save options modal regardless of edit mode to allow applying changes
+    // Alternatively, we can check if it's Edit mode to show the modal, but if the user wants it to be shown, we should just show it.
+    // Let's modify this to ALWAYS show the modal when Item Settings are saved if there are changes.
+    setShowSaveOptionsModal(true);
   };
 
   const confirmItemSettingsSave = () => {

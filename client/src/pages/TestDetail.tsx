@@ -1501,7 +1501,7 @@ export default function TestDetail() {
                                           <button onClick={() => toggleThread(item.id)} className="text-slate-400 hover:text-slate-600" title="Collapse Thread">
                                             <ChevronDown className="w-4 h-4 transform rotate-180" />
                                           </button>
-                                          <span className="text-sm font-semibold text-slate-700">Issue Resolution Thread</span>
+                                          <span className="text-sm font-semibold text-slate-700">Thread</span>
                                         </div>
                                         {!item.isResolved ? (
                                           <button 

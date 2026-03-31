@@ -1362,12 +1362,6 @@ export default function TestDetail() {
                                           <CheckCircle className="w-4 h-4" />
                                           Mark as Solved
                                         </button>
-                                        <button className="px-4 py-2 bg-white border border-amber-200 hover:bg-amber-100 text-amber-800 rounded-lg text-sm font-medium transition-colors">
-                                          Escalate
-                                        </button>
-                                        <button className="px-4 py-2 bg-white border border-amber-200 hover:bg-amber-100 text-amber-800 rounded-lg text-sm font-medium transition-colors">
-                                          Retest
-                                        </button>
                                       </div>
                                     </div>
                                   ) : (

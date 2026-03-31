@@ -1430,7 +1430,7 @@ export default function TestDetail() {
                                     ) : (
                                       <button 
                                         onClick={() => handleResolvedChange(item.id, false)}
-                                        className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-600 rounded-md text-xs font-medium transition-colors flex items-center gap-1 shadow-sm"
+                                        className="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300 rounded-md text-xs font-medium transition-colors flex items-center gap-1 shadow-sm"
                                       >
                                         <AlertCircle className="w-3 h-3" />
                                         Mark as Unresolved

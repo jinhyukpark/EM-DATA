@@ -1326,13 +1326,33 @@ export default function TestDetail() {
                               <div className="flex items-center gap-2">
                                 <button 
                                   onClick={() => handleResolvedChange(item.id, !item.isResolved)}
-                                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity ${
-                                    item.isResolved ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+                                  className={`relative inline-flex h-6 w-28 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 ${
+                                    item.isResolved ? 'bg-emerald-500' : 'bg-red-500'
                                   }`}
                                   title={`Click to mark as ${item.isResolved ? 'unresolved' : 'resolved'}`}
                                 >
-                                  {item.isResolved ? <CheckCircle className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
-                                  {item.isResolved ? "Resolved" : "Unresolved"}
+                                  <span className="sr-only">Toggle resolution status</span>
+                                  <span
+                                    className={`absolute inset-y-0.5 left-0.5 flex items-center justify-center h-5 w-5 rounded-full bg-white shadow transform transition-transform ${
+                                      item.isResolved ? 'translate-x-[5.5rem]' : 'translate-x-0'
+                                    }`}
+                                  >
+                                    {item.isResolved ? (
+                                      <CheckCircle className="w-3 h-3 text-emerald-500" />
+                                    ) : (
+                                      <AlertCircle className="w-3 h-3 text-red-500" />
+                                    )}
+                                  </span>
+                                  <span className={`absolute text-[10px] font-medium text-white transition-opacity ${
+                                    item.isResolved ? 'left-3 opacity-100' : 'left-3 opacity-0'
+                                  }`}>
+                                    Resolved
+                                  </span>
+                                  <span className={`absolute text-[10px] font-medium text-white right-3 transition-opacity ${
+                                    !item.isResolved ? 'opacity-100' : 'opacity-0'
+                                  }`}>
+                                    Unresolved
+                                  </span>
                                 </button>
                               </div>
                             )}

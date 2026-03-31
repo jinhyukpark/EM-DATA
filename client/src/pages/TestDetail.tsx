@@ -44,17 +44,17 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import Sidebar from "@/components/Sidebar";
 
 const stabilityData = [
-  { date: "2024-11-01", normal: 45, abnormal: 3, resolved: 2 },
-  { date: "2024-11-08", normal: 42, abnormal: 5, resolved: 4 },
-  { date: "2024-11-15", normal: 48, abnormal: 2, resolved: 2 },
-  { date: "2024-11-22", normal: 44, abnormal: 4, resolved: 3 },
-  { date: "2024-11-29", normal: 40, abnormal: 6, resolved: 5 },
-  { date: "2024-12-06", normal: 47, abnormal: 3, resolved: 2 },
-  { date: "2024-12-13", normal: 50, abnormal: 1, resolved: 1 },
-  { date: "2024-12-20", normal: 43, abnormal: 5, resolved: 4 },
-  { date: "2024-12-27", normal: 46, abnormal: 2, resolved: 2 },
-  { date: "2025-01-03", normal: 49, abnormal: 1, resolved: 1 },
-  { date: "2025-01-10", normal: 51, abnormal: 0, resolved: 0 },
+  { date: "2026-01-20", normal: 45, abnormal: 3, resolved: 2 },
+  { date: "2026-01-27", normal: 42, abnormal: 5, resolved: 4 },
+  { date: "2026-02-03", normal: 48, abnormal: 2, resolved: 2 },
+  { date: "2026-02-10", normal: 44, abnormal: 4, resolved: 3 },
+  { date: "2026-02-17", normal: 40, abnormal: 6, resolved: 5 },
+  { date: "2026-02-24", normal: 47, abnormal: 3, resolved: 2 },
+  { date: "2026-03-03", normal: 50, abnormal: 1, resolved: 1 },
+  { date: "2026-03-10", normal: 43, abnormal: 5, resolved: 4 },
+  { date: "2026-03-17", normal: 46, abnormal: 2, resolved: 2 },
+  { date: "2026-03-24", normal: 49, abnormal: 1, resolved: 1 },
+  { date: "2026-03-31", normal: 51, abnormal: 0, resolved: 0 },
 ];
 
 const inspectors = [
@@ -601,6 +601,27 @@ export default function TestDetail() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeDetailTab, setActiveDetailTab] = useState<"info" | "schedule">("info");
+  const [stabilityPeriod, setStabilityPeriod] = useState<"1w" | "1m" | "3m" | "6m" | "all">("all");
+
+  // Helper to get filtered stability data based on selected period
+  const getFilteredStabilityData = () => {
+    if (stabilityPeriod === "all") return stabilityData;
+    
+    // In a real app, we would use current date. For mockup, we'll use the last date in data.
+    const lastDate = new Date(stabilityData[stabilityData.length - 1].date);
+    const filterDate = new Date(lastDate);
+    
+    switch (stabilityPeriod) {
+      case "1w": filterDate.setDate(lastDate.getDate() - 7); break;
+      case "1m": filterDate.setMonth(lastDate.getMonth() - 1); break;
+      case "3m": filterDate.setMonth(lastDate.getMonth() - 3); break;
+      case "6m": filterDate.setMonth(lastDate.getMonth() - 6); break;
+    }
+    
+    return stabilityData.filter(item => new Date(item.date) >= filterDate);
+  };
+
+  const filteredStabilityData = getFilteredStabilityData();
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden" data-testid="test-detail-page">
@@ -848,24 +869,48 @@ export default function TestDetail() {
               </div>
 
               <div className="border-t border-slate-100 pt-6 mt-4">
-                <h3 className="text-sm font-medium text-slate-700 mb-4">Stability Metrics</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium text-slate-700">Stability Metrics</h3>
+                  <select 
+                    value={stabilityPeriod}
+                    onChange={(e) => setStabilityPeriod(e.target.value as any)}
+                    className="text-xs border border-slate-200 rounded-md px-2 py-1 text-slate-600 focus:outline-none focus:border-blue-500 bg-white"
+                  >
+                    <option value="1w">Last 1 Week</option>
+                    <option value="1m">Last 1 Month</option>
+                    <option value="3m">Last 3 Months</option>
+                    <option value="6m">Last 6 Months</option>
+                    <option value="all">All Time</option>
+                  </select>
+                </div>
                 <div className="grid grid-cols-3 gap-4 mb-4">
                   <div className="bg-emerald-50 rounded-lg p-3">
                     <p className="text-xs text-emerald-600 mb-1">Total Normal</p>
-                    <p className="text-xl font-semibold text-emerald-700">505</p>
+                    <p className="text-xl font-semibold text-emerald-700">
+                      {filteredStabilityData.reduce((sum, item) => sum + item.normal, 0)}
+                    </p>
                   </div>
                   <div className="bg-red-50 rounded-lg p-3">
                     <p className="text-xs text-red-600 mb-1">Total Resolved / Abnormal</p>
-                    <p className="text-xl font-semibold text-red-700">26 / 32</p>
+                    <p className="text-xl font-semibold text-red-700">
+                      {filteredStabilityData.reduce((sum, item) => sum + item.resolved, 0)} / {filteredStabilityData.reduce((sum, item) => sum + item.abnormal, 0)}
+                    </p>
                   </div>
                   <div className="bg-blue-50 rounded-lg p-3">
                     <p className="text-xs text-blue-600 mb-1">Normal Rate</p>
-                    <p className="text-xl font-semibold text-blue-700">94.0%</p>
+                    <p className="text-xl font-semibold text-blue-700">
+                      {(() => {
+                        const totalNormal = filteredStabilityData.reduce((sum, item) => sum + item.normal, 0);
+                        const totalAbnormal = filteredStabilityData.reduce((sum, item) => sum + item.abnormal, 0);
+                        const total = totalNormal + totalAbnormal;
+                        return total > 0 ? ((totalNormal / total) * 100).toFixed(1) + '%' : '0.0%';
+                      })()}
+                    </p>
                   </div>
                 </div>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={stabilityData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <AreaChart data={filteredStabilityData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorNormal" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>

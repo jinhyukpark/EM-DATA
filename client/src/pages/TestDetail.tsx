@@ -74,6 +74,13 @@ type TestItemResult = {
   status?: "pass" | "fail" | "na";
   isResolved?: boolean;
   actionNote?: string;
+  resolutionNotes?: {
+    id: string;
+    author: string;
+    avatar: string;
+    timestamp: string;
+    text: string;
+  }[];
 };
 
 type ScheduleItem = {
@@ -494,6 +501,38 @@ export default function TestDetail() {
       [selectedSchedule]: updatedResults
     }));
     setEditedItems(updatedResults);
+  };
+
+  const [newNoteText, setNewNoteText] = useState<Record<number, string>>({});
+
+  const handleAddResolutionNote = (itemId: number) => {
+    const text = newNoteText[itemId];
+    if (!text || !text.trim()) return;
+
+    const newNote = {
+      id: Math.random().toString(36).substring(7),
+      author: "Current User", // Mocked user
+      avatar: "CU",
+      timestamp: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      text: text.trim()
+    };
+
+    const currentResults = getCurrentTestResults();
+    const updatedResults = currentResults.map(item => 
+      item.id === itemId ? { 
+        ...item, 
+        resolutionNotes: [...(item.resolutionNotes || []), newNote] 
+      } : item
+    );
+    
+    setEditedScheduleResults(prev => ({
+      ...prev,
+      [selectedSchedule]: updatedResults
+    }));
+    setEditedItems(updatedResults);
+    
+    // Clear input
+    setNewNoteText(prev => ({ ...prev, [itemId]: "" }));
   };
 
   const handleSave = () => {
@@ -1173,11 +1212,33 @@ export default function TestDetail() {
                           {index + 1}
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-slate-400">{getAnswerIcon(item.answerType)}</span>
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                              {item.answerType === "ox" ? "O/X" : item.answerType === "multiple_choice" ? "Multiple Choice" : "Text"}
-                            </span>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-slate-400">{getAnswerIcon(item.answerType)}</span>
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                                {item.answerType === "ox" ? "O/X" : item.answerType === "multiple_choice" ? "Multiple Choice" : "Text"}
+                              </span>
+                            </div>
+                            
+                            {!isEditing && (item.answerType === "ox" ? item.answer === "X" : item.status === "fail") && (
+                              <div className="flex items-center gap-2">
+                                <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
+                                  item.isResolved ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+                                }`}>
+                                  {item.isResolved ? <CheckCircle className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
+                                  {item.isResolved ? "Resolved" : "Pending Action"}
+                                </span>
+                                {!item.isResolved && (
+                                  <button 
+                                    onClick={() => handleResolvedChange(item.id, true)}
+                                    className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md text-xs font-medium transition-colors flex items-center gap-1 shadow-sm"
+                                  >
+                                    <CheckCircle className="w-3 h-3" />
+                                    Mark as Solved
+                                  </button>
+                                )}
+                              </div>
+                            )}
                           </div>
                           <p className="text-slate-800 font-medium mb-3">{item.question}</p>
                           
@@ -1333,43 +1394,59 @@ export default function TestDetail() {
                               {/* Error Action Status for all fail/abnormal items */}
                               {(item.answerType === "ox" ? item.answer === "X" : item.status === "fail") && (
                                 <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                                  <div className="flex items-center justify-between mb-3">
-                                    <span className="text-sm font-semibold text-amber-800">Issue Resolution</span>
-                                    <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
-                                      item.isResolved ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
-                                    }`}>
-                                      {item.isResolved ? <CheckCircle className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
-                                      {item.isResolved ? "Resolved" : "Pending"}
-                                    </span>
+                                  <div className="flex items-center justify-between mb-4">
+                                    <span className="text-sm font-semibold text-amber-800">Issue Resolution Thread</span>
                                   </div>
                                   
-                                  {!item.isResolved ? (
-                                    <div className="space-y-3 mt-2">
-                                      <div>
-                                        <label className="text-xs font-medium text-amber-800 block mb-1">Resolution Note</label>
-                                        <textarea 
-                                          value={item.actionNote || ""}
-                                          onChange={(e) => handleActionNoteChange(item.id, e.target.value)}
-                                          placeholder="Describe how this issue was resolved..."
-                                          className="w-full border border-amber-200 rounded-lg p-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white min-h-[80px]"
-                                        />
+                                  <div className="space-y-4 mt-2">
+                                    {(item.resolutionNotes || []).length > 0 ? (
+                                      <div className="space-y-3">
+                                        {item.resolutionNotes?.map((note) => (
+                                          <div key={note.id} className="flex gap-3 bg-white/60 p-3 rounded-lg border border-amber-100">
+                                            <div className="w-8 h-8 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                                              {note.avatar}
+                                            </div>
+                                            <div className="flex-1">
+                                              <div className="flex items-baseline justify-between mb-1">
+                                                <span className="text-sm font-medium text-amber-900">{note.author}</span>
+                                                <span className="text-xs text-amber-600">{note.timestamp}</span>
+                                              </div>
+                                              <p className="text-sm text-amber-800 whitespace-pre-wrap">{note.text}</p>
+                                            </div>
+                                          </div>
+                                        ))}
                                       </div>
-                                      <div className="flex flex-wrap gap-2">
-                                         <button 
-                                          onClick={() => handleResolvedChange(item.id, true)}
-                                          className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5"
+                                    ) : (
+                                      <div className="text-sm text-amber-600/70 italic text-center py-4 bg-white/40 rounded-lg border border-amber-100 border-dashed">
+                                        No notes added yet.
+                                      </div>
+                                    )}
+
+                                    {!item.isResolved && (
+                                      <div className="mt-4 flex gap-2">
+                                        <div className="flex-1">
+                                          <textarea 
+                                            value={newNoteText[item.id] || ""}
+                                            onChange={(e) => setNewNoteText(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                            placeholder="Add a comment or update..."
+                                            className="w-full border border-amber-200 rounded-lg p-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white min-h-[44px]"
+                                            rows={2}
+                                          />
+                                        </div>
+                                        <button 
+                                          onClick={() => handleAddResolutionNote(item.id)}
+                                          disabled={!newNoteText[item.id]?.trim()}
+                                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap self-end ${
+                                            newNoteText[item.id]?.trim() 
+                                              ? "bg-amber-600 hover:bg-amber-700 text-white" 
+                                              : "bg-amber-200 text-amber-50 cursor-not-allowed"
+                                          }`}
                                         >
-                                          <CheckCircle className="w-4 h-4" />
-                                          Mark as Solved
+                                          Add Note
                                         </button>
                                       </div>
-                                    </div>
-                                  ) : (
-                                    <div className="bg-white/60 p-3 rounded border border-amber-100">
-                                      <p className="text-xs font-medium text-amber-800 mb-1">Resolution Note</p>
-                                      <p className="text-sm text-amber-900">{item.actionNote || "Resolved without a note."}</p>
-                                    </div>
-                                  )}
+                                    )}
+                                  </div>
                                 </div>
                               )}
                             </div>

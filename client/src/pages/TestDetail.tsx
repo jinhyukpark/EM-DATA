@@ -1326,35 +1326,21 @@ export default function TestDetail() {
                               <div className="flex items-center gap-2">
                                 <button 
                                   onClick={() => handleResolvedChange(item.id, !item.isResolved)}
-                                  className={`group relative inline-flex h-7 w-[120px] items-center rounded-full transition-all duration-300 ease-in-out border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 ${
+                                  className={`group inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border transition-all hover:shadow-sm ${
                                     item.isResolved 
-                                      ? 'bg-emerald-50 border-emerald-200' 
-                                      : 'bg-red-50 border-red-200'
+                                      ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100" 
+                                      : "bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
                                   }`}
                                   title={`Click to mark as ${item.isResolved ? 'unresolved' : 'resolved'}`}
                                 >
-                                  <span className="sr-only">Toggle resolution status</span>
-                                  <div className="absolute w-full flex justify-between px-2.5 text-[10px] font-semibold tracking-wider uppercase z-0">
-                                    <span className={`transition-opacity duration-300 ${item.isResolved ? 'opacity-100 text-emerald-700' : 'opacity-0'}`}>
-                                      Resolved
-                                    </span>
-                                    <span className={`transition-opacity duration-300 ${!item.isResolved ? 'opacity-100 text-red-700' : 'opacity-0'}`}>
-                                      Unresolved
-                                    </span>
+                                  <div className={`relative inline-flex h-3.5 w-6 items-center rounded-full transition-colors ${
+                                    item.isResolved ? 'bg-emerald-500' : 'bg-red-400'
+                                  }`}>
+                                    <span className={`inline-block h-2.5 w-2.5 rounded-full bg-white shadow-sm transform transition-transform ${
+                                      item.isResolved ? 'translate-x-[12px]' : 'translate-x-[2px]'
+                                    }`} />
                                   </div>
-                                  <span
-                                    className={`absolute flex items-center justify-center h-[22px] w-[22px] rounded-full shadow-sm transform transition-all duration-300 ease-in-out z-10 ${
-                                      item.isResolved 
-                                        ? 'translate-x-[94px] bg-emerald-500 text-white' 
-                                        : 'translate-x-0.5 bg-red-500 text-white'
-                                    }`}
-                                  >
-                                    {item.isResolved ? (
-                                      <CheckCircle className="w-3.5 h-3.5" />
-                                    ) : (
-                                      <AlertCircle className="w-3.5 h-3.5" />
-                                    )}
-                                  </span>
+                                  <span className="pr-1">{item.isResolved ? "Resolved" : "Unresolved"}</span>
                                 </button>
                               </div>
                             )}

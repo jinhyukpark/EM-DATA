@@ -28,11 +28,11 @@ import Sidebar from "@/components/Sidebar";
 
 
 const services = [
-  { id: 1, testName: "Data Integrity Check", name: "Company Data Pipeline", type: ["Internal", "Database", "Core"], status: "Active", workStatus: "Normal", step: 5, lastInspection: "2025-01-09", inspectors: ["John Kim", "Sarah Lee"], nextInspection: "2025-01-16", normalCount: 12, abnormalCount: 0 },
-  { id: 2, testName: "API Response Validation", name: "Patent Crawler Service", type: ["Internal"], status: "Active", workStatus: "Normal", step: 3, lastInspection: "2025-01-08", inspectors: ["Sarah Lee"], nextInspection: "2025-01-15", normalCount: 8, abnormalCount: 1 },
-  { id: 3, testName: "Performance Benchmark", name: "News API Integration", type: ["External", "API"], status: "Warning", workStatus: "Delayed, Failed", step: 8, lastInspection: "2025-01-05", inspectors: ["Mike Park", "Emily Choi", "David Jung"], nextInspection: "2025-01-12", normalCount: 5, abnormalCount: 3 },
-  { id: 4, testName: "Security Audit", name: "Stock Data Collector", type: ["External", "Security"], status: "Active", workStatus: "Normal", step: 4, lastInspection: "2025-01-09", inspectors: ["Emily Choi"], nextInspection: "2025-01-16", normalCount: 10, abnormalCount: 0 },
-  { id: 5, testName: "Data Accuracy Test", name: "ML Prediction Service", type: ["Internal", "ML", "Analytics"], status: "Inactive", workStatus: "Stopped", step: 6, lastInspection: "2024-12-20", inspectors: ["David Jung", "John Kim"], nextInspection: "2025-01-20", normalCount: 3, abnormalCount: 2 },
+  { id: 1, testName: "Data Integrity Check", name: "Company Data Pipeline", type: ["Internal", "Database", "Core"], status: "Active", workStatus: "Normal", step: 5, startDate: "2025-01-01", endDate: "2025-03-31", inspectors: ["John Kim", "Sarah Lee"], nextInspection: "2025-01-16", normalCount: 12, abnormalCount: 0 },
+  { id: 2, testName: "API Response Validation", name: "Patent Crawler Service", type: ["Internal"], status: "Active", workStatus: "Normal", step: 3, startDate: "2025-01-01", endDate: "2025-06-30", inspectors: ["Sarah Lee"], nextInspection: "2025-01-15", normalCount: 8, abnormalCount: 1 },
+  { id: 3, testName: "Performance Benchmark", name: "News API Integration", type: ["External", "API"], status: "Warning", workStatus: "Delayed, Failed", step: 8, startDate: "2024-12-01", endDate: "2025-02-28", inspectors: ["Mike Park", "Emily Choi", "David Jung"], nextInspection: "2025-01-12", normalCount: 5, abnormalCount: 3 },
+  { id: 4, testName: "Security Audit", name: "Stock Data Collector", type: ["External", "Security"], status: "Active", workStatus: "Normal", step: 4, startDate: "2025-01-01", endDate: "2025-12-31", inspectors: ["Emily Choi"], nextInspection: "2025-01-16", normalCount: 10, abnormalCount: 0 },
+  { id: 5, testName: "Data Accuracy Test", name: "ML Prediction Service", type: ["Internal", "ML", "Analytics"], status: "Inactive", workStatus: "Stopped", step: 6, startDate: "2025-01-06", endDate: "2025-04-30", inspectors: ["David Jung", "John Kim"], nextInspection: "2025-01-20", normalCount: 3, abnormalCount: 2 },
 ];
 
 const testProcedures = [
@@ -357,9 +357,13 @@ export default function QAReport() {
                       {servicesList.filter(service => {
                           if (filterTestName && service.testName !== filterTestName) return false;
                           if (filterDateFrom || filterDateTo) {
-                            const lastDate = new Date(service.lastInspection);
-                            if (filterDateFrom && lastDate < new Date(filterDateFrom)) return false;
-                            if (filterDateTo && lastDate > new Date(filterDateTo)) return false;
+                            const startDate = new Date(service.startDate);
+                            const endDate = new Date(service.endDate);
+                            const filterFrom = filterDateFrom ? new Date(filterDateFrom) : new Date('2000-01-01');
+                            const filterTo = filterDateTo ? new Date(filterDateTo) : new Date('2099-12-31');
+                            
+                            // Check if the service's period overlaps with the filter period
+                            if (endDate < filterFrom || startDate > filterTo) return false;
                           }
                           return true;
                         }).map((service) => (
@@ -428,7 +432,9 @@ export default function QAReport() {
                               </span>
                             </div>
                           </td>
-                          <td className="py-4 px-4 text-sm text-slate-600">{service.lastInspection}</td>
+                          <td className="py-4 px-4 text-sm text-slate-600">
+                            {service.startDate} ~ {service.endDate}
+                          </td>
                           <td className="py-4 px-4">
                             <div className="flex items-center gap-1">
                               <div className="flex -space-x-2">

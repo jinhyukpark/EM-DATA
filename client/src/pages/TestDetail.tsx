@@ -1492,7 +1492,7 @@ export default function TestDetail() {
                                     className="text-xs flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors"
                                   >
                                     <MessageSquare className="w-3.5 h-3.5" />
-                                    {item.resolutionNotes?.length ? `View Resolution Thread (${item.resolutionNotes.length})` : "Create Resolution Thread"}
+                                    {item.resolutionNotes?.length ? `View Thread (${item.resolutionNotes.length})` : "Create Thread"}
                                   </button>
                                 ) : (
                                   <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">

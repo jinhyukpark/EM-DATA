@@ -1260,15 +1260,6 @@ export default function TestDetail() {
                                   {item.isResolved ? <CheckCircle className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
                                   {item.isResolved ? "Resolved" : "Unresolved"}
                                 </span>
-                                {!item.isResolved && (
-                                  <button 
-                                    onClick={() => handleResolvedChange(item.id, true)}
-                                    className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md text-xs font-medium transition-colors flex items-center gap-1 shadow-sm"
-                                  >
-                                    <CheckCircle className="w-3 h-3" />
-                                    Mark as Solved
-                                  </button>
-                                )}
                               </div>
                             )}
                           </div>
@@ -1428,6 +1419,15 @@ export default function TestDetail() {
                                 <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
                                   <div className="flex items-center justify-between mb-4">
                                     <span className="text-sm font-semibold text-amber-800">Issue Resolution Thread</span>
+                                    {!item.isResolved && (
+                                      <button 
+                                        onClick={() => handleResolvedChange(item.id, true)}
+                                        className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md text-xs font-medium transition-colors flex items-center gap-1 shadow-sm"
+                                      >
+                                        <CheckCircle className="w-3 h-3" />
+                                        Mark as Solved
+                                      </button>
+                                    )}
                                   </div>
                                   
                                   <div className="space-y-4 mt-2">

@@ -1485,19 +1485,18 @@ export default function TestDetail() {
                               )}
                               
                               {/* Error Action Status for all fail/abnormal items */}
-                              {(item.answerType === "ox" ? item.answer === "X" : item.status === "fail") && (
-                                <div className="mt-4">
-                                  {!expandedThreads[item.id] ? (
-                                    <button
-                                      onClick={() => toggleThread(item.id)}
-                                      className="text-xs flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors"
-                                    >
-                                      <MessageSquare className="w-3.5 h-3.5" />
-                                      {item.resolutionNotes?.length ? `View Resolution Thread (${item.resolutionNotes.length})` : "Create Resolution Thread"}
-                                    </button>
-                                  ) : (
-                                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
-                                      <div className="flex items-center justify-between mb-4">
+                              <div className="mt-4">
+                                {!expandedThreads[item.id] ? (
+                                  <button
+                                    onClick={() => toggleThread(item.id)}
+                                    className="text-xs flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors"
+                                  >
+                                    <MessageSquare className="w-3.5 h-3.5" />
+                                    {item.resolutionNotes?.length ? `View Resolution Thread (${item.resolutionNotes.length})` : "Create Resolution Thread"}
+                                  </button>
+                                ) : (
+                                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                                    <div className="flex items-center justify-between mb-4">
                                         <div className="flex items-center gap-2">
                                           <button onClick={() => toggleThread(item.id)} className="text-slate-400 hover:text-slate-600" title="Collapse Thread">
                                             <ChevronDown className="w-4 h-4 transform rotate-180" />

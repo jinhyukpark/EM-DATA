@@ -347,7 +347,7 @@ export default function QAReport() {
                         <th className="text-center py-3 px-4 text-sm font-medium text-slate-500">Step</th>
                         <th className="text-center py-3 px-4 text-sm font-medium text-slate-500">Work Status</th>
                         <th className="text-center py-3 px-4 text-sm font-medium text-slate-500">Review Results</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Last Inspection</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Test Period</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Inspector</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Next Inspection</th>
                         <th className="text-right py-3 px-4 text-sm font-medium text-slate-500">Actions</th>

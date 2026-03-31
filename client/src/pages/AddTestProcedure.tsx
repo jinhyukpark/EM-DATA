@@ -244,7 +244,8 @@ export default function AddTestProcedure() {
   const TEMPLATES_PER_PAGE = 7; // 7 templates + 1 new button = 8 items per page
   
   const [showSaveOptionsModal, setShowSaveOptionsModal] = useState(false);
-  const [saveOption, setSaveOption] = useState<"today" | "next">("today");
+  const [saveOption, setSaveOption] = useState<"today" | "next" | "custom">("today");
+  const [customApplyDate, setCustomApplyDate] = useState("");
   const [showUpdateAlertModal, setShowUpdateAlertModal] = useState(false);
   
   // Track original assigned inspectors and days to detect changes
@@ -1463,6 +1464,39 @@ export default function AddTestProcedure() {
                             </span>
                           </div>
                         </label>
+
+                        <label 
+                          className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            saveOption === "custom" ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:border-blue-300"
+                          }`}
+                        >
+                          <div className="flex h-5 items-center">
+                            <input
+                              type="radio"
+                              name="saveOption"
+                              checked={saveOption === "custom"}
+                              onChange={() => setSaveOption("custom")}
+                              className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div className="w-full">
+                            <span className="block text-sm font-medium text-slate-900">Select Specific Date</span>
+                            <span className="block text-xs text-slate-500 mt-0.5 mb-2">
+                              Choose a specific date from when these changes should apply.
+                            </span>
+                            {saveOption === "custom" && (
+                              <div className="mt-2 w-full max-w-[200px]" onClick={(e) => e.stopPropagation()}>
+                                <Input
+                                  type="date"
+                                  value={customApplyDate}
+                                  onChange={(e) => setCustomApplyDate(e.target.value)}
+                                  className="h-9 text-sm"
+                                  min={new Date().toISOString().split('T')[0]}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </label>
                       </div>
                       
                       <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50 rounded-b-xl">
@@ -1520,7 +1554,7 @@ export default function AddTestProcedure() {
                         Please select when these changes should take effect:
                       </p>
                       
-                      <div className="space-y-3">
+                      <div className="p-6 space-y-3">
                         <label 
                           className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
                             saveOption === "today" ? "border-amber-500 bg-amber-50/50" : "border-slate-200 hover:border-amber-300"
@@ -1562,6 +1596,39 @@ export default function AddTestProcedure() {
                             <span className="block text-xs text-slate-500 mt-0.5">
                               Changes will apply to future dates. Today's progress remains intact.
                             </span>
+                          </div>
+                        </label>
+
+                        <label 
+                          className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            saveOption === "custom" ? "border-amber-500 bg-amber-50/50" : "border-slate-200 hover:border-amber-300"
+                          }`}
+                        >
+                          <div className="flex h-5 items-center">
+                            <input
+                              type="radio"
+                              name="alertSaveOption"
+                              checked={saveOption === "custom"}
+                              onChange={() => setSaveOption("custom")}
+                              className="w-4 h-4 text-amber-600 focus:ring-amber-500"
+                            />
+                          </div>
+                          <div className="w-full">
+                            <span className="block text-sm font-medium text-slate-900">Select Specific Date</span>
+                            <span className="block text-xs text-slate-500 mt-0.5 mb-2">
+                              Choose a specific date from when these changes should apply.
+                            </span>
+                            {saveOption === "custom" && (
+                              <div className="mt-2 w-full max-w-[200px]" onClick={(e) => e.stopPropagation()}>
+                                <Input
+                                  type="date"
+                                  value={customApplyDate}
+                                  onChange={(e) => setCustomApplyDate(e.target.value)}
+                                  className="h-9 text-sm"
+                                  min={new Date().toISOString().split('T')[0]}
+                                />
+                              </div>
+                            )}
                           </div>
                         </label>
                       </div>

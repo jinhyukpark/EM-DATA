@@ -1255,10 +1255,10 @@ export default function TestDetail() {
                             {!isEditing && (item.answerType === "ox" ? item.answer === "X" : item.status === "fail") && (
                               <div className="flex items-center gap-2">
                                 <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
-                                  item.isResolved ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+                                  item.isResolved ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
                                 }`}>
-                                  {item.isResolved ? <CheckCircle className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
-                                  {item.isResolved ? "Resolved" : "Pending Action"}
+                                  {item.isResolved ? <CheckCircle className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                                  {item.isResolved ? "Resolved" : "Unresolved"}
                                 </span>
                                 {!item.isResolved && (
                                   <button 

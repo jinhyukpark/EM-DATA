@@ -522,11 +522,6 @@ export default function AddTestProcedure() {
     if (selectedTemplateId) setTemplateModified(true);
   };
 
-  const handleSave = () => {
-    console.log({ serviceName, procedureName, testItems });
-    setLocation("/qa-report");
-  };
-
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (

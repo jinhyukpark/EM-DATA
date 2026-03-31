@@ -44,17 +44,17 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import Sidebar from "@/components/Sidebar";
 
 const stabilityData = [
-  { date: "2024-11-01", normal: 45, abnormal: 3 },
-  { date: "2024-11-08", normal: 42, abnormal: 5 },
-  { date: "2024-11-15", normal: 48, abnormal: 2 },
-  { date: "2024-11-22", normal: 44, abnormal: 4 },
-  { date: "2024-11-29", normal: 40, abnormal: 6 },
-  { date: "2024-12-06", normal: 47, abnormal: 3 },
-  { date: "2024-12-13", normal: 50, abnormal: 1 },
-  { date: "2024-12-20", normal: 43, abnormal: 5 },
-  { date: "2024-12-27", normal: 46, abnormal: 2 },
-  { date: "2025-01-03", normal: 49, abnormal: 1 },
-  { date: "2025-01-10", normal: 51, abnormal: 0 },
+  { date: "2024-11-01", normal: 45, abnormal: 3, resolved: 2 },
+  { date: "2024-11-08", normal: 42, abnormal: 5, resolved: 4 },
+  { date: "2024-11-15", normal: 48, abnormal: 2, resolved: 2 },
+  { date: "2024-11-22", normal: 44, abnormal: 4, resolved: 3 },
+  { date: "2024-11-29", normal: 40, abnormal: 6, resolved: 5 },
+  { date: "2024-12-06", normal: 47, abnormal: 3, resolved: 2 },
+  { date: "2024-12-13", normal: 50, abnormal: 1, resolved: 1 },
+  { date: "2024-12-20", normal: 43, abnormal: 5, resolved: 4 },
+  { date: "2024-12-27", normal: 46, abnormal: 2, resolved: 2 },
+  { date: "2025-01-03", normal: 49, abnormal: 1, resolved: 1 },
+  { date: "2025-01-10", normal: 51, abnormal: 0, resolved: 0 },
 ];
 
 const inspectors = [
@@ -855,11 +855,11 @@ export default function TestDetail() {
                     <p className="text-xl font-semibold text-emerald-700">505</p>
                   </div>
                   <div className="bg-red-50 rounded-lg p-3">
-                    <p className="text-xs text-red-600 mb-1">Total Abnormal</p>
-                    <p className="text-xl font-semibold text-red-700">32</p>
+                    <p className="text-xs text-red-600 mb-1">Total Resolved / Abnormal</p>
+                    <p className="text-xl font-semibold text-red-700">26 / 32</p>
                   </div>
                   <div className="bg-blue-50 rounded-lg p-3">
-                    <p className="text-xs text-blue-600 mb-1">Stability Rate</p>
+                    <p className="text-xs text-blue-600 mb-1">Normal Rate</p>
                     <p className="text-xl font-semibold text-blue-700">94.0%</p>
                   </div>
                 </div>
@@ -874,6 +874,10 @@ export default function TestDetail() {
                         <linearGradient id="colorAbnormal" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4}/>
                           <stop offset="95%" stopColor="#ef4444" stopOpacity={0.05}/>
+                        </linearGradient>
+                        <linearGradient id="colorResolved" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4}/>
+                          <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.05}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -899,7 +903,8 @@ export default function TestDetail() {
                         formatter={(value: number, name: string) => {
                           const labels: Record<string, string> = {
                             normal: 'Normal',
-                            abnormal: 'Abnormal'
+                            abnormal: 'Abnormal',
+                            resolved: 'Resolved'
                           };
                           return [`${value} cases`, labels[name] || name];
                         }}
@@ -924,6 +929,14 @@ export default function TestDetail() {
                         fillOpacity={1} 
                         fill="url(#colorAbnormal)" 
                       />
+                      <Area 
+                        type="monotone" 
+                        dataKey="resolved" 
+                        stroke="#f59e0b" 
+                        strokeWidth={2}
+                        fillOpacity={1} 
+                        fill="url(#colorResolved)" 
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -935,6 +948,10 @@ export default function TestDetail() {
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-red-500" />
                     <span className="text-xs text-slate-600">Abnormal</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-amber-500" />
+                    <span className="text-xs text-slate-600">Resolved</span>
                   </div>
                 </div>
               </div>

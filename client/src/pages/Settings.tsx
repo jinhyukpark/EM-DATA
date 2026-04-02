@@ -56,6 +56,7 @@ interface ModuleConfig {
 interface Role {
   id: number;
   role: string;
+  type: "admin" | "service";
   description: string;
   users: number;
   // Map module ID to list of allowed permissions
@@ -88,6 +89,7 @@ const initialRoles: Role[] = [
   { 
     id: 1, 
     role: "Admin", 
+    type: "admin",
     description: "Full access to all features", 
     users: 2, 
     permissions: modules.reduce((acc, mod) => ({
@@ -98,6 +100,7 @@ const initialRoles: Role[] = [
   { 
     id: 2, 
     role: "Editor", 
+    type: "service",
     description: "Can view and edit data", 
     users: 5, 
     permissions: modules.reduce((acc, mod) => {
@@ -109,6 +112,7 @@ const initialRoles: Role[] = [
   { 
     id: 3, 
     role: "Viewer", 
+    type: "service",
     description: "Read-only access", 
     users: 12, 
     permissions: modules.reduce((acc, mod) => ({
@@ -362,14 +366,12 @@ function UsersTab() {
                       className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       data-testid="select-edit-user-role"
                     >
-                      {editUser.roleType === "admin" ? (
-                        <option value="Admin">Admin</option>
-                      ) : (
-                        <>
-                          <option value="Editor">Editor</option>
-                          <option value="Viewer">Viewer</option>
-                        </>
-                      )}
+                      {roles
+                        .filter(r => r.type === editUser.roleType)
+                        .map(r => (
+                          <option key={r.id} value={r.role}>{r.role}</option>
+                        ))
+                      }
                     </select>
                   </div>
                 </div>
@@ -501,14 +503,12 @@ function UsersTab() {
                     className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     data-testid="new-user-role"
                   >
-                    {newUser.roleType === "admin" ? (
-                      <option value="Admin">Admin</option>
-                    ) : (
-                      <>
-                        <option value="Editor">Editor</option>
-                        <option value="Viewer">Viewer</option>
-                      </>
-                    )}
+                    {roles
+                      .filter(r => r.type === newUser.roleType)
+                      .map(r => (
+                        <option key={r.id} value={r.role}>{r.role}</option>
+                      ))
+                    }
                   </select>
                 </div>
               </div>

@@ -46,7 +46,7 @@ const users = [
 ];
 
 // Types
-type PermissionType = "View" | "Create" | "Edit" | "Delete" | "Export" | "Execute";
+type PermissionType = "View" | "Create" | "Edit" | "Delete" | "Export" | "Inspect";
 
 interface ModuleConfig {
   id: string;
@@ -81,7 +81,7 @@ const modules: ModuleConfig[] = [
 ];
 
 const permissionTypes: PermissionType[] = ["View", "Create", "Edit", "Delete", "Export"];
-const qaPermissionTypes: PermissionType[] = ["View", "Execute", "Create", "Edit", "Delete", "Export"];
+const qaPermissionTypes: PermissionType[] = ["View", "Inspect", "Export"];
 
 // Initial data with updated structure
 const initialRoles: Role[] = [
@@ -102,7 +102,7 @@ const initialRoles: Role[] = [
     users: 5, 
     permissions: modules.reduce((acc, mod) => {
       // Editor permissions logic
-      if (mod.id === "qa-report") return { ...acc, [mod.id]: ["View", "Execute", "Create", "Edit", "Export"] };
+      if (mod.id === "qa-report") return { ...acc, [mod.id]: ["View", "Inspect", "Export"] };
       return { ...acc, [mod.id]: ["View", "Create", "Edit", "Export"] };
     }, {} as Record<string, PermissionType[]>)
   },
@@ -644,10 +644,28 @@ function PermissionsTab() {
   const togglePermission = (moduleId: string, type: PermissionType) => {
     setSelectedPerms(prev => {
       const modulePerms = prev[moduleId] || [];
+      
       if (modulePerms.includes(type)) {
-        return { ...prev, [moduleId]: modulePerms.filter(p => p !== type) };
+        // If unchecking, and it's View being unchecked, we might need to uncheck Execute too if it's QA report (if they depend on View)
+        // But the requirement is: "inspect(Execute)는 클릭할 경우 view가 자동으로 켜지도록, 즉 inspect는 되는데 view가 안되는 케이스는 없도록"
+        let newPerms = modulePerms.filter(p => p !== type);
+        
+        // If unchecking View, must uncheck Inspect as well because Inspect requires View
+        if (moduleId === "qa-report" && type === "View") {
+          newPerms = newPerms.filter(p => p !== "Inspect");
+        }
+        
+        return { ...prev, [moduleId]: newPerms };
       } else {
-        return { ...prev, [moduleId]: [...modulePerms, type] };
+        // If checking
+        let newPerms = [...modulePerms, type];
+        
+        // If checking Inspect, must also check View
+        if (moduleId === "qa-report" && type === "Inspect" && !modulePerms.includes("View")) {
+          newPerms.push("View");
+        }
+        
+        return { ...prev, [moduleId]: newPerms };
       }
     });
   };
@@ -886,10 +904,7 @@ function PermissionsTab() {
                             <tr>
                               <th className="px-4 py-3 font-medium text-slate-600 w-1/3">Module</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center">View</th>
-                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Execute</th>
-                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Create</th>
-                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Edit</th>
-                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Delete</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Inspect</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center">Export</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>
                             </tr>

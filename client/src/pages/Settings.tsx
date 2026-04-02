@@ -46,7 +46,7 @@ const users = [
 ];
 
 // Types
-type PermissionType = "View" | "Create" | "Edit" | "Delete" | "Export";
+type PermissionType = "View" | "Create" | "Edit" | "Delete" | "Export" | "Execute";
 
 interface ModuleConfig {
   id: string;
@@ -81,6 +81,7 @@ const modules: ModuleConfig[] = [
 ];
 
 const permissionTypes: PermissionType[] = ["View", "Create", "Edit", "Delete", "Export"];
+const qaPermissionTypes: PermissionType[] = ["View", "Execute", "Create", "Edit", "Delete", "Export"];
 
 // Initial data with updated structure
 const initialRoles: Role[] = [
@@ -91,7 +92,7 @@ const initialRoles: Role[] = [
     users: 2, 
     permissions: modules.reduce((acc, mod) => ({
       ...acc,
-      [mod.id]: permissionTypes // Admin has all permissions for all modules
+      [mod.id]: mod.id === "qa-report" ? qaPermissionTypes : permissionTypes // Admin has all permissions for all modules
     }), {} as Record<string, PermissionType[]>)
   },
   { 
@@ -101,7 +102,7 @@ const initialRoles: Role[] = [
     users: 5, 
     permissions: modules.reduce((acc, mod) => {
       // Editor permissions logic
-      if (mod.id === "qa-report") return { ...acc, [mod.id]: ["View", "Create", "Edit", "Export"] };
+      if (mod.id === "qa-report") return { ...acc, [mod.id]: ["View", "Execute", "Create", "Edit", "Export"] };
       return { ...acc, [mod.id]: ["View", "Create", "Edit", "Export"] };
     }, {} as Record<string, PermissionType[]>)
   },
@@ -654,12 +655,13 @@ function PermissionsTab() {
   const toggleAllInModule = (moduleId: string) => {
     setSelectedPerms(prev => {
       const modulePerms = prev[moduleId] || [];
-      if (modulePerms.length === permissionTypes.length) {
+      const currentTypes = moduleId === "qa-report" ? qaPermissionTypes : permissionTypes;
+      if (modulePerms.length === currentTypes.length) {
         // Deselect all
         return { ...prev, [moduleId]: [] };
       } else {
         // Select all
-        return { ...prev, [moduleId]: [...permissionTypes] };
+        return { ...prev, [moduleId]: [...currentTypes] };
       }
     });
   };
@@ -884,6 +886,7 @@ function PermissionsTab() {
                             <tr>
                               <th className="px-4 py-3 font-medium text-slate-600 w-1/3">Module</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center">View</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Execute</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center">Create</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center">Edit</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center">Delete</th>
@@ -895,7 +898,7 @@ function PermissionsTab() {
                             {modules.filter(m => m.id === "qa-report").map(mod => (
                               <tr key={mod.id} className="hover:bg-slate-50/50">
                                 <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
-                                {permissionTypes.map(type => {
+                                {qaPermissionTypes.map(type => {
                                   const isSelected = (selectedPerms[mod.id] || []).includes(type);
                                   return (
                                     <td key={type} className="px-4 py-3 text-center">

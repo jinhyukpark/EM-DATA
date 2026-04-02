@@ -822,48 +822,56 @@ function PermissionsTab() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-3">User Type</label>
                   <div className="flex gap-4">
-                    <label 
-                      className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all flex-1 ${
-                        roleModalMode === "edit" ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
-                      } ${
-                        roleType === "admin" ? "border-purple-500 bg-purple-50" : "border-slate-200 hover:border-purple-200"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        checked={roleType === "admin"}
-                        onChange={() => setRoleType("admin")}
-                        disabled={roleModalMode === "edit"}
-                        className="w-4 h-4 text-purple-600 focus:ring-purple-500 disabled:opacity-50"
-                      />
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-slate-900">Admin Role</span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">슈퍼 관리자</span>
+                    {(roleModalMode === "add" || roleType === "admin") && (
+                      <div 
+                        className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all flex-1 ${
+                          roleModalMode === "edit" 
+                            ? "border-purple-500 bg-purple-50 cursor-default" 
+                            : `cursor-pointer ${roleType === "admin" ? "border-purple-500 bg-purple-50" : "border-slate-200 hover:border-purple-200"}`
+                        }`}
+                        onClick={() => roleModalMode === "add" && setRoleType("admin")}
+                      >
+                        {roleModalMode === "add" && (
+                          <input
+                            type="radio"
+                            checked={roleType === "admin"}
+                            onChange={() => setRoleType("admin")}
+                            className="w-4 h-4 text-purple-600 focus:ring-purple-500"
+                          />
+                        )}
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-semibold text-slate-900">Admin Role</span>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">슈퍼 관리자</span>
+                          </div>
+                          <span className="block text-xs text-slate-500 mt-1">시스템·그룹 관리 권한 설정</span>
                         </div>
-                        <span className="block text-xs text-slate-500 mt-1">시스템·그룹 관리 권한 설정</span>
                       </div>
-                    </label>
+                    )}
 
-                    <label 
-                      className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all flex-1 ${
-                        roleModalMode === "edit" ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
-                      } ${
-                        roleType === "service" ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:border-blue-200"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        checked={roleType === "service"}
-                        onChange={() => setRoleType("service")}
-                        disabled={roleModalMode === "edit"}
-                        className="w-4 h-4 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
-                      />
-                      <div>
-                        <span className="block text-sm font-semibold text-slate-900">Service Role</span>
-                        <span className="block text-xs text-slate-500 mt-1">메뉴별 View/Create/Edit/Delete/Export 설정</span>
+                    {(roleModalMode === "add" || roleType === "service") && (
+                      <div 
+                        className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all flex-1 ${
+                          roleModalMode === "edit" 
+                            ? "border-blue-500 bg-blue-50 cursor-default" 
+                            : `cursor-pointer ${roleType === "service" ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:border-blue-200"}`
+                        }`}
+                        onClick={() => roleModalMode === "add" && setRoleType("service")}
+                      >
+                        {roleModalMode === "add" && (
+                          <input
+                            type="radio"
+                            checked={roleType === "service"}
+                            onChange={() => setRoleType("service")}
+                            className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                          />
+                        )}
+                        <div>
+                          <span className="block text-sm font-semibold text-slate-900">Service Role</span>
+                          <span className="block text-xs text-slate-500 mt-1">메뉴별 View/Create/Edit/Delete/Export 설정</span>
+                        </div>
                       </div>
-                    </label>
+                    )}
                   </div>
                 </div>
 

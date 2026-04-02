@@ -76,7 +76,7 @@ const modules: ModuleConfig[] = [
   { id: "gcp", name: "Server (GCP)" },
   { id: "idc", name: "Server (IDC)" },
   { id: "user-management", name: "User Management" },
-  { id: "permission-management", name: "Permission Management" },
+  { id: "permission-management", name: "Role Management" },
   { id: "email-notifications", name: "Email Notifications" },
 ];
 
@@ -336,7 +336,7 @@ function UsersTab() {
 
                 <div className="col-span-2 grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Role Type</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">User Type</label>
                     <select
                       value={editUser.roleType}
                       onChange={(e) => {
@@ -474,7 +474,7 @@ function UsersTab() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Role Type</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">User Type</label>
                   <select
                     value={newUser.roleType}
                     onChange={(e) => {
@@ -820,7 +820,7 @@ function PermissionsTab() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-3">Role Type</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-3">User Type</label>
                   <div className="flex gap-4">
                     <label 
                       className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all flex-1 ${
@@ -871,7 +871,7 @@ function PermissionsTab() {
                       <div className="space-y-3 bg-white border border-slate-200 rounded-xl p-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-medium text-slate-800">Permission Management</p>
+                            <p className="text-sm font-medium text-slate-800">Role Management</p>
                             <p className="text-xs text-slate-500 mt-0.5">서비스 이용 권한 role 설정 (관리자 권한 제외)</p>
                           </div>
                           <label className="relative inline-flex items-center cursor-pointer">
@@ -1113,7 +1113,7 @@ function PermissionsTab() {
 
       <div className="chart-container-light">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-slate-800">Permission Management</h3>
+          <h3 className="text-lg font-semibold text-slate-800">Role Management</h3>
           <Button className="gap-2 bg-blue-600 hover:bg-blue-700" onClick={openAddRole}>
             <Plus className="w-4 h-4" />
             Add Role
@@ -1391,7 +1391,7 @@ export default function Settings() {
                 </TabsTrigger>
                 <TabsTrigger value="permissions" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm" data-testid="tab-permissions">
                   <Shield className="w-4 h-4" />
-                  Permission Management
+                  Role Management
                 </TabsTrigger>
                 <TabsTrigger value="notifications" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm" data-testid="tab-notifications">
                   <Bell className="w-4 h-4" />

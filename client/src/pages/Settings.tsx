@@ -542,6 +542,19 @@ function PermissionsTab() {
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [roleModalMode, setRoleModalMode] = useState<"add" | "edit">("add");
   const [roleName, setRoleName] = useState("");
+  // Determine if it's admin role or service role
+  const [roleType, setRoleType] = useState<"admin" | "service">("service");
+  
+  // Admin specific toggles
+  const [adminToggles, setAdminToggles] = useState({
+    permissionManagement: true,
+    userManagement: true,
+    emailNotifications: false,
+    qaGroupAdmin: false,
+    internalDataGroupAdmin: false,
+    serverGroupAdmin: false
+  });
+
   // Selected permissions state: Map of ModuleID -> PermissionType[]
   const [selectedPerms, setSelectedPerms] = useState<Record<string, PermissionType[]>>({});
   
@@ -555,6 +568,15 @@ function PermissionsTab() {
   const openAddRole = () => {
     setRoleModalMode("add");
     setRoleName("");
+    setRoleType("service");
+    setAdminToggles({
+      permissionManagement: true,
+      userManagement: true,
+      emailNotifications: false,
+      qaGroupAdmin: false,
+      internalDataGroupAdmin: false,
+      serverGroupAdmin: false
+    });
     // Default permissions: View only for all modules
     const defaults = modules.reduce((acc, mod) => ({
       ...acc,
@@ -570,6 +592,7 @@ function PermissionsTab() {
     if (!role) return;
     setRoleModalMode("edit");
     setRoleName(role.role);
+    setRoleType(role.role === "Admin" ? "admin" : "service"); // Basic check for demo
     setSelectedPerms(role.permissions);
     setEditRoleId(id);
     setShowRoleModal(true);
@@ -721,51 +744,249 @@ function PermissionsTab() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-4">Module Permissions</label>
-                  <div className="border border-slate-200 rounded-xl overflow-hidden">
-                    <table className="w-full text-sm text-left">
-                      <thead className="bg-slate-50 border-b border-slate-200">
-                        <tr>
-                          <th className="px-4 py-3 font-medium text-slate-600">Module</th>
-                          {permissionTypes.map(type => (
-                            <th key={type} className="px-4 py-3 font-medium text-slate-600 text-center w-24">{type}</th>
-                          ))}
-                          <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {modules.map(mod => (
-                          <tr key={mod.id} className="hover:bg-slate-50/50">
-                            <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
-                            {permissionTypes.map(type => {
-                              const isSelected = (selectedPerms[mod.id] || []).includes(type);
-                              return (
-                                <td key={type} className="px-4 py-3 text-center">
-                                  <button
-                                    onClick={() => togglePermission(mod.id, type)}
-                                    className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
-                                      isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
-                                    }`}
-                                  >
-                                    {isSelected && <Check className="w-3 h-3" />}
-                                  </button>
-                                </td>
-                              );
-                            })}
-                            <td className="px-4 py-3 text-center">
-                              <button
-                                onClick={() => toggleAllInModule(mod.id)}
-                                className="text-xs font-medium text-blue-600 hover:text-blue-700"
-                              >
-                                Toggle
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <label className="block text-sm font-medium text-slate-700 mb-3">Role Type</label>
+                  <div className="flex gap-4">
+                    <label 
+                      className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all flex-1 ${
+                        roleType === "admin" ? "border-purple-500 bg-purple-50" : "border-slate-200 hover:border-purple-200"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        checked={roleType === "admin"}
+                        onChange={() => setRoleType("admin")}
+                        className="w-4 h-4 text-purple-600 focus:ring-purple-500"
+                      />
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-slate-900">Admin Role</span>
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">슈퍼 관리자</span>
+                        </div>
+                        <span className="block text-xs text-slate-500 mt-1">시스템·그룹 관리 권한 설정</span>
+                      </div>
+                    </label>
+
+                    <label 
+                      className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all flex-1 ${
+                        roleType === "service" ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:border-blue-200"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        checked={roleType === "service"}
+                        onChange={() => setRoleType("service")}
+                        className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                      />
+                      <div>
+                        <span className="block text-sm font-semibold text-slate-900">Service Role</span>
+                        <span className="block text-xs text-slate-500 mt-1">메뉴별 View/Create/Edit/Delete/Export 설정</span>
+                      </div>
+                    </label>
                   </div>
                 </div>
+
+                {roleType === "admin" ? (
+                  <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                        <Shield className="w-4 h-4 text-purple-500" />
+                        System Management <span className="text-xs font-normal text-slate-400 bg-slate-100 px-2 py-0.5 rounded">Admin only</span>
+                      </h4>
+                      <div className="space-y-3 bg-white border border-slate-200 rounded-xl p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">Permission Management</p>
+                            <p className="text-xs text-slate-500 mt-0.5">서비스 이용 권한 role 설정 (관리자 권한 제외)</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={adminToggles.permissionManagement} onChange={(e) => setAdminToggles({...adminToggles, permissionManagement: e.target.checked})} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                          </label>
+                        </div>
+                        <div className="h-px bg-slate-100 my-2"></div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">User Management</p>
+                            <p className="text-xs text-slate-500 mt-0.5">구성원 초대·제거·역할 변경</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={adminToggles.userManagement} onChange={(e) => setAdminToggles({...adminToggles, userManagement: e.target.checked})} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                          </label>
+                        </div>
+                        <div className="h-px bg-slate-100 my-2"></div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">Email Notifications</p>
+                            <p className="text-xs text-slate-500 mt-0.5">시스템 알림 설정 관리</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={adminToggles.emailNotifications} onChange={(e) => setAdminToggles({...adminToggles, emailNotifications: e.target.checked})} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                        <Users className="w-4 h-4 text-blue-500" />
+                        Group Management <span className="text-xs font-normal text-slate-400 bg-slate-100 px-2 py-0.5 rounded">Group Admin</span>
+                      </h4>
+                      <div className="space-y-3 bg-white border border-slate-200 rounded-xl p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">QA Report 그룹 관리</p>
+                            <p className="text-xs text-slate-500 mt-0.5">inspector 배정, 일정·검사 항목 관리</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={adminToggles.qaGroupAdmin} onChange={(e) => setAdminToggles({...adminToggles, qaGroupAdmin: e.target.checked})} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                          </label>
+                        </div>
+                        <div className="h-px bg-slate-100 my-2"></div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">Internal Data 그룹 관리</p>
+                            <p className="text-xs text-slate-500 mt-0.5">데이터 항목 전체 관리</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={adminToggles.internalDataGroupAdmin} onChange={(e) => setAdminToggles({...adminToggles, internalDataGroupAdmin: e.target.checked})} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                          </label>
+                        </div>
+                        <div className="h-px bg-slate-100 my-2"></div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">Server Management 그룹 관리</p>
+                            <p className="text-xs text-slate-500 mt-0.5">서버 항목 전체 관리</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={adminToggles.serverGroupAdmin} onChange={(e) => setAdminToggles({...adminToggles, serverGroupAdmin: e.target.checked})} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <label className="block text-sm font-medium text-slate-700 mb-4">Module Permissions</label>
+                    <div className="border border-slate-200 rounded-xl overflow-hidden">
+                      <table className="w-full text-sm text-left">
+                        <thead className="bg-slate-50 border-b border-slate-200">
+                          <tr>
+                            <th className="px-4 py-3 font-medium text-slate-600">Module</th>
+                            {permissionTypes.map(type => (
+                              <th key={type} className="px-4 py-3 font-medium text-slate-600 text-center w-24">{type}</th>
+                            ))}
+                            <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {/* Group 1: QA Report */}
+                          <tr className="bg-blue-50/50 border-y border-blue-100">
+                            <td colSpan={7} className="px-4 py-2 font-semibold text-blue-800 text-xs uppercase tracking-wider">Group 1 — QA Report</td>
+                          </tr>
+                          {modules.filter(m => m.id === "qa-report").map(mod => (
+                            <tr key={mod.id} className="hover:bg-slate-50/50">
+                              <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
+                              {permissionTypes.map(type => {
+                                const isSelected = (selectedPerms[mod.id] || []).includes(type);
+                                return (
+                                  <td key={type} className="px-4 py-3 text-center">
+                                    <button
+                                      onClick={() => togglePermission(mod.id, type)}
+                                      className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                        isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                      }`}
+                                    >
+                                      {isSelected && <Check className="w-3 h-3" />}
+                                    </button>
+                                  </td>
+                                );
+                              })}
+                              <td className="px-4 py-3 text-center">
+                                <button
+                                  onClick={() => toggleAllInModule(mod.id)}
+                                  className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                                >
+                                  Toggle
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+
+                          {/* Group 2: Internal Data */}
+                          <tr className="bg-emerald-50/50 border-y border-emerald-100">
+                            <td colSpan={7} className="px-4 py-2 font-semibold text-emerald-800 text-xs uppercase tracking-wider">Group 2 — Internal Data</td>
+                          </tr>
+                          {modules.filter(m => ["company-data", "disclosure-data", "patent-data", "paper-data", "stock-data", "news-data", "finance-data", "employment-data"].includes(m.id)).map(mod => (
+                            <tr key={mod.id} className="hover:bg-slate-50/50">
+                              <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
+                              {permissionTypes.map(type => {
+                                const isSelected = (selectedPerms[mod.id] || []).includes(type);
+                                return (
+                                  <td key={type} className="px-4 py-3 text-center">
+                                    <button
+                                      onClick={() => togglePermission(mod.id, type)}
+                                      className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                        isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                      }`}
+                                    >
+                                      {isSelected && <Check className="w-3 h-3" />}
+                                    </button>
+                                  </td>
+                                );
+                              })}
+                              <td className="px-4 py-3 text-center">
+                                <button
+                                  onClick={() => toggleAllInModule(mod.id)}
+                                  className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                                >
+                                  Toggle
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+
+                          {/* Group 3: Server Management */}
+                          <tr className="bg-amber-50/50 border-y border-amber-100">
+                            <td colSpan={7} className="px-4 py-2 font-semibold text-amber-800 text-xs uppercase tracking-wider">Group 3 — Server Management</td>
+                          </tr>
+                          {modules.filter(m => ["aws", "gcp", "idc"].includes(m.id)).map(mod => (
+                            <tr key={mod.id} className="hover:bg-slate-50/50">
+                              <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
+                              {permissionTypes.map(type => {
+                                const isSelected = (selectedPerms[mod.id] || []).includes(type);
+                                return (
+                                  <td key={type} className="px-4 py-3 text-center">
+                                    <button
+                                      onClick={() => togglePermission(mod.id, type)}
+                                      className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                        isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                      }`}
+                                    >
+                                      {isSelected && <Check className="w-3 h-3" />}
+                                    </button>
+                                  </td>
+                                );
+                              })}
+                              <td className="px-4 py-3 text-center">
+                                <button
+                                  onClick={() => toggleAllInModule(mod.id)}
+                                  className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                                >
+                                  Toggle
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

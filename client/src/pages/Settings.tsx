@@ -46,7 +46,7 @@ const users = [
 ];
 
 // Types
-type PermissionType = "View" | "Create" | "Edit" | "Delete" | "Export" | "Inspect";
+type PermissionType = "View" | "Create/Delete" | "Edit" | "Delete" | "Export" | "Inspect";
 
 interface ModuleConfig {
   id: string;
@@ -82,7 +82,7 @@ const modules: ModuleConfig[] = [
 ];
 
 const permissionTypes: PermissionType[] = ["View", "Create", "Edit", "Delete", "Export"];
-const qaPermissionTypes: PermissionType[] = ["View", "Create", "Delete", "Inspect", "Export"];
+const qaPermissionTypes: PermissionType[] = ["View", "Create/Delete", "Inspect", "Export"];
 
 // Initial data with updated structure
 const initialRoles: Role[] = [
@@ -974,8 +974,7 @@ function PermissionsTab() {
                             <tr>
                               <th className="px-4 py-3 font-medium text-slate-600 w-1/3">Module</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center">View</th>
-                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Create</th>
-                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Delete</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Create / Delete</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center">Inspect</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center">Export</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>

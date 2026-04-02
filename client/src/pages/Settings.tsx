@@ -872,118 +872,157 @@ function PermissionsTab() {
                 ) : (
                   <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                     <label className="block text-sm font-medium text-slate-700 mb-4">Module Permissions</label>
-                    <div className="border border-slate-200 rounded-xl overflow-hidden">
-                      <table className="w-full text-sm text-left">
-                        <thead className="bg-slate-50 border-b border-slate-200">
-                          <tr>
-                            <th className="px-4 py-3 font-medium text-slate-600">Module</th>
-                            {permissionTypes.map(type => (
-                              <th key={type} className="px-4 py-3 font-medium text-slate-600 text-center w-24">{type}</th>
+                    <div className="space-y-6">
+                      
+                      {/* Group 1: QA Report */}
+                      <div className="border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="bg-blue-50/50 border-b border-blue-100 px-4 py-2 font-semibold text-blue-800 text-xs uppercase tracking-wider">
+                          Group 1 — QA Report
+                        </div>
+                        <table className="w-full text-sm text-left">
+                          <thead className="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                              <th className="px-4 py-3 font-medium text-slate-600 w-1/3">Module</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">View</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Create</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Edit</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Delete</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Export</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {modules.filter(m => m.id === "qa-report").map(mod => (
+                              <tr key={mod.id} className="hover:bg-slate-50/50">
+                                <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
+                                {permissionTypes.map(type => {
+                                  const isSelected = (selectedPerms[mod.id] || []).includes(type);
+                                  return (
+                                    <td key={type} className="px-4 py-3 text-center">
+                                      <button
+                                        onClick={() => togglePermission(mod.id, type)}
+                                        className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                          isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                        }`}
+                                      >
+                                        {isSelected && <Check className="w-3 h-3" />}
+                                      </button>
+                                    </td>
+                                  );
+                                })}
+                                <td className="px-4 py-3 text-center">
+                                  <button
+                                    onClick={() => toggleAllInModule(mod.id)}
+                                    className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                                  >
+                                    Toggle
+                                  </button>
+                                </td>
+                              </tr>
                             ))}
-                            <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                          {/* Group 1: QA Report */}
-                          <tr className="bg-blue-50/50 border-y border-blue-100">
-                            <td colSpan={7} className="px-4 py-2 font-semibold text-blue-800 text-xs uppercase tracking-wider">Group 1 — QA Report</td>
-                          </tr>
-                          {modules.filter(m => m.id === "qa-report").map(mod => (
-                            <tr key={mod.id} className="hover:bg-slate-50/50">
-                              <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
-                              {permissionTypes.map(type => {
-                                const isSelected = (selectedPerms[mod.id] || []).includes(type);
-                                return (
-                                  <td key={type} className="px-4 py-3 text-center">
-                                    <button
-                                      onClick={() => togglePermission(mod.id, type)}
-                                      className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
-                                        isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
-                                      }`}
-                                    >
-                                      {isSelected && <Check className="w-3 h-3" />}
-                                    </button>
-                                  </td>
-                                );
-                              })}
-                              <td className="px-4 py-3 text-center">
-                                <button
-                                  onClick={() => toggleAllInModule(mod.id)}
-                                  className="text-xs font-medium text-blue-600 hover:text-blue-700"
-                                >
-                                  Toggle
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
+                          </tbody>
+                        </table>
+                      </div>
 
-                          {/* Group 2: Internal Data */}
-                          <tr className="bg-emerald-50/50 border-y border-emerald-100">
-                            <td colSpan={7} className="px-4 py-2 font-semibold text-emerald-800 text-xs uppercase tracking-wider">Group 2 — Internal Data</td>
-                          </tr>
-                          {modules.filter(m => ["company-data", "disclosure-data", "patent-data", "paper-data", "stock-data", "news-data", "finance-data", "employment-data"].includes(m.id)).map(mod => (
-                            <tr key={mod.id} className="hover:bg-slate-50/50">
-                              <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
-                              {permissionTypes.map(type => {
-                                const isSelected = (selectedPerms[mod.id] || []).includes(type);
-                                return (
-                                  <td key={type} className="px-4 py-3 text-center">
-                                    <button
-                                      onClick={() => togglePermission(mod.id, type)}
-                                      className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
-                                        isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
-                                      }`}
-                                    >
-                                      {isSelected && <Check className="w-3 h-3" />}
-                                    </button>
-                                  </td>
-                                );
-                              })}
-                              <td className="px-4 py-3 text-center">
-                                <button
-                                  onClick={() => toggleAllInModule(mod.id)}
-                                  className="text-xs font-medium text-blue-600 hover:text-blue-700"
-                                >
-                                  Toggle
-                                </button>
-                              </td>
+                      {/* Group 2: Internal Data */}
+                      <div className="border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="bg-emerald-50/50 border-b border-emerald-100 px-4 py-2 font-semibold text-emerald-800 text-xs uppercase tracking-wider">
+                          Group 2 — Internal Data
+                        </div>
+                        <table className="w-full text-sm text-left">
+                          <thead className="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                              <th className="px-4 py-3 font-medium text-slate-600 w-1/3">Module</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">View</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Create</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Edit</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Delete</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Export</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>
                             </tr>
-                          ))}
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {modules.filter(m => ["company-data", "disclosure-data", "patent-data", "paper-data", "stock-data", "news-data", "finance-data", "employment-data"].includes(m.id)).map(mod => (
+                              <tr key={mod.id} className="hover:bg-slate-50/50">
+                                <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
+                                {permissionTypes.map(type => {
+                                  const isSelected = (selectedPerms[mod.id] || []).includes(type);
+                                  return (
+                                    <td key={type} className="px-4 py-3 text-center">
+                                      <button
+                                        onClick={() => togglePermission(mod.id, type)}
+                                        className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                          isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                        }`}
+                                      >
+                                        {isSelected && <Check className="w-3 h-3" />}
+                                      </button>
+                                    </td>
+                                  );
+                                })}
+                                <td className="px-4 py-3 text-center">
+                                  <button
+                                    onClick={() => toggleAllInModule(mod.id)}
+                                    className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                                  >
+                                    Toggle
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
 
-                          {/* Group 3: Server Management */}
-                          <tr className="bg-amber-50/50 border-y border-amber-100">
-                            <td colSpan={7} className="px-4 py-2 font-semibold text-amber-800 text-xs uppercase tracking-wider">Group 3 — Server Management</td>
-                          </tr>
-                          {modules.filter(m => ["aws", "gcp", "idc"].includes(m.id)).map(mod => (
-                            <tr key={mod.id} className="hover:bg-slate-50/50">
-                              <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
-                              {permissionTypes.map(type => {
-                                const isSelected = (selectedPerms[mod.id] || []).includes(type);
-                                return (
-                                  <td key={type} className="px-4 py-3 text-center">
-                                    <button
-                                      onClick={() => togglePermission(mod.id, type)}
-                                      className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
-                                        isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
-                                      }`}
-                                    >
-                                      {isSelected && <Check className="w-3 h-3" />}
-                                    </button>
-                                  </td>
-                                );
-                              })}
-                              <td className="px-4 py-3 text-center">
-                                <button
-                                  onClick={() => toggleAllInModule(mod.id)}
-                                  className="text-xs font-medium text-blue-600 hover:text-blue-700"
-                                >
-                                  Toggle
-                                </button>
-                              </td>
+                      {/* Group 3: Server Management */}
+                      <div className="border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="bg-amber-50/50 border-b border-amber-100 px-4 py-2 font-semibold text-amber-800 text-xs uppercase tracking-wider">
+                          Group 3 — Server Management
+                        </div>
+                        <table className="w-full text-sm text-left">
+                          <thead className="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                              <th className="px-4 py-3 font-medium text-slate-600 w-1/3">Module</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">View</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Create</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Edit</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Delete</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Export</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {modules.filter(m => ["aws", "gcp", "idc"].includes(m.id)).map(mod => (
+                              <tr key={mod.id} className="hover:bg-slate-50/50">
+                                <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
+                                {permissionTypes.map(type => {
+                                  const isSelected = (selectedPerms[mod.id] || []).includes(type);
+                                  return (
+                                    <td key={type} className="px-4 py-3 text-center">
+                                      <button
+                                        onClick={() => togglePermission(mod.id, type)}
+                                        className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                          isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                        }`}
+                                      >
+                                        {isSelected && <Check className="w-3 h-3" />}
+                                      </button>
+                                    </td>
+                                  );
+                                })}
+                                <td className="px-4 py-3 text-center">
+                                  <button
+                                    onClick={() => toggleAllInModule(mod.id)}
+                                    className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                                  >
+                                    Toggle
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 )}

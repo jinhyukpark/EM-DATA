@@ -912,7 +912,7 @@ export default function AddTestProcedure() {
                                               );
                                             })
                                           ) : (
-                                            <span className="text-slate-400">Select participants...</span>
+                                            <span className="text-slate-400">Select inspectors...</span>
                                           )}
                                         </div>
                                         <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />

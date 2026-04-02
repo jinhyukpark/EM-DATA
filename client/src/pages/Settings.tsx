@@ -823,7 +823,9 @@ function PermissionsTab() {
                   <label className="block text-sm font-medium text-slate-700 mb-3">User Type</label>
                   <div className="flex gap-4">
                     <label 
-                      className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all flex-1 ${
+                      className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all flex-1 ${
+                        roleModalMode === "edit" ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+                      } ${
                         roleType === "admin" ? "border-purple-500 bg-purple-50" : "border-slate-200 hover:border-purple-200"
                       }`}
                     >
@@ -831,7 +833,8 @@ function PermissionsTab() {
                         type="radio"
                         checked={roleType === "admin"}
                         onChange={() => setRoleType("admin")}
-                        className="w-4 h-4 text-purple-600 focus:ring-purple-500"
+                        disabled={roleModalMode === "edit"}
+                        className="w-4 h-4 text-purple-600 focus:ring-purple-500 disabled:opacity-50"
                       />
                       <div>
                         <div className="flex items-center gap-2">
@@ -843,7 +846,9 @@ function PermissionsTab() {
                     </label>
 
                     <label 
-                      className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all flex-1 ${
+                      className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all flex-1 ${
+                        roleModalMode === "edit" ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+                      } ${
                         roleType === "service" ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:border-blue-200"
                       }`}
                     >
@@ -851,7 +856,8 @@ function PermissionsTab() {
                         type="radio"
                         checked={roleType === "service"}
                         onChange={() => setRoleType("service")}
-                        className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                        disabled={roleModalMode === "edit"}
+                        className="w-4 h-4 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
                       />
                       <div>
                         <span className="block text-sm font-semibold text-slate-900">Service Role</span>

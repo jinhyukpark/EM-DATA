@@ -226,6 +226,7 @@ function UsersTab() {
   const [editUser, setEditUser] = useState({
     name: "",
     email: "",
+    roleType: "service",
     role: "Viewer",
     status: "Active",
   });
@@ -236,6 +237,7 @@ function UsersTab() {
     email: "",
     tempPassword: "",
     confirmPassword: "",
+    roleType: "service",
     role: "Viewer"
   });
   const [userList, setUserList] = useState(users);
@@ -270,6 +272,7 @@ function UsersTab() {
     setEditUser({
       name: u.name,
       email: u.email,
+      roleType: u.role === "Admin" ? "admin" : "service",
       role: u.role,
       status: u.status,
     });
@@ -331,21 +334,47 @@ function UsersTab() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
-                  <select
-                    value={editUser.role}
-                    onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
-                    className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    data-testid="select-edit-user-role"
-                  >
-                    <option value="Admin">Admin</option>
-                    <option value="Editor">Editor</option>
-                    <option value="Viewer">Viewer</option>
-                  </select>
+                <div className="col-span-2 grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Role Type</label>
+                    <select
+                      value={editUser.roleType}
+                      onChange={(e) => {
+                        const newType = e.target.value;
+                        setEditUser({ 
+                          ...editUser, 
+                          roleType: newType,
+                          role: newType === "admin" ? "Admin" : "Viewer" // Reset role when type changes
+                        });
+                      }}
+                      className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      data-testid="select-edit-user-role-type"
+                    >
+                      <option value="admin">Administrator</option>
+                      <option value="service">Service User</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
+                    <select
+                      value={editUser.role}
+                      onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
+                      className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      data-testid="select-edit-user-role"
+                    >
+                      {editUser.roleType === "admin" ? (
+                        <option value="Admin">Admin</option>
+                      ) : (
+                        <>
+                          <option value="Editor">Editor</option>
+                          <option value="Viewer">Viewer</option>
+                        </>
+                      )}
+                    </select>
+                  </div>
                 </div>
 
-                <div>
+                <div className="col-span-2">
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">Status</label>
                   <select
                     value={editUser.status}
@@ -443,18 +472,45 @@ function UsersTab() {
               </div>
 
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
-                <select
-                  value={newUser.role}
-                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                  className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  data-testid="new-user-role"
-                >
-                  <option value="Admin">Admin</option>
-                  <option value="Editor">Editor</option>
-                  <option value="Viewer">Viewer</option>
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Role Type</label>
+                  <select
+                    value={newUser.roleType}
+                    onChange={(e) => {
+                      const newType = e.target.value;
+                      setNewUser({ 
+                        ...newUser, 
+                        roleType: newType,
+                        role: newType === "admin" ? "Admin" : "Viewer"
+                      });
+                    }}
+                    className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    data-testid="new-user-role-type"
+                  >
+                    <option value="admin">Administrator</option>
+                    <option value="service">Service User</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
+                  <select
+                    value={newUser.role}
+                    onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                    className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    data-testid="new-user-role"
+                  >
+                    {newUser.roleType === "admin" ? (
+                      <option value="Admin">Admin</option>
+                    ) : (
+                      <>
+                        <option value="Editor">Editor</option>
+                        <option value="Viewer">Viewer</option>
+                      </>
+                    )}
+                  </select>
+                </div>
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">

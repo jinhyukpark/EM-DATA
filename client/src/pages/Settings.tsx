@@ -790,7 +790,7 @@ function PermissionsTab() {
                     <div>
                       <h4 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
                         <Shield className="w-4 h-4 text-purple-500" />
-                        System Management <span className="text-xs font-normal text-slate-400 bg-slate-100 px-2 py-0.5 rounded">Admin only</span>
+                        System Management
                       </h4>
                       <div className="space-y-3 bg-white border border-slate-200 rounded-xl p-4">
                         <div className="flex items-center justify-between">
@@ -831,7 +831,7 @@ function PermissionsTab() {
                     <div>
                       <h4 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
                         <Users className="w-4 h-4 text-blue-500" />
-                        Group Management <span className="text-xs font-normal text-slate-400 bg-slate-100 px-2 py-0.5 rounded">Group Admin</span>
+                        Group Management
                       </h4>
                       <div className="space-y-3 bg-white border border-slate-200 rounded-xl p-4">
                         <div className="flex items-center justify-between">

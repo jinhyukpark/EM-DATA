@@ -46,7 +46,7 @@ const users = [
 ];
 
 // Types
-type PermissionType = "View" | "Create/Delete" | "Edit" | "Delete" | "Export" | "Inspect";
+type PermissionType = "View" | "Create" | "Create/Delete" | "Edit" | "Delete" | "Export" | "Inspect";
 
 interface ModuleConfig {
   id: string;
@@ -81,7 +81,7 @@ const modules: ModuleConfig[] = [
   { id: "email-notifications", name: "Email Notifications" },
 ];
 
-const permissionTypes: PermissionType[] = ["View", "Edit", "Delete", "Export"];
+const permissionTypes: PermissionType[] = ["View", "Create", "Edit", "Delete", "Export"];
 const qaPermissionTypes: PermissionType[] = ["View", "Create/Delete", "Inspect", "Export"];
 
 // Initial data with updated structure
@@ -1003,9 +1003,11 @@ function PermissionsTab() {
                                 <td className="px-4 py-3 text-center">
                                   <button
                                     onClick={() => toggleAllInModule(mod.id)}
-                                    className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                                    className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                      (selectedPerms[mod.id] || []).length === qaPermissionTypes.length ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                    }`}
                                   >
-                                    Toggle
+                                    {(selectedPerms[mod.id] || []).length === qaPermissionTypes.length && <Check className="w-3 h-3" />}
                                   </button>
                                 </td>
                               </tr>
@@ -1053,9 +1055,11 @@ function PermissionsTab() {
                                 <td className="px-4 py-3 text-center">
                                   <button
                                     onClick={() => toggleAllInModule(mod.id)}
-                                    className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                                    className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                      (selectedPerms[mod.id] || []).length === permissionTypes.length ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                    }`}
                                   >
-                                    Toggle
+                                    {(selectedPerms[mod.id] || []).length === permissionTypes.length && <Check className="w-3 h-3" />}
                                   </button>
                                 </td>
                               </tr>
@@ -1103,9 +1107,11 @@ function PermissionsTab() {
                                 <td className="px-4 py-3 text-center">
                                   <button
                                     onClick={() => toggleAllInModule(mod.id)}
-                                    className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                                    className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                      (selectedPerms[mod.id] || []).length === permissionTypes.length ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                    }`}
                                   >
-                                    Toggle
+                                    {(selectedPerms[mod.id] || []).length === permissionTypes.length && <Check className="w-3 h-3" />}
                                   </button>
                                 </td>
                               </tr>

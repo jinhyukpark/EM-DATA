@@ -81,7 +81,7 @@ const modules: ModuleConfig[] = [
   { id: "email-notifications", name: "Email Notifications" },
 ];
 
-const permissionTypes: PermissionType[] = ["View", "Create", "Edit", "Delete", "Export"];
+const permissionTypes: PermissionType[] = ["View", "Edit", "Delete", "Export"];
 const qaPermissionTypes: PermissionType[] = ["View", "Create/Delete", "Inspect", "Export"];
 
 // Initial data with updated structure
@@ -106,7 +106,7 @@ const initialRoles: Role[] = [
     permissions: modules.reduce((acc, mod) => {
       // Editor permissions logic
       if (mod.id === "qa-report") return { ...acc, [mod.id]: ["View", "Inspect", "Export"] };
-      return { ...acc, [mod.id]: ["View", "Create", "Edit", "Export"] };
+      return { ...acc, [mod.id]: ["View", "Edit", "Export"] };
     }, {} as Record<string, PermissionType[]>)
   },
   { 
@@ -263,6 +263,7 @@ function UsersTab() {
         email: "",
         tempPassword: "",
         confirmPassword: "",
+        roleType: "service",
         role: "Viewer"
       });
       setShowAddModal(false);
@@ -342,7 +343,7 @@ function UsersTab() {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1.5">User Type</label>
                     <select
-                      value={editUser.roleType}
+                      value={"service"}
                       onChange={(e) => {
                         const newType = e.target.value;
                         setEditUser({ 
@@ -366,8 +367,8 @@ function UsersTab() {
                       className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       data-testid="select-edit-user-role"
                     >
-                      {roles
-                        .filter(r => r.type === editUser.roleType)
+                      {(initialRoles || [])
+                        .filter(r => r.type === "service")
                         .map(r => (
                           <option key={r.id} value={r.role}>{r.role}</option>
                         ))
@@ -478,7 +479,7 @@ function UsersTab() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">User Type</label>
                   <select
-                    value={newUser.roleType}
+                    value={"service"}
                     onChange={(e) => {
                       const newType = e.target.value;
                       setNewUser({ 
@@ -503,8 +504,8 @@ function UsersTab() {
                     className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     data-testid="new-user-role"
                   >
-                    {roles
-                      .filter(r => r.type === newUser.roleType)
+                    {(initialRoles || [])
+                      .filter(r => r.type === "service")
                       .map(r => (
                         <option key={r.id} value={r.role}>{r.role}</option>
                       ))
@@ -660,7 +661,7 @@ function PermissionsTab() {
     if (roleName.trim() === "") return;
 
     if (roleModalMode === "add") {
-      const newRole: Role = {
+      const newRole: Role = { type: "service", 
         id: roles.length > 0 ? Math.max(...roles.map(r => r.id)) + 1 : 1,
         role: roleName,
         description: "Custom role",
@@ -1135,7 +1136,7 @@ function PermissionsTab() {
           </Button>
         </div>
         <div className="space-y-4">
-          {roles.map((perm) => (
+          {(initialRoles || []).map((perm) => (
             <div
               key={perm.id}
               className="border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors bg-white shadow-sm"

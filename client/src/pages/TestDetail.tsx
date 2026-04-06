@@ -87,7 +87,7 @@ type ScheduleItem = {
   id: number;
   date: string;
   assignee: string;
-  status: "completed" | "pending" | "in_progress" | "cancelled";
+  status: "Planned" | "In Progress" | "Delayed" | "Normal" | "Failed" | "Resolved" | "Canceled";
   startTime?: string;
   endTime?: string;
   duration?: string;
@@ -132,82 +132,82 @@ const testData: Record<string, {
     normalCount: 12,
     abnormalCount: 0,
     schedule: [
-      { id: -11, date: "2025-04-03", assignee: "Sarah Lee", status: "cancelled", cancelReason: "Inspector on vacation during this period. Rescheduled to next week.", cancelledAt: "2025-03-25 14:30", cancelledBy: "Admin" },
-      { id: -10, date: "2025-03-27", assignee: "John Kim", status: "pending" },
-      { id: -9, date: "2025-03-20", assignee: "Sarah Lee", status: "pending" },
-      { id: -8, date: "2025-03-13", assignee: "John Kim", status: "pending" },
-      { id: -7, date: "2025-03-06", assignee: "Sarah Lee", status: "pending" },
-      { id: -6, date: "2025-02-27", assignee: "John Kim", status: "pending" },
-      { id: -5, date: "2025-02-20", assignee: "Sarah Lee", status: "pending" },
-      { id: -4, date: "2025-02-13", assignee: "John Kim", status: "pending" },
-      { id: 0, date: "2025-02-06", assignee: "Sarah Lee", status: "pending" },
-      { id: -1, date: "2025-01-30", assignee: "John Kim", status: "pending" },
-      { id: -2, date: "2025-01-23", assignee: "Sarah Lee", status: "pending" },
-      { id: 1, date: "2025-01-16", assignee: "John Kim", status: "in_progress" },
-      { id: 2, date: "2025-01-09", assignee: "Sarah Lee", status: "completed", startTime: "14:00", endTime: "14:32", duration: "32 min", notes: "All checks passed.", testResults: [
+      { id: -11, date: "2025-04-03", assignee: "Sarah Lee", status: "Canceled", cancelReason: "Inspector on vacation during this period. Rescheduled to next week.", cancelledAt: "2025-03-25 14:30", cancelledBy: "Admin" },
+      { id: -10, date: "2025-03-27", assignee: "John Kim", status: "Planned" },
+      { id: -9, date: "2025-03-20", assignee: "Sarah Lee", status: "Planned" },
+      { id: -8, date: "2025-03-13", assignee: "John Kim", status: "Planned" },
+      { id: -7, date: "2025-03-06", assignee: "Sarah Lee", status: "Planned" },
+      { id: -6, date: "2025-02-27", assignee: "John Kim", status: "Planned" },
+      { id: -5, date: "2025-02-20", assignee: "Sarah Lee", status: "Planned" },
+      { id: -4, date: "2025-02-13", assignee: "John Kim", status: "Planned" },
+      { id: 0, date: "2025-02-06", assignee: "Sarah Lee", status: "Planned" },
+      { id: -1, date: "2025-01-30", assignee: "John Kim", status: "Planned" },
+      { id: -2, date: "2025-01-23", assignee: "Sarah Lee", status: "Planned" },
+      { id: 1, date: "2025-01-16", assignee: "John Kim", status: "In Progress" },
+      { id: 2, date: "2025-01-09", assignee: "Sarah Lee", status: "Normal", startTime: "14:00", endTime: "14:32", duration: "32 min", notes: "All checks passed.", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O", status: "pass" },
         { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "O", status: "pass" },
         { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }], answer: "Excellent", status: "pass" },
         { id: 4, question: "Duplicate records?", answerType: "ox", answer: "X", status: "fail", isResolved: true, actionNote: "Duplicates removed." },
         { id: 5, question: "Additional notes:", answerType: "text", answer: "All checks passed.", status: "pass" },
       ]},
-      { id: 3, date: "2025-01-02", assignee: "John Kim", status: "completed", startTime: "09:45", endTime: "10:15", duration: "30 min", testResults: [
+      { id: 3, date: "2025-01-02", assignee: "John Kim", status: "Normal", startTime: "09:45", endTime: "10:15", duration: "30 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O", status: "pass" },
         { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "X", status: "fail", isResolved: true, actionNote: "Fixed." },
         { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }], answer: "Good", status: "pass" },
       ]},
-      { id: 4, date: "2024-12-26", assignee: "Sarah Lee", status: "completed", startTime: "16:20", endTime: "16:48", duration: "28 min", testResults: [
+      { id: 4, date: "2024-12-26", assignee: "Sarah Lee", status: "Normal", startTime: "16:20", endTime: "16:48", duration: "28 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O", status: "pass" },
         { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "O", status: "pass" },
         { id: 3, question: "Data quality score?", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }], answer: "Excellent", status: "pass" },
       ]},
-      { id: 5, date: "2024-12-19", assignee: "John Kim", status: "completed", startTime: "11:00", endTime: "11:22", duration: "22 min", testResults: [
+      { id: 5, date: "2024-12-19", assignee: "John Kim", status: "Normal", startTime: "11:00", endTime: "11:22", duration: "22 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
         { id: 2, question: "Is the data format consistent?", answerType: "ox", answer: "O" },
       ]},
-      { id: 6, date: "2024-12-12", assignee: "Sarah Lee", status: "completed", startTime: "10:00", endTime: "10:25", duration: "25 min", testResults: [
+      { id: 6, date: "2024-12-12", assignee: "Sarah Lee", status: "Normal", startTime: "10:00", endTime: "10:25", duration: "25 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
-      { id: 7, date: "2024-12-05", assignee: "John Kim", status: "completed", startTime: "14:30", endTime: "15:00", duration: "30 min", testResults: [
+      { id: 7, date: "2024-12-05", assignee: "John Kim", status: "Normal", startTime: "14:30", endTime: "15:00", duration: "30 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
-      { id: 8, date: "2024-11-28", assignee: "Sarah Lee", status: "completed", startTime: "09:00", endTime: "09:20", duration: "20 min", testResults: [
+      { id: 8, date: "2024-11-28", assignee: "Sarah Lee", status: "Normal", startTime: "09:00", endTime: "09:20", duration: "20 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
-      { id: 9, date: "2024-11-21", assignee: "John Kim", status: "completed", startTime: "11:30", endTime: "11:55", duration: "25 min", testResults: [
+      { id: 9, date: "2024-11-21", assignee: "John Kim", status: "Normal", startTime: "11:30", endTime: "11:55", duration: "25 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
-      { id: 10, date: "2024-11-14", assignee: "Sarah Lee", status: "completed", startTime: "15:00", endTime: "15:30", duration: "30 min", testResults: [
+      { id: 10, date: "2024-11-14", assignee: "Sarah Lee", status: "Normal", startTime: "15:00", endTime: "15:30", duration: "30 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "X", isResolved: true, actionNote: "Fixed missing fields." },
       ]},
-      { id: 11, date: "2024-11-07", assignee: "John Kim", status: "completed", startTime: "10:15", endTime: "10:40", duration: "25 min", testResults: [
+      { id: 11, date: "2024-11-07", assignee: "John Kim", status: "Normal", startTime: "10:15", endTime: "10:40", duration: "25 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
-      { id: 12, date: "2024-10-31", assignee: "Sarah Lee", status: "completed", startTime: "13:00", endTime: "13:25", duration: "25 min", testResults: [
+      { id: 12, date: "2024-10-31", assignee: "Sarah Lee", status: "Normal", startTime: "13:00", endTime: "13:25", duration: "25 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
-      { id: 13, date: "2024-10-24", assignee: "John Kim", status: "completed", startTime: "16:00", endTime: "16:20", duration: "20 min", testResults: [
+      { id: 13, date: "2024-10-24", assignee: "John Kim", status: "Normal", startTime: "16:00", endTime: "16:20", duration: "20 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
-      { id: 14, date: "2024-10-17", assignee: "Sarah Lee", status: "completed", startTime: "09:30", endTime: "09:55", duration: "25 min", testResults: [
+      { id: 14, date: "2024-10-17", assignee: "Sarah Lee", status: "Normal", startTime: "09:30", endTime: "09:55", duration: "25 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
-      { id: 15, date: "2024-10-10", assignee: "John Kim", status: "completed", startTime: "14:00", endTime: "14:30", duration: "30 min", testResults: [
+      { id: 15, date: "2024-10-10", assignee: "John Kim", status: "Normal", startTime: "14:00", endTime: "14:30", duration: "30 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
-      { id: 16, date: "2024-10-03", assignee: "Sarah Lee", status: "completed", startTime: "11:00", endTime: "11:25", duration: "25 min", testResults: [
+      { id: 16, date: "2024-10-03", assignee: "Sarah Lee", status: "Normal", startTime: "11:00", endTime: "11:25", duration: "25 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
-      { id: 17, date: "2024-09-26", assignee: "John Kim", status: "completed", startTime: "10:00", endTime: "10:20", duration: "20 min", testResults: [
+      { id: 17, date: "2024-09-26", assignee: "John Kim", status: "Normal", startTime: "10:00", endTime: "10:20", duration: "20 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
-      { id: 18, date: "2024-09-19", assignee: "Sarah Lee", status: "completed", startTime: "15:30", endTime: "16:00", duration: "30 min", testResults: [
+      { id: 18, date: "2024-09-19", assignee: "Sarah Lee", status: "Normal", startTime: "15:30", endTime: "16:00", duration: "30 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
-      { id: 19, date: "2024-09-12", assignee: "John Kim", status: "completed", startTime: "09:00", endTime: "09:25", duration: "25 min", testResults: [
+      { id: 19, date: "2024-09-12", assignee: "John Kim", status: "Normal", startTime: "09:00", endTime: "09:25", duration: "25 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
-      { id: 20, date: "2024-09-05", assignee: "Sarah Lee", status: "completed", startTime: "13:30", endTime: "13:55", duration: "25 min", testResults: [
+      { id: 20, date: "2024-09-05", assignee: "Sarah Lee", status: "Normal", startTime: "13:30", endTime: "13:55", duration: "25 min", testResults: [
         { id: 1, question: "Are all required fields populated correctly?", answerType: "ox", answer: "O" },
       ]},
     ],
@@ -235,9 +235,9 @@ const testData: Record<string, {
     normalCount: 8,
     abnormalCount: 1,
     schedule: [
-      { id: 1, date: "2025-01-15", assignee: "Sarah Lee", status: "pending" },
-      { id: 2, date: "2025-01-08", assignee: "Sarah Lee", status: "completed", startTime: "09:20", endTime: "09:45", duration: "25 min", notes: "API validation complete." },
-      { id: 3, date: "2025-01-01", assignee: "Sarah Lee", status: "completed", startTime: "13:00", endTime: "13:20", duration: "20 min", notes: "New year check." },
+      { id: 1, date: "2025-01-15", assignee: "Sarah Lee", status: "Planned" },
+      { id: 2, date: "2025-01-08", assignee: "Sarah Lee", status: "Normal", startTime: "09:20", endTime: "09:45", duration: "25 min", notes: "API validation complete." },
+      { id: 3, date: "2025-01-01", assignee: "Sarah Lee", status: "Normal", startTime: "13:00", endTime: "13:20", duration: "20 min", notes: "New year check." },
     ],
     items: [
       { id: 1, question: "Is the API response time within acceptable limits (<500ms)?", answerType: "ox", answer: "O", status: "pass" },
@@ -261,10 +261,10 @@ const testData: Record<string, {
     normalCount: 5,
     abnormalCount: 3,
     schedule: [
-      { id: 1, date: "2025-01-12", assignee: "Mike Park", status: "in_progress", startTime: "10:00" },
-      { id: 2, date: "2025-01-05", assignee: "Emily Choi", status: "completed", startTime: "17:00", endTime: "17:30", duration: "30 min", notes: "Performance issues noted." },
-      { id: 3, date: "2024-12-29", assignee: "David Jung", status: "completed", startTime: "14:45", endTime: "15:12", duration: "27 min", notes: "Year-end benchmark." },
-      { id: 4, date: "2024-12-22", assignee: "Mike Park", status: "completed", startTime: "10:15", endTime: "10:45", duration: "30 min", notes: "Pre-holiday check." },
+      { id: 1, date: "2025-01-12", assignee: "Mike Park", status: "In Progress", startTime: "10:00" },
+      { id: 2, date: "2025-01-05", assignee: "Emily Choi", status: "Normal", startTime: "17:00", endTime: "17:30", duration: "30 min", notes: "Performance issues noted." },
+      { id: 3, date: "2024-12-29", assignee: "David Jung", status: "Normal", startTime: "14:45", endTime: "15:12", duration: "27 min", notes: "Year-end benchmark." },
+      { id: 4, date: "2024-12-22", assignee: "Mike Park", status: "Normal", startTime: "10:15", endTime: "10:45", duration: "30 min", notes: "Pre-holiday check." },
     ],
     items: [
       { id: 1, question: "Average response time:", answerType: "multiple_choice", options: [{ text: "<100ms", isNormal: true }, { text: "100-300ms", isNormal: true }, { text: "300-500ms", isNormal: false }, { text: ">500ms", isNormal: false }], answer: "300-500ms", status: "fail" },
@@ -293,9 +293,9 @@ const testData: Record<string, {
     normalCount: 10,
     abnormalCount: 0,
     schedule: [
-      { id: 1, date: "2025-01-16", assignee: "Emily Choi", status: "pending" },
-      { id: 2, date: "2025-01-09", assignee: "Emily Choi", status: "completed", startTime: "10:30", endTime: "11:00", duration: "30 min", notes: "Security audit passed." },
-      { id: 3, date: "2025-01-02", assignee: "Emily Choi", status: "completed", startTime: "14:00", endTime: "14:30", duration: "30 min", notes: "Full security review." },
+      { id: 1, date: "2025-01-16", assignee: "Emily Choi", status: "Planned" },
+      { id: 2, date: "2025-01-09", assignee: "Emily Choi", status: "Normal", startTime: "10:30", endTime: "11:00", duration: "30 min", notes: "Security audit passed." },
+      { id: 3, date: "2025-01-02", assignee: "Emily Choi", status: "Normal", startTime: "14:00", endTime: "14:30", duration: "30 min", notes: "Full security review." },
     ],
     items: [
       { id: 1, question: "All API endpoints secured?", answerType: "ox", answer: "O", status: "pass" },
@@ -320,9 +320,9 @@ const testData: Record<string, {
     normalCount: 3,
     abnormalCount: 2,
     schedule: [
-      { id: 1, date: "2025-01-20", assignee: "David Jung", status: "pending" },
-      { id: 2, date: "2024-12-20", assignee: "John Kim", status: "completed", startTime: "15:45", endTime: "16:15", duration: "30 min", notes: "Accuracy issues identified." },
-      { id: 3, date: "2024-12-13", assignee: "David Jung", status: "completed", startTime: "09:00", endTime: "09:30", duration: "30 min", notes: "Initial accuracy test." },
+      { id: 1, date: "2025-01-20", assignee: "David Jung", status: "Planned" },
+      { id: 2, date: "2024-12-20", assignee: "John Kim", status: "Normal", startTime: "15:45", endTime: "16:15", duration: "30 min", notes: "Accuracy issues identified." },
+      { id: 3, date: "2024-12-13", assignee: "David Jung", status: "Normal", startTime: "09:00", endTime: "09:30", duration: "30 min", notes: "Initial accuracy test." },
     ],
     items: [
       { id: 1, question: "Model accuracy meets threshold (>90%)?", answerType: "ox", answer: "X", status: "fail", isResolved: false, actionNote: "Model retraining scheduled with updated dataset." },
@@ -343,8 +343,15 @@ export default function TestDetail() {
   const [itemHistoryModal, setItemHistoryModal] = useState(false);
   const [editedItems, setEditedItems] = useState<TestItemResult[]>(test?.items || []);
   const [selectedSchedule, setSelectedSchedule] = useState(test?.schedule[0]?.id || 1);
-  const [scheduleFilterFrom, setScheduleFilterFrom] = useState("");
-  const [scheduleFilterTo, setScheduleFilterTo] = useState("");
+  const [scheduleFilterFrom, setScheduleFilterFrom] = useState(() => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  });
+  const [scheduleFilterTo, setScheduleFilterTo] = useState(() => {
+    const nextMonth = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    return nextMonth.toISOString().split('T')[0];
+  });
   const [scheduleMenuOpen, setScheduleMenuOpen] = useState<number | null>(null);
   const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
   const [editScheduleModal, setEditScheduleModal] = useState<number | null>(null);
@@ -354,7 +361,6 @@ export default function TestDetail() {
   const [editScheduleType, setEditScheduleType] = useState<'date' | 'assignee' | 'cancel'>('date');
   const [cancelScheduleReason, setCancelScheduleReason] = useState("");
   const [historyModal, setHistoryModal] = useState<number | null>(null);
-  const scheduleScrollRef = useRef<HTMLDivElement>(null);
   
   // Mock history data for test items
   const itemHistory = [
@@ -394,15 +400,12 @@ export default function TestDetail() {
   };
 
   const scrollSchedule = (direction: 'left' | 'right') => {
-    if (scheduleScrollRef.current) {
-      const scrollAmount = 300;
-      scheduleScrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
+    // Scroll functionality removed as we now use pagination
   };
   const [editedScheduleResults, setEditedScheduleResults] = useState<Record<number, TestItemResult[]>>({});
+
+  const [schedulePage, setSchedulePage] = useState(1);
+  const itemsPerPage = 5;
 
   if (!test) {
     return (
@@ -1021,29 +1024,18 @@ export default function TestDetail() {
                       <Calendar className="w-4 h-4 text-slate-400" />
                       Inspection Schedule / History
                     </h3>
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => scrollSchedule('left')}
-                        className="w-7 h-7 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-800 transition-colors"
-                        data-testid="schedule-scroll-left"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => scrollSchedule('right')}
-                        className="w-7 h-7 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-800 transition-colors"
-                        data-testid="schedule-scroll-right"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
                   </div>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-slate-500">Filter:</span>
                     <input
                       type="date"
                       value={scheduleFilterFrom}
-                      onChange={(e) => setScheduleFilterFrom(e.target.value)}
+                      onChange={(e) => {
+                        setScheduleFilterFrom(e.target.value);
+                        setSchedulePage(1);
+                      }}
                       placeholder="YYYY-MM-DD"
                       lang="en"
                       className="px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-700 bg-white"
@@ -1053,7 +1045,10 @@ export default function TestDetail() {
                     <input
                       type="date"
                       value={scheduleFilterTo}
-                      onChange={(e) => setScheduleFilterTo(e.target.value)}
+                      onChange={(e) => {
+                        setScheduleFilterTo(e.target.value);
+                        setSchedulePage(1);
+                      }}
                       placeholder="YYYY-MM-DD"
                       lang="en"
                       className="px-2 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-700 bg-white"
@@ -1061,7 +1056,11 @@ export default function TestDetail() {
                     />
                     {(scheduleFilterFrom || scheduleFilterTo) && (
                       <button
-                        onClick={() => { setScheduleFilterFrom(""); setScheduleFilterTo(""); }}
+                        onClick={() => { 
+                          setScheduleFilterFrom(""); 
+                          setScheduleFilterTo(""); 
+                          setSchedulePage(1);
+                        }}
                         className="text-xs text-slate-500 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-100"
                       >
                         Reset
@@ -1070,8 +1069,8 @@ export default function TestDetail() {
                   </div>
                 </div>
                 
-                <div ref={scheduleScrollRef} className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide relative z-20" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} data-testid="schedule-dates">
-                  {test.schedule.filter(item => {
+                {(() => {
+                  const filteredSchedules = test.schedule.filter(item => {
                     if (!scheduleFilterFrom && !scheduleFilterTo) return true;
                     const itemDate = new Date(item.date);
                     const fromDate = scheduleFilterFrom ? new Date(scheduleFilterFrom) : null;
@@ -1080,20 +1079,35 @@ export default function TestDetail() {
                     if (fromDate) return itemDate >= fromDate;
                     if (toDate) return itemDate <= toDate;
                     return true;
-                  }).map((item) => {
-                    const normalCount = item.testResults?.filter(r => r.answer === "O").length || 0;
-                    const abnormalCount = item.testResults?.filter(r => r.answer === "X").length || 0;
-                    return (
+                  });
+                  const totalPages = Math.ceil(filteredSchedules.length / itemsPerPage);
+                  const currentSchedules = filteredSchedules.slice((schedulePage - 1) * itemsPerPage, schedulePage * itemsPerPage);
+
+                  return (
+                    <>
+                      <div className="flex gap-2 pb-3 relative z-20" data-testid="schedule-dates">
+                        {currentSchedules.length > 0 ? currentSchedules.map((item) => {
+                          const normalCount = item.testResults?.filter(r => r.answer === "O").length || 0;
+                          const abnormalCount = item.testResults?.filter(r => r.answer === "X").length || 0;
+                          return (
                       <div key={item.id} className="relative flex-shrink-0">
                         <button
                           onClick={() => setSelectedSchedule(item.id)}
                           className={`px-5 py-3 rounded-lg border transition-all min-w-[140px] h-[90px] flex flex-col justify-center ${
                             selectedSchedule === item.id 
-                              ? item.status === "cancelled" 
+                              ? item.status === "Canceled" || item.status === "Failed"
                                 ? "bg-red-500 text-white border-red-500 shadow-lg"
+                                : item.status === "Resolved"
+                                ? "bg-teal-500 text-white border-teal-500 shadow-lg"
+                                : item.status === "Delayed"
+                                ? "bg-purple-500 text-white border-purple-500 shadow-lg"
                                 : "bg-blue-600 text-white border-blue-600 shadow-lg" 
-                              : item.status === "cancelled"
+                              : item.status === "Canceled" || item.status === "Failed"
                                 ? "bg-red-50 text-slate-700 border-red-200 hover:border-red-300 hover:bg-red-100"
+                                : item.status === "Resolved"
+                                ? "bg-teal-50 text-slate-700 border-teal-200 hover:border-teal-300 hover:bg-teal-100"
+                                : item.status === "Delayed"
+                                ? "bg-purple-50 text-slate-700 border-purple-200 hover:border-purple-300 hover:bg-purple-100"
                                 : "bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50"
                           }`}
                           data-testid={`schedule-date-${item.id}`}
@@ -1104,16 +1118,20 @@ export default function TestDetail() {
                             </div>
                             <div className="flex items-center gap-1.5 mt-1 justify-center">
                               <span className={`w-1.5 h-1.5 rounded-full ${
-                                item.status === "completed" ? "bg-emerald-400" :
-                                item.status === "in_progress" ? "bg-blue-400 animate-pulse" :
-                                item.status === "cancelled" ? "bg-red-400" :
+                                item.status === "Normal" ? "bg-emerald-400" :
+                                item.status === "In Progress" ? "bg-blue-400 animate-pulse" :
+                                item.status === "Canceled" ? "bg-red-400" :
+                                item.status === "Failed" ? "bg-orange-500" :
+                                item.status === "Resolved" ? "bg-teal-400" :
+                                item.status === "Delayed" ? "bg-purple-400" :
+                                item.status === "Planned" ? "bg-slate-400" :
                                 "bg-slate-400"
                               }`} />
                               <span className={`text-xs ${selectedSchedule === item.id ? "text-blue-100" : "text-slate-500"}`}>
                                 {item.assignee.split(" ")[0]}
                               </span>
                             </div>
-                            {item.status === "completed" ? (
+                            {item.status === "Normal" ? (
                               <div className={`flex items-center gap-2 mt-2 text-xs justify-center ${selectedSchedule === item.id ? "text-blue-100" : ""}`}>
                                 <span className={`flex items-center gap-1 ${selectedSchedule === item.id ? "text-emerald-200" : "text-emerald-600"}`}>
                                   <CheckCircle className="w-3 h-3" />
@@ -1126,11 +1144,17 @@ export default function TestDetail() {
                               </div>
                             ) : (
                               <div className={`mt-2 text-xs ${
-                                item.status === "cancelled" 
+                                item.status === "Canceled" || item.status === "Failed"
                                   ? (selectedSchedule === item.id ? "text-red-200" : "text-red-400")
-                                  : (selectedSchedule === item.id ? "text-blue-200" : "text-slate-400")
+                                  : item.status === "Resolved"
+                                  ? (selectedSchedule === item.id ? "text-teal-200" : "text-teal-500")
+                                  : item.status === "Delayed"
+                                  ? (selectedSchedule === item.id ? "text-purple-200" : "text-purple-400")
+                                  : item.status === "In Progress"
+                                  ? (selectedSchedule === item.id ? "text-blue-200" : "text-blue-400")
+                                  : (selectedSchedule === item.id ? "text-slate-300" : "text-slate-400")
                               }`}>
-                                {item.status === "in_progress" ? "In Progress" : item.status === "cancelled" ? "Cancelled" : "Pending"}
+                                {item.status}
                               </div>
                             )}
                           </div>
@@ -1163,7 +1187,7 @@ export default function TestDetail() {
                                 className="fixed bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
                                 style={{ zIndex: 9999, top: menuPosition.top, left: menuPosition.left }}
                               >
-                              {item.status !== "completed" && (
+                              {item.status !== "Normal" && (
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -1191,8 +1215,37 @@ export default function TestDetail() {
                         </div>
                       </div>
                     );
-                  })}
-                </div>
+                  }) : (
+                    <div className="w-full text-center py-8 text-slate-500 text-sm">
+                      No schedules found for the selected date range.
+                    </div>
+                  )}
+                      </div>
+                      
+                      {totalPages > 1 && (
+                        <div className="flex items-center justify-center gap-2 mt-4">
+                          <button
+                            onClick={() => setSchedulePage(p => Math.max(1, p - 1))}
+                            disabled={schedulePage === 1}
+                            className="p-1.5 rounded hover:bg-slate-100 disabled:opacity-50 disabled:hover:bg-transparent text-slate-600 transition-colors"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </button>
+                          <span className="text-sm text-slate-600">
+                            Page {schedulePage} of {totalPages}
+                          </span>
+                          <button
+                            onClick={() => setSchedulePage(p => Math.min(totalPages, p + 1))}
+                            disabled={schedulePage === totalPages}
+                            className="p-1.5 rounded hover:bg-slate-100 disabled:opacity-50 disabled:hover:bg-transparent text-slate-600 transition-colors"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
 
                 {(() => {
                   const selected = test.schedule.find(s => s.id === selectedSchedule);
@@ -1218,18 +1271,24 @@ export default function TestDetail() {
                         <div>
                           <p className="text-xs text-slate-500 mb-1">Status</p>
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                            selected.status === "completed" ? "bg-emerald-100 text-emerald-700" :
-                            selected.status === "in_progress" ? "bg-blue-100 text-blue-700" :
-                            selected.status === "cancelled" ? "bg-red-100 text-red-700" :
+                            selected.status === "Normal" ? "bg-emerald-100 text-emerald-700" :
+                            selected.status === "In Progress" ? "bg-blue-100 text-blue-700" :
+                            selected.status === "Canceled" ? "bg-red-100 text-red-700" :
+                            selected.status === "Failed" ? "bg-orange-100 text-orange-700" :
+                            selected.status === "Resolved" ? "bg-teal-100 text-teal-700" :
+                            selected.status === "Delayed" ? "bg-purple-100 text-purple-700" :
                             "bg-slate-200 text-slate-600"
                           }`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${
-                              selected.status === "completed" ? "bg-emerald-500" :
-                              selected.status === "in_progress" ? "bg-blue-500 animate-pulse" :
-                              selected.status === "cancelled" ? "bg-red-500" :
+                              selected.status === "Normal" ? "bg-emerald-500" :
+                              selected.status === "In Progress" ? "bg-blue-500 animate-pulse" :
+                              selected.status === "Canceled" ? "bg-red-500" :
+                              selected.status === "Failed" ? "bg-orange-500" :
+                              selected.status === "Resolved" ? "bg-teal-500" :
+                              selected.status === "Delayed" ? "bg-purple-500" :
                               "bg-slate-400"
                             }`} />
-                            {selected.status === "completed" ? "Completed" : selected.status === "in_progress" ? "In Progress" : selected.status === "cancelled" ? "Cancelled" : "Pending"}
+                            {selected.status}
                           </span>
                         </div>
                         <div>
@@ -1247,7 +1306,7 @@ export default function TestDetail() {
                           </div>
                         </div>
                       </div>
-                      {selected.status === "cancelled" && selected.cancelReason && (
+                      {selected.status === "Canceled" && selected.cancelReason && (
                         <div className="mt-4 pt-4 border-t border-red-200 bg-red-50 -mx-5 px-5 -mb-5 pb-5 rounded-b-xl">
                           <div className="flex items-start gap-3">
                             <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">

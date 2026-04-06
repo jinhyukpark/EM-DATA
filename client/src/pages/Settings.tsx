@@ -46,7 +46,7 @@ const users = [
 ];
 
 // Types
-type PermissionType = "View" | "Create" | "Edit" | "Delete" | "Export";
+type PermissionType = "View" | "Create" | "Create/Delete" | "Edit" | "Delete" | "Export" | "Inspect";
 
 interface ModuleConfig {
   id: string;
@@ -56,6 +56,7 @@ interface ModuleConfig {
 interface Role {
   id: number;
   role: string;
+  type: "admin" | "service";
   description: string;
   users: number;
   // Map module ID to list of allowed permissions
@@ -76,38 +77,42 @@ const modules: ModuleConfig[] = [
   { id: "gcp", name: "Server (GCP)" },
   { id: "idc", name: "Server (IDC)" },
   { id: "user-management", name: "User Management" },
-  { id: "permission-management", name: "Permission Management" },
+  { id: "permission-management", name: "Role Management" },
   { id: "email-notifications", name: "Email Notifications" },
 ];
 
 const permissionTypes: PermissionType[] = ["View", "Create", "Edit", "Delete", "Export"];
+const qaPermissionTypes: PermissionType[] = ["View", "Create/Delete", "Inspect", "Export"];
 
 // Initial data with updated structure
 const initialRoles: Role[] = [
   { 
     id: 1, 
     role: "Admin", 
+    type: "admin",
     description: "Full access to all features", 
     users: 2, 
     permissions: modules.reduce((acc, mod) => ({
       ...acc,
-      [mod.id]: permissionTypes // Admin has all permissions for all modules
+      [mod.id]: mod.id === "qa-report" ? qaPermissionTypes : permissionTypes // Admin has all permissions for all modules
     }), {} as Record<string, PermissionType[]>)
   },
   { 
     id: 2, 
     role: "Editor", 
+    type: "service",
     description: "Can view and edit data", 
     users: 5, 
     permissions: modules.reduce((acc, mod) => {
       // Editor permissions logic
-      if (mod.id === "qa-report") return { ...acc, [mod.id]: ["View", "Create", "Edit", "Export"] };
-      return { ...acc, [mod.id]: ["View", "Create", "Edit", "Export"] };
+      if (mod.id === "qa-report") return { ...acc, [mod.id]: ["View", "Inspect", "Export"] };
+      return { ...acc, [mod.id]: ["View", "Edit", "Export"] };
     }, {} as Record<string, PermissionType[]>)
   },
   { 
     id: 3, 
     role: "Viewer", 
+    type: "service",
     description: "Read-only access", 
     users: 12, 
     permissions: modules.reduce((acc, mod) => ({
@@ -225,6 +230,7 @@ function UsersTab() {
   const [editUser, setEditUser] = useState({
     name: "",
     email: "",
+    roleType: "service",
     role: "Viewer",
     status: "Active",
   });
@@ -235,6 +241,7 @@ function UsersTab() {
     email: "",
     tempPassword: "",
     confirmPassword: "",
+    roleType: "service",
     role: "Viewer"
   });
   const [userList, setUserList] = useState(users);
@@ -256,6 +263,7 @@ function UsersTab() {
         email: "",
         tempPassword: "",
         confirmPassword: "",
+        roleType: "service",
         role: "Viewer"
       });
       setShowAddModal(false);
@@ -269,6 +277,7 @@ function UsersTab() {
     setEditUser({
       name: u.name,
       email: u.email,
+      roleType: u.role === "Admin" ? "admin" : "service",
       role: u.role,
       status: u.status,
     });
@@ -330,21 +339,45 @@ function UsersTab() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
-                  <select
-                    value={editUser.role}
-                    onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
-                    className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    data-testid="select-edit-user-role"
-                  >
-                    <option value="Admin">Admin</option>
-                    <option value="Editor">Editor</option>
-                    <option value="Viewer">Viewer</option>
-                  </select>
+                <div className="col-span-2 grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">User Type</label>
+                    <select
+                      value={"service"}
+                      onChange={(e) => {
+                        const newType = e.target.value;
+                        setEditUser({ 
+                          ...editUser, 
+                          roleType: newType,
+                          role: newType === "admin" ? "Admin" : "Viewer" // Reset role when type changes
+                        });
+                      }}
+                      className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      data-testid="select-edit-user-role-type"
+                    >
+                      <option value="admin">Administrator</option>
+                      <option value="service">Service User</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
+                    <select
+                      value={editUser.role}
+                      onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
+                      className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      data-testid="select-edit-user-role"
+                    >
+                      {(initialRoles || [])
+                        .filter(r => r.type === "service")
+                        .map(r => (
+                          <option key={r.id} value={r.role}>{r.role}</option>
+                        ))
+                      }
+                    </select>
+                  </div>
                 </div>
 
-                <div>
+                <div className="col-span-2">
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">Status</label>
                   <select
                     value={editUser.status}
@@ -442,18 +475,43 @@ function UsersTab() {
               </div>
 
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
-                <select
-                  value={newUser.role}
-                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                  className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  data-testid="new-user-role"
-                >
-                  <option value="Admin">Admin</option>
-                  <option value="Editor">Editor</option>
-                  <option value="Viewer">Viewer</option>
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">User Type</label>
+                  <select
+                    value={"service"}
+                    onChange={(e) => {
+                      const newType = e.target.value;
+                      setNewUser({ 
+                        ...newUser, 
+                        roleType: newType,
+                        role: newType === "admin" ? "Admin" : "Viewer"
+                      });
+                    }}
+                    className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    data-testid="new-user-role-type"
+                  >
+                    <option value="admin">Administrator</option>
+                    <option value="service">Service User</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
+                  <select
+                    value={newUser.role}
+                    onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                    className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    data-testid="new-user-role"
+                  >
+                    {(initialRoles || [])
+                      .filter(r => r.type === "service")
+                      .map(r => (
+                        <option key={r.id} value={r.role}>{r.role}</option>
+                      ))
+                    }
+                  </select>
+                </div>
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
@@ -542,6 +600,19 @@ function PermissionsTab() {
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [roleModalMode, setRoleModalMode] = useState<"add" | "edit">("add");
   const [roleName, setRoleName] = useState("");
+  // Determine if it's admin role or service role
+  const [roleType, setRoleType] = useState<"admin" | "service">("service");
+  
+  // Admin specific toggles
+  const [adminToggles, setAdminToggles] = useState({
+    permissionManagement: true,
+    userManagement: true,
+    emailNotifications: false,
+    qaGroupAdmin: false,
+    internalDataGroupAdmin: false,
+    serverGroupAdmin: false
+  });
+
   // Selected permissions state: Map of ModuleID -> PermissionType[]
   const [selectedPerms, setSelectedPerms] = useState<Record<string, PermissionType[]>>({});
   
@@ -555,6 +626,15 @@ function PermissionsTab() {
   const openAddRole = () => {
     setRoleModalMode("add");
     setRoleName("");
+    setRoleType("service");
+    setAdminToggles({
+      permissionManagement: true,
+      userManagement: true,
+      emailNotifications: false,
+      qaGroupAdmin: false,
+      internalDataGroupAdmin: false,
+      serverGroupAdmin: false
+    });
     // Default permissions: View only for all modules
     const defaults = modules.reduce((acc, mod) => ({
       ...acc,
@@ -570,6 +650,7 @@ function PermissionsTab() {
     if (!role) return;
     setRoleModalMode("edit");
     setRoleName(role.role);
+    setRoleType(role.role === "Admin" ? "admin" : "service"); // Basic check for demo
     setSelectedPerms(role.permissions);
     setEditRoleId(id);
     setShowRoleModal(true);
@@ -580,7 +661,7 @@ function PermissionsTab() {
     if (roleName.trim() === "") return;
 
     if (roleModalMode === "add") {
-      const newRole: Role = {
+      const newRole: Role = { type: "service", 
         id: roles.length > 0 ? Math.max(...roles.map(r => r.id)) + 1 : 1,
         role: roleName,
         description: "Custom role",
@@ -620,10 +701,28 @@ function PermissionsTab() {
   const togglePermission = (moduleId: string, type: PermissionType) => {
     setSelectedPerms(prev => {
       const modulePerms = prev[moduleId] || [];
+      
       if (modulePerms.includes(type)) {
-        return { ...prev, [moduleId]: modulePerms.filter(p => p !== type) };
+        // If unchecking, and it's View being unchecked, we might need to uncheck Execute too if it's QA report (if they depend on View)
+        // But the requirement is: "inspect(Execute)는 클릭할 경우 view가 자동으로 켜지도록, 즉 inspect는 되는데 view가 안되는 케이스는 없도록"
+        let newPerms = modulePerms.filter(p => p !== type);
+        
+        // If unchecking View, must uncheck Inspect as well because Inspect requires View
+        if (moduleId === "qa-report" && type === "View") {
+          newPerms = newPerms.filter(p => p !== "Inspect");
+        }
+        
+        return { ...prev, [moduleId]: newPerms };
       } else {
-        return { ...prev, [moduleId]: [...modulePerms, type] };
+        // If checking
+        let newPerms = [...modulePerms, type];
+        
+        // If checking Inspect, must also check View
+        if (moduleId === "qa-report" && type === "Inspect" && !modulePerms.includes("View")) {
+          newPerms.push("View");
+        }
+        
+        return { ...prev, [moduleId]: newPerms };
       }
     });
   };
@@ -631,12 +730,13 @@ function PermissionsTab() {
   const toggleAllInModule = (moduleId: string) => {
     setSelectedPerms(prev => {
       const modulePerms = prev[moduleId] || [];
-      if (modulePerms.length === permissionTypes.length) {
+      const currentTypes = moduleId === "qa-report" ? qaPermissionTypes : permissionTypes;
+      if (modulePerms.length === currentTypes.length) {
         // Deselect all
         return { ...prev, [moduleId]: [] };
       } else {
         // Select all
-        return { ...prev, [moduleId]: [...permissionTypes] };
+        return { ...prev, [moduleId]: [...currentTypes] };
       }
     });
   };
@@ -721,51 +821,307 @@ function PermissionsTab() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-4">Module Permissions</label>
-                  <div className="border border-slate-200 rounded-xl overflow-hidden">
-                    <table className="w-full text-sm text-left">
-                      <thead className="bg-slate-50 border-b border-slate-200">
-                        <tr>
-                          <th className="px-4 py-3 font-medium text-slate-600">Module</th>
-                          {permissionTypes.map(type => (
-                            <th key={type} className="px-4 py-3 font-medium text-slate-600 text-center w-24">{type}</th>
-                          ))}
-                          <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {modules.map(mod => (
-                          <tr key={mod.id} className="hover:bg-slate-50/50">
-                            <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
-                            {permissionTypes.map(type => {
-                              const isSelected = (selectedPerms[mod.id] || []).includes(type);
-                              return (
-                                <td key={type} className="px-4 py-3 text-center">
-                                  <button
-                                    onClick={() => togglePermission(mod.id, type)}
-                                    className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
-                                      isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
-                                    }`}
-                                  >
-                                    {isSelected && <Check className="w-3 h-3" />}
-                                  </button>
-                                </td>
-                              );
-                            })}
-                            <td className="px-4 py-3 text-center">
-                              <button
-                                onClick={() => toggleAllInModule(mod.id)}
-                                className="text-xs font-medium text-blue-600 hover:text-blue-700"
-                              >
-                                Toggle
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <label className="block text-sm font-medium text-slate-700 mb-3">User Type</label>
+                  <div className="flex gap-4">
+                    {(roleModalMode === "add" || roleType === "admin") && (
+                      <div 
+                        className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all flex-1 ${
+                          roleModalMode === "edit" 
+                            ? "border-purple-500 bg-purple-50 cursor-default" 
+                            : `cursor-pointer ${roleType === "admin" ? "border-purple-500 bg-purple-50" : "border-slate-200 hover:border-purple-200"}`
+                        }`}
+                        onClick={() => roleModalMode === "add" && setRoleType("admin")}
+                      >
+                        {roleModalMode === "add" && (
+                          <input
+                            type="radio"
+                            checked={roleType === "admin"}
+                            onChange={() => setRoleType("admin")}
+                            className="w-4 h-4 text-purple-600 focus:ring-purple-500"
+                          />
+                        )}
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-semibold text-slate-900">Admin Role</span>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">슈퍼 관리자</span>
+                          </div>
+                          <span className="block text-xs text-slate-500 mt-1">시스템·그룹 관리 권한 설정</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {(roleModalMode === "add" || roleType === "service") && (
+                      <div 
+                        className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all flex-1 ${
+                          roleModalMode === "edit" 
+                            ? "border-blue-500 bg-blue-50 cursor-default" 
+                            : `cursor-pointer ${roleType === "service" ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:border-blue-200"}`
+                        }`}
+                        onClick={() => roleModalMode === "add" && setRoleType("service")}
+                      >
+                        {roleModalMode === "add" && (
+                          <input
+                            type="radio"
+                            checked={roleType === "service"}
+                            onChange={() => setRoleType("service")}
+                            className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                          />
+                        )}
+                        <div>
+                          <span className="block text-sm font-semibold text-slate-900">Service Role</span>
+                          <span className="block text-xs text-slate-500 mt-1">메뉴별 View/Create/Edit/Delete/Export 설정</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
+
+                {roleType === "admin" ? (
+                  <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                        <Shield className="w-4 h-4 text-purple-500" />
+                        System Management
+                      </h4>
+                      <div className="space-y-3 bg-white border border-slate-200 rounded-xl p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">Role Management</p>
+                            <p className="text-xs text-slate-500 mt-0.5">서비스 이용 권한 role 설정 (관리자 권한 제외)</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={adminToggles.permissionManagement} onChange={(e) => setAdminToggles({...adminToggles, permissionManagement: e.target.checked})} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                          </label>
+                        </div>
+                        <div className="h-px bg-slate-100 my-2"></div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">User Management</p>
+                            <p className="text-xs text-slate-500 mt-0.5">구성원 초대·제거·역할 변경</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={adminToggles.userManagement} onChange={(e) => setAdminToggles({...adminToggles, userManagement: e.target.checked})} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                          </label>
+                        </div>
+                        <div className="h-px bg-slate-100 my-2"></div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">Email Notifications</p>
+                            <p className="text-xs text-slate-500 mt-0.5">시스템 알림 설정 관리</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={adminToggles.emailNotifications} onChange={(e) => setAdminToggles({...adminToggles, emailNotifications: e.target.checked})} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                        <Users className="w-4 h-4 text-blue-500" />
+                        Group Management
+                      </h4>
+                      <div className="space-y-3 bg-white border border-slate-200 rounded-xl p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">QA Report 그룹 관리</p>
+                            <p className="text-xs text-slate-500 mt-0.5">inspector 배정, 일정·검사 항목 관리</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={adminToggles.qaGroupAdmin} onChange={(e) => setAdminToggles({...adminToggles, qaGroupAdmin: e.target.checked})} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                          </label>
+                        </div>
+                        <div className="h-px bg-slate-100 my-2"></div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">Internal Data 그룹 관리</p>
+                            <p className="text-xs text-slate-500 mt-0.5">데이터 항목 전체 관리</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={adminToggles.internalDataGroupAdmin} onChange={(e) => setAdminToggles({...adminToggles, internalDataGroupAdmin: e.target.checked})} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                          </label>
+                        </div>
+                        <div className="h-px bg-slate-100 my-2"></div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">Server Management 그룹 관리</p>
+                            <p className="text-xs text-slate-500 mt-0.5">서버 항목 전체 관리</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={adminToggles.serverGroupAdmin} onChange={(e) => setAdminToggles({...adminToggles, serverGroupAdmin: e.target.checked})} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <label className="block text-sm font-medium text-slate-700 mb-4">Module Permissions</label>
+                    <div className="space-y-6">
+                      
+                      {/* Group 1: QA Report */}
+                      <div className="border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="bg-blue-50/50 border-b border-blue-100 px-4 py-2 font-semibold text-blue-800 text-xs uppercase tracking-wider">
+                          Group 1 — QA Report
+                        </div>
+                        <table className="w-full text-sm text-left">
+                          <thead className="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                              <th className="px-4 py-3 font-medium text-slate-600 w-1/3">Module</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">View</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Create / Delete</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Inspect</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Export</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {modules.filter(m => m.id === "qa-report").map(mod => (
+                              <tr key={mod.id} className="hover:bg-slate-50/50">
+                                <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
+                                {qaPermissionTypes.map(type => {
+                                  const isSelected = (selectedPerms[mod.id] || []).includes(type);
+                                  return (
+                                    <td key={type} className="px-4 py-3 text-center">
+                                      <button
+                                        onClick={() => togglePermission(mod.id, type)}
+                                        className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                          isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                        }`}
+                                      >
+                                        {isSelected && <Check className="w-3 h-3" />}
+                                      </button>
+                                    </td>
+                                  );
+                                })}
+                                <td className="px-4 py-3 text-center">
+                                  <button
+                                    onClick={() => toggleAllInModule(mod.id)}
+                                    className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                      (selectedPerms[mod.id] || []).length === qaPermissionTypes.length ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                    }`}
+                                  >
+                                    {(selectedPerms[mod.id] || []).length === qaPermissionTypes.length && <Check className="w-3 h-3" />}
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Group 2: Internal Data */}
+                      <div className="border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="bg-emerald-50/50 border-b border-emerald-100 px-4 py-2 font-semibold text-emerald-800 text-xs uppercase tracking-wider">
+                          Group 2 — Internal Data
+                        </div>
+                        <table className="w-full text-sm text-left">
+                          <thead className="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                              <th className="px-4 py-3 font-medium text-slate-600 w-1/3">Module</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">View</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Create</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Edit</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Delete</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Export</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {modules.filter(m => ["company-data", "disclosure-data", "patent-data", "paper-data", "stock-data", "news-data", "finance-data", "employment-data"].includes(m.id)).map(mod => (
+                              <tr key={mod.id} className="hover:bg-slate-50/50">
+                                <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
+                                {permissionTypes.map(type => {
+                                  const isSelected = (selectedPerms[mod.id] || []).includes(type);
+                                  return (
+                                    <td key={type} className="px-4 py-3 text-center">
+                                      <button
+                                        onClick={() => togglePermission(mod.id, type)}
+                                        className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                          isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                        }`}
+                                      >
+                                        {isSelected && <Check className="w-3 h-3" />}
+                                      </button>
+                                    </td>
+                                  );
+                                })}
+                                <td className="px-4 py-3 text-center">
+                                  <button
+                                    onClick={() => toggleAllInModule(mod.id)}
+                                    className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                      (selectedPerms[mod.id] || []).length === permissionTypes.length ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                    }`}
+                                  >
+                                    {(selectedPerms[mod.id] || []).length === permissionTypes.length && <Check className="w-3 h-3" />}
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Group 3: Server Management */}
+                      <div className="border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="bg-amber-50/50 border-b border-amber-100 px-4 py-2 font-semibold text-amber-800 text-xs uppercase tracking-wider">
+                          Group 3 — Server Management
+                        </div>
+                        <table className="w-full text-sm text-left">
+                          <thead className="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                              <th className="px-4 py-3 font-medium text-slate-600 w-1/3">Module</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">View</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Create</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Edit</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Delete</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Export</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {modules.filter(m => ["aws", "gcp", "idc"].includes(m.id)).map(mod => (
+                              <tr key={mod.id} className="hover:bg-slate-50/50">
+                                <td className="px-4 py-3 font-medium text-slate-700">{mod.name}</td>
+                                {permissionTypes.map(type => {
+                                  const isSelected = (selectedPerms[mod.id] || []).includes(type);
+                                  return (
+                                    <td key={type} className="px-4 py-3 text-center">
+                                      <button
+                                        onClick={() => togglePermission(mod.id, type)}
+                                        className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                          isSelected ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                        }`}
+                                      >
+                                        {isSelected && <Check className="w-3 h-3" />}
+                                      </button>
+                                    </td>
+                                  );
+                                })}
+                                <td className="px-4 py-3 text-center">
+                                  <button
+                                    onClick={() => toggleAllInModule(mod.id)}
+                                    className={`w-5 h-5 rounded border flex items-center justify-center transition-colors mx-auto ${
+                                      (selectedPerms[mod.id] || []).length === permissionTypes.length ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white hover:border-blue-400"
+                                    }`}
+                                  >
+                                    {(selectedPerms[mod.id] || []).length === permissionTypes.length && <Check className="w-3 h-3" />}
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -779,14 +1135,14 @@ function PermissionsTab() {
 
       <div className="chart-container-light">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-slate-800">Permission Management</h3>
+          <h3 className="text-lg font-semibold text-slate-800">Role Management</h3>
           <Button className="gap-2 bg-blue-600 hover:bg-blue-700" onClick={openAddRole}>
             <Plus className="w-4 h-4" />
             Add Role
           </Button>
         </div>
         <div className="space-y-4">
-          {roles.map((perm) => (
+          {(initialRoles || []).map((perm) => (
             <div
               key={perm.id}
               className="border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors bg-white shadow-sm"
@@ -1057,7 +1413,7 @@ export default function Settings() {
                 </TabsTrigger>
                 <TabsTrigger value="permissions" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm" data-testid="tab-permissions">
                   <Shield className="w-4 h-4" />
-                  Permission Management
+                  Role Management
                 </TabsTrigger>
                 <TabsTrigger value="notifications" className="gap-2 data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-sm" data-testid="tab-notifications">
                   <Bell className="w-4 h-4" />

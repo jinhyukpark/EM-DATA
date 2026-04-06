@@ -751,7 +751,7 @@ export default function AddTestProcedure() {
                     </Popover>
                   </div>
                   <div className="relative">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Assigned Inspector(s)</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Assigned Participant(s)</label>
                     <button
                       onClick={() => setShowInspectorDropdown(!showInspectorDropdown)}
                       className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-left flex items-center justify-between"
@@ -761,8 +761,8 @@ export default function AddTestProcedure() {
                         {assignedInspectors.length > 0 
                           ? assignedInspectors.length === 1 
                             ? assignedInspectors[0]
-                            : `${assignedInspectors.length} inspectors selected`
-                          : "Select inspectors..."
+                            : `${assignedInspectors.length} participants selected`
+                          : "Select participants..."
                         }
                       </span>
                       <ChevronDown className="w-4 h-4 text-slate-400" />

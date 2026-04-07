@@ -1088,7 +1088,7 @@ export default function TestDetail() {
                       <div key={item.id} className="relative flex-shrink-0">
                         <button
                           onClick={() => setSelectedSchedule(item.id)}
-                          className={`px-5 py-3 rounded-lg border transition-all min-w-[140px] h-[90px] flex flex-col justify-center ${
+                          className={`relative px-5 py-3 rounded-lg border transition-all min-w-[140px] h-[90px] flex flex-col justify-center ${
                             selectedSchedule === item.id 
                               ? item.status === "Canceled" || item.status === "Failed"
                                 ? "bg-red-500 text-white border-red-500 shadow-lg"
@@ -1135,14 +1135,21 @@ export default function TestDetail() {
                                   {item.assignee.split(" ")[0]}
                                 </span>
                               </div>
-                              {item.wasDelayed && (
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
-                                  selectedSchedule === item.id ? "bg-white/20 text-white" : "bg-purple-100 text-purple-700"
-                                }`}>
-                                  Delayed
-                                </span>
-                              )}
                             </div>
+                            {(item.status === "Delayed" || item.wasDelayed) && (
+                              <div className="absolute top-2 left-2 flex items-center gap-1">
+                                <Clock className={`w-3.5 h-3.5 ${
+                                  selectedSchedule === item.id ? "text-white" : "text-purple-500"
+                                }`} />
+                                {item.status === "Delayed" && (
+                                  <span className={`text-[10px] font-medium ${
+                                    selectedSchedule === item.id ? "text-white" : "text-purple-600"
+                                  }`}>
+                                    Delayed
+                                  </span>
+                                )}
+                              </div>
+                            )}
                             {item.status === "Normal" ? (
                               <div className={`flex items-center gap-2 mt-1.5 text-xs justify-center ${selectedSchedule === item.id ? "text-white/90" : ""}`}>
                                 <span className={`flex items-center gap-1 ${selectedSchedule === item.id ? "text-emerald-100" : "text-emerald-600"}`}>
@@ -1154,7 +1161,7 @@ export default function TestDetail() {
                                   {abnormalCount}
                                 </span>
                               </div>
-                            ) : (
+                            ) : item.status !== "Delayed" ? (
                               <div className={`mt-1.5 text-xs font-medium ${
                                 selectedSchedule === item.id 
                                   ? "text-white/90"
@@ -1162,14 +1169,14 @@ export default function TestDetail() {
                                   ? "text-red-600"
                                   : item.status === "Resolved"
                                   ? "text-teal-600"
-                                  : item.status === "Delayed"
-                                  ? "text-purple-600"
                                   : item.status === "In Progress"
                                   ? "text-blue-600"
                                   : "text-slate-500"
                               }`}>
                                 {item.status}
                               </div>
+                            ) : (
+                              <div className="mt-1.5 h-4" />
                             )}
                           </div>
                         </button>

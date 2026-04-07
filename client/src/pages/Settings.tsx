@@ -1153,96 +1153,65 @@ function PermissionsTab() {
               data-testid={`permission-${perm.id}`}
             >
               <div className="flex items-start justify-between mb-4">
-                <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <h4 className="text-lg font-bold text-slate-800" data-testid={`text-role-${perm.id}`}>{perm.role}</h4>
-                    {perm.type === "admin" ? (
-                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
-                        Admin Role
-                      </span>
-                    ) : (
-                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-700 border border-blue-200">
-                        Service Role
-                      </span>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
+                  <h4 className="text-lg font-bold text-slate-800" data-testid={`text-role-${perm.id}`}>{perm.role}</h4>
+                  {perm.type === "admin" ? (
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
+                      Admin Role
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-700 border border-blue-200">
+                      Service Role
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="mt-auto pt-4 flex justify-between items-center border-t border-slate-50">
+                 <div className="flex flex-wrap gap-2">
                     {roleUsers.length === 0 ? (
                       <span className="text-sm text-slate-400 italic">No users assigned</span>
                     ) : (
-                      <div className="flex items-center gap-3">
-                        <div className="flex -space-x-2">
-                          {roleUsers.slice(0, 5).map((user) => (
-                            <div
-                              key={user.id}
-                              className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-700 text-xs font-semibold border-2 border-white shadow-sm"
-                              title={user.name}
-                            >
+                      <>
+                        {roleUsers.slice(0, 5).map((user) => (
+                          <div
+                            key={user.id}
+                            className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-full border border-slate-200 shadow-sm"
+                            title={user.name}
+                          >
+                            <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-[10px] font-bold">
                               {user.name.split(" ").map(n => n[0]).join("")}
                             </div>
-                          ))}
-                          {roleUsers.length > 5 && (
-                            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-600 border-2 border-white shadow-sm">
-                              +{roleUsers.length - 5}
-                            </div>
-                          )}
-                        </div>
-                        <span className="text-sm font-medium text-slate-600">
-                          {roleUsers.length} user{roleUsers.length !== 1 ? 's' : ''}
-                        </span>
-                      </div>
+                            <span className="text-xs font-medium text-slate-700 pr-1">{user.name}</span>
+                          </div>
+                        ))}
+                        {roleUsers.length > 5 && (
+                          <div className="flex items-center justify-center px-2 py-1 bg-slate-100 rounded-full text-xs font-medium text-slate-600 border border-slate-200 shadow-sm">
+                            +{roleUsers.length - 5} more
+                          </div>
+                        )}
+                      </>
                     )}
-                  </div>
-                </div>
-
-                {perm.role !== "Admin" && (
-                  <div className="relative">
-                    <button
-                      className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-400 hover:text-slate-600"
-                      onClick={() => setMenuOpenId(menuOpenId === perm.id ? null : perm.id)}
-                      data-testid={`button-role-menu-${perm.id}`}
-                      type="button"
-                    >
-                      <MoreHorizontal className="w-5 h-5" />
-                    </button>
-
-                    {menuOpenId === perm.id && (
-                      <div
-                        className="absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden z-10"
-                        data-testid={`menu-role-${perm.id}`}
-                      >
-                        <button
-                          className="w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center justify-between"
-                          onClick={() => openEditRole(perm.id)}
-                          data-testid={`menu-role-edit-${perm.id}`}
-                          type="button"
-                        >
-                          Edit
-                          <Edit2 className="w-4 h-4 text-slate-400" />
-                        </button>
-                        <button
-                          className="w-full px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center justify-between"
-                          onClick={() => requestDeleteRole(perm.id)}
-                          data-testid={`menu-role-delete-${perm.id}`}
-                          type="button"
-                        >
-                          Delete
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              <div className="mt-auto pt-4 flex justify-end border-t border-slate-50">
-                 <button 
-                   onClick={() => openEditRole(perm.id)}
-                   className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"
-                 >
-                   <Edit2 className="w-3.5 h-3.5" />
-                   Edit Role
-                 </button>
+                 </div>
+                 <div className="flex items-center gap-2">
+                   <button 
+                     onClick={() => openEditRole(perm.id)}
+                     className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"
+                   >
+                     <Edit2 className="w-3.5 h-3.5" />
+                     Edit Role
+                   </button>
+                   {perm.role !== "Admin" && (
+                     <button
+                       className="flex items-center justify-center w-9 h-9 bg-white hover:bg-red-50 border border-slate-200 text-red-600 hover:border-red-200 rounded-lg transition-colors shadow-sm"
+                       onClick={() => requestDeleteRole(perm.id)}
+                       data-testid={`button-role-delete-${perm.id}`}
+                       title="Delete Role"
+                       type="button"
+                     >
+                       <Trash2 className="w-4 h-4" />
+                     </button>
+                   )}
+                 </div>
               </div>
             </div>
             );

@@ -1933,7 +1933,6 @@ export default function TestDetail() {
                               <User className="w-4 h-4 text-slate-400" />
                               <span className="font-medium">{historyGroup.actor}</span>
                             </div>
-                            <p className="text-xs text-slate-400 mt-0.5">{historyGroup.role}</p>
                           </div>
                         </div>
                         

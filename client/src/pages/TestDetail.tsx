@@ -831,13 +831,7 @@ export default function TestDetail() {
 
                   <div>
                     <p className="text-xs text-slate-500 mb-2">Assign Inspectors per Day</p>
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-10 h-5 bg-blue-500 rounded-full relative">
-                        <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow" />
-                      </div>
-                      <span className="text-sm text-slate-600">On</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 mt-2">
                       {[
                         { day: "Mon", inspector: "John Kim" },
                         { day: "Wed", inspector: "Sarah Lee" },

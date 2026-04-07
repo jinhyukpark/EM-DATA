@@ -1088,7 +1088,7 @@ export default function TestDetail() {
                       <div key={item.id} className="relative flex-shrink-0">
                         <button
                           onClick={() => setSelectedSchedule(item.id)}
-                          className={`relative px-3 py-2.5 rounded-lg border transition-all min-w-[150px] h-[96px] flex flex-col ${
+                          className={`relative px-3 py-2 rounded-lg border transition-all min-w-[140px] h-[92px] flex flex-col items-center justify-center gap-0.5 ${
                             selectedSchedule === item.id 
                               ? item.status === "Canceled" || item.status === "Failed"
                                 ? "bg-red-500 text-white border-red-500 shadow-lg"
@@ -1115,72 +1115,67 @@ export default function TestDetail() {
                           }`}
                           data-testid={`schedule-date-${item.id}`}
                         >
-                          <div className="w-full flex items-start h-4 mb-0.5">
-                            {(item.status === "Delayed" || item.wasDelayed) && (
-                              <div className="flex items-center gap-1 z-10">
-                                <AlertCircle className={`w-3.5 h-3.5 ${
-                                  selectedSchedule === item.id ? "text-white" : "text-amber-500"
-                                }`} />
-                                {item.status === "Delayed" && (
-                                  <span className={`text-[10px] font-medium leading-none ${
-                                    selectedSchedule === item.id ? "text-white" : "text-amber-600"
-                                  }`}>
-                                    Delayed
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                          <div className="text-center w-full flex-1 flex flex-col justify-center -mt-1.5">
-                            <div className={`text-sm font-semibold ${selectedSchedule === item.id ? "text-white" : "text-slate-800"}`}>
-                              {item.date}
+                          {(item.status === "Delayed" || item.wasDelayed) && (
+                            <div className="absolute top-2 left-2 flex items-center gap-1 z-10">
+                              <Clock className={`w-3.5 h-3.5 ${
+                                selectedSchedule === item.id ? "text-white" : "text-amber-500"
+                              }`} />
+                              {item.status === "Delayed" && (
+                                <span className={`text-[10px] font-medium leading-none ${
+                                  selectedSchedule === item.id ? "text-white" : "text-amber-600"
+                                }`}>
+                                  Delayed
+                                </span>
+                              )}
                             </div>
-                            <div className="flex flex-col items-center gap-1 mt-1 justify-center">
-                              <div className="flex items-center gap-1.5">
-                                <span className={`w-1.5 h-1.5 rounded-full ${
-                                  item.status === "Normal" ? "bg-emerald-400" :
-                                  item.status === "In Progress" ? "bg-blue-400 animate-pulse" :
-                                  item.status === "Canceled" ? "bg-red-400" :
-                                  item.status === "Failed" ? "bg-orange-500" :
-                                  item.status === "Resolved" ? "bg-teal-400" :
-                                  item.status === "Delayed" ? "bg-purple-400" :
-                                  item.status === "Planned" ? "bg-slate-400" :
-                                  "bg-slate-400"
-                                }`} />
-                                <span className={`text-xs ${selectedSchedule === item.id ? "text-white/90" : "text-slate-600"}`}>
-                                  {item.assignee.split(" ")[0]}
-                                </span>
-                              </div>
-                            </div>
-                            {item.status === "Normal" ? (
-                              <div className={`flex items-center gap-2 mt-1 text-xs justify-center ${selectedSchedule === item.id ? "text-white/90" : ""}`}>
-                                <span className={`flex items-center gap-1 ${selectedSchedule === item.id ? "text-emerald-100" : "text-emerald-600"}`}>
-                                  <CheckCircle className="w-3 h-3" />
-                                  {normalCount}
-                                </span>
-                                <span className={`flex items-center gap-1 ${selectedSchedule === item.id ? "text-red-100" : "text-red-500"}`}>
-                                  <XCircle className="w-3 h-3" />
-                                  {abnormalCount}
-                                </span>
-                              </div>
-                            ) : item.status !== "Delayed" ? (
-                              <div className={`mt-1 text-xs font-medium ${
-                                selectedSchedule === item.id 
-                                  ? "text-white/90"
-                                  : item.status === "Canceled" || item.status === "Failed"
-                                  ? "text-red-600"
-                                  : item.status === "Resolved"
-                                  ? "text-teal-600"
-                                  : item.status === "In Progress"
-                                  ? "text-blue-600"
-                                  : "text-slate-500"
-                              }`}>
-                                {item.status}
-                              </div>
-                            ) : (
-                              <div className="mt-1 h-4" />
-                            )}
+                          )}
+                          
+                          <div className={`text-[15px] font-bold leading-none ${selectedSchedule === item.id ? "text-white" : "text-slate-800"}`}>
+                            {item.date}
                           </div>
+                          
+                          <div className="flex items-center justify-center gap-1.5 mt-1">
+                            <span className={`w-1.5 h-1.5 rounded-full ${
+                              item.status === "Normal" ? "bg-emerald-400" :
+                              item.status === "In Progress" ? "bg-blue-400 animate-pulse" :
+                              item.status === "Canceled" ? "bg-red-400" :
+                              item.status === "Failed" ? "bg-orange-500" :
+                              item.status === "Resolved" ? "bg-teal-400" :
+                              item.status === "Delayed" ? "bg-purple-400" :
+                              item.status === "Planned" ? "bg-slate-400" :
+                              "bg-slate-400"
+                            }`} />
+                            <span className={`text-xs font-medium leading-none ${selectedSchedule === item.id ? "text-white/90" : "text-slate-600"}`}>
+                              {item.assignee.split(" ")[0]}
+                            </span>
+                          </div>
+                          
+                          {item.status === "Normal" ? (
+                            <div className={`flex items-center justify-center gap-2 text-xs font-medium mt-1.5 ${selectedSchedule === item.id ? "text-white/90" : ""}`}>
+                              <span className={`flex items-center gap-1 leading-none ${selectedSchedule === item.id ? "text-emerald-100" : "text-emerald-600"}`}>
+                                <CheckCircle className="w-3.5 h-3.5" />
+                                {normalCount}
+                              </span>
+                              <span className={`flex items-center gap-1 leading-none ${selectedSchedule === item.id ? "text-red-100" : "text-red-500"}`}>
+                                <XCircle className="w-3.5 h-3.5" />
+                                {abnormalCount}
+                              </span>
+                            </div>
+                          ) : item.status !== "Delayed" ? (
+                            <div className={`text-xs font-semibold leading-none mt-1.5 ${
+                              selectedSchedule === item.id 
+                                ? "text-white/90"
+                                : item.status === "Canceled" || item.status === "Failed"
+                                ? "text-red-600"
+                                : item.status === "Resolved"
+                                ? "text-teal-600"
+                                : item.status === "In Progress"
+                                ? "text-blue-600"
+                                : "text-slate-500"
+                            }`}>
+                              {item.status}
+                            </div>
+                          ) : null}
                         </button>
                         <div className="absolute top-0 right-0">
                           <button

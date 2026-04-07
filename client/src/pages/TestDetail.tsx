@@ -1088,7 +1088,7 @@ export default function TestDetail() {
                       <div key={item.id} className="relative flex-shrink-0">
                         <button
                           onClick={() => setSelectedSchedule(item.id)}
-                          className={`relative px-5 py-3 rounded-lg border transition-all min-w-[140px] h-[90px] flex flex-col justify-center ${
+                          className={`relative px-3 py-2.5 rounded-lg border transition-all min-w-[150px] h-[96px] flex flex-col ${
                             selectedSchedule === item.id 
                               ? item.status === "Canceled" || item.status === "Failed"
                                 ? "bg-red-500 text-white border-red-500 shadow-lg"
@@ -1115,7 +1115,23 @@ export default function TestDetail() {
                           }`}
                           data-testid={`schedule-date-${item.id}`}
                         >
-                          <div className="text-center w-full relative">
+                          <div className="w-full flex items-start h-4 mb-0.5">
+                            {(item.status === "Delayed" || item.wasDelayed) && (
+                              <div className="flex items-center gap-1 z-10">
+                                <AlertCircle className={`w-3.5 h-3.5 ${
+                                  selectedSchedule === item.id ? "text-white" : "text-amber-500"
+                                }`} />
+                                {item.status === "Delayed" && (
+                                  <span className={`text-[10px] font-medium leading-none ${
+                                    selectedSchedule === item.id ? "text-white" : "text-amber-600"
+                                  }`}>
+                                    Delayed
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-center w-full flex-1 flex flex-col justify-center -mt-1.5">
                             <div className={`text-sm font-semibold ${selectedSchedule === item.id ? "text-white" : "text-slate-800"}`}>
                               {item.date}
                             </div>
@@ -1136,22 +1152,8 @@ export default function TestDetail() {
                                 </span>
                               </div>
                             </div>
-                            {(item.status === "Delayed" || item.wasDelayed) && (
-                              <div className="absolute top-2 left-2 flex items-center gap-1">
-                                <Clock className={`w-3.5 h-3.5 ${
-                                  selectedSchedule === item.id ? "text-white" : "text-purple-500"
-                                }`} />
-                                {item.status === "Delayed" && (
-                                  <span className={`text-[10px] font-medium ${
-                                    selectedSchedule === item.id ? "text-white" : "text-purple-600"
-                                  }`}>
-                                    Delayed
-                                  </span>
-                                )}
-                              </div>
-                            )}
                             {item.status === "Normal" ? (
-                              <div className={`flex items-center gap-2 mt-1.5 text-xs justify-center ${selectedSchedule === item.id ? "text-white/90" : ""}`}>
+                              <div className={`flex items-center gap-2 mt-1 text-xs justify-center ${selectedSchedule === item.id ? "text-white/90" : ""}`}>
                                 <span className={`flex items-center gap-1 ${selectedSchedule === item.id ? "text-emerald-100" : "text-emerald-600"}`}>
                                   <CheckCircle className="w-3 h-3" />
                                   {normalCount}
@@ -1162,7 +1164,7 @@ export default function TestDetail() {
                                 </span>
                               </div>
                             ) : item.status !== "Delayed" ? (
-                              <div className={`mt-1.5 text-xs font-medium ${
+                              <div className={`mt-1 text-xs font-medium ${
                                 selectedSchedule === item.id 
                                   ? "text-white/90"
                                   : item.status === "Canceled" || item.status === "Failed"
@@ -1176,7 +1178,7 @@ export default function TestDetail() {
                                 {item.status}
                               </div>
                             ) : (
-                              <div className="mt-1.5 h-4" />
+                              <div className="mt-1 h-4" />
                             )}
                           </div>
                         </button>

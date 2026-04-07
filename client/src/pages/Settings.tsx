@@ -618,8 +618,7 @@ function PermissionsTab() {
   
   const [editRoleId, setEditRoleId] = useState<number | null>(null);
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
-  const [showDeleteRoleModal, setShowDeleteRoleModal] = useState(false);
-  const [showCannotDeleteModal, setShowCannotDeleteModal] = useState(false);
+  const [showEditConfirmModal, setShowEditConfirmModal] = useState(false);
   const [deleteRoleId, setDeleteRoleId] = useState<number | null>(null);
   const [deleteRoleName, setDeleteRoleName] = useState(" ");
 
@@ -670,23 +669,26 @@ function PermissionsTab() {
         permissions: selectedPerms
       };
       setRoles([...roles, newRole]);
+      setShowRoleModal(false);
     } else if (roleModalMode === "edit" && editRoleId) {
-      setRoles(roles.map(r => r.id === editRoleId ? { ...r, role: roleName, permissions: selectedPerms } : r));
+      setShowEditConfirmModal(true);
     }
-    setShowRoleModal(false);
+  };
+
+  const confirmEditRole = () => {
+    if (editRoleId) {
+      setRoles(roles.map(r => r.id === editRoleId ? { ...r, role: roleName, permissions: selectedPerms } : r));
+      setShowEditConfirmModal(false);
+      setShowRoleModal(false);
+    }
   };
 
   const requestDeleteRole = (id: number) => {
     const role = roles.find(r => r.id === id);
     if (role) {
-      if (role.users > 0) {
-        setDeleteRoleName(role.role);
-        setShowCannotDeleteModal(true);
-      } else {
-        setDeleteRoleId(id);
-        setDeleteRoleName(role.role);
-        setShowDeleteRoleModal(true);
-      }
+      setDeleteRoleId(id);
+      setDeleteRoleName(role.role);
+      // Removed setShowDeleteRoleModal since it was removed from state
       setMenuOpenId(null);
     }
   };
@@ -694,7 +696,6 @@ function PermissionsTab() {
   const confirmDeleteRole = () => {
     if (deleteRoleId) {
       setRoles(roles.filter(r => r.id !== deleteRoleId));
-      setShowDeleteRoleModal(false);
       setDeleteRoleId(null);
     }
   };
@@ -744,48 +745,27 @@ function PermissionsTab() {
 
   return (
     <div className="space-y-6">
-      {/* Cannot Delete Role Modal */}
-      {showCannotDeleteModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]" onClick={() => setShowCannotDeleteModal(false)}>
+      {/* Edit Role Confirmation Modal */}
+      {showEditConfirmModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]" onClick={() => setShowEditConfirmModal(false)}>
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-xl p-6 w-full max-w-sm shadow-xl"
+            className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-3 mb-2 text-red-600">
+            <div className="flex items-center gap-3 mb-2 text-blue-600">
                 <Shield className="w-5 h-5" />
-                <h3 className="text-lg font-semibold text-slate-800">Cannot Delete Role</h3>
+                <h3 className="text-lg font-semibold text-slate-800">Apply Role Changes?</h3>
             </div>
             <p className="text-sm text-slate-600 mb-6">
-              The <span className="font-bold text-slate-800">{deleteRoleName}</span> role cannot be deleted because there are users currently assigned to it.
+              You are about to update the permissions for the <span className="font-bold text-slate-800">{roleName}</span> role.
               <br/><br/>
-              Please reassign these users to a different role before deleting.
-            </p>
-            <div className="flex justify-end">
-              <Button onClick={() => setShowCannotDeleteModal(false)}>Close</Button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteRoleModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]" onClick={() => setShowDeleteRoleModal(false)}>
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-xl p-6 w-full max-w-sm shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-lg font-semibold text-slate-800 mb-2">Delete Role</h3>
-            <p className="text-sm text-slate-600 mb-6">
-              Are you sure you want to delete <span className="font-bold">{deleteRoleName}</span> role?
-              This action cannot be undone.
+              <span className="text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded">Note:</span> These changes will be immediately applied to all users currently assigned to this role.
             </p>
             <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setShowDeleteRoleModal(false)}>Cancel</Button>
-              <Button variant="destructive" onClick={confirmDeleteRole}>Delete</Button>
+              <Button variant="outline" onClick={() => setShowEditConfirmModal(false)}>Cancel</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700" onClick={confirmEditRole}>Apply Changes</Button>
             </div>
           </motion.div>
         </div>

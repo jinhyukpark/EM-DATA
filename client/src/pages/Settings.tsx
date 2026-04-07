@@ -270,6 +270,9 @@ function UsersTab() {
     }
   };
 
+  const [deleteUserId, setDeleteUserId] = useState<number | null>(null);
+  const [showDeleteUserModal, setShowDeleteUserModal] = useState(false);
+
   const openEditUser = (id: number) => {
     const u = userList.find((x) => x.id === id);
     if (!u) return;
@@ -297,6 +300,19 @@ function UsersTab() {
     setEditUserId(null);
   };
 
+  const handleDeleteUser = (id: number) => {
+    setDeleteUserId(id);
+    setShowDeleteUserModal(true);
+  };
+
+  const confirmDeleteUser = () => {
+    if (deleteUserId) {
+      setUserList(userList.filter(u => u.id !== deleteUserId));
+      setShowDeleteUserModal(false);
+      setDeleteUserId(null);
+    }
+  };
+
   const closeEditUser = () => {
     setShowEditModal(false);
     setEditUserId(null);
@@ -304,6 +320,31 @@ function UsersTab() {
 
   return (
     <div className="space-y-6">
+      {/* Delete User Confirmation Modal */}
+      {showDeleteUserModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]" onClick={() => setShowDeleteUserModal(false)}>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl p-6 w-full max-w-sm shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-2 text-red-600">
+                <Trash2 className="w-5 h-5" />
+                <h3 className="text-lg font-semibold text-slate-800">Delete User</h3>
+            </div>
+            <p className="text-sm text-slate-600 mb-6">
+              Are you sure you want to delete this user?
+              This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setShowDeleteUserModal(false)}>Cancel</Button>
+              <Button className="bg-red-600 hover:bg-red-700" onClick={confirmDeleteUser}>Delete User</Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {showEditModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={closeEditUser}>
           <motion.div
@@ -574,13 +615,27 @@ function UsersTab() {
                   <td className="py-4 px-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button
-                        className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-                        onClick={() => openEditUser(user.id)}
+                        type="button"
+                        className="p-2 hover:bg-slate-100 rounded-lg transition-colors relative z-10"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          openEditUser(user.id);
+                        }}
                         data-testid={`edit-user-${user.id}`}
                       >
                         <Edit2 className="w-4 h-4 text-slate-500" />
                       </button>
-                      <button className="p-2 hover:bg-red-50 rounded-lg transition-colors" data-testid={`delete-user-${user.id}`}>
+                      <button 
+                        type="button"
+                        className="p-2 hover:bg-red-50 rounded-lg transition-colors relative z-10" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDeleteUser(user.id);
+                        }}
+                        data-testid={`delete-user-${user.id}`}
+                      >
                         <Trash2 className="w-4 h-4 text-red-500" />
                       </button>
                     </div>
@@ -621,6 +676,7 @@ function PermissionsTab() {
   const [showEditConfirmModal, setShowEditConfirmModal] = useState(false);
   const [deleteRoleId, setDeleteRoleId] = useState<number | null>(null);
   const [deleteRoleName, setDeleteRoleName] = useState(" ");
+  const [showDeleteRoleModal, setShowDeleteRoleModal] = useState(false);
 
   const openAddRole = () => {
     setRoleModalMode("add");
@@ -688,7 +744,7 @@ function PermissionsTab() {
     if (role) {
       setDeleteRoleId(id);
       setDeleteRoleName(role.role);
-      // Removed setShowDeleteRoleModal since it was removed from state
+      setShowDeleteRoleModal(true);
       setMenuOpenId(null);
     }
   };
@@ -696,6 +752,7 @@ function PermissionsTab() {
   const confirmDeleteRole = () => {
     if (deleteRoleId) {
       setRoles(roles.filter(r => r.id !== deleteRoleId));
+      setShowDeleteRoleModal(false);
       setDeleteRoleId(null);
     }
   };
@@ -766,6 +823,31 @@ function PermissionsTab() {
             <div className="flex justify-end gap-3">
               <Button variant="outline" onClick={() => setShowEditConfirmModal(false)}>Cancel</Button>
               <Button className="bg-blue-600 hover:bg-blue-700" onClick={confirmEditRole}>Apply Changes</Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteRoleModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]" onClick={() => setShowDeleteRoleModal(false)}>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl p-6 w-full max-w-sm shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-2 text-red-600">
+                <Trash2 className="w-5 h-5" />
+                <h3 className="text-lg font-semibold text-slate-800">Delete Role</h3>
+            </div>
+            <p className="text-sm text-slate-600 mb-6">
+              Are you sure you want to delete the <span className="font-bold">{deleteRoleName}</span> role?
+              This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setShowDeleteRoleModal(false)}>Cancel</Button>
+              <Button className="bg-red-600 hover:bg-red-700" onClick={confirmDeleteRole}>Delete Role</Button>
             </div>
           </motion.div>
         </div>
@@ -1174,16 +1256,25 @@ function PermissionsTab() {
                  </div>
                  <div className="flex items-center gap-2">
                    <button 
-                     onClick={() => openEditRole(perm.id)}
-                     className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"
+                     type="button"
+                     onClick={(e) => {
+                       e.preventDefault();
+                       e.stopPropagation();
+                       openEditRole(perm.id);
+                     }}
+                     className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm relative z-10"
                    >
                      <Edit2 className="w-3.5 h-3.5" />
                      Edit Role
                    </button>
                    {perm.role !== "Admin" && (
                      <button
-                       className="flex items-center justify-center w-9 h-9 bg-white hover:bg-red-50 border border-slate-200 text-red-600 hover:border-red-200 rounded-lg transition-colors shadow-sm"
-                       onClick={() => requestDeleteRole(perm.id)}
+                       className="flex items-center justify-center w-9 h-9 bg-white hover:bg-red-50 border border-slate-200 text-red-600 hover:border-red-200 rounded-lg transition-colors shadow-sm relative z-10"
+                       onClick={(e) => {
+                         e.preventDefault();
+                         e.stopPropagation();
+                         requestDeleteRole(perm.id);
+                       }}
                        data-testid={`button-role-delete-${perm.id}`}
                        title="Delete Role"
                        type="button"

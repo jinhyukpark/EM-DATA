@@ -82,7 +82,7 @@ const modules: ModuleConfig[] = [
 ];
 
 const permissionTypes: PermissionType[] = ["View", "Create", "Edit", "Delete", "Export"];
-const qaPermissionTypes: PermissionType[] = ["View", "Create/Delete", "Inspect", "Export"];
+const qaPermissionTypes: PermissionType[] = ["View", "Create", "Edit", "Delete", "Export"]; // Changed to match other modules as requested
 
 // Initial data with updated structure
 const initialRoles: Role[] = [
@@ -709,7 +709,7 @@ function PermissionsTab() {
         
         // If unchecking View, must uncheck Inspect as well because Inspect requires View
         if (moduleId === "qa-report" && type === "View") {
-          newPerms = newPerms.filter(p => p !== "Inspect");
+          // No longer needed as Inspect is removed from QA Report
         }
         
         return { ...prev, [moduleId]: newPerms };
@@ -719,7 +719,7 @@ function PermissionsTab() {
         
         // If checking Inspect, must also check View
         if (moduleId === "qa-report" && type === "Inspect" && !modulePerms.includes("View")) {
-          newPerms.push("View");
+          // No longer needed as Inspect is removed from QA Report
         }
         
         return { ...prev, [moduleId]: newPerms };
@@ -975,8 +975,9 @@ function PermissionsTab() {
                             <tr>
                               <th className="px-4 py-3 font-medium text-slate-600 w-1/3">Module</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center">View</th>
-                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Create / Delete</th>
-                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Inspect</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Create</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Edit</th>
+                              <th className="px-4 py-3 font-medium text-slate-600 text-center">Delete</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center">Export</th>
                               <th className="px-4 py-3 font-medium text-slate-600 text-center w-24">All</th>
                             </tr>

@@ -196,7 +196,6 @@ export default function QAReport() {
       <div className="hidden lg:block flex-shrink-0">
         <Sidebar />
       </div>
-
       {sidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
           <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
@@ -205,7 +204,6 @@ export default function QAReport() {
           </div>
         </div>
       )}
-
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         <header className="bg-white border-b border-slate-200 flex-shrink-0 z-40">
           <div className="px-4 md:px-8 py-4">
@@ -263,7 +261,7 @@ export default function QAReport() {
                   <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center">
                     <Clock className="w-5 h-5 text-amber-600" />
                   </div>
-                  <p className="text-sm font-medium text-slate-500">Pending Reviews</p>
+                  <p className="text-sm font-medium text-slate-500">Delayed Tests</p>
                 </div>
                 <p className="text-3xl font-bold text-amber-600">5</p>
                 <p className="text-sm text-slate-400 mt-1">awaiting inspection</p>
@@ -569,7 +567,6 @@ export default function QAReport() {
           </motion.section>
         </main>
       </div>
-
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={cancelDelete}>
           <motion.div
@@ -594,7 +591,6 @@ export default function QAReport() {
           </motion.div>
         </div>
       )}
-
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={resetModal}>
           <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full mx-4 max-h-[85vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>

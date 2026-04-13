@@ -368,29 +368,38 @@ export default function TestDetail() {
     { 
       id: 1, 
       title: "QA 테스트 항목", 
-      action: "Replaced", 
+      action: "수정", 
       date: "2026-04-03 16:57", 
       actor: "Actor #2", 
-      role: "Member #2",
-      itemCount: 3,
-      changes: [
-        { id: 1, type: "ox", question: "회원가입 폼이 정상 표시되나요?", from: "O", to: "X", toStatus: "abnormal" },
-        { id: 2, type: "text", question: "발견된 문제를 입력해주세요.", from: "버튼이 안눌림", to: "가입하기 버튼 클릭 시 500 에러 발생함", toStatus: "normal" },
-        { id: 3, type: "multiple_choice", question: "테스트한 브라우저를 선택해주세요.", options: ["Chrome", "Firefox", "Safari", "Edge"], from: "미선택", to: "Chrome", toStatus: "normal" }
-      ]
+      results: {
+        normal: 12,
+        abnormal: 3,
+        resolved: 1
+      }
     },
     { 
       id: 2, 
       title: "QA 테스트 항목", 
-      action: "Updated", 
+      action: "시작", 
       date: "2026-04-03 14:20", 
       actor: "Actor #1", 
-      role: "Member #1",
-      itemCount: 2,
-      changes: [
-        { id: 1, type: "multiple_choice", question: "테스트 환경을 선택해주세요.", options: ["Local", "Dev", "Staging", "Prod"], from: "Dev", to: "Staging", fromStatus: "normal", toStatus: "abnormal" },
-        { id: 2, type: "ox", question: "API 응답이 200 OK 인가요?", from: "미선택", to: "O", toStatus: "normal" },
-      ]
+      results: {
+        normal: 0,
+        abnormal: 0,
+        resolved: 0
+      }
+    },
+    { 
+      id: 3, 
+      title: "QA 테스트 항목", 
+      action: "종료(등록)", 
+      date: "2026-04-04 10:15", 
+      actor: "Actor #3", 
+      results: {
+        normal: 15,
+        abnormal: 0,
+        resolved: 4
+      }
     }
   ];
   // Mock history data for schedule changes
@@ -1912,19 +1921,40 @@ export default function TestDetail() {
                     {itemHistory.map((historyGroup) => (
                       <div key={historyGroup.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                         {/* History Group Header */}
-                        <div className="p-5 border-b border-slate-100 flex items-start justify-between">
-                          <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 mt-1">
-                              <CheckCircle className="w-5 h-5 text-blue-500" />
+                        <div className="p-5 flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                              historyGroup.action === '시작' ? 'bg-blue-50 text-blue-500' :
+                              historyGroup.action === '종료(등록)' ? 'bg-emerald-50 text-emerald-500' :
+                              'bg-purple-50 text-purple-500'
+                            }`}>
+                              <CheckCircle className="w-5 h-5" />
                             </div>
                             <div>
                               <div className="flex items-center gap-3">
                                 <h4 className="text-base font-semibold text-slate-800">{historyGroup.title}</h4>
-                                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">
+                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                  historyGroup.action === '시작' ? 'bg-blue-100 text-blue-700' :
+                                  historyGroup.action === '종료(등록)' ? 'bg-emerald-100 text-emerald-700' :
+                                  'bg-purple-100 text-purple-700'
+                                }`}>
                                   {historyGroup.action}
                                 </span>
                               </div>
-                              <p className="text-sm text-slate-500 mt-1">{historyGroup.itemCount} item(s) snapshot</p>
+                              <div className="flex items-center gap-4 mt-2">
+                                <div className="flex items-center gap-1.5 text-sm text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                                  <span className="font-medium">정상</span>
+                                  <span className="font-bold">{historyGroup.results.normal}건</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-sm text-red-600 bg-red-50 px-2 py-0.5 rounded-md border border-red-100">
+                                  <span className="font-medium">비정상</span>
+                                  <span className="font-bold">{historyGroup.results.abnormal}건</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-sm text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
+                                  <span className="font-medium">Resolved</span>
+                                  <span className="font-bold">{historyGroup.results.resolved}건</span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                           <div className="text-right flex-shrink-0">
@@ -1934,77 +1964,6 @@ export default function TestDetail() {
                               <span className="font-medium">{historyGroup.actor}</span>
                             </div>
                           </div>
-                        </div>
-                        
-                        {/* History Group Items */}
-                        <div className="p-5 space-y-4">
-                          {historyGroup.changes.map((change, index) => (
-                            <div key={change.id} className="p-4 rounded-xl border border-slate-200 bg-white">
-                              <div className="flex gap-4">
-                                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 text-blue-600 font-semibold text-sm">
-                                  {index + 1}
-                                </div>
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <CheckCircle className="w-4 h-4 text-slate-400" />
-                                    <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wider">
-                                      {change.type === 'ox' ? 'O/X' : change.type === 'text' ? 'Text' : 'Multiple Choice'}
-                                    </span>
-                                  </div>
-                                  <p className="text-sm font-medium text-slate-800 mb-4">{change.question}</p>
-                                  
-                                  {/* Render different UI based on question type */}
-                                  {change.type === 'text' ? (
-                                    <div className="mt-3 space-y-2">
-                                      {change.from && change.from !== '미선택' && (
-                                        <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-500 line-through opacity-70">
-                                          {change.from}
-                                        </div>
-                                      )}
-                                      {!change.from || change.from === '미선택' ? (
-                                        <div className="flex items-center gap-2 mb-2">
-                                          <span className="px-3 py-1 rounded-lg text-xs font-medium bg-slate-50 text-slate-500 border border-slate-200 border-dashed">미선택</span>
-                                          <span className="text-slate-400 font-medium px-1 text-xs">→</span>
-                                        </div>
-                                      ) : null}
-                                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800 shadow-sm">
-                                        {change.to || "Text response field"}
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className="flex items-center flex-wrap gap-2 mt-3">
-                                      {change.from && change.from !== '미선택' && change.from !== '' ? (
-                                        <>
-                                          <span className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
-                                            change.fromStatus === 'normal' || change.from === 'O' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 
-                                            change.fromStatus === 'abnormal' || change.from === 'X' ? 'bg-red-50 text-red-700 border border-red-200' : 
-                                            'bg-slate-50 text-slate-600 border border-slate-200'
-                                          }`}>
-                                            {change.from}
-                                          </span>
-                                          <span className="text-slate-400 font-medium px-1">→</span>
-                                        </>
-                                      ) : (
-                                        <>
-                                          <span className="px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-50 text-slate-500 border border-slate-200 border-dashed">
-                                            미선택
-                                          </span>
-                                          <span className="text-slate-400 font-medium px-1">→</span>
-                                        </>
-                                      )}
-                                      <span className={`px-3 py-1.5 rounded-lg text-sm font-medium shadow-sm ${
-                                        change.toStatus === 'normal' || change.to === 'O' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 
-                                        change.toStatus === 'abnormal' || change.to === 'X' ? 'bg-red-50 text-red-700 border border-red-200' : 
-                                        'bg-blue-50 text-blue-700 border border-blue-200'
-                                      }`}>
-                                        {change.to}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
                         </div>
                       </div>
                     ))}

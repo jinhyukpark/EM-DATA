@@ -363,12 +363,44 @@ export default function TestDetail() {
   const [cancelScheduleReason, setCancelScheduleReason] = useState("");
   const [historyModal, setHistoryModal] = useState<number | null>(null);
   
-  // Mock history data for test items
+  // Mock history data for test items grouped by action
   const itemHistory = [
-    { id: 1, itemId: 2, itemQuestion: "Response time within SLA?", type: "status_change", date: "2025-03-29 15:20", by: "John Kim", from: "Abnormal", to: "Normal", reason: "Issue resolved after server restart." },
-    { id: 2, itemId: 1, itemQuestion: "Is the service responding correctly?", type: "answer_change", date: "2025-03-28 10:15", by: "Sarah Lee", from: "X", to: "O" },
-    { id: 3, itemId: 3, itemQuestion: "Additional notes:", type: "text_update", date: "2025-03-28 09:30", by: "Admin", from: "", to: "Minor latency observed during peak hours." },
-    { id: 4, itemId: 2, itemQuestion: "Response time within SLA?", type: "status_change", date: "2025-03-27 14:00", by: "Admin", from: "Normal", to: "Abnormal", reason: "SLA exceeded by 200ms." },
+    { 
+      id: 1, 
+      title: "QA 테스트 항목", 
+      action: "수정", 
+      date: "2026-04-03 16:57", 
+      actor: "Actor #2", 
+      results: {
+        normal: 12,
+        abnormal: 3,
+        resolved: 1
+      }
+    },
+    { 
+      id: 2, 
+      title: "QA 테스트 항목", 
+      action: "시작", 
+      date: "2026-04-03 14:20", 
+      actor: "Actor #1", 
+      results: {
+        normal: 0,
+        abnormal: 0,
+        resolved: 0
+      }
+    },
+    { 
+      id: 3, 
+      title: "QA 테스트 항목", 
+      action: "종료(등록)", 
+      date: "2026-04-04 10:15", 
+      actor: "Actor #3", 
+      results: {
+        normal: 15,
+        abnormal: 0,
+        resolved: 4
+      }
+    }
   ];
   // Mock history data for schedule changes
   const scheduleHistory: Record<number, { id: number; type: 'date_change' | 'assignee_change' | 'cancelled'; date: string; by: string; from?: string; to?: string; reason?: string }[]> = {
@@ -1867,87 +1899,71 @@ export default function TestDetail() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col"
+              className="bg-white rounded-xl shadow-xl max-w-3xl w-full mx-4 max-h-[85vh] flex flex-col"
               onClick={e => e.stopPropagation()}
             >
               <div className="p-6 border-b border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-800">Test Items History</h3>
+                <h3 className="text-xl font-bold text-slate-800">Test Items History</h3>
                 <p className="text-sm text-slate-500 mt-1">
-                  View all changes made to the test results
+                  View all changes made to the registered QA test items
                 </p>
               </div>
               
-              <div className="p-6 overflow-y-auto flex-1">
+              <div className="p-6 overflow-y-auto flex-1 bg-slate-50/50">
                 {itemHistory.length === 0 ? (
-                  <div className="text-center py-8 text-slate-400">
-                    <Clock className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                    <p className="text-sm font-medium">No changes recorded</p>
-                    <p className="text-xs mt-1">This test has no modification history</p>
+                  <div className="text-center py-12 text-slate-400">
+                    <Clock className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-base font-medium">No changes recorded</p>
+                    <p className="text-sm mt-1">This test has no modification history</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {itemHistory.map((entry) => (
-                      <div key={entry.id} className="p-4 bg-slate-50 rounded-lg border border-slate-100">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            {entry.type === 'status_change' && (
-                              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                                <AlertCircle className="w-4 h-4 text-blue-600" />
-                              </div>
-                            )}
-                            {entry.type === 'answer_change' && (
-                              <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
-                                <CheckCircle className="w-4 h-4 text-purple-600" />
-                              </div>
-                            )}
-                            {entry.type === 'text_update' && (
-                              <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                                <Edit3 className="w-4 h-4 text-emerald-600" />
-                              </div>
-                            )}
+                  <div className="space-y-6">
+                    {itemHistory.map((historyGroup) => (
+                      <div key={historyGroup.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                        {/* History Group Header */}
+                        <div className="p-5 flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                              historyGroup.action === '시작' ? 'bg-blue-50 text-blue-500' :
+                              historyGroup.action === '종료(등록)' ? 'bg-emerald-50 text-emerald-500' :
+                              'bg-purple-50 text-purple-500'
+                            }`}>
+                              <CheckCircle className="w-5 h-5" />
+                            </div>
                             <div>
-                              <p className="text-sm font-medium text-slate-800">
-                                <span className="text-blue-600 mr-1">#{entry.itemId}</span>
-                                {entry.itemQuestion}
-                              </p>
-                              <p className="text-xs text-slate-500 mt-0.5">
-                                {entry.type === 'status_change' && 'Status Changed'}
-                                {entry.type === 'answer_change' && 'Answer Changed'}
-                                {entry.type === 'text_update' && 'Notes Updated'}
-                              </p>
+                              <div className="flex items-center gap-3">
+                                <h4 className="text-base font-semibold text-slate-800">{historyGroup.title}</h4>
+                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                  historyGroup.action === '시작' ? 'bg-blue-100 text-blue-700' :
+                                  historyGroup.action === '종료(등록)' ? 'bg-emerald-100 text-emerald-700' :
+                                  'bg-purple-100 text-purple-700'
+                                }`}>
+                                  {historyGroup.action}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-4 mt-2">
+                                <div className="flex items-center gap-1.5 text-sm text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                                  <span className="font-medium">정상</span>
+                                  <span className="font-bold">{historyGroup.results.normal}건</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-sm text-red-600 bg-red-50 px-2 py-0.5 rounded-md border border-red-100">
+                                  <span className="font-medium">비정상</span>
+                                  <span className="font-bold">{historyGroup.results.abnormal}건</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-sm text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
+                                  <span className="font-medium">Resolved</span>
+                                  <span className="font-bold">{historyGroup.results.resolved}건</span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                           <div className="text-right flex-shrink-0">
-                            <p className="text-xs text-slate-400">{entry.date}</p>
-                            <p className="text-xs font-medium text-slate-600 mt-0.5">by {entry.by}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="mt-3 pl-10">
-                          <div className="flex items-center gap-3 text-sm">
-                            <span className={`px-2 py-1 rounded-md ${
-                              entry.from === "Normal" || entry.from === "O" ? "bg-emerald-100 text-emerald-700" :
-                              entry.from === "Abnormal" || entry.from === "X" ? "bg-red-100 text-red-700" :
-                              "bg-slate-200 text-slate-600"
-                            }`}>
-                              {entry.from || "Empty"}
-                            </span>
-                            <span className="text-slate-400">→</span>
-                            <span className={`px-2 py-1 rounded-md ${
-                              entry.to === "Normal" || entry.to === "O" ? "bg-emerald-100 text-emerald-700" :
-                              entry.to === "Abnormal" || entry.to === "X" ? "bg-red-100 text-red-700" :
-                              "bg-blue-100 text-blue-700"
-                            }`}>
-                              {entry.to}
-                            </span>
-                          </div>
-                          
-                          {entry.reason && (
-                            <div className="mt-3 p-3 bg-white rounded-md border border-slate-200 text-sm text-slate-600">
-                              <span className="font-medium text-slate-700 mr-2">Reason:</span>
-                              {entry.reason}
+                            <p className="text-sm text-slate-500">{historyGroup.date}</p>
+                            <div className="flex items-center justify-end gap-1.5 mt-1.5 text-sm text-slate-600">
+                              <User className="w-4 h-4 text-slate-400" />
+                              <span className="font-medium">{historyGroup.actor}</span>
                             </div>
-                          )}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -1955,7 +1971,8 @@ export default function TestDetail() {
                 )}
               </div>
               
-              <div className="p-4 border-t border-slate-200 flex justify-end bg-slate-50 rounded-b-xl mt-auto">
+              <div className="p-5 border-t border-slate-200 flex items-center justify-between bg-white rounded-b-xl">
+                <span className="text-sm text-slate-500">{itemHistory.length} history record(s)</span>
                 <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" onClick={() => setItemHistoryModal(false)}>
                   Close
                 </Button>

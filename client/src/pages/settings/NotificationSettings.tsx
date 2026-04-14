@@ -59,38 +59,26 @@ import {
 
 // Categories Definition
 const categories = [
-  { value: "internal", label: "Internal Data", type: "group" },
   { value: "server", label: "Server Management", type: "group" },
 ];
 
 const subCategories = {
-  internal: [
-    { value: "company_data", label: "Company Data" },
-    { value: "patent_data", label: "Patent Data" },
-    { value: "paper_data", label: "Paper Data" },
-    { value: "disclosure_data", label: "Disclosure Data" },
-    { value: "stock_data", label: "Stock Data" },
-    { value: "news_data", label: "News Data" },
-    { value: "finance_data", label: "Finance Data" },
-    { value: "employment_data", label: "Employment Data" },
-  ],
   server: [
     { value: "aws", label: "AWS" },
-    { value: "gcp", label: "GCP" },
     { value: "idc", label: "IDC" },
+    { value: "gcp", label: "GCP" },
+    { value: "azure", label: "Azure" },
+    { value: "onpremise", label: "On-Premise" },
   ],
 };
 
 const metrics = {
-  internal: [
-    { value: "today", label: "Today" },
-    { value: "yesterday", label: "Yesterday" },
-  ],
   server: [
-    { value: "total", label: "Total" },
-    { value: "running", label: "Running" },
-    { value: "warning", label: "Warning" },
-    { value: "stopped", label: "Stopped" },
+    { value: "cpu_usage", label: "CPU Usage (%)" },
+    { value: "memory_usage", label: "Memory Usage (%)" },
+    { value: "storage_usage", label: "Storage Usage (%)" },
+    { value: "error_count", label: "Error Count" },
+    { value: "network_traffic", label: "Network Traffic" },
   ],
 };
 
@@ -103,6 +91,13 @@ const operators = [
   { value: "lte", label: "Less/Equal (<=)" },
 ];
 
+const checkIntervals = [
+  { value: "5m", label: "5분" },
+  { value: "15m", label: "15분" },
+  { value: "30m", label: "30분" },
+  { value: "1h", label: "1시간" },
+];
+
 // Mock Users
 const users = [
   { id: 1, name: "John Kim", email: "john.kim@company.com" },
@@ -113,12 +108,13 @@ const users = [
 
 type Condition = {
   id: string;
-  categoryGroup: "internal" | "server";
+  categoryGroup: "server";
   subCategory: string; // The specific page/service
   metric: string; // today/yesterday OR total/running/etc
   operator: string;
   value: string;
   logic: "AND" | "OR";
+  checkInterval?: string; // e.g. "5m", "15m"
 };
 
 type NotificationConfig = {
@@ -148,33 +144,15 @@ const initialNotifications: NotificationConfig[] = [
         id: "c1", 
         categoryGroup: "server", 
         subCategory: "aws", 
-        metric: "warning", 
+        metric: "cpu_usage", 
         operator: "gt", 
-        value: "0", 
-        logic: "AND" 
+        value: "80", 
+        logic: "AND",
+        checkInterval: "5m"
       },
     ],
     recipients: [1, 3],
     schedule: { isRealtime: true, startTime: "09:00", endTime: "18:00", daysOfWeek: [0, 1, 2, 3, 4, 5, 6] }
-  },
-  {
-    id: "2",
-    name: "Daily Stock Data Check",
-    isActive: true,
-    type: "basic",
-    conditions: [
-      { 
-        id: "c2", 
-        categoryGroup: "internal", 
-        subCategory: "stock_data", 
-        metric: "today", 
-        operator: "eq", 
-        value: "0", 
-        logic: "AND" 
-      },
-    ],
-    recipients: [1, 2],
-    schedule: { isRealtime: false, startTime: "17:00", endTime: "18:00", daysOfWeek: [1, 2, 3, 4, 5] }
   },
   {
     id: "3",
@@ -224,11 +202,14 @@ export default function NotificationSettings() {
     }
 
     const conditionsText = formConditions.map((cond, index) => {
-      const subCatLabel = subCategories[cond.categoryGroup].find(s => s.value === cond.subCategory)?.label || cond.subCategory;
-      const metricLabel = metrics[cond.categoryGroup].find(m => m.value === cond.metric)?.label || cond.metric;
+      const subCatLabel = subCategories[cond.categoryGroup as "server"]?.find(s => s.value === cond.subCategory)?.label || cond.subCategory;
+      const metricLabel = metrics[cond.categoryGroup as "server"]?.find(m => m.value === cond.metric)?.label || cond.metric;
       const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim() || cond.operator;
       const logic = index > 0 ? ` ${cond.logic} ` : "";
-      return `${logic}[${subCatLabel} > ${metricLabel}] is ${op} "${cond.value}"`;
+      const intervalLabel = cond.categoryGroup === "server" && cond.checkInterval 
+        ? ` (체크 주기: ${checkIntervals.find(i => i.value === cond.checkInterval)?.label || cond.checkInterval})`
+        : "";
+      return `${logic}[${subCatLabel} > ${metricLabel}${intervalLabel}] is ${op} "${cond.value}"`;
     }).join("");
 
     let scheduleText = "";
@@ -259,9 +240,9 @@ export default function NotificationSettings() {
       hasExistingData = true;
     } else if (formType === "basic") {
       const isDefaultCondition = formConditions.length === 1 && 
-        formConditions[0].categoryGroup === "internal" &&
-        formConditions[0].subCategory === "company_data" &&
-        formConditions[0].metric === "today" &&
+        formConditions[0].categoryGroup === "server" &&
+        formConditions[0].subCategory === "aws" &&
+        formConditions[0].metric === "cpu_usage" &&
         formConditions[0].operator === "gt" &&
         formConditions[0].value === "";
         
@@ -290,12 +271,13 @@ export default function NotificationSettings() {
         setFormConditions([
           { 
             id: Math.random().toString(36).substr(2, 9), 
-            categoryGroup: "internal", 
-            subCategory: "company_data", 
-            metric: "today", 
+            categoryGroup: "server", 
+            subCategory: "aws", 
+            metric: "cpu_usage", 
             operator: "gt", 
             value: "", 
-            logic: "AND" 
+            logic: "AND",
+            checkInterval: "5m"
           }
         ]);
         setFormSchedule({ isRealtime: false, startTime: "09:00", endTime: "18:00", daysOfWeek: [1, 2, 3, 4, 5] });
@@ -316,12 +298,13 @@ export default function NotificationSettings() {
     setFormConditions([
       { 
         id: Math.random().toString(36).substr(2, 9), 
-        categoryGroup: "internal", 
-        subCategory: "company_data", 
-        metric: "today", 
+        categoryGroup: "server", 
+        subCategory: "aws", 
+        metric: "cpu_usage", 
         operator: "gt", 
         value: "", 
-        logic: "AND" 
+        logic: "AND",
+        checkInterval: "5m"
       }
     ]);
     setFormRecipients([]);
@@ -383,12 +366,13 @@ export default function NotificationSettings() {
       ...formConditions,
       { 
         id: Math.random().toString(36).substr(2, 9), 
-        categoryGroup: "internal", 
-        subCategory: "company_data", 
-        metric: "today", 
+        categoryGroup: "server", 
+        subCategory: "aws", 
+        metric: "cpu_usage", 
         operator: "gt", 
         value: "", 
-        logic: "AND" 
+        logic: "AND",
+        checkInterval: "5m"
       }
     ]);
   };
@@ -407,8 +391,8 @@ export default function NotificationSettings() {
       
       // Reset dependent fields when category group changes
       if (field === "categoryGroup") {
-        updated.subCategory = subCategories[value as "internal" | "server"][0].value;
-        updated.metric = metrics[value as "internal" | "server"][0].value;
+        updated.subCategory = subCategories[value as "server"][0].value;
+        updated.metric = metrics[value as "server"][0].value;
         updated.value = "";
       }
       
@@ -481,9 +465,9 @@ export default function NotificationSettings() {
                 {notification.type === "basic" && notification.conditions ? (
                   <div className="flex flex-col gap-2 text-sm text-slate-600 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
                     {notification.conditions.map((cond, idx) => {
-                      const subCatLabel = subCategories[cond.categoryGroup].find(s => s.value === cond.subCategory)?.label;
-                      const metricLabel = metrics[cond.categoryGroup].find(m => m.value === cond.metric)?.label;
-                      const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim();
+                      const subCatLabel = subCategories.server?.find(s => s.value === cond.subCategory)?.label || cond.subCategory;
+                      const metricLabel = metrics.server?.find(m => m.value === cond.metric)?.label || cond.metric;
+                      const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim() || cond.operator;
                       
                       return (
                         <div key={cond.id} className="flex flex-col">
@@ -631,7 +615,7 @@ export default function NotificationSettings() {
                                     value={condition.subCategory} 
                                     onValueChange={(val) => {
                                       // Find which group this value belongs to
-                                      const group = subCategories.internal.some(s => s.value === val) ? "internal" : "server";
+                                      const group = "server";
                                       updateCondition(condition.id, "categoryGroup", group);
                                       updateCondition(condition.id, "subCategory", val);
                                     }}
@@ -640,11 +624,7 @@ export default function NotificationSettings() {
                                         <SelectValue placeholder="Page" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <div className="mb-1 px-2 text-xs font-semibold text-slate-500">Internal Data</div>
-                                        {subCategories.internal.map(s => (
-                                            <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                                        ))}
-                                        <div className="mt-2 mb-1 px-2 text-xs font-semibold text-slate-500">Server Management</div>
+                                        <div className="mb-1 px-2 text-xs font-semibold text-slate-500">Server Management</div>
                                         {subCategories.server.map(s => (
                                             <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                                         ))}
@@ -653,7 +633,7 @@ export default function NotificationSettings() {
                             </div>
 
                             {/* 2. Metric Selection (Today/Total/etc) */}
-                            <div className="col-span-3">
+                            <div className={condition.categoryGroup === "server" ? "col-span-2" : "col-span-3"}>
                                 <Select 
                                     value={condition.metric} 
                                     onValueChange={(val) => updateCondition(condition.id, "metric", val)}
@@ -669,8 +649,27 @@ export default function NotificationSettings() {
                                 </Select>
                             </div>
 
+                            {/* 2-5. Check Interval (Only for Server) */}
+                            {condition.categoryGroup === "server" && (
+                                <div className="col-span-2">
+                                    <Select 
+                                        value={condition.checkInterval || "5m"} 
+                                        onValueChange={(val) => updateCondition(condition.id, "checkInterval", val)}
+                                    >
+                                        <SelectTrigger className="h-9 bg-white border-slate-300 text-sm text-slate-700">
+                                            <SelectValue placeholder="Interval" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {checkIntervals.map(i => (
+                                                <SelectItem key={i.value} value={i.value}>{i.label}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
+
                             {/* 3. Operator */}
-                            <div className="col-span-3">
+                            <div className={condition.categoryGroup === "server" ? "col-span-2" : "col-span-3"}>
                                 <Select 
                                     value={condition.operator} 
                                     onValueChange={(val) => updateCondition(condition.id, "operator", val)}
@@ -687,7 +686,7 @@ export default function NotificationSettings() {
                             </div>
 
                             {/* 4. Value */}
-                            <div className="col-span-3 relative">
+                            <div className={condition.categoryGroup === "server" ? "col-span-3 relative" : "col-span-3 relative"}>
                                 <Input 
                                     value={condition.value}
                                     onChange={(e) => updateCondition(condition.id, "value", e.target.value)}

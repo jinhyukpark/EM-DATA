@@ -75,9 +75,11 @@ const subCategories = {
     { value: "employment_data", label: "Employment Data" },
   ],
   server: [
-    { value: "aws", label: "AWS" },
-    { value: "gcp", label: "GCP" },
-    { value: "idc", label: "IDC" },
+    { value: "aws", label: "AWS 서버" },
+    { value: "idc", label: "IDC 서버" },
+    { value: "gcp", label: "GCP 서버" },
+    { value: "azure", label: "Azure 서버" },
+    { value: "onpremise", label: "On-Premise" },
   ],
 };
 
@@ -87,10 +89,11 @@ const metrics = {
     { value: "yesterday", label: "Yesterday" },
   ],
   server: [
-    { value: "total", label: "Total" },
-    { value: "running", label: "Running" },
-    { value: "warning", label: "Warning" },
-    { value: "stopped", label: "Stopped" },
+    { value: "cpu_usage", label: "CPU 점유율 (%)" },
+    { value: "memory_usage", label: "메모리 점유율 (%)" },
+    { value: "storage_usage", label: "스토리지 사용량 (%)" },
+    { value: "error_count", label: "오류 발생 건수" },
+    { value: "network_traffic", label: "네트워크 트래픽" },
   ],
 };
 
@@ -101,6 +104,13 @@ const operators = [
   { value: "neq", label: "Not Equals (!=)" },
   { value: "gte", label: "Greater/Equal (>=)" },
   { value: "lte", label: "Less/Equal (<=)" },
+];
+
+const checkIntervals = [
+  { value: "5m", label: "5분" },
+  { value: "15m", label: "15분" },
+  { value: "30m", label: "30분" },
+  { value: "1h", label: "1시간" },
 ];
 
 // Mock Users
@@ -119,6 +129,7 @@ type Condition = {
   operator: string;
   value: string;
   logic: "AND" | "OR";
+  checkInterval?: string; // e.g. "5m", "15m"
 };
 
 type NotificationConfig = {
@@ -228,7 +239,10 @@ export default function NotificationSettings() {
       const metricLabel = metrics[cond.categoryGroup].find(m => m.value === cond.metric)?.label || cond.metric;
       const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim() || cond.operator;
       const logic = index > 0 ? ` ${cond.logic} ` : "";
-      return `${logic}[${subCatLabel} > ${metricLabel}] is ${op} "${cond.value}"`;
+      const intervalLabel = cond.categoryGroup === "server" && cond.checkInterval 
+        ? ` (체크 주기: ${checkIntervals.find(i => i.value === cond.checkInterval)?.label || cond.checkInterval})`
+        : "";
+      return `${logic}[${subCatLabel} > ${metricLabel}${intervalLabel}] is ${op} "${cond.value}"`;
     }).join("");
 
     let scheduleText = "";
@@ -653,7 +667,7 @@ export default function NotificationSettings() {
                             </div>
 
                             {/* 2. Metric Selection (Today/Total/etc) */}
-                            <div className="col-span-3">
+                            <div className={condition.categoryGroup === "server" ? "col-span-2" : "col-span-3"}>
                                 <Select 
                                     value={condition.metric} 
                                     onValueChange={(val) => updateCondition(condition.id, "metric", val)}
@@ -669,8 +683,27 @@ export default function NotificationSettings() {
                                 </Select>
                             </div>
 
+                            {/* 2-5. Check Interval (Only for Server) */}
+                            {condition.categoryGroup === "server" && (
+                                <div className="col-span-2">
+                                    <Select 
+                                        value={condition.checkInterval || "5m"} 
+                                        onValueChange={(val) => updateCondition(condition.id, "checkInterval", val)}
+                                    >
+                                        <SelectTrigger className="h-9 bg-white border-slate-300 text-sm text-slate-700">
+                                            <SelectValue placeholder="Interval" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {checkIntervals.map(i => (
+                                                <SelectItem key={i.value} value={i.value}>{i.label}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
+
                             {/* 3. Operator */}
-                            <div className="col-span-3">
+                            <div className={condition.categoryGroup === "server" ? "col-span-2" : "col-span-3"}>
                                 <Select 
                                     value={condition.operator} 
                                     onValueChange={(val) => updateCondition(condition.id, "operator", val)}
@@ -687,7 +720,7 @@ export default function NotificationSettings() {
                             </div>
 
                             {/* 4. Value */}
-                            <div className="col-span-3 relative">
+                            <div className={condition.categoryGroup === "server" ? "col-span-3 relative" : "col-span-3 relative"}>
                                 <Input 
                                     value={condition.value}
                                     onChange={(e) => updateCondition(condition.id, "value", e.target.value)}

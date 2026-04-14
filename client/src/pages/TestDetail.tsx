@@ -885,18 +885,29 @@ export default function TestDetail() {
                     <option value="all">All Time</option>
                   </select>
                 </div>
-                <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-5 gap-4 mb-4">
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <p className="text-xs text-slate-600 mb-1">Total items</p>
+                    <p className="text-xl font-semibold text-slate-700">
+                      {filteredStabilityData.reduce((sum, item) => sum + item.normal + item.abnormal + item.resolved, 0)}
+                    </p>
+                  </div>
                   <div className="bg-emerald-50 rounded-lg p-3">
-                    <p className="text-xs text-emerald-600 mb-1">Total Normal items
-</p>
+                    <p className="text-xs text-emerald-600 mb-1">Normal items</p>
                     <p className="text-xl font-semibold text-emerald-700">
                       {filteredStabilityData.reduce((sum, item) => sum + item.normal, 0)}
                     </p>
                   </div>
                   <div className="bg-red-50 rounded-lg p-3">
-                    <p className="text-xs text-red-600 mb-1">Total Resolved / Abnormal items</p>
+                    <p className="text-xs text-red-600 mb-1">Abnormal items</p>
                     <p className="text-xl font-semibold text-red-700">
-                      {filteredStabilityData.reduce((sum, item) => sum + item.resolved, 0)} / {filteredStabilityData.reduce((sum, item) => sum + item.abnormal, 0)}
+                      {filteredStabilityData.reduce((sum, item) => sum + item.abnormal, 0)}
+                    </p>
+                  </div>
+                  <div className="bg-amber-50 rounded-lg p-3">
+                    <p className="text-xs text-amber-600 mb-1">Resolved items</p>
+                    <p className="text-xl font-semibold text-amber-700">
+                      {filteredStabilityData.reduce((sum, item) => sum + item.resolved, 0)}
                     </p>
                   </div>
                   <div className="bg-blue-50 rounded-lg p-3">
@@ -905,7 +916,8 @@ export default function TestDetail() {
                       {(() => {
                         const totalNormal = filteredStabilityData.reduce((sum, item) => sum + item.normal, 0);
                         const totalAbnormal = filteredStabilityData.reduce((sum, item) => sum + item.abnormal, 0);
-                        const total = totalNormal + totalAbnormal;
+                        const totalResolved = filteredStabilityData.reduce((sum, item) => sum + item.resolved, 0);
+                        const total = totalNormal + totalAbnormal + totalResolved;
                         return total > 0 ? ((totalNormal / total) * 100).toFixed(1) + '%' : '0.0%';
                       })()}
                     </p>

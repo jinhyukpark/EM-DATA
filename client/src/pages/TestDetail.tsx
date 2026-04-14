@@ -802,42 +802,6 @@ export default function TestDetail() {
                 </div>
               </div>
 
-              <div className="mb-3">
-                <div className="flex items-center gap-4 mb-2">
-                  <h3 className="text-sm font-medium text-slate-700">Review Results</h3>
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1.5 text-sm">
-                      <CheckCircle className="w-4 h-4 text-emerald-500" />
-                      <span className="text-emerald-600 font-medium">{test.normalCount} Normal</span>
-                    </span>
-                    <span className="flex items-center gap-1.5 text-sm">
-                      <XCircle className="w-4 h-4 text-red-500" />
-                      <span className="text-red-600 font-medium">{test.abnormalCount} Abnormal</span>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 mt-1">
-                  <p className="text-sm text-slate-500">Inspectors:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {test.inspectors.map((inspectorName, idx) => {
-                       const inspectorData = inspectors.find(i => i.name === inspectorName);
-                       return (
-                         <div key={idx} className="flex items-center gap-2 py-1 px-2 bg-slate-50 rounded-full border border-slate-100">
-                           <div
-                             className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-medium text-white shadow-sm"
-                             title={inspectorName}
-                           >
-                             {inspectorData?.avatar || inspectorName.split(" ").map(n => n[0]).join("")}
-                           </div>
-                           <span className="text-xs font-medium text-slate-700">{inspectorName}</span>
-                         </div>
-                       );
-                    })}
-                  </div>
-                </div>
-              </div>
-
               <div className="border-t border-slate-100 pt-4 mt-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>

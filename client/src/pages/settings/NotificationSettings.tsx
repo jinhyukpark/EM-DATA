@@ -304,12 +304,13 @@ export default function NotificationSettings() {
         setFormConditions([
           { 
             id: Math.random().toString(36).substr(2, 9), 
-            categoryGroup: "internal", 
-            subCategory: "company_data", 
-            metric: "today", 
+            categoryGroup: "server", 
+            subCategory: "aws", 
+            metric: "cpu_usage", 
             operator: "gt", 
             value: "", 
-            logic: "AND" 
+            logic: "AND",
+            checkInterval: "5m"
           }
         ]);
         setFormSchedule({ isRealtime: false, startTime: "09:00", endTime: "18:00", daysOfWeek: [1, 2, 3, 4, 5] });
@@ -330,12 +331,13 @@ export default function NotificationSettings() {
     setFormConditions([
       { 
         id: Math.random().toString(36).substr(2, 9), 
-        categoryGroup: "internal", 
-        subCategory: "company_data", 
-        metric: "today", 
+        categoryGroup: "server", 
+        subCategory: "aws", 
+        metric: "cpu_usage", 
         operator: "gt", 
         value: "", 
-        logic: "AND" 
+        logic: "AND",
+        checkInterval: "5m"
       }
     ]);
     setFormRecipients([]);
@@ -397,12 +399,13 @@ export default function NotificationSettings() {
       ...formConditions,
       { 
         id: Math.random().toString(36).substr(2, 9), 
-        categoryGroup: "internal", 
-        subCategory: "company_data", 
-        metric: "today", 
+        categoryGroup: "server", 
+        subCategory: "aws", 
+        metric: "cpu_usage", 
         operator: "gt", 
         value: "", 
-        logic: "AND" 
+        logic: "AND",
+        checkInterval: "5m"
       }
     ]);
   };

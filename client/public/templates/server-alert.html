@@ -78,14 +78,41 @@
                                 <table width="100%" cellspacing="0" cellpadding="0">
                                     <tr>
                                         <td style="padding-bottom: 16px; border-bottom: 1px solid #E2E8F0;">
-                                            <span class="data-label">Trigger Condition</span>
-                                            <span class="data-value">[AWS > Warning] GREATER THAN 80</span>
+                                            <span class="data-label">Trigger Conditions</span>
+                                            <div style="background: #F1F5F9; border-radius: 6px; padding: 12px; margin-top: 8px;">
+                                                <table width="100%" cellspacing="0" cellpadding="0" style="font-size: 14px;">
+                                                    <tr>
+                                                        <td style="padding: 4px 0; color: #475569; font-weight: 500;" width="45%">[AWS &gt; CPU Usage (5m)]</td>
+                                                        <td style="padding: 4px 0; color: #0F172A;" width="25%">Greater than (&gt;)</td>
+                                                        <td style="padding: 4px 0; color: #DC2626; font-weight: 700; font-family: monospace;" width="30%">80%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="3" align="center" style="padding: 8px 0;">
+                                                            <span style="font-size: 11px; font-weight: 700; color: #64748B; background: #E2E8F0; padding: 2px 8px; border-radius: 99px;">AND</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 4px 0; color: #475569; font-weight: 500;">[AWS &gt; Error Count (5m)]</td>
+                                                        <td style="padding: 4px 0; color: #0F172A;">Greater than (&gt;)</td>
+                                                        <td style="padding: 4px 0; color: #DC2626; font-weight: 700; font-family: monospace;">10</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="padding: 16px 0; border-bottom: 1px solid #E2E8F0;">
-                                            <span class="data-label">Detected Value</span>
-                                            <span class="data-value data-value-highlight">85%</span>
+                                            <span class="data-label">Detected Values</span>
+                                            <div style="margin-top: 8px;">
+                                                <div style="margin-bottom: 6px; font-size: 15px;">
+                                                    <span style="color: #475569; display: inline-block; width: 140px;">CPU Usage:</span>
+                                                    <span class="data-value data-value-highlight">85%</span>
+                                                </div>
+                                                <div style="font-size: 15px;">
+                                                    <span style="color: #475569; display: inline-block; width: 140px;">Error Count:</span>
+                                                    <span class="data-value data-value-highlight">12</span>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                     <tr>

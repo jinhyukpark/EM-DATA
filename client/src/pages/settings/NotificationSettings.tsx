@@ -64,36 +64,22 @@ const categories = [
 ];
 
 const subCategories = {
-  internal: [
-    { value: "company_data", label: "Company Data" },
-    { value: "patent_data", label: "Patent Data" },
-    { value: "paper_data", label: "Paper Data" },
-    { value: "disclosure_data", label: "Disclosure Data" },
-    { value: "stock_data", label: "Stock Data" },
-    { value: "news_data", label: "News Data" },
-    { value: "finance_data", label: "Finance Data" },
-    { value: "employment_data", label: "Employment Data" },
-  ],
   server: [
-    { value: "aws", label: "AWS 서버" },
-    { value: "idc", label: "IDC 서버" },
-    { value: "gcp", label: "GCP 서버" },
-    { value: "azure", label: "Azure 서버" },
+    { value: "aws", label: "AWS" },
+    { value: "idc", label: "IDC" },
+    { value: "gcp", label: "GCP" },
+    { value: "azure", label: "Azure" },
     { value: "onpremise", label: "On-Premise" },
   ],
 };
 
 const metrics = {
-  internal: [
-    { value: "today", label: "Today" },
-    { value: "yesterday", label: "Yesterday" },
-  ],
   server: [
-    { value: "cpu_usage", label: "CPU 점유율 (%)" },
-    { value: "memory_usage", label: "메모리 점유율 (%)" },
-    { value: "storage_usage", label: "스토리지 사용량 (%)" },
-    { value: "error_count", label: "오류 발생 건수" },
-    { value: "network_traffic", label: "네트워크 트래픽" },
+    { value: "cpu_usage", label: "CPU Usage (%)" },
+    { value: "memory_usage", label: "Memory Usage (%)" },
+    { value: "storage_usage", label: "Storage Usage (%)" },
+    { value: "error_count", label: "Error Count" },
+    { value: "network_traffic", label: "Network Traffic" },
   ],
 };
 
@@ -648,7 +634,7 @@ export default function NotificationSettings() {
                                     value={condition.subCategory} 
                                     onValueChange={(val) => {
                                       // Find which group this value belongs to
-                                      const group = subCategories.internal.some(s => s.value === val) ? "internal" : "server";
+                                      const group = "server";
                                       updateCondition(condition.id, "categoryGroup", group);
                                       updateCondition(condition.id, "subCategory", val);
                                     }}
@@ -657,11 +643,7 @@ export default function NotificationSettings() {
                                         <SelectValue placeholder="Page" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <div className="mb-1 px-2 text-xs font-semibold text-slate-500">Internal Data</div>
-                                        {subCategories.internal.map(s => (
-                                            <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                                        ))}
-                                        <div className="mt-2 mb-1 px-2 text-xs font-semibold text-slate-500">Server Management</div>
+                                        <div className="mb-1 px-2 text-xs font-semibold text-slate-500">Server Management</div>
                                         {subCategories.server.map(s => (
                                             <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                                         ))}

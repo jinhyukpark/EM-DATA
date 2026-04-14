@@ -904,15 +904,15 @@ export default function TestDetail() {
                       {filteredStabilityData.reduce((sum, item) => sum + item.abnormal, 0)}
                     </p>
                   </div>
-                  <div className="bg-amber-50 rounded-lg p-3">
-                    <p className="text-xs text-amber-600 mb-1">Resolved items</p>
-                    <p className="text-xl font-semibold text-amber-700">
+                  <div className="bg-blue-50 rounded-lg p-3">
+                    <p className="text-xs text-blue-600 mb-1">Resolved items</p>
+                    <p className="text-xl font-semibold text-blue-700">
                       {filteredStabilityData.reduce((sum, item) => sum + item.resolved, 0)}
                     </p>
                   </div>
-                  <div className="bg-blue-50 rounded-lg p-3">
-                    <p className="text-xs text-blue-600 mb-1">Normal Rate</p>
-                    <p className="text-xl font-semibold text-blue-700">
+                  <div className="bg-indigo-50 rounded-lg p-3">
+                    <p className="text-xs text-indigo-600 mb-1">Normal Rate</p>
+                    <p className="text-xl font-semibold text-indigo-700">
                       {(() => {
                         const totalNormal = filteredStabilityData.reduce((sum, item) => sum + item.normal, 0);
                         const totalAbnormal = filteredStabilityData.reduce((sum, item) => sum + item.abnormal, 0);
@@ -936,8 +936,8 @@ export default function TestDetail() {
                           <stop offset="95%" stopColor="#ef4444" stopOpacity={0.05}/>
                         </linearGradient>
                         <linearGradient id="colorResolved" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4}/>
-                          <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.05}/>
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -1010,7 +1010,7 @@ export default function TestDetail() {
                     <span className="text-xs text-slate-600">Abnormal</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-amber-500" />
+                    <div className="w-3 h-3 rounded-full bg-blue-500" />
                     <span className="text-xs text-slate-600">Resolved</span>
                   </div>
                 </div>

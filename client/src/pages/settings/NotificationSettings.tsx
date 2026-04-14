@@ -59,7 +59,6 @@ import {
 
 // Categories Definition
 const categories = [
-  { value: "internal", label: "Internal Data", type: "group" },
   { value: "server", label: "Server Management", type: "group" },
 ];
 
@@ -109,7 +108,7 @@ const users = [
 
 type Condition = {
   id: string;
-  categoryGroup: "internal" | "server";
+  categoryGroup: "server";
   subCategory: string; // The specific page/service
   metric: string; // today/yesterday OR total/running/etc
   operator: string;
@@ -145,33 +144,15 @@ const initialNotifications: NotificationConfig[] = [
         id: "c1", 
         categoryGroup: "server", 
         subCategory: "aws", 
-        metric: "warning", 
+        metric: "cpu_usage", 
         operator: "gt", 
-        value: "0", 
-        logic: "AND" 
+        value: "80", 
+        logic: "AND",
+        checkInterval: "5m"
       },
     ],
     recipients: [1, 3],
     schedule: { isRealtime: true, startTime: "09:00", endTime: "18:00", daysOfWeek: [0, 1, 2, 3, 4, 5, 6] }
-  },
-  {
-    id: "2",
-    name: "Daily Stock Data Check",
-    isActive: true,
-    type: "basic",
-    conditions: [
-      { 
-        id: "c2", 
-        categoryGroup: "internal", 
-        subCategory: "stock_data", 
-        metric: "today", 
-        operator: "eq", 
-        value: "0", 
-        logic: "AND" 
-      },
-    ],
-    recipients: [1, 2],
-    schedule: { isRealtime: false, startTime: "17:00", endTime: "18:00", daysOfWeek: [1, 2, 3, 4, 5] }
   },
   {
     id: "3",
@@ -221,8 +202,8 @@ export default function NotificationSettings() {
     }
 
     const conditionsText = formConditions.map((cond, index) => {
-      const subCatLabel = subCategories[cond.categoryGroup].find(s => s.value === cond.subCategory)?.label || cond.subCategory;
-      const metricLabel = metrics[cond.categoryGroup].find(m => m.value === cond.metric)?.label || cond.metric;
+      const subCatLabel = subCategories[cond.categoryGroup as "server"]?.find(s => s.value === cond.subCategory)?.label || cond.subCategory;
+      const metricLabel = metrics[cond.categoryGroup as "server"]?.find(m => m.value === cond.metric)?.label || cond.metric;
       const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim() || cond.operator;
       const logic = index > 0 ? ` ${cond.logic} ` : "";
       const intervalLabel = cond.categoryGroup === "server" && cond.checkInterval 
@@ -259,9 +240,9 @@ export default function NotificationSettings() {
       hasExistingData = true;
     } else if (formType === "basic") {
       const isDefaultCondition = formConditions.length === 1 && 
-        formConditions[0].categoryGroup === "internal" &&
-        formConditions[0].subCategory === "company_data" &&
-        formConditions[0].metric === "today" &&
+        formConditions[0].categoryGroup === "server" &&
+        formConditions[0].subCategory === "aws" &&
+        formConditions[0].metric === "cpu_usage" &&
         formConditions[0].operator === "gt" &&
         formConditions[0].value === "";
         
@@ -410,8 +391,8 @@ export default function NotificationSettings() {
       
       // Reset dependent fields when category group changes
       if (field === "categoryGroup") {
-        updated.subCategory = subCategories[value as "internal" | "server"][0].value;
-        updated.metric = metrics[value as "internal" | "server"][0].value;
+        updated.subCategory = subCategories[value as "server"][0].value;
+        updated.metric = metrics[value as "server"][0].value;
         updated.value = "";
       }
       
@@ -484,9 +465,9 @@ export default function NotificationSettings() {
                 {notification.type === "basic" && notification.conditions ? (
                   <div className="flex flex-col gap-2 text-sm text-slate-600 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
                     {notification.conditions.map((cond, idx) => {
-                      const subCatLabel = subCategories[cond.categoryGroup].find(s => s.value === cond.subCategory)?.label;
-                      const metricLabel = metrics[cond.categoryGroup].find(m => m.value === cond.metric)?.label;
-                      const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim();
+                      const subCatLabel = subCategories.server?.find(s => s.value === cond.subCategory)?.label || cond.subCategory;
+                      const metricLabel = metrics.server?.find(m => m.value === cond.metric)?.label || cond.metric;
+                      const op = operators.find(o => o.value === cond.operator)?.label.split('(')[0].trim() || cond.operator;
                       
                       return (
                         <div key={cond.id} className="flex flex-col">

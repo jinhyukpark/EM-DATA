@@ -802,42 +802,6 @@ export default function TestDetail() {
                 </div>
               </div>
 
-              <div className="mb-3">
-                <div className="flex items-center gap-4 mb-2">
-                  <h3 className="text-sm font-medium text-slate-700">Review Results</h3>
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1.5 text-sm">
-                      <CheckCircle className="w-4 h-4 text-emerald-500" />
-                      <span className="text-emerald-600 font-medium">{test.normalCount} Normal</span>
-                    </span>
-                    <span className="flex items-center gap-1.5 text-sm">
-                      <XCircle className="w-4 h-4 text-red-500" />
-                      <span className="text-red-600 font-medium">{test.abnormalCount} Abnormal</span>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 mt-1">
-                  <p className="text-sm text-slate-500">Inspectors:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {test.inspectors.map((inspectorName, idx) => {
-                       const inspectorData = inspectors.find(i => i.name === inspectorName);
-                       return (
-                         <div key={idx} className="flex items-center gap-2 py-1 px-2 bg-slate-50 rounded-full border border-slate-100">
-                           <div
-                             className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-medium text-white shadow-sm"
-                             title={inspectorName}
-                           >
-                             {inspectorData?.avatar || inspectorName.split(" ").map(n => n[0]).join("")}
-                           </div>
-                           <span className="text-xs font-medium text-slate-700">{inspectorName}</span>
-                         </div>
-                       );
-                    })}
-                  </div>
-                </div>
-              </div>
-
               <div className="border-t border-slate-100 pt-4 mt-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
@@ -921,27 +885,39 @@ export default function TestDetail() {
                     <option value="all">All Time</option>
                   </select>
                 </div>
-                <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-5 gap-4 mb-4">
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <p className="text-xs text-slate-600 mb-1">Total items</p>
+                    <p className="text-xl font-semibold text-slate-700">
+                      {filteredStabilityData.reduce((sum, item) => sum + item.normal + item.abnormal + item.resolved, 0)}
+                    </p>
+                  </div>
                   <div className="bg-emerald-50 rounded-lg p-3">
-                    <p className="text-xs text-emerald-600 mb-1">Total Normal items
-</p>
+                    <p className="text-xs text-emerald-600 mb-1">Normal items</p>
                     <p className="text-xl font-semibold text-emerald-700">
                       {filteredStabilityData.reduce((sum, item) => sum + item.normal, 0)}
                     </p>
                   </div>
                   <div className="bg-red-50 rounded-lg p-3">
-                    <p className="text-xs text-red-600 mb-1">Total Resolved / Abnormal items</p>
+                    <p className="text-xs text-red-600 mb-1">Abnormal items</p>
                     <p className="text-xl font-semibold text-red-700">
-                      {filteredStabilityData.reduce((sum, item) => sum + item.resolved, 0)} / {filteredStabilityData.reduce((sum, item) => sum + item.abnormal, 0)}
+                      {filteredStabilityData.reduce((sum, item) => sum + item.abnormal, 0)}
                     </p>
                   </div>
                   <div className="bg-blue-50 rounded-lg p-3">
-                    <p className="text-xs text-blue-600 mb-1">Normal Rate</p>
+                    <p className="text-xs text-blue-600 mb-1">Resolved items</p>
                     <p className="text-xl font-semibold text-blue-700">
+                      {filteredStabilityData.reduce((sum, item) => sum + item.resolved, 0)}
+                    </p>
+                  </div>
+                  <div className="bg-indigo-50 rounded-lg p-3">
+                    <p className="text-xs text-indigo-600 mb-1">Normal Rate</p>
+                    <p className="text-xl font-semibold text-indigo-700">
                       {(() => {
                         const totalNormal = filteredStabilityData.reduce((sum, item) => sum + item.normal, 0);
                         const totalAbnormal = filteredStabilityData.reduce((sum, item) => sum + item.abnormal, 0);
-                        const total = totalNormal + totalAbnormal;
+                        const totalResolved = filteredStabilityData.reduce((sum, item) => sum + item.resolved, 0);
+                        const total = totalNormal + totalAbnormal + totalResolved;
                         return total > 0 ? ((totalNormal / total) * 100).toFixed(1) + '%' : '0.0%';
                       })()}
                     </p>
@@ -960,8 +936,8 @@ export default function TestDetail() {
                           <stop offset="95%" stopColor="#ef4444" stopOpacity={0.05}/>
                         </linearGradient>
                         <linearGradient id="colorResolved" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4}/>
-                          <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.05}/>
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -1034,7 +1010,7 @@ export default function TestDetail() {
                     <span className="text-xs text-slate-600">Abnormal</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-amber-500" />
+                    <div className="w-3 h-3 rounded-full bg-blue-500" />
                     <span className="text-xs text-slate-600">Resolved</span>
                   </div>
                 </div>

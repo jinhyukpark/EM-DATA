@@ -1028,8 +1028,7 @@ export default function TestDetail() {
                       Inspection Schedule / History
                     </h3>
                   </div>
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                  
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-slate-500">Filter:</span>
                     <input

@@ -21,7 +21,7 @@ import {
   Menu,
   Server,
   ClipboardCheck,
-  Wrench,
+  CheckCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -430,7 +430,7 @@ export default function QAReport() {
                                 {service.abnormalCount}
                               </span>
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-50 text-blue-600 text-xs font-medium">
-                                <Wrench className="w-3 h-3" />
+                                <CheckCheck className="w-3 h-3" />
                                 {service.resolvedCount}
                               </span>
                             </div>

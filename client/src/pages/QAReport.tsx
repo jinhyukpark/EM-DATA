@@ -21,6 +21,7 @@ import {
   Menu,
   Server,
   ClipboardCheck,
+  CheckCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,11 +29,11 @@ import Sidebar from "@/components/Sidebar";
 
 
 const services = [
-  { id: 1, testName: "Data Integrity Check", name: "Company Data Pipeline", type: ["Internal", "Database", "Core"], status: "Active", workStatus: "Normal", step: 5, startDate: "2025-01-01", endDate: "2025-03-31", inspectors: ["John Kim", "Sarah Lee"], nextInspection: "2025-01-16", normalCount: 12, abnormalCount: 0 },
-  { id: 2, testName: "API Response Validation", name: "Patent Crawler Service", type: ["Internal"], status: "Active", workStatus: "Normal", step: 3, startDate: "2025-01-01", endDate: "2025-06-30", inspectors: ["Sarah Lee"], nextInspection: "2025-01-15", normalCount: 8, abnormalCount: 1 },
-  { id: 3, testName: "Performance Benchmark", name: "News API Integration", type: ["External", "API"], status: "Warning", workStatus: "Delayed, Failed", step: 8, startDate: "2024-12-01", endDate: "2025-02-28", inspectors: ["Mike Park", "Emily Choi", "David Jung"], nextInspection: "2025-01-12", normalCount: 5, abnormalCount: 3 },
-  { id: 4, testName: "Security Audit", name: "Stock Data Collector", type: ["External", "Security"], status: "Active", workStatus: "Normal", step: 4, startDate: "2025-01-01", endDate: "2025-12-31", inspectors: ["Emily Choi"], nextInspection: "2025-01-16", normalCount: 10, abnormalCount: 0 },
-  { id: 5, testName: "Data Accuracy Test", name: "ML Prediction Service", type: ["Internal", "ML", "Analytics"], status: "Inactive", workStatus: "Stopped", step: 6, startDate: "2025-01-06", endDate: "2025-04-30", inspectors: ["David Jung", "John Kim"], nextInspection: "2025-01-20", normalCount: 3, abnormalCount: 2 },
+  { id: 1, testName: "Data Integrity Check", name: "Company Data Pipeline", type: ["Internal", "Database", "Core"], status: "Active", workStatus: "Normal", step: 5, startDate: "2025-01-01", endDate: "2025-03-31", inspectors: ["John Kim", "Sarah Lee"], nextInspection: "2025-01-16", normalCount: 12, abnormalCount: 0, resolvedCount: 1 },
+  { id: 2, testName: "API Response Validation", name: "Patent Crawler Service", type: ["Internal"], status: "Active", workStatus: "Normal", step: 3, startDate: "2025-01-01", endDate: "2025-06-30", inspectors: ["Sarah Lee"], nextInspection: "2025-01-15", normalCount: 8, abnormalCount: 1, resolvedCount: 2 },
+  { id: 3, testName: "Performance Benchmark", name: "News API Integration", type: ["External", "API"], status: "Warning", workStatus: "Delayed, Failed", step: 8, startDate: "2024-12-01", endDate: "2025-02-28", inspectors: ["Mike Park", "Emily Choi", "David Jung"], nextInspection: "2025-01-12", normalCount: 5, abnormalCount: 3, resolvedCount: 0 },
+  { id: 4, testName: "Security Audit", name: "Stock Data Collector", type: ["External", "Security"], status: "Active", workStatus: "Normal", step: 4, startDate: "2025-01-01", endDate: "2025-12-31", inspectors: ["Emily Choi"], nextInspection: "2025-01-16", normalCount: 10, abnormalCount: 0, resolvedCount: 3 },
+  { id: 5, testName: "Data Accuracy Test", name: "ML Prediction Service", type: ["Internal", "ML", "Analytics"], status: "Inactive", workStatus: "Stopped", step: 6, startDate: "2025-01-06", endDate: "2025-04-30", inspectors: ["David Jung", "John Kim"], nextInspection: "2025-01-20", normalCount: 3, abnormalCount: 2, resolvedCount: 0 },
 ];
 
 const testProcedures = [
@@ -427,6 +428,10 @@ export default function QAReport() {
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-50 text-red-600 text-xs font-medium">
                                 <AlertCircle className="w-3 h-3" />
                                 {service.abnormalCount}
+                              </span>
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-50 text-blue-600 text-xs font-medium">
+                                <CheckCheck className="w-3 h-3" />
+                                {service.resolvedCount}
                               </span>
                             </div>
                           </td>

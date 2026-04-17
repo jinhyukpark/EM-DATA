@@ -910,7 +910,7 @@ export default function TestDetail() {
                       {filteredStabilityData.reduce((sum, item) => sum + item.resolved, 0)}
                     </p>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                  <div className="bg-gray-100 rounded-lg p-3">
                     <p className="text-xs text-[#6B7280] mb-1">N/A items</p>
                     <p className="text-xl font-semibold text-gray-700">
                       {filteredStabilityData.reduce((sum, item) => sum + (item.na || 0), 0)}

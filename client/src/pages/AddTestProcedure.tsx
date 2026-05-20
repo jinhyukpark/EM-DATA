@@ -396,10 +396,17 @@ export default function AddTestProcedure() {
   };
 
   const confirmItemSettingsSave = () => {
-    // We no longer automatically save to the template because Templates and Test Items are decoupled.
-    // The user must explicitly click "Save to Template" to update a template.
-    setShowSaveOptionsModal(false);
-    setItemSettingsOpen(false);
+    // Check if test items were modified compared to original state
+    const itemsChanged = JSON.stringify(originalTestItemsRef.current) !== JSON.stringify(testItems);
+    
+    // We want to show the 'apply changes' modal if items were changed during edit mode
+    // (excluding when just template editing was active, which should be self-contained)
+    if (isEditMode && itemsChanged && !templateEditMode) {
+      setShowSaveOptionsModal(true);
+    } else {
+      setShowSaveOptionsModal(false);
+      setItemSettingsOpen(false);
+    }
   };
 
   const handleSave = () => {
@@ -1065,11 +1072,21 @@ export default function AddTestProcedure() {
                 >
                   <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
                     <div>
-                      <h2 className="text-lg font-semibold text-slate-900">Item Settings</h2>
-                      <p className="text-sm text-slate-500 mt-0.5">Set up test items and templates</p>
+                      <h2 className="text-lg font-semibold text-slate-900">
+                        {templateEditMode ? "Template Settings" : "Item Settings"}
+                      </h2>
+                      <p className="text-sm text-slate-500 mt-0.5">
+                        {templateEditMode ? "Set up your reusable template items" : "Set up test items and templates"}
+                      </p>
                     </div>
                     <button
-                      onClick={() => setItemSettingsOpen(false)}
+                      onClick={() => {
+                        if (templateEditMode) {
+                          setTemplateEditMode(false);
+                        } else {
+                          setItemSettingsOpen(false);
+                        }
+                      }}
                       className="p-2 rounded-lg hover:bg-slate-100 text-slate-600"
                       data-testid="button-close-item-settings"
                     >
@@ -1083,21 +1100,42 @@ export default function AddTestProcedure() {
 
                   <div className="absolute inset-x-0 bottom-0 border-t border-slate-200 bg-white/95 backdrop-blur px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        className="border-slate-300 text-slate-700 hover:bg-slate-100"
-                        onClick={() => setItemSettingsOpen(false)}
-                        data-testid="button-item-settings-cancel"
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        className="bg-blue-600 hover:bg-blue-700"
-                        onClick={handleItemSettingsSave}
-                        data-testid="button-item-settings-save"
-                      >
-                        Save
-                      </Button>
+                      {templateEditMode ? (
+                        <>
+                          <Button
+                            variant="outline"
+                            className="border-slate-300 text-slate-700 hover:bg-slate-100"
+                            onClick={() => setTemplateEditMode(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            className="bg-blue-600 hover:bg-blue-700"
+                            onClick={saveTemplateInternal}
+                            disabled={!newTemplateName.trim()}
+                          >
+                            Save Template
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="outline"
+                            className="border-slate-300 text-slate-700 hover:bg-slate-100"
+                            onClick={() => setItemSettingsOpen(false)}
+                            data-testid="button-item-settings-cancel"
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            className="bg-blue-600 hover:bg-blue-700"
+                            onClick={handleItemSettingsSave}
+                            data-testid="button-item-settings-save"
+                          >
+                            Save
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -1203,27 +1241,18 @@ export default function AddTestProcedure() {
                 
                 {templateEditMode && (
                   <div className="mb-6 bg-slate-50 rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                    <div className="p-4 border-b border-slate-200 bg-white flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <button 
-                          onClick={() => setTemplateEditMode(false)}
-                          className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
-                        >
-                          <ChevronLeft className="w-5 h-5" />
-                        </button>
-                        <div>
-                          <h3 className="text-sm font-semibold text-slate-800">
-                            {editingTemplateId ? 'Edit Template' : 'Create New Template'}
-                          </h3>
-                        </div>
-                      </div>
-                      <Button
-                        onClick={saveTemplateInternal}
-                        className="h-8 px-4 bg-blue-600 hover:bg-blue-700 text-xs font-medium"
-                        disabled={!newTemplateName.trim()}
+                    <div className="p-4 border-b border-slate-200 bg-white flex items-center gap-3">
+                      <button 
+                        onClick={() => setTemplateEditMode(false)}
+                        className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
                       >
-                        Save Template
-                      </Button>
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <div>
+                        <h3 className="text-sm font-semibold text-slate-800">
+                          {editingTemplateId ? 'Edit Template' : 'Create New Template'}
+                        </h3>
+                      </div>
                     </div>
                     
                     <div className="p-5">
@@ -1238,13 +1267,13 @@ export default function AddTestProcedure() {
                       </div>
                       
                       <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-sm font-semibold text-slate-700">Template Items</h4>
+                        <h4 className="text-lg font-semibold text-slate-800">Template Items</h4>
                         <Button 
                           onClick={addTemplateItem} 
-                          variant="outline" 
-                          className="h-8 gap-1.5 border-blue-200 text-blue-600 hover:bg-blue-50 text-xs font-medium px-3"
+                          className="gap-2 bg-blue-600 hover:bg-blue-700"
+                          data-testid="add-template-item"
                         >
-                          <Plus className="w-3.5 h-3.5" />
+                          <Plus className="w-4 h-4" />
                           Add Item
                         </Button>
                       </div>
@@ -1264,28 +1293,149 @@ export default function AddTestProcedure() {
                           </Button>
                         </div>
                       ) : (
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                           {templateItems.map((item, index) => (
-                            <div key={item.id} className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm relative group">
-                              <div className="flex gap-4">
-                                <div className="flex-1 space-y-3">
+                            <motion.div
+                              key={item.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="border border-slate-200 rounded-xl p-5 bg-white shadow-sm"
+                            >
+                              <div className="flex items-start gap-4">
+                                <div className="flex items-center gap-2 pt-2">
+                                  <GripVertical className="w-4 h-4 text-slate-300" />
+                                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-medium">
+                                    {index + 1}
+                                  </span>
+                                </div>
+                                <div className="flex-1 space-y-4">
                                   <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Question</label>
                                     <Input
                                       value={item.question}
                                       onChange={(e) => updateTemplateItem(item.id, "question", e.target.value)}
                                       placeholder="Enter your question..."
-                                      className="border-slate-200 bg-white h-9"
+                                      className="border-slate-200 bg-white"
                                     />
                                   </div>
+
+                                  <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Answer Type</label>
+                                    <div className="flex items-center gap-3">
+                                      <button
+                                        onClick={() => updateTemplateItem(item.id, "answerType", "multiple_choice")}
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                          item.answerType === "multiple_choice"
+                                            ? "border-blue-500 bg-blue-50 text-blue-700"
+                                            : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                        }`}
+                                      >
+                                        <List className="w-4 h-4" />
+                                        <span className="text-sm font-medium">Multiple Choice</span>
+                                      </button>
+                                      <button
+                                        onClick={() => updateTemplateItem(item.id, "answerType", "text")}
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                          item.answerType === "text"
+                                            ? "border-green-500 bg-green-50 text-green-700"
+                                            : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                        }`}
+                                      >
+                                        <MessageSquare className="w-4 h-4" />
+                                        <span className="text-sm font-medium">Text</span>
+                                      </button>
+                                      <button
+                                        onClick={() => updateTemplateItem(item.id, "answerType", "ox")}
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                          item.answerType === "ox"
+                                            ? "border-purple-500 bg-purple-50 text-purple-700"
+                                            : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                        }`}
+                                      >
+                                        <CheckSquare className="w-4 h-4" />
+                                        <span className="text-sm font-medium">O/X</span>
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  {item.answerType === "multiple_choice" && (
+                                    <div>
+                                      <div className="flex items-center justify-between mb-2">
+                                        <label className="block text-sm font-medium text-slate-700">Options</label>
+                                        <button
+                                          onClick={() => addTemplateOption(item.id)}
+                                          className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                                        >
+                                          <Plus className="w-3 h-3" />
+                                          Add Option
+                                        </button>
+                                      </div>
+                                      <div className="grid grid-cols-1 gap-3">
+                                        {item.options.map((opt, optIndex) => (
+                                          <div key={optIndex} className="flex items-center gap-2">
+                                            <span className="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-medium flex-shrink-0">
+                                              {optIndex + 1}
+                                            </span>
+                                            <div className="flex-1 flex items-center gap-2">
+                                              <Input
+                                                value={opt.text}
+                                                onChange={(e) => updateTemplateOption(item.id, optIndex, e.target.value)}
+                                                placeholder={`Option ${optIndex + 1}`}
+                                                className="border-slate-200 bg-white text-sm flex-1"
+                                              />
+                                              <div className="flex items-center gap-2 px-2 bg-slate-50 border border-slate-100 rounded h-10">
+                                                <label className="flex items-center gap-2 cursor-pointer select-none">
+                                                  <input 
+                                                    type="checkbox" 
+                                                    checked={opt.isNormal}
+                                                    onChange={() => toggleTemplateOptionNormal(item.id, optIndex)}
+                                                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                  />
+                                                  <span className={`text-xs font-medium ${opt.isNormal ? 'text-blue-600' : 'text-slate-400'}`}>Normal</span>
+                                                </label>
+                                              </div>
+                                            </div>
+                                            {item.options.length > 2 && (
+                                              <button
+                                                onClick={() => removeTemplateOption(item.id, optIndex)}
+                                                className="p-1 hover:bg-red-50 rounded transition-colors flex-shrink-0"
+                                              >
+                                                <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                                              </button>
+                                            )}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {item.answerType === "text" && (
+                                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                                      <p className="text-sm text-slate-500 italic">Inspector will enter a text response</p>
+                                    </div>
+                                  )}
+
+                                  {item.answerType === "ox" && (
+                                    <div className="flex items-center gap-6 bg-slate-50 border border-slate-200 rounded-lg p-4">
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold">O</span>
+                                        <span className="text-sm text-slate-600">Pass / Yes</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-sm font-bold">X</span>
+                                        <span className="text-sm text-slate-600">Fail / No</span>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                                 <button
                                   onClick={() => removeTemplateItem(item.id)}
-                                  className="p-1.5 text-slate-400 hover:text-red-500 rounded-md hover:bg-red-50 mt-0.5 self-start"
+                                  className="p-2 hover:bg-red-50 rounded-lg transition-colors"
                                 >
-                                  <Trash2 className="w-4 h-4" />
+                                  <Trash2 className="w-4 h-4 text-red-400" />
                                 </button>
                               </div>
-                            </div>
+                            </motion.div>
                           ))}
                         </div>
                       )}
@@ -1337,35 +1487,25 @@ export default function AddTestProcedure() {
                   </div>
                 )}
 
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-semibold text-slate-800">Test Items</h2>
-                  <div className="flex gap-2">
-                    <Button 
-                      onClick={() => setShowTemplateModal(true)} 
-                      variant="outline" 
-                      className="gap-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-blue-600"
-                      disabled={testItems.length === 0}
-                      data-testid="save-to-template"
-                    >
-                      <Save className="w-4 h-4" />
-                      Save to Template
-                    </Button>
-                    <Button onClick={addTestItem} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-item">
-                      <Plus className="w-4 h-4" />
-                      Add Test Item
-                    </Button>
-                  </div>
-                </div>
+                {/* When editing a template, hide the main Test Items area completely */}
+                {!templateEditMode && (
+                  <>
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-lg font-semibold text-slate-800">Test Items</h2>
+                      <div className="flex gap-2">
+                        <Button onClick={addTestItem} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-item">
+                          <Plus className="w-4 h-4" />
+                          Add Test Item
+                        </Button>
+                      </div>
+                    </div>
 
                 {testItems.length === 0 ? (
                   <div className="text-center py-16 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
                     <ClipboardCheck className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                     <p className="text-slate-600 font-medium mb-1">No test items added yet</p>
                     <p className="text-slate-400 text-sm mb-6">
-                      {selectedTemplateId 
-                        ? "This template is empty. Add test items to build your checklist."
-                        : "Start building your test procedure by adding test items."
-                      }
+                      Start building your test procedure by adding test items.
                     </p>
                     <Button onClick={addTestItem} variant="outline" className="gap-2 border-blue-300 text-blue-600 hover:bg-blue-50" data-testid="add-first-item">
                       <Plus className="w-4 h-4" />
@@ -1528,6 +1668,8 @@ export default function AddTestProcedure() {
                       </motion.div>
                     ))}
                   </div>
+                )}
+                  </>
                 )}
                 {/* Save Options Modal */}
                 {showSaveOptionsModal && (

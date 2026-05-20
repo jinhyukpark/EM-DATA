@@ -246,7 +246,20 @@ export default function AddTestProcedure() {
   const [showSaveOptionsModal, setShowSaveOptionsModal] = useState(false);
   const [saveOption, setSaveOption] = useState<"today" | "next" | "custom">("today");
   const [customApplyDate, setCustomApplyDate] = useState("");
-  const [showUpdateAlertModal, setShowUpdateAlertModal] = useState(false);
+  const [templateEditMode, setTemplateEditMode] = useState(false);
+  const [editingTemplateId, setEditingTemplateId] = useState<number | null>(null);
+
+  const startEditTemplate = (e: React.MouseEvent, templateId: number) => {
+    e.stopPropagation();
+    const template = templates.find(t => t.id === templateId);
+    if (template) {
+      setNewTemplateName(template.name);
+      setTemplateItems(template.items.map(item => ({ ...item })));
+      setTemplateNextId(template.items.length ? Math.max(...template.items.map(i => i.id)) + 1 : 1);
+      setEditingTemplateId(templateId);
+      setTemplateEditMode(true);
+    }
+  };
   
   // Track original assigned inspectors and days to detect changes
   const [originalInspectors, setOriginalInspectors] = useState<string[]>(existingData?.inspectors || []);
@@ -266,42 +279,51 @@ export default function AddTestProcedure() {
     setTemplateItems(templateItems.filter(item => item.id !== id));
   };
 
-  const saveNewTemplate = () => {
+  const saveTemplateInternal = () => {
     if (newTemplateName.trim() && templateItems.length > 0) {
-      const newTemplate = {
-        id: templates.length + 1,
-        name: newTemplateName.trim(),
-        isDefault: false,
-        items: templateItems.map(item => ({ ...item })),
-      };
-      setTemplates([...templates, newTemplate]);
+      if (editingTemplateId) {
+        setTemplates(templates.map(t => 
+          t.id === editingTemplateId 
+            ? { ...t, name: newTemplateName.trim(), items: templateItems.map(item => ({ ...item })) }
+            : t
+        ));
+      } else {
+        const newTemplate = {
+          id: templates.length ? Math.max(...templates.map(t => t.id)) + 1 : 1,
+          name: newTemplateName.trim(),
+          isDefault: false,
+          items: templateItems.map(item => ({ ...item })),
+        };
+        setTemplates([...templates, newTemplate]);
+      }
       setNewTemplateName("");
       setTemplateItems([]);
       setTemplateNextId(1);
-      setShowTemplateModal(false);
+      setEditingTemplateId(null);
+      setTemplateEditMode(false);
     }
   };
 
   const saveAsTemplate = () => {
     if (newTemplateName.trim()) {
-      const newId = templates.length + 1;
+      const newId = templates.length ? Math.max(...templates.map(t => t.id)) + 1 : 1;
       const newTemplate = {
         id: newId,
         name: newTemplateName.trim(),
         isDefault: false,
-        items: [],
+        items: testItems.map(item => ({ ...item })),
       };
       setTemplates([...templates, newTemplate]);
       setSelectedTemplateId(newId);
-      setTestItems([]);
-      setNextId(1);
-      setTemplateModified(false);
       setNewTemplateName("");
       setShowTemplateModal(false);
     }
   };
 
   const loadTemplate = (templateId: number) => {
+    if (testItems.length > 0 && selectedTemplateId !== templateId) {
+      if (!window.confirm("기존 항목이 모두 삭제됩니다. 계속하시겠어요?")) return;
+    }
     const template = templates.find(t => t.id === templateId);
     if (template) {
       setTestItems(template.items.map((item, idx) => ({ ...item, id: idx + 1 })));
@@ -317,6 +339,7 @@ export default function AddTestProcedure() {
   };
 
   const deleteTemplate = (templateId: number) => {
+    if (!window.confirm("템플릿을 삭제하시겠습니까?")) return;
     setTemplates(templates.filter(t => t.id !== templateId));
     if (selectedTemplateId === templateId) {
       setSelectedTemplateId(null);
@@ -324,6 +347,8 @@ export default function AddTestProcedure() {
   };
 
   const saveToSelectedTemplate = () => {
+    // This function is no longer used for automatic saving, but kept for reference if needed.
+    // We use saveTemplateInternal for explicit saves.
     if (selectedTemplateId && testItems.length > 0) {
       setTemplates(templates.map(t => 
         t.id === selectedTemplateId 
@@ -370,9 +395,8 @@ export default function AddTestProcedure() {
   };
 
   const confirmItemSettingsSave = () => {
-    if (selectedTemplateId && templateModified) {
-        saveToSelectedTemplate();
-    }
+    // We no longer automatically save to the template because Templates and Test Items are decoupled.
+    // The user must explicitly click "Save to Template" to update a template.
     setShowSaveOptionsModal(false);
     setItemSettingsOpen(false);
   };
@@ -1077,6 +1101,7 @@ export default function AddTestProcedure() {
                   </div>
 
                 {/* Template Section */}
+                {!templateEditMode && (
                 <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
@@ -1110,7 +1135,13 @@ export default function AddTestProcedure() {
                     {/* Add New Template Button - Always First on First Page */}
                     {templateCurrentPage === 1 && (
                       <button
-                        onClick={() => setShowTemplateModal(true)}
+                        onClick={() => {
+                          setTemplateEditMode(true);
+                          setEditingTemplateId(null);
+                          setNewTemplateName("");
+                          setTemplateItems([]);
+                          setTemplateNextId(1);
+                        }}
                         className="p-4 bg-white rounded-lg border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-2 min-h-[100px]"
                         data-testid="add-template-btn"
                       >
@@ -1144,11 +1175,11 @@ export default function AddTestProcedure() {
                         )}
                         <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 rounded p-0.5">
                           <button
-                            onClick={(e) => { e.stopPropagation(); setDefaultTemplate(template.id); }}
-                            className={`p-1.5 rounded hover:bg-slate-100 ${template.isDefault ? 'text-amber-500' : 'text-slate-400'}`}
-                            title="Set as default"
+                            onClick={(e) => startEditTemplate(e, template.id)}
+                            className="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-blue-500"
+                            title="Edit"
                           >
-                            <Star className={`w-4 h-4 ${template.isDefault ? 'fill-amber-500' : ''}`} />
+                            <Settings className="w-4 h-4" /> {/* Use Edit icon ideally, fallback to Settings if Edit not imported */}
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); deleteTemplate(template.id); }}
@@ -1167,6 +1198,99 @@ export default function AddTestProcedure() {
                     ))}
                   </div>
                 </div>
+                )}
+                
+                {templateEditMode && (
+                  <div className="mb-6 bg-slate-50 rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                    <div className="p-4 border-b border-slate-200 bg-white flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <button 
+                          onClick={() => setTemplateEditMode(false)}
+                          className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <div>
+                          <h3 className="text-sm font-semibold text-slate-800">
+                            {editingTemplateId ? 'Edit Template' : 'Create New Template'}
+                          </h3>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={saveTemplateInternal}
+                        className="h-8 px-4 bg-blue-600 hover:bg-blue-700 text-xs font-medium"
+                        disabled={!newTemplateName.trim()}
+                      >
+                        Save Template
+                      </Button>
+                    </div>
+                    
+                    <div className="p-5">
+                      <div className="mb-6">
+                        <label className="block text-xs font-medium text-slate-600 mb-1.5">Template Name</label>
+                        <Input
+                          value={newTemplateName}
+                          onChange={(e) => setNewTemplateName(e.target.value)}
+                          placeholder="e.g., Basic QA Checklist"
+                          className="max-w-md bg-white"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-sm font-semibold text-slate-700">Template Items</h4>
+                        <Button 
+                          onClick={addTemplateItem} 
+                          variant="outline" 
+                          className="h-8 gap-1.5 border-blue-200 text-blue-600 hover:bg-blue-50 text-xs font-medium px-3"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          Add Item
+                        </Button>
+                      </div>
+                      
+                      {templateItems.length === 0 ? (
+                        <div className="text-center py-10 border-2 border-dashed border-slate-200 rounded-lg bg-white/50">
+                          <ClipboardCheck className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                          <p className="text-sm font-medium text-slate-500">No items added</p>
+                          <p className="text-xs text-slate-400 mt-1 mb-4">Add items to build your template</p>
+                          <Button 
+                            onClick={addTemplateItem} 
+                            variant="outline" 
+                            className="h-8 gap-1.5 border-blue-200 text-blue-600 hover:bg-blue-50 text-xs font-medium"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            Add First Item
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {templateItems.map((item, index) => (
+                            <div key={item.id} className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm relative group">
+                              <div className="flex gap-4">
+                                <div className="flex-1 space-y-3">
+                                  <div>
+                                    <Input
+                                      value={item.question}
+                                      onChange={(e) => updateTemplateItem(item.id, "question", e.target.value)}
+                                      placeholder="Enter your question..."
+                                      className="border-slate-200 bg-white h-9"
+                                    />
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={() => removeTemplateItem(item.id)}
+                                  className="p-1.5 text-slate-400 hover:text-red-500 rounded-md hover:bg-red-50 mt-0.5 self-start"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Create Template Modal */}
                 {showTemplateModal && (
@@ -1215,18 +1339,16 @@ export default function AddTestProcedure() {
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-semibold text-slate-800">Test Items</h2>
                   <div className="flex gap-2">
-                    {selectedTemplateId && (
-                      <Button 
-                        onClick={handleDuplicateTemplate} 
-                        variant="outline" 
-                        className="gap-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-blue-600"
-                        disabled={testItems.length === 0}
-                        data-testid="duplicate-template"
-                      >
-                        <Copy className="w-4 h-4" />
-                        Duplicate
-                      </Button>
-                    )}
+                    <Button 
+                      onClick={() => setShowTemplateModal(true)} 
+                      variant="outline" 
+                      className="gap-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-blue-600"
+                      disabled={testItems.length === 0}
+                      data-testid="save-to-template"
+                    >
+                      <Save className="w-4 h-4" />
+                      Save to Template
+                    </Button>
                     <Button onClick={addTestItem} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-item">
                       <Plus className="w-4 h-4" />
                       Add Test Item

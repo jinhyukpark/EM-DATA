@@ -361,7 +361,11 @@ export default function TestDetail() {
   const [cancelScheduleMode, setCancelScheduleMode] = useState(false);
   const [editScheduleType, setEditScheduleType] = useState<'date' | 'assignee' | 'cancel'>('date');
   const [cancelScheduleReason, setCancelScheduleReason] = useState("");
-  const [historyModal, setHistoryModal] = useState<number | null>(null);
+  const [addInspectionModal, setAddInspectionModal] = useState(false);
+  const [adHocDate, setAdHocDate] = useState("");
+  const [adHocTime, setAdHocTime] = useState("");
+  const [adHocAssignee, setAdHocAssignee] = useState("");
+  const [adHocItems, setAdHocItems] = useState<any[]>([]);
   
   // Mock history data for test items grouped by action
   const itemHistory = [
@@ -1113,7 +1117,25 @@ export default function TestDetail() {
 
                   return (
                     <>
-                      <div className="flex gap-2 pb-3 relative z-20" data-testid="schedule-dates">
+                      <div className="flex gap-2 pb-3 relative z-20 overflow-x-auto" data-testid="schedule-dates">
+                        {/* Ad-hoc Inspection Card */}
+                        <div className="relative flex-shrink-0">
+                          <button
+                            onClick={() => {
+                              setAdHocDate(new Date().toISOString().split('T')[0]);
+                              setAdHocTime("10:00");
+                              setAdHocAssignee(test.inspectors[0] || "");
+                              setAdHocItems(test.items.map(i => ({ ...i, answer: "", status: "pending", comment: "" })));
+                              setAddInspectionModal(true);
+                            }}
+                            className="relative px-3 py-2 rounded-lg border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all min-w-[140px] h-[92px] flex flex-col items-center justify-center gap-2 bg-white"
+                            data-testid="add-ad-hoc-inspection"
+                          >
+                            <Plus className="w-6 h-6 text-blue-500" />
+                            <span className="text-[13px] font-medium text-slate-600">Add Inspection</span>
+                          </button>
+                        </div>
+
                         {currentSchedules.length > 0 ? currentSchedules.map((item) => {
                           const normalCount = item.testResults?.filter(r => r.answer === "O").length || 0;
                           const abnormalCount = item.testResults?.filter(r => r.answer === "X").length || 0;
@@ -1165,6 +1187,11 @@ export default function TestDetail() {
                           
                           <div className={`text-[15px] font-bold leading-none ${selectedSchedule === item.id ? "text-white" : "text-slate-800"}`}>
                             {item.date}
+                            {item.isAdHoc && (
+                              <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-indigo-100 text-indigo-700">
+                                Ad-hoc
+                              </span>
+                            )}
                           </div>
                           
                           <div className="flex items-center justify-center gap-1.5 mt-1">
@@ -2055,6 +2082,155 @@ export default function TestDetail() {
               <div className="p-4 border-t border-slate-200 flex justify-end bg-slate-50 rounded-b-xl">
                 <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" onClick={() => setHistoryModal(null)}>
                   Close
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {addInspectionModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setAddInspectionModal(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between p-6 border-b border-slate-200">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800">Add Ad-hoc Inspection</h3>
+                  <p className="text-sm text-slate-500 mt-1">Create a one-off inspection with custom test items.</p>
+                </div>
+                <button onClick={() => setAddInspectionModal(false)} className="text-slate-400 hover:text-slate-600">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="p-6 overflow-y-auto flex-1 bg-slate-50/50">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Assignee</label>
+                    <select
+                      value={adHocAssignee}
+                      onChange={(e) => setAdHocAssignee(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {test.inspectors.map((inspector) => (
+                        <option key={inspector} value={inspector}>{inspector}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
+                    <input
+                      type="date"
+                      value={adHocDate}
+                      onChange={(e) => setAdHocDate(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Time</label>
+                    <input
+                      type="time"
+                      value={adHocTime}
+                      onChange={(e) => setAdHocTime(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-base font-semibold text-slate-800">Test Items</h4>
+                    <Button 
+                      onClick={() => setAdHocItems([...adHocItems, { id: Date.now(), question: "", answerType: "text", status: "pending", answer: "" }])}
+                      variant="outline" 
+                      className="gap-2 border-blue-200 text-blue-600 hover:bg-blue-50"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add Item
+                    </Button>
+                  </div>
+                  
+                  {adHocItems.map((item, index) => (
+                    <div key={item.id} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                      <div className="flex items-start gap-4">
+                        <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-medium flex-shrink-0 mt-2">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1 space-y-4">
+                          <div>
+                            <label className="block text-xs font-medium text-slate-500 mb-1">Question</label>
+                            <input
+                              type="text"
+                              value={item.question}
+                              onChange={(e) => {
+                                const newItems = [...adHocItems];
+                                newItems[index].question = e.target.value;
+                                setAdHocItems(newItems);
+                              }}
+                              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-slate-500 mb-1">Type</label>
+                            <select
+                              value={item.answerType}
+                              onChange={(e) => {
+                                const newItems = [...adHocItems];
+                                newItems[index].answerType = e.target.value;
+                                if (e.target.value === 'multiple_choice' && !item.options) {
+                                  newItems[index].options = [{ text: "Option 1" }, { text: "Option 2" }];
+                                }
+                                setAdHocItems(newItems);
+                              }}
+                              className="w-full sm:w-auto px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="ox">O/X</option>
+                              <option value="multiple_choice">Multiple Choice</option>
+                              <option value="text">Text</option>
+                            </select>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setAdHocItems(adHocItems.filter((_, i) => i !== index))}
+                          className="p-2 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 mt-1"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {adHocItems.length === 0 && (
+                    <div className="text-center py-8 text-slate-500 bg-white border border-slate-200 rounded-xl border-dashed">
+                      No test items. Add an item to proceed.
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-white rounded-b-xl">
+                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" onClick={() => setAddInspectionModal(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  className="bg-blue-600 hover:bg-blue-700" 
+                  disabled={!adHocAssignee || !adHocDate || adHocItems.length === 0}
+                  onClick={() => {
+                    const newSchedule = {
+                      id: Date.now(),
+                      date: adHocDate,
+                      assignee: adHocAssignee,
+                      status: "Planned",
+                      isAdHoc: true,
+                      testResults: adHocItems.map(item => ({...item}))
+                    };
+                    test.schedule.unshift(newSchedule);
+                    setAddInspectionModal(false);
+                  }}
+                >
+                  Create Inspection
                 </Button>
               </div>
             </motion.div>

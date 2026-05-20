@@ -248,6 +248,7 @@ export default function AddTestProcedure() {
   const [customApplyDate, setCustomApplyDate] = useState("");
   const [templateEditMode, setTemplateEditMode] = useState(false);
   const [editingTemplateId, setEditingTemplateId] = useState<number | null>(null);
+  const [showUpdateAlertModal, setShowUpdateAlertModal] = useState(false);
 
   const startEditTemplate = (e: React.MouseEvent, templateId: number) => {
     e.stopPropagation();

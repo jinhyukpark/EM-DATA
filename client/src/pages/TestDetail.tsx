@@ -2319,7 +2319,7 @@ export default function TestDetail() {
                   
                   <div className="grid grid-cols-1 gap-4">
                     {adHocItems.map((item, index) => (
-                    <div key={item.id} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                    <div key={item.id} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative">
                       <div className="flex items-start gap-4">
                         <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-medium flex-shrink-0 mt-2">
                           {index + 1}
@@ -2360,22 +2360,26 @@ export default function TestDetail() {
                             </select>
                           </div>
                         </div>
-                        {adHocMode !== "existing" && (
-                          <button
-                            onClick={() => setAdHocItems(adHocItems.filter((_, i) => i !== index))}
-                            className="p-2 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 mt-1"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
                       </div>
+                      
+                      {adHocMode !== "existing" && (
+                        <button
+                          onClick={() => setAdHocItems(adHocItems.filter((_, i) => i !== index))}
+                          className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                       
                       {/* Options rendering for multiple choice */}
                       {item.answerType === 'multiple_choice' && item.options && (
-                        <div className="mt-4 pl-10 space-y-2">
+                        <div className="mt-4 space-y-2">
                           <label className="block text-xs font-medium text-slate-500">Options</label>
                           {item.options.map((opt: any, optIndex: number) => (
-                            <div key={optIndex} className="flex gap-2">
+                            <div key={optIndex} className="flex gap-2 items-center">
+                              <span className="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-medium flex-shrink-0">
+                                {optIndex + 1}
+                              </span>
                               <input
                                 type="text"
                                 value={opt.text}

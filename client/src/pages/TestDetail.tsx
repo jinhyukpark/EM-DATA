@@ -38,6 +38,7 @@ import {
   ChevronRight,
   Plus,
   X,
+  Copy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -370,6 +371,24 @@ export default function TestDetail() {
   const [adHocTime, setAdHocTime] = useState("");
   const [adHocAssignee, setAdHocAssignee] = useState("");
   const [adHocItems, setAdHocItems] = useState<any[]>([]);
+  const [adHocMode, setAdHocMode] = useState<"existing" | "custom">("existing");
+  const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
+  const [templates, setTemplates] = useState<{id: number; name: string; isDefault: boolean; items: any[]}[]>([
+    { id: 1, name: "Basic QA Check", isDefault: true, items: [
+      { id: 1, question: "Is the service responding correctly?", answerType: "ox", options: [] },
+      { id: 2, question: "Are all endpoints accessible?", answerType: "ox", options: [] },
+    ]},
+    { id: 2, name: "Performance Review", isDefault: false, items: [
+      { id: 1, question: "Response time within SLA?", answerType: "ox", options: [] },
+      { id: 2, question: "Performance rating:", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }] },
+      { id: 3, question: "Additional notes:", answerType: "text", options: [] },
+    ]},
+    { id: 3, name: "Data Validation", isDefault: false, items: [
+      { id: 1, question: "Data format is correct?", answerType: "ox", options: [] },
+      { id: 2, question: "All required fields present?", answerType: "ox", options: [] },
+      { id: 3, question: "Data quality score:", answerType: "multiple_choice", options: [{ text: "100%", isNormal: true }, { text: "90-99%", isNormal: true }, { text: "80-89%", isNormal: false }, { text: "Below 80%", isNormal: false }] },
+    ]},
+  ]);
   
   // Mock history data for test items grouped by action
   const itemHistory = [
@@ -1130,6 +1149,7 @@ export default function TestDetail() {
                               setAdHocTime("10:00");
                               setAdHocAssignee(test.inspectors[0] || "");
                               setAdHocItems(test.items.map(i => ({ ...i, answer: "", status: "pending", comment: "" })));
+                              setAdHocMode("existing");
                               setAddInspectionModal(true);
                             }}
                             className="relative px-3 py-2 rounded-lg border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all min-w-[140px] h-[92px] flex flex-col items-center justify-center gap-2 bg-white"
@@ -2109,6 +2129,72 @@ export default function TestDetail() {
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {/* Template Selection Section inside Modal Header Area */}
+              <div className="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    onClick={() => {
+                      setAdHocMode("existing");
+                      const existingItems = test.items.map((i, index) => ({
+                        id: Date.now() + index,
+                        question: i.question,
+                        answerType: i.answerType,
+                        options: i.options,
+                        status: "pending",
+                        answer: ""
+                      }));
+                      setAdHocItems(existingItems);
+                    }}
+                    className={`flex flex-col items-start p-4 rounded-xl border-2 text-left transition-all ${
+                      adHocMode === "existing" 
+                        ? "border-blue-600 bg-blue-50/50" 
+                        : "border-slate-200 bg-white hover:border-slate-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                        adHocMode === "existing" ? "border-blue-600" : "border-slate-300"
+                      }`}>
+                        {adHocMode === "existing" && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                      </div>
+                      <span className={`font-semibold ${adHocMode === "existing" ? "text-blue-700" : "text-slate-700"}`}>
+                        Load Existing Items
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 pl-6">
+                      Use and sync with the original test items. Changes will affect the main test.
+                    </p>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setAdHocMode("custom");
+                      setAdHocItems([]);
+                      setShowTemplateDropdown(true);
+                    }}
+                    className={`flex flex-col items-start p-4 rounded-xl border-2 text-left transition-all ${
+                      adHocMode === "custom" 
+                        ? "border-blue-600 bg-blue-50/50" 
+                        : "border-slate-200 bg-white hover:border-slate-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                        adHocMode === "custom" ? "border-blue-600" : "border-slate-300"
+                      }`}>
+                        {adHocMode === "custom" && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                      </div>
+                      <span className={`font-semibold ${adHocMode === "custom" ? "text-blue-700" : "text-slate-700"}`}>
+                        Custom Settings
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 pl-6">
+                      Create an independent inspection. Set up new items or load from templates.
+                    </p>
+                  </button>
+                </div>
+              </div>
               
               <div className="p-6 overflow-y-auto flex-1 bg-slate-50/50">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -2147,14 +2233,53 @@ export default function TestDetail() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="text-base font-semibold text-slate-800">Test Items</h4>
-                    <Button 
-                      onClick={() => setAdHocItems([...adHocItems, { id: Date.now(), question: "", answerType: "text", status: "pending", answer: "" }])}
-                      variant="outline" 
-                      className="gap-2 border-blue-200 text-blue-600 hover:bg-blue-50"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Item
-                    </Button>
+                    {adHocMode === "custom" && (
+                      <div className="flex gap-2 items-center">
+                        {showTemplateDropdown ? (
+                          <select
+                            className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            onChange={(e) => {
+                              const templateId = parseInt(e.target.value);
+                              const template = templates.find(t => t.id === templateId);
+                              if (template) {
+                                const newItems = template.items.map((i: any, index: number) => ({
+                                  id: Date.now() + index,
+                                  question: i.question,
+                                  answerType: i.answerType,
+                                  options: i.options,
+                                  status: "pending",
+                                  answer: ""
+                                }));
+                                setAdHocItems([...adHocItems, ...newItems]);
+                                setShowTemplateDropdown(false);
+                              }
+                            }}
+                          >
+                            <option value="">Select a template...</option>
+                            {templates.map(t => (
+                              <option key={t.id} value={t.id}>{t.name}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <Button 
+                            onClick={() => setShowTemplateDropdown(true)}
+                            variant="outline" 
+                            className="gap-2 border-slate-200 text-slate-600 hover:bg-slate-50"
+                          >
+                            <Copy className="w-4 h-4" />
+                            Load from Template
+                          </Button>
+                        )}
+                        <Button 
+                          onClick={() => setAdHocItems([...adHocItems, { id: Date.now(), question: "", answerType: "text", status: "pending", answer: "" }])}
+                          variant="outline" 
+                          className="gap-2 border-blue-200 text-blue-600 hover:bg-blue-50"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Item
+                        </Button>
+                      </div>
+                    )}
                   </div>
                   
                   {adHocItems.map((item, index) => (

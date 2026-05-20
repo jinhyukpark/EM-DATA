@@ -361,6 +361,7 @@ export default function TestDetail() {
   const [cancelScheduleMode, setCancelScheduleMode] = useState(false);
   const [editScheduleType, setEditScheduleType] = useState<'date' | 'assignee' | 'cancel'>('date');
   const [cancelScheduleReason, setCancelScheduleReason] = useState("");
+  const [historyModal, setHistoryModal] = useState<number | null>(null);
   const [addInspectionModal, setAddInspectionModal] = useState(false);
   const [adHocDate, setAdHocDate] = useState("");
   const [adHocTime, setAdHocTime] = useState("");

@@ -90,6 +90,7 @@ type ScheduleItem = {
   date: string;
   assignee: string;
   status: "Planned" | "In Progress" | "Delayed" | "Normal" | "Failed" | "Resolved" | "Canceled";
+  isAdHoc?: boolean;
   startTime?: string;
   endTime?: string;
   duration?: string;
@@ -2225,7 +2226,7 @@ export default function TestDetail() {
                       id: Date.now(),
                       date: adHocDate,
                       assignee: adHocAssignee,
-                      status: "Planned",
+                      status: "Planned" as const,
                       isAdHoc: true,
                       testResults: adHocItems.map(item => ({...item}))
                     };

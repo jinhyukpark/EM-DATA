@@ -2441,6 +2441,7 @@ export default function TestDetail() {
                   )}
                 </div>
               </div>
+              </div>
               
               <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-white rounded-b-xl">
                 <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" onClick={() => setAddInspectionModal(false)}>

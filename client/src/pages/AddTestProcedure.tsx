@@ -218,7 +218,7 @@ export default function AddTestProcedure() {
 
   // Template state
   const [templates, setTemplates] = useState<{id: number; name: string; isDefault: boolean; items: TestItem[]}[]>([
-    { id: 1, name: "Basic QA Check", isDefault: true, items: [
+    { id: 1, name: "Basic QA Check", isDefault: false, items: [
       { id: 1, question: "Is the service responding correctly?", answerType: "ox", options: [] },
       { id: 2, question: "Are all endpoints accessible?", answerType: "ox", options: [] },
     ]},
@@ -246,7 +246,54 @@ export default function AddTestProcedure() {
   const [showSaveOptionsModal, setShowSaveOptionsModal] = useState(false);
   const [saveOption, setSaveOption] = useState<"today" | "next" | "custom">("today");
   const [customApplyDate, setCustomApplyDate] = useState("");
+  const [templateEditMode, setTemplateEditMode] = useState(false);
+  const [editingTemplateId, setEditingTemplateId] = useState<number | null>(null);
   const [showUpdateAlertModal, setShowUpdateAlertModal] = useState(false);
+
+  const handleCancelEditTemplate = () => {
+    let isModified = false;
+    
+    if (editingTemplateId) {
+      const originalTemplate = templates.find(t => t.id === editingTemplateId);
+      if (originalTemplate) {
+        if (originalTemplate.name !== newTemplateName) {
+          isModified = true;
+        } else if (originalTemplate.items.length !== templateItems.length) {
+          isModified = true;
+        } else {
+          const origStr = JSON.stringify(originalTemplate.items.map(i => ({q: i.question, t: i.answerType, o: i.options})));
+          const currStr = JSON.stringify(templateItems.map(i => ({q: i.question, t: i.answerType, o: i.options})));
+          if (origStr !== currStr) {
+            isModified = true;
+          }
+        }
+      }
+    } else {
+      if (newTemplateName.trim() !== "" || templateItems.length > 0) {
+        isModified = true;
+      }
+    }
+
+    if (isModified) {
+      if (window.confirm("템플릿 수정을 취소하시겠습니까?")) {
+        setTemplateEditMode(false);
+      }
+    } else {
+      setTemplateEditMode(false);
+    }
+  };
+
+  const startEditTemplate = (e: React.MouseEvent, templateId: number) => {
+    e.stopPropagation();
+    const template = templates.find(t => t.id === templateId);
+    if (template) {
+      setNewTemplateName(template.name);
+      setTemplateItems(template.items.map(item => ({ ...item })));
+      setTemplateNextId(template.items.length ? Math.max(...template.items.map(i => i.id)) + 1 : 1);
+      setEditingTemplateId(templateId);
+      setTemplateEditMode(true);
+    }
+  };
   
   // Track original assigned inspectors and days to detect changes
   const [originalInspectors, setOriginalInspectors] = useState<string[]>(existingData?.inspectors || []);
@@ -266,42 +313,103 @@ export default function AddTestProcedure() {
     setTemplateItems(templateItems.filter(item => item.id !== id));
   };
 
-  const saveNewTemplate = () => {
+  const addTemplateItemOption = (itemId: number) => {
+    setTemplateItems(
+      templateItems.map((item) => {
+        if (item.id === itemId) {
+          return { ...item, options: [...item.options, { text: "", isNormal: false }] };
+        }
+        return item;
+      })
+    );
+  };
+
+  const updateTemplateItemOption = (itemId: number, optionIndex: number, value: string) => {
+    setTemplateItems(
+      templateItems.map((item) => {
+        if (item.id === itemId) {
+          const newOptions = [...item.options];
+          newOptions[optionIndex] = { ...newOptions[optionIndex], text: value };
+          return { ...item, options: newOptions };
+        }
+        return item;
+      })
+    );
+  };
+
+  const toggleTemplateItemOptionNormal = (itemId: number, optionIndex: number) => {
+    setTemplateItems(
+      templateItems.map((item) => {
+        if (item.id === itemId) {
+          const newOptions = [...item.options];
+          newOptions[optionIndex] = { 
+            ...newOptions[optionIndex], 
+            isNormal: !newOptions[optionIndex].isNormal 
+          };
+          return { ...item, options: newOptions };
+        }
+        return item;
+      })
+    );
+  };
+
+  const removeTemplateItemOption = (itemId: number, optionIndex: number) => {
+    setTemplateItems(
+      templateItems.map((item) => {
+        if (item.id === itemId && item.options.length > 2) {
+          const newOptions = item.options.filter((_, idx) => idx !== optionIndex);
+          return { ...item, options: newOptions };
+        }
+        return item;
+      })
+    );
+  };
+
+  const saveTemplateInternal = () => {
     if (newTemplateName.trim() && templateItems.length > 0) {
-      const newTemplate = {
-        id: templates.length + 1,
-        name: newTemplateName.trim(),
-        isDefault: false,
-        items: templateItems.map(item => ({ ...item })),
-      };
-      setTemplates([...templates, newTemplate]);
+      if (editingTemplateId) {
+        setTemplates(templates.map(t => 
+          t.id === editingTemplateId 
+            ? { ...t, name: newTemplateName.trim(), items: templateItems.map(item => ({ ...item })) }
+            : t
+        ));
+      } else {
+        const newTemplate = {
+          id: templates.length ? Math.max(...templates.map(t => t.id)) + 1 : 1,
+          name: newTemplateName.trim(),
+          isDefault: false,
+          items: templateItems.map(item => ({ ...item })),
+        };
+        setTemplates([...templates, newTemplate]);
+      }
       setNewTemplateName("");
       setTemplateItems([]);
       setTemplateNextId(1);
-      setShowTemplateModal(false);
+      setEditingTemplateId(null);
+      setTemplateEditMode(false);
     }
   };
 
   const saveAsTemplate = () => {
     if (newTemplateName.trim()) {
-      const newId = templates.length + 1;
+      const newId = templates.length ? Math.max(...templates.map(t => t.id)) + 1 : 1;
       const newTemplate = {
         id: newId,
         name: newTemplateName.trim(),
         isDefault: false,
-        items: [],
+        items: testItems.map(item => ({ ...item })),
       };
       setTemplates([...templates, newTemplate]);
       setSelectedTemplateId(newId);
-      setTestItems([]);
-      setNextId(1);
-      setTemplateModified(false);
       setNewTemplateName("");
       setShowTemplateModal(false);
     }
   };
 
   const loadTemplate = (templateId: number) => {
+    if (testItems.length > 0 && selectedTemplateId !== templateId) {
+      if (!window.confirm("기존 항목이 모두 삭제됩니다. 계속하시겠어요?")) return;
+    }
     const template = templates.find(t => t.id === templateId);
     if (template) {
       setTestItems(template.items.map((item, idx) => ({ ...item, id: idx + 1 })));
@@ -317,6 +425,7 @@ export default function AddTestProcedure() {
   };
 
   const deleteTemplate = (templateId: number) => {
+    if (!window.confirm("템플릿을 삭제하시겠습니까?")) return;
     setTemplates(templates.filter(t => t.id !== templateId));
     if (selectedTemplateId === templateId) {
       setSelectedTemplateId(null);
@@ -324,6 +433,8 @@ export default function AddTestProcedure() {
   };
 
   const saveToSelectedTemplate = () => {
+    // This function is no longer used for automatic saving, but kept for reference if needed.
+    // We use saveTemplateInternal for explicit saves.
     if (selectedTemplateId && testItems.length > 0) {
       setTemplates(templates.map(t => 
         t.id === selectedTemplateId 
@@ -370,11 +481,14 @@ export default function AddTestProcedure() {
   };
 
   const confirmItemSettingsSave = () => {
-    if (selectedTemplateId && templateModified) {
-        saveToSelectedTemplate();
+    // We want to show the 'apply changes' modal if items were changed during edit mode
+    // (excluding when just template editing was active, which should be self-contained)
+    if (isEditMode && !templateEditMode) {
+      setShowSaveOptionsModal(true);
+    } else {
+      setShowSaveOptionsModal(false);
+      setItemSettingsOpen(false);
     }
-    setShowSaveOptionsModal(false);
-    setItemSettingsOpen(false);
   };
 
   const handleSave = () => {
@@ -1040,11 +1154,21 @@ export default function AddTestProcedure() {
                 >
                   <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
                     <div>
-                      <h2 className="text-lg font-semibold text-slate-900">Item Settings</h2>
-                      <p className="text-sm text-slate-500 mt-0.5">Set up test items and templates</p>
+                      <h2 className="text-lg font-semibold text-slate-900">
+                        {templateEditMode ? "Template Settings" : "Item Settings"}
+                      </h2>
+                      <p className="text-sm text-slate-500 mt-0.5">
+                        {templateEditMode ? "Set up your reusable template items" : "Set up test items and templates"}
+                      </p>
                     </div>
                     <button
-                      onClick={() => setItemSettingsOpen(false)}
+                      onClick={() => {
+                        if (templateEditMode) {
+                          setTemplateEditMode(false);
+                        } else {
+                          setItemSettingsOpen(false);
+                        }
+                      }}
                       className="p-2 rounded-lg hover:bg-slate-100 text-slate-600"
                       data-testid="button-close-item-settings"
                     >
@@ -1058,25 +1182,47 @@ export default function AddTestProcedure() {
 
                   <div className="absolute inset-x-0 bottom-0 border-t border-slate-200 bg-white/95 backdrop-blur px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        className="border-slate-300 text-slate-700 hover:bg-slate-100"
-                        onClick={() => setItemSettingsOpen(false)}
-                        data-testid="button-item-settings-cancel"
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        className="bg-blue-600 hover:bg-blue-700"
-                        onClick={handleItemSettingsSave}
-                        data-testid="button-item-settings-save"
-                      >
-                        Save
-                      </Button>
+                      {templateEditMode ? (
+                        <>
+                          <Button
+                            variant="outline"
+                            className="border-slate-300 text-slate-700 hover:bg-slate-100"
+                            onClick={handleCancelEditTemplate}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            className="bg-blue-600 hover:bg-blue-700"
+                            onClick={saveTemplateInternal}
+                            disabled={!newTemplateName.trim()}
+                          >
+                            Save Template
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="outline"
+                            className="border-slate-300 text-slate-700 hover:bg-slate-100"
+                            onClick={() => setItemSettingsOpen(false)}
+                            data-testid="button-item-settings-cancel"
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            className="bg-blue-600 hover:bg-blue-700"
+                            onClick={handleItemSettingsSave}
+                            data-testid="button-item-settings-save"
+                          >
+                            Save
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
 
                 {/* Template Section */}
+                {!templateEditMode && (
                 <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
@@ -1110,7 +1256,13 @@ export default function AddTestProcedure() {
                     {/* Add New Template Button - Always First on First Page */}
                     {templateCurrentPage === 1 && (
                       <button
-                        onClick={() => setShowTemplateModal(true)}
+                        onClick={() => {
+                          setTemplateEditMode(true);
+                          setEditingTemplateId(null);
+                          setNewTemplateName("");
+                          setTemplateItems([]);
+                          setTemplateNextId(1);
+                        }}
                         className="p-4 bg-white rounded-lg border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-2 min-h-[100px]"
                         data-testid="add-template-btn"
                       >
@@ -1144,11 +1296,11 @@ export default function AddTestProcedure() {
                         )}
                         <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 rounded p-0.5">
                           <button
-                            onClick={(e) => { e.stopPropagation(); setDefaultTemplate(template.id); }}
-                            className={`p-1.5 rounded hover:bg-slate-100 ${template.isDefault ? 'text-amber-500' : 'text-slate-400'}`}
-                            title="Set as default"
+                            onClick={(e) => startEditTemplate(e, template.id)}
+                            className="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-blue-500"
+                            title="Edit"
                           >
-                            <Star className={`w-4 h-4 ${template.isDefault ? 'fill-amber-500' : ''}`} />
+                            <Settings className="w-4 h-4" /> {/* Use Edit icon ideally, fallback to Settings if Edit not imported */}
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); deleteTemplate(template.id); }}
@@ -1167,6 +1319,197 @@ export default function AddTestProcedure() {
                     ))}
                   </div>
                 </div>
+                )}
+                
+                {templateEditMode && (
+                  <div className="mb-6 bg-slate-50 rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                    <div className="p-5">
+                      <div className="mb-6">
+                        <label className="block text-xs font-medium text-slate-600 mb-1.5">Template Name</label>
+                        <Input
+                          value={newTemplateName}
+                          onChange={(e) => setNewTemplateName(e.target.value)}
+                          placeholder="e.g., Basic QA Checklist"
+                          className="max-w-md bg-white"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-slate-800">Template Items</h4>
+                        <Button 
+                          onClick={addTemplateItem} 
+                          className="gap-2 bg-blue-600 hover:bg-blue-700"
+                          data-testid="add-template-item"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Item
+                        </Button>
+                      </div>
+                      
+                      {templateItems.length === 0 ? (
+                        <div className="text-center py-10 border-2 border-dashed border-slate-200 rounded-lg bg-white/50">
+                          <ClipboardCheck className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                          <p className="text-sm font-medium text-slate-500">No items added</p>
+                          <p className="text-xs text-slate-400 mt-1 mb-4">Add items to build your template</p>
+                          <Button 
+                            onClick={addTemplateItem} 
+                            variant="outline" 
+                            className="h-8 gap-1.5 border-blue-200 text-blue-600 hover:bg-blue-50 text-xs font-medium"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            Add First Item
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {templateItems.map((item, index) => (
+                            <motion.div
+                              key={item.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="border border-slate-200 rounded-xl p-5 bg-white shadow-sm"
+                            >
+                              <div className="flex items-start gap-4">
+                                <div className="flex items-center gap-2 pt-2">
+                                  <GripVertical className="w-4 h-4 text-slate-300" />
+                                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-medium">
+                                    {index + 1}
+                                  </span>
+                                </div>
+                                <div className="flex-1 space-y-4">
+                                  <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Question</label>
+                                    <Input
+                                      value={item.question}
+                                      onChange={(e) => updateTemplateItem(item.id, "question", e.target.value)}
+                                      placeholder="Enter your question..."
+                                      className="border-slate-200 bg-white"
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Answer Type</label>
+                                    <div className="flex items-center gap-3">
+                                      <button
+                                        onClick={() => updateTemplateItem(item.id, "answerType", "multiple_choice")}
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                          item.answerType === "multiple_choice"
+                                            ? "border-blue-500 bg-blue-50 text-blue-700"
+                                            : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                        }`}
+                                      >
+                                        <List className="w-4 h-4" />
+                                        <span className="text-sm font-medium">Multiple Choice</span>
+                                      </button>
+                                      <button
+                                        onClick={() => updateTemplateItem(item.id, "answerType", "text")}
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                          item.answerType === "text"
+                                            ? "border-green-500 bg-green-50 text-green-700"
+                                            : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                        }`}
+                                      >
+                                        <MessageSquare className="w-4 h-4" />
+                                        <span className="text-sm font-medium">Text</span>
+                                      </button>
+                                      <button
+                                        onClick={() => updateTemplateItem(item.id, "answerType", "ox")}
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                          item.answerType === "ox"
+                                            ? "border-purple-500 bg-purple-50 text-purple-700"
+                                            : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                        }`}
+                                      >
+                                        <CheckSquare className="w-4 h-4" />
+                                        <span className="text-sm font-medium">O/X</span>
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  {item.answerType === "multiple_choice" && (
+                                    <div>
+                                      <div className="flex items-center justify-between mb-2">
+                                        <label className="block text-sm font-medium text-slate-700">Options</label>
+                                        <button
+                                          onClick={() => addTemplateItemOption(item.id)}
+                                          className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                                        >
+                                          <Plus className="w-3 h-3" />
+                                          Add Option
+                                        </button>
+                                      </div>
+                                      <div className="grid grid-cols-1 gap-3">
+                                        {item.options.map((opt, optIndex) => (
+                                          <div key={optIndex} className="flex items-center gap-2">
+                                            <span className="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-medium flex-shrink-0">
+                                              {optIndex + 1}
+                                            </span>
+                                            <div className="flex-1 flex items-center gap-2">
+                                              <Input
+                                                value={opt.text}
+                                                onChange={(e) => updateTemplateItemOption(item.id, optIndex, e.target.value)}
+                                                placeholder={`Option ${optIndex + 1}`}
+                                                className="border-slate-200 bg-white text-sm flex-1"
+                                              />
+                                              <div className="flex items-center gap-2 px-2 bg-slate-50 border border-slate-100 rounded h-10">
+                                                <label className="flex items-center gap-2 cursor-pointer select-none">
+                                                  <input 
+                                                    type="checkbox" 
+                                                    checked={opt.isNormal}
+                                                    onChange={() => toggleTemplateItemOptionNormal(item.id, optIndex)}
+                                                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                  />
+                                                  <span className={`text-xs font-medium ${opt.isNormal ? 'text-blue-600' : 'text-slate-400'}`}>Normal</span>
+                                                </label>
+                                              </div>
+                                            </div>
+                                            {item.options.length > 2 && (
+                                              <button
+                                                onClick={() => removeTemplateItemOption(item.id, optIndex)}
+                                                className="p-1 hover:bg-red-50 rounded transition-colors flex-shrink-0"
+                                              >
+                                                <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                                              </button>
+                                            )}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {item.answerType === "text" && (
+                                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                                      <p className="text-sm text-slate-500 italic">Inspector will enter a text response</p>
+                                    </div>
+                                  )}
+
+                                  {item.answerType === "ox" && (
+                                    <div className="flex items-center gap-6 bg-slate-50 border border-slate-200 rounded-lg p-4">
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold">O</span>
+                                        <span className="text-sm text-slate-600">Pass / Yes</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-sm font-bold">X</span>
+                                        <span className="text-sm text-slate-600">Fail / No</span>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                                <button
+                                  onClick={() => removeTemplateItem(item.id)}
+                                  className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4 text-red-400" />
+                                </button>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Create Template Modal */}
                 {showTemplateModal && (
@@ -1197,9 +1540,7 @@ export default function AddTestProcedure() {
                       </div>
                       
                       <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50 rounded-b-xl">
-                        <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" onClick={() => { setShowTemplateModal(false); setNewTemplateName(""); }}>
-                          Cancel
-                        </Button>
+                        <Button onClick={() => setShowTemplateModal(false)} variant="outline">Cancel</Button>
                         <Button 
                           onClick={saveAsTemplate} 
                           className="bg-blue-600 hover:bg-blue-700" 
@@ -1212,37 +1553,35 @@ export default function AddTestProcedure() {
                   </div>
                 )}
 
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-semibold text-slate-800">Test Items</h2>
-                  <div className="flex gap-2">
-                    {selectedTemplateId && (
-                      <Button 
-                        onClick={handleDuplicateTemplate} 
-                        variant="outline" 
-                        className="gap-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-blue-600"
-                        disabled={testItems.length === 0}
-                        data-testid="duplicate-template"
-                      >
-                        <Copy className="w-4 h-4" />
-                        Duplicate
-                      </Button>
-                    )}
-                    <Button onClick={addTestItem} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-item">
-                      <Plus className="w-4 h-4" />
-                      Add Test Item
-                    </Button>
-                  </div>
-                </div>
+                {/* When editing a template, hide the main Test Items area completely */}
+                {!templateEditMode && (
+                  <>
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-lg font-semibold text-slate-800">Test Items</h2>
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={() => setShowTemplateModal(true)} 
+                          variant="outline" 
+                          className="gap-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-blue-600"
+                          disabled={testItems.length === 0}
+                          data-testid="save-to-template"
+                        >
+                          <Save className="w-4 h-4" />
+                          Save to Template
+                        </Button>
+                        <Button onClick={addTestItem} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="add-test-item">
+                          <Plus className="w-4 h-4" />
+                          Add Test Item
+                        </Button>
+                      </div>
+                    </div>
 
                 {testItems.length === 0 ? (
                   <div className="text-center py-16 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
                     <ClipboardCheck className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                     <p className="text-slate-600 font-medium mb-1">No test items added yet</p>
                     <p className="text-slate-400 text-sm mb-6">
-                      {selectedTemplateId 
-                        ? "This template is empty. Add test items to build your checklist."
-                        : "Start building your test procedure by adding test items."
-                      }
+                      Start building your test procedure by adding test items.
                     </p>
                     <Button onClick={addTestItem} variant="outline" className="gap-2 border-blue-300 text-blue-600 hover:bg-blue-50" data-testid="add-first-item">
                       <Plus className="w-4 h-4" />
@@ -1405,6 +1744,8 @@ export default function AddTestProcedure() {
                       </motion.div>
                     ))}
                   </div>
+                )}
+                  </>
                 )}
                 {/* Save Options Modal */}
                 {showSaveOptionsModal && (

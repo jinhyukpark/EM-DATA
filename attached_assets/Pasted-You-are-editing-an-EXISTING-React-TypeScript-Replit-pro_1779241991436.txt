@@ -1,0 +1,63 @@
+You are editing an EXISTING React/TypeScript Replit project. The QA Report & Inspection feature is already implemented and deployed. You are NOT starting from scratch — you are adding new functionality on top of working code.
+
+Hard rule: minimum-change principle. Do not refactor, restructure, restyle, or 'improve' anything outside the explicit scope below. Reuse every existing component, design token, layout pattern, file structure, and naming convention already in the codebase. If you find yourself rewriting something that already works, stop and reuse it instead.
+
+## Scope (only these changes)
+
+Add three pieces of functionality to the existing QA Report flow:
+1. Decouple Templates from Test Items so Templates can be managed independently.
+2. Allow creating a Test with no template selected (one-off).
+3. Add ad-hoc Inspection creation on the Schedule/History page.
+
+## How it currently works (do not break this)
+- QA Report main page has '+ Add Test Procedure' button → opens Add Test Procedure page with Basic Info + 'Item Settings' button.
+- Item Settings modal currently saves Templates and Test Items as the same entity — editing items mutates the template.
+- Test detail page has Test Info / Schedule/History tabs and an Edit Test button.
+- Schedule/History shows a horizontal list of inspection cards sorted newest-first (left = newest).
+
+## Required changes
+
+### Change 1 — Decouple Templates from Test Items (Item Settings modal)
+- Templates become an independent entity. Clicking a template card COPIES its items into the Test Items area below (deep copy). Subsequent edits to Test Items must NOT mutate the template, and template edits must NOT mutate any Test that already loaded from it.
+- Default state on opening the modal: NO template selected. Test Items area starts empty (use the existing 'No test items added yet' empty state — do not redesign it).
+- Add a 'Save to Template' button placed next to the existing '+ Add Test Item' button. Match the existing button style exactly. Clicking it opens a small popup asking for a template name → saves current Test Items as a new independent template.
+- If the Test Items area already has items and the user clicks a DIFFERENT template card: show an alert "기존 항목이 모두 삭제됩니다. 계속하시겠어요?" with [확인] / [취소]. Use whatever alert/dialog component the project already has.
+
+### Change 2 — Template management inside the modal (modal-internal routing)
+- Clicking the existing '+ New Template' card transitions WITHIN the modal to a Template Creation view (NOT a separate modal, NOT a new page). The modal body swaps content with a [Back] button at top-left and [Save] at bottom-right. Reuse the existing modal shell and Test Items list component.
+- Hovering a template card reveals a small edit (pencil) icon AND a trash icon, both top-right of the card. Use the existing icon set in the project.
+  - Edit icon → modal-internal Template Edit view, identical layout to the Creation view but pre-filled.
+  - Trash icon → confirmation alert → delete. Deleting a template must not touch any Test that previously copied from it.
+- The favorite/star (⭐) on template cards: leave it alone, not in scope.
+
+### Change 3 — Ad-hoc Inspection on Schedule/History
+- Add an '+ Add Inspection' card at the LEFT end of the horizontal inspection card list (the list is newest-first, left-to-right, so left = where new ones belong).
+- Visual: dashed border + plus icon, matching dimensions of existing inspection cards and matching the dashed-card style already used by '+ New Template' in Item Settings. Do not invent a new style.
+- Click → opens a popup with: Assignee picker, Date picker, Time picker, and a Test Items section. Reuse the existing assignee/date/time pickers from the Add Test Procedure page.
+- The Test Items section pre-loads the current Test's items as defaults (deep copy), but the user can freely add / edit / remove items here. These edits stay independent to THIS ad-hoc inspection only — never propagated back to the Test.
+- On [Save] the new inspection appears in the card list. Add a small 'Ad-hoc' badge (or use an existing badge style if one exists) to distinguish it from regular scheduled inspections. Do NOT introduce new colors — use an existing accent from the design tokens.
+
+## Behavior on Edit Test [Save]
+When the existing 'Edit Test' button saves changes to Test Items:
+- Future regular inspections: receive the updated items.
+- Past / submitted inspections: FROZEN, unchanged (store a snapshot of items at submission time if not already).
+- All ad-hoc inspections: unchanged (they own independent items from creation).
+- The source template (if items were originally loaded from one): unchanged.
+
+## Strict constraints
+- Do NOT change any existing colors, fonts, spacing tokens, border radii, shadow values, or component variants.
+- Do NOT rename existing files, props, or types unless absolutely necessary to add the new functionality.
+- Korean copy stays in Korean. English copy stays in English. Do not translate.
+- Do NOT touch: the QA Report main page layout, the Inspectors tab, the Test Info tab, the permission system, the favorite-star feature, or any chart/stat card on the main page.
+- Animations for the modal-internal view swap should match whatever transition the modal already uses (or no transition if the existing modal has none).
+
+## Implementation notes
+- Treat Templates as a separate data store/table from Tests.
+- 'Loading a template into a Test' = deep copy of items. Mutations on either side must not bleed through.
+- 'Ad-hoc inspection' = forked copy of current Test items at creation time. Independent thereafter.
+- 'Submitted inspection' = snapshot of items at submission time. Immutable.
+- Empty states: reuse the existing 'No test items added yet' pattern wherever a new empty state is needed.
+- Accessibility: new buttons need aria-labels; alerts need focus trap and Escape to cancel — follow whatever pattern the project already uses.
+
+## What success looks like
+A reviewer comparing screenshots before/after should see: same colors, same spacing, same fonts, same component shapes — with the three new features sliding in naturally as if they were always part of the design. If anything looks 'fresh' or 'redesigned', you've gone too far.

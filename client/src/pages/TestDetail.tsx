@@ -36,6 +36,10 @@ import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
+  Plus,
+  X,
+  Copy,
+  GripVertical
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -88,6 +92,7 @@ type ScheduleItem = {
   date: string;
   assignee: string;
   status: "Planned" | "In Progress" | "Delayed" | "Normal" | "Failed" | "Resolved" | "Canceled";
+  isAdHoc?: boolean;
   startTime?: string;
   endTime?: string;
   duration?: string;
@@ -362,6 +367,30 @@ export default function TestDetail() {
   const [editScheduleType, setEditScheduleType] = useState<'date' | 'assignee' | 'cancel'>('date');
   const [cancelScheduleReason, setCancelScheduleReason] = useState("");
   const [historyModal, setHistoryModal] = useState<number | null>(null);
+  const [addInspectionModal, setAddInspectionModal] = useState(false);
+  const [adHocDate, setAdHocDate] = useState("");
+  const [adHocTime, setAdHocTime] = useState("");
+  const [adHocAssignees, setAdHocAssignees] = useState<string[]>([]);
+  const [adHocItems, setAdHocItems] = useState<any[]>([]);
+  const [adHocMode, setAdHocMode] = useState<"existing" | "custom">("existing");
+  const [adHocTimeType, setAdHocTimeType] = useState<"anytime" | "custom">("anytime");
+  const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
+  const [templates, setTemplates] = useState<{id: number; name: string; isDefault: boolean; items: any[]}[]>([
+    { id: 1, name: "Basic QA Check", isDefault: true, items: [
+      { id: 1, question: "Is the service responding correctly?", answerType: "ox", options: [] },
+      { id: 2, question: "Are all endpoints accessible?", answerType: "ox", options: [] },
+    ]},
+    { id: 2, name: "Performance Review", isDefault: false, items: [
+      { id: 1, question: "Response time within SLA?", answerType: "ox", options: [] },
+      { id: 2, question: "Performance rating:", answerType: "multiple_choice", options: [{ text: "Excellent", isNormal: true }, { text: "Good", isNormal: true }, { text: "Fair", isNormal: false }, { text: "Poor", isNormal: false }] },
+      { id: 3, question: "Additional notes:", answerType: "text", options: [] },
+    ]},
+    { id: 3, name: "Data Validation", isDefault: false, items: [
+      { id: 1, question: "Data format is correct?", answerType: "ox", options: [] },
+      { id: 2, question: "All required fields present?", answerType: "ox", options: [] },
+      { id: 3, question: "Data quality score:", answerType: "multiple_choice", options: [{ text: "100%", isNormal: true }, { text: "90-99%", isNormal: true }, { text: "80-89%", isNormal: false }, { text: "Below 80%", isNormal: false }] },
+    ]},
+  ]);
   
   // Mock history data for test items grouped by action
   const itemHistory = [
@@ -1113,7 +1142,26 @@ export default function TestDetail() {
 
                   return (
                     <>
-                      <div className="flex gap-2 pb-3 relative z-20" data-testid="schedule-dates">
+                      <div className="flex gap-2 pb-3 relative z-20 overflow-x-auto" data-testid="schedule-dates">
+                        {/* Ad-hoc Inspection Card */}
+                        <div className="relative flex-shrink-0">
+                          <button
+                            onClick={() => {
+                              setAdHocDate(new Date().toISOString().split('T')[0]);
+                              setAdHocTime("10:00");
+                              setAdHocAssignee(test.inspectors[0] || "");
+                              setAdHocItems(test.items.map(i => ({ ...i, answer: "", status: "pending", comment: "" })));
+                              setAdHocMode("existing");
+                              setAddInspectionModal(true);
+                            }}
+                            className="relative px-3 py-2 rounded-lg border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all min-w-[140px] h-[92px] flex flex-col items-center justify-center gap-2 bg-white"
+                            data-testid="add-ad-hoc-inspection"
+                          >
+                            <Plus className="w-6 h-6 text-blue-500" />
+                            <span className="text-[13px] font-medium text-slate-600">Add Inspection</span>
+                          </button>
+                        </div>
+
                         {currentSchedules.length > 0 ? currentSchedules.map((item) => {
                           const normalCount = item.testResults?.filter(r => r.answer === "O").length || 0;
                           const abnormalCount = item.testResults?.filter(r => r.answer === "X").length || 0;
@@ -1165,6 +1213,11 @@ export default function TestDetail() {
                           
                           <div className={`text-[15px] font-bold leading-none ${selectedSchedule === item.id ? "text-white" : "text-slate-800"}`}>
                             {item.date}
+                            {item.isAdHoc && (
+                              <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-indigo-100 text-indigo-700">
+                                Ad-hoc
+                              </span>
+                            )}
                           </div>
                           
                           <div className="flex items-center justify-center gap-1.5 mt-1">
@@ -2055,6 +2108,536 @@ export default function TestDetail() {
               <div className="p-4 border-t border-slate-200 flex justify-end bg-slate-50 rounded-b-xl">
                 <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" onClick={() => setHistoryModal(null)}>
                   Close
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {addInspectionModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setAddInspectionModal(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] flex flex-col"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between p-6 border-b border-slate-200">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800">Add Ad-hoc Inspection</h3>
+                  <p className="text-sm text-slate-500 mt-1">Create a one-off inspection with custom test items.</p>
+                </div>
+                <button onClick={() => setAddInspectionModal(false)} className="text-slate-400 hover:text-slate-600">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Template Selection Section inside Modal Header Area */}
+              <div className="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    onClick={() => {
+                      setAdHocMode("existing");
+                      const existingItems = test.items.map((i, index) => ({
+                        id: Date.now() + index,
+                        question: i.question,
+                        answerType: i.answerType,
+                        options: i.options,
+                        status: "pending",
+                        answer: ""
+                      }));
+                      setAdHocItems(existingItems);
+                    }}
+                    className={`flex flex-col items-start p-4 rounded-xl border-2 text-left transition-all ${
+                      adHocMode === "existing" 
+                        ? "border-blue-600 bg-blue-50/50" 
+                        : "border-slate-200 bg-white hover:border-slate-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                        adHocMode === "existing" ? "border-blue-600" : "border-slate-300"
+                      }`}>
+                        {adHocMode === "existing" && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                      </div>
+                      <span className={`font-semibold ${adHocMode === "existing" ? "text-blue-700" : "text-slate-700"}`}>
+                        Load Existing Items
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 pl-6">
+                      Use and sync with the original test items. Changes will affect the main test.
+                    </p>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setAdHocMode("custom");
+                      const existingItems = test.items.map((i, index) => ({
+                        id: Date.now() + index,
+                        question: i.question,
+                        answerType: i.answerType,
+                        options: i.options,
+                        status: "pending",
+                        answer: ""
+                      }));
+                      setAdHocItems(existingItems);
+                      setShowTemplateDropdown(false);
+                    }}
+                    className={`flex flex-col items-start p-4 rounded-xl border-2 text-left transition-all ${
+                      adHocMode === "custom" 
+                        ? "border-blue-600 bg-blue-50/50" 
+                        : "border-slate-200 bg-white hover:border-slate-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                        adHocMode === "custom" ? "border-blue-600" : "border-slate-300"
+                      }`}>
+                        {adHocMode === "custom" && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                      </div>
+                      <span className={`font-semibold ${adHocMode === "custom" ? "text-blue-700" : "text-slate-700"}`}>
+                        Custom Settings
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 pl-6">
+                      Create an independent inspection. Set up new items or load from templates.
+                    </p>
+                  </button>
+                </div>
+              </div>
+              
+              <div className="p-6 overflow-y-auto flex-1 bg-slate-50/50">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Assignees</label>
+                    <div className="flex flex-wrap gap-2">
+                      {test.inspectors.map((inspector) => (
+                        <button
+                          key={inspector}
+                          onClick={() => {
+                            if (adHocAssignees.includes(inspector)) {
+                              setAdHocAssignees(adHocAssignees.filter(a => a !== inspector));
+                            } else {
+                              setAdHocAssignees([...adHocAssignees, inspector]);
+                            }
+                          }}
+                          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${
+                            adHocAssignees.includes(inspector)
+                              ? "bg-blue-50 border-blue-200 text-blue-700"
+                              : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                          }`}
+                        >
+                          {inspector}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
+                    <input
+                      type="date"
+                      value={adHocDate}
+                      onChange={(e) => setAdHocDate(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Time</label>
+                    <div className="flex gap-2">
+                      <Button
+                        variant={adHocTimeType === "anytime" ? "default" : "outline"}
+                        className={adHocTimeType === "anytime" ? "bg-blue-600 hover:bg-blue-700" : "text-slate-600 border-slate-300"}
+                        onClick={() => {
+                          setAdHocTimeType("anytime");
+                          setAdHocTime("");
+                        }}
+                      >
+                        Anytime
+                      </Button>
+                      <Button
+                        variant={adHocTimeType === "custom" ? "default" : "outline"}
+                        className={adHocTimeType === "custom" ? "bg-blue-600 hover:bg-blue-700" : "text-slate-600 border-slate-300"}
+                        onClick={() => setAdHocTimeType("custom")}
+                      >
+                        Custom Time
+                      </Button>
+                    </div>
+                    {adHocTimeType === "custom" && (
+                      <input
+                        type="time"
+                        value={adHocTime}
+                        onChange={(e) => setAdHocTime(e.target.value)}
+                        className="w-full mt-3 px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {adHocMode === "custom" && (
+                    <div className="flex items-center justify-between mb-6">
+                      <h4 className="text-lg font-semibold text-slate-800">Test Items</h4>
+                      <div className="flex gap-2">
+                        {showTemplateDropdown ? (
+                          <div className="flex items-center gap-2">
+                            <select
+                              className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[200px]"
+                              onChange={(e) => {
+                                const templateId = parseInt(e.target.value);
+                                const template = templates.find(t => t.id === templateId);
+                                if (template) {
+                                  if (adHocItems.length > 0) {
+                                    if (window.confirm("Changing the template will overwrite all current test items. Are you sure you want to proceed?")) {
+                                      const newItems = template.items.map((i: any, index: number) => ({
+                                        id: Date.now() + index,
+                                        question: i.question,
+                                        answerType: i.answerType,
+                                        options: i.options,
+                                        status: "pending",
+                                        answer: ""
+                                      }));
+                                      setAdHocItems(newItems);
+                                      setShowTemplateDropdown(false);
+                                    } else {
+                                      e.target.value = "";
+                                    }
+                                  } else {
+                                    const newItems = template.items.map((i: any, index: number) => ({
+                                      id: Date.now() + index,
+                                      question: i.question,
+                                      answerType: i.answerType,
+                                      options: i.options,
+                                      status: "pending",
+                                      answer: ""
+                                    }));
+                                    setAdHocItems(newItems);
+                                    setShowTemplateDropdown(false);
+                                  }
+                                }
+                              }}
+                            >
+                              <option value="">Select a template...</option>
+                              {templates.map(t => (
+                                <option key={t.id} value={t.id}>{t.name}</option>
+                              ))}
+                            </select>
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              onClick={() => setShowTemplateDropdown(false)}
+                              className="h-9 w-9 text-slate-400 hover:text-slate-600"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button 
+                            onClick={() => setShowTemplateDropdown(true)}
+                            variant="outline" 
+                            className="gap-2 border-slate-200 text-slate-600 hover:bg-slate-50"
+                          >
+                            <Copy className="w-4 h-4" />
+                            Load Template
+                          </Button>
+                        )}
+                        <Button 
+                          onClick={() => {
+                            if (adHocItems.length === 0) {
+                              alert("Add at least one item to save as a template.");
+                              return;
+                            }
+                            const templateName = prompt("Enter a name for the new template:");
+                            if (templateName) {
+                              setTemplates([...templates, {
+                                id: Date.now(),
+                                name: templateName,
+                                isDefault: false,
+                                items: adHocItems.map((item, i) => ({
+                                  id: Date.now() + i,
+                                  question: item.question,
+                                  answerType: item.answerType,
+                                  options: item.options
+                                }))
+                              }]);
+                              alert("Template saved successfully!");
+                            }
+                          }}
+                          variant="outline" 
+                          className="gap-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-blue-600"
+                          disabled={adHocItems.length === 0}
+                        >
+                          <Save className="w-4 h-4" />
+                          Save to Template
+                        </Button>
+                        <Button 
+                          onClick={() => setAdHocItems([...adHocItems, { id: Date.now(), question: "", answerType: "text", status: "pending", answer: "" }])}
+                          className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Test Item
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {adHocMode !== "custom" && (
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-base font-semibold text-slate-800">Test Items</h4>
+                    </div>
+                  )}
+                  
+                  <div className="space-y-4">
+                    {adHocItems.map((item, index) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="border border-slate-200 rounded-xl p-5 bg-slate-50/50"
+                        data-testid={`test-item-${item.id}`}
+                      >
+                        <div className="sr-only" data-testid={`text-item-settings-dirty-${item.id}`}>{item.question}</div>
+                        <div className="flex items-start gap-4">
+                          <div className="flex items-center gap-2 pt-2">
+                            <GripVertical className="w-4 h-4 text-slate-300" />
+                            <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-medium">
+                              {index + 1}
+                            </span>
+                          </div>
+                          <div className="flex-1 space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">Question</label>
+                              <Input
+                                value={item.question}
+                                onChange={(e) => {
+                                  const newItems = [...adHocItems];
+                                  newItems[index].question = e.target.value;
+                                  setAdHocItems(newItems);
+                                }}
+                                disabled={adHocMode === "existing"}
+                                placeholder="Enter your question..."
+                                className="border-slate-200 bg-white"
+                                data-testid={`question-${item.id}`}
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">Answer Type</label>
+                              <div className="flex items-center gap-3">
+                                <button
+                                  onClick={() => {
+                                    if (adHocMode === "existing") return;
+                                    const newItems = [...adHocItems];
+                                    newItems[index].answerType = "multiple_choice";
+                                    if (!item.options) {
+                                      newItems[index].options = [{ text: "Option 1", isNormal: true }, { text: "Option 2", isNormal: false }];
+                                    }
+                                    setAdHocItems(newItems);
+                                  }}
+                                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                    item.answerType === "multiple_choice"
+                                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                  } ${adHocMode === "existing" ? "opacity-70 cursor-not-allowed" : ""}`}
+                                  data-testid={`type-multiple-${item.id}`}
+                                >
+                                  <List className="w-4 h-4" />
+                                  <span className="text-sm font-medium">Multiple Choice</span>
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (adHocMode === "existing") return;
+                                    const newItems = [...adHocItems];
+                                    newItems[index].answerType = "text";
+                                    setAdHocItems(newItems);
+                                  }}
+                                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                    item.answerType === "text"
+                                      ? "border-green-500 bg-green-50 text-green-700"
+                                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                  } ${adHocMode === "existing" ? "opacity-70 cursor-not-allowed" : ""}`}
+                                  data-testid={`type-text-${item.id}`}
+                                >
+                                  <MessageSquare className="w-4 h-4" />
+                                  <span className="text-sm font-medium">Text</span>
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (adHocMode === "existing") return;
+                                    const newItems = [...adHocItems];
+                                    newItems[index].answerType = "ox";
+                                    setAdHocItems(newItems);
+                                  }}
+                                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                    item.answerType === "ox"
+                                      ? "border-purple-500 bg-purple-50 text-purple-700"
+                                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                  } ${adHocMode === "existing" ? "opacity-70 cursor-not-allowed" : ""}`}
+                                  data-testid={`type-ox-${item.id}`}
+                                >
+                                  <CheckSquare className="w-4 h-4" />
+                                  <span className="text-sm font-medium">O/X</span>
+                                </button>
+                              </div>
+                            </div>
+                            {item.answerType === "ox" && (
+                              <div className="flex items-center gap-6 bg-slate-50 border border-slate-200 rounded-lg p-4 mt-4">
+                                <div className="flex items-center gap-2">
+                                  <span className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold">O</span>
+                                  <span className="text-sm text-slate-600">Pass / Yes</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-sm font-bold">X</span>
+                                  <span className="text-sm text-slate-600">Fail / No</span>
+                                </div>
+                              </div>
+                            )}
+
+                            {item.answerType === "multiple_choice" && item.options && (
+                              <div className="pt-4 border-t border-slate-200">
+                                <label className="block text-sm font-medium text-slate-700 mb-3">Options</label>
+                                <div className="space-y-3">
+                                  {item.options.map((opt: any, optIndex: number) => (
+                                    <div key={optIndex} className="flex items-center gap-3">
+                                      <div className="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-medium shrink-0">
+                                        {optIndex + 1}
+                                      </div>
+                                      <Input
+                                        value={opt.text}
+                                        disabled={adHocMode === "existing"}
+                                        onChange={(e) => {
+                                          const newItems = [...adHocItems];
+                                          newItems[index].options[optIndex].text = e.target.value;
+                                          setAdHocItems(newItems);
+                                        }}
+                                        placeholder={`Option ${optIndex + 1}`}
+                                        className="flex-1 border-slate-200"
+                                        data-testid={`option-${item.id}-${optIndex}`}
+                                      />
+                                      <div className="flex items-center gap-2 shrink-0">
+                                        <button
+                                          onClick={() => {
+                                            if (adHocMode === "existing") return;
+                                            const newItems = [...adHocItems];
+                                            newItems[index].options[optIndex].isNormal = true;
+                                            setAdHocItems(newItems);
+                                          }}
+                                          className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                                            opt.isNormal
+                                              ? "bg-emerald-100 text-emerald-700"
+                                              : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                                          } ${adHocMode === "existing" ? "opacity-70 cursor-not-allowed" : ""}`}
+                                          data-testid={`status-normal-${item.id}-${optIndex}`}
+                                        >
+                                          Normal
+                                        </button>
+                                        <button
+                                          onClick={() => {
+                                            if (adHocMode === "existing") return;
+                                            const newItems = [...adHocItems];
+                                            newItems[index].options[optIndex].isNormal = false;
+                                            setAdHocItems(newItems);
+                                          }}
+                                          className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                                            !opt.isNormal
+                                              ? "bg-red-100 text-red-700"
+                                              : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                                          } ${adHocMode === "existing" ? "opacity-70 cursor-not-allowed" : ""}`}
+                                          data-testid={`status-abnormal-${item.id}-${optIndex}`}
+                                        >
+                                          Abnormal
+                                        </button>
+                                      </div>
+                                      {adHocMode !== "existing" && item.options.length > 1 && (
+                                        <button
+                                          onClick={() => {
+                                            const newItems = [...adHocItems];
+                                            newItems[index].options = item.options.filter((_: any, i: number) => i !== optIndex);
+                                            setAdHocItems(newItems);
+                                          }}
+                                          className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors shrink-0"
+                                          data-testid={`remove-option-${item.id}-${optIndex}`}
+                                        >
+                                          <Trash2 className="w-4 h-4" />
+                                        </button>
+                                      )}
+                                    </div>
+                                  ))}
+                                  {adHocMode !== "existing" && (
+                                    <Button
+                                      variant="outline"
+                                      onClick={() => {
+                                        const newItems = [...adHocItems];
+                                        newItems[index].options.push({ text: `Option ${item.options.length + 1}`, isNormal: true });
+                                        setAdHocItems(newItems);
+                                      }}
+                                      className="w-full gap-2 border-dashed border-2 text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300"
+                                      data-testid={`add-option-${item.id}`}
+                                    >
+                                      <Plus className="w-4 h-4" />
+                                      Add Option
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {adHocMode !== "existing" && (
+                            <button
+                              onClick={() => setAdHocItems(adHocItems.filter((_, i) => i !== index))}
+                              className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors shrink-0 mt-8"
+                              data-testid={`remove-item-${item.id}`}
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </button>
+                          )}
+                        </div>
+                      </motion.div>
+                    ))}
+                  {adHocItems.length === 0 && adHocMode !== "custom" && (
+                    <div className="text-center py-8 text-slate-500 bg-white border border-slate-200 rounded-xl border-dashed">
+                      No test items.
+                    </div>
+                  )}
+                  {adHocItems.length === 0 && adHocMode === "custom" && (
+                    <div className="text-center py-16 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                      <ClipboardCheck className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                      <p className="text-slate-600 font-medium mb-1">No test items added yet</p>
+                      <p className="text-slate-400 text-sm mb-6">
+                        Start building your custom inspection by adding test items.
+                      </p>
+                      <Button onClick={() => setAdHocItems([...adHocItems, { id: Date.now(), question: "", answerType: "text", status: "pending", answer: "" }])} variant="outline" className="gap-2 border-blue-300 text-blue-600 hover:bg-blue-50">
+                        <Plus className="w-4 h-4" />
+                        Add First Test Item
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+              </div>
+              
+              <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-white rounded-b-xl">
+                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" onClick={() => setAddInspectionModal(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  className="bg-blue-600 hover:bg-blue-700" 
+                  disabled={adHocAssignees.length === 0 || !adHocDate || adHocItems.length === 0}
+                  onClick={() => {
+                    const newSchedule = {
+                      id: Date.now(),
+                      date: adHocDate,
+                      time: adHocTimeType === "custom" ? adHocTime : undefined,
+                      assignee: adHocAssignees.join(", "),
+                      status: "Planned" as const,
+                      isAdHoc: true,
+                      testResults: adHocItems.map(item => ({...item}))
+                    };
+                    test.schedule.unshift(newSchedule);
+                    setAddInspectionModal(false);
+                  }}
+                >
+                  Create Inspection
                 </Button>
               </div>
             </motion.div>

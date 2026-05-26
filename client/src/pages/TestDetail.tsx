@@ -370,7 +370,7 @@ export default function TestDetail() {
   const [addInspectionModal, setAddInspectionModal] = useState(false);
   const [adHocDate, setAdHocDate] = useState("");
   const [adHocTime, setAdHocTime] = useState("");
-  const [adHocAssignee, setAdHocAssignee] = useState("");
+  const [adHocAssignees, setAdHocAssignees] = useState<string[]>([]);
   const [adHocItems, setAdHocItems] = useState<any[]>([]);
   const [adHocMode, setAdHocMode] = useState<"existing" | "custom">("existing");
   const [adHocTimeType, setAdHocTimeType] = useState<"anytime" | "custom">("anytime");
@@ -2209,16 +2209,28 @@ export default function TestDetail() {
               <div className="p-6 overflow-y-auto flex-1 bg-slate-50/50">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Assignee</label>
-                    <select
-                      value={adHocAssignee}
-                      onChange={(e) => setAdHocAssignee(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Assignees</label>
+                    <div className="flex flex-wrap gap-2">
                       {test.inspectors.map((inspector) => (
-                        <option key={inspector} value={inspector}>{inspector}</option>
+                        <button
+                          key={inspector}
+                          onClick={() => {
+                            if (adHocAssignees.includes(inspector)) {
+                              setAdHocAssignees(adHocAssignees.filter(a => a !== inspector));
+                            } else {
+                              setAdHocAssignees([...adHocAssignees, inspector]);
+                            }
+                          }}
+                          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${
+                            adHocAssignees.includes(inspector)
+                              ? "bg-blue-50 border-blue-200 text-blue-700"
+                              : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                          }`}
+                        >
+                          {inspector}
+                        </button>
                       ))}
-                    </select>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
@@ -2610,13 +2622,13 @@ export default function TestDetail() {
                 </Button>
                 <Button 
                   className="bg-blue-600 hover:bg-blue-700" 
-                  disabled={!adHocAssignee || !adHocDate || adHocItems.length === 0}
+                  disabled={adHocAssignees.length === 0 || !adHocDate || adHocItems.length === 0}
                   onClick={() => {
                     const newSchedule = {
                       id: Date.now(),
                       date: adHocDate,
                       time: adHocTimeType === "custom" ? adHocTime : undefined,
-                      assignee: adHocAssignee,
+                      assignee: adHocAssignees.join(", "),
                       status: "Planned" as const,
                       isAdHoc: true,
                       testResults: adHocItems.map(item => ({...item}))

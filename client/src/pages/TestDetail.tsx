@@ -373,6 +373,7 @@ export default function TestDetail() {
   const [adHocAssignee, setAdHocAssignee] = useState("");
   const [adHocItems, setAdHocItems] = useState<any[]>([]);
   const [adHocMode, setAdHocMode] = useState<"existing" | "custom">("existing");
+  const [adHocTimeType, setAdHocTimeType] = useState<"anytime" | "custom">("anytime");
   const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
   const [templates, setTemplates] = useState<{id: number; name: string; isDefault: boolean; items: any[]}[]>([
     { id: 1, name: "Basic QA Check", isDefault: true, items: [
@@ -2230,12 +2231,33 @@ export default function TestDetail() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Time</label>
-                    <input
-                      type="time"
-                      value={adHocTime}
-                      onChange={(e) => setAdHocTime(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                    <div className="flex gap-2">
+                      <Button
+                        variant={adHocTimeType === "anytime" ? "default" : "outline"}
+                        className={adHocTimeType === "anytime" ? "bg-blue-600 hover:bg-blue-700" : "text-slate-600 border-slate-300"}
+                        onClick={() => {
+                          setAdHocTimeType("anytime");
+                          setAdHocTime("");
+                        }}
+                      >
+                        Anytime
+                      </Button>
+                      <Button
+                        variant={adHocTimeType === "custom" ? "default" : "outline"}
+                        className={adHocTimeType === "custom" ? "bg-blue-600 hover:bg-blue-700" : "text-slate-600 border-slate-300"}
+                        onClick={() => setAdHocTimeType("custom")}
+                      >
+                        Custom Time
+                      </Button>
+                    </div>
+                    {adHocTimeType === "custom" && (
+                      <input
+                        type="time"
+                        value={adHocTime}
+                        onChange={(e) => setAdHocTime(e.target.value)}
+                        className="w-full mt-3 px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    )}
                   </div>
                 </div>
 
@@ -2593,6 +2615,7 @@ export default function TestDetail() {
                     const newSchedule = {
                       id: Date.now(),
                       date: adHocDate,
+                      time: adHocTimeType === "custom" ? adHocTime : undefined,
                       assignee: adHocAssignee,
                       status: "Planned" as const,
                       isAdHoc: true,

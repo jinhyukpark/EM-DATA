@@ -2242,22 +2242,25 @@ export default function TestDetail() {
                       >
                         Anytime
                       </Button>
-                      <Button
-                        variant={adHocTimeType === "custom" ? "default" : "outline"}
-                        className={adHocTimeType === "custom" ? "bg-blue-600 hover:bg-blue-700" : "text-slate-600 border-slate-300"}
-                        onClick={() => setAdHocTimeType("custom")}
-                      >
-                        Custom Time
-                      </Button>
+                      {adHocTimeType === "anytime" ? (
+                        <Button
+                          variant="outline"
+                          className="text-slate-600 border-slate-300"
+                          onClick={() => setAdHocTimeType("custom")}
+                        >
+                          Custom Time
+                        </Button>
+                      ) : (
+                        <div className="flex-1 relative">
+                          <input
+                            type="time"
+                            value={adHocTime}
+                            onChange={(e) => setAdHocTime(e.target.value)}
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                          />
+                        </div>
+                      )}
                     </div>
-                    {adHocTimeType === "custom" && (
-                      <input
-                        type="time"
-                        value={adHocTime}
-                        onChange={(e) => setAdHocTime(e.target.value)}
-                        className="w-full mt-3 px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    )}
                   </div>
                 </div>
 

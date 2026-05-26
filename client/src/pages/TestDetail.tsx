@@ -39,6 +39,7 @@ import {
   Plus,
   X,
   Copy,
+  GripVertical
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -2117,7 +2118,7 @@ export default function TestDetail() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col"
+              className="bg-white rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] flex flex-col"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between p-6 border-b border-slate-200">
@@ -2306,123 +2307,202 @@ export default function TestDetail() {
                     </div>
                   )}
                   
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-4">
                     {adHocItems.map((item, index) => (
-                    <div key={item.id} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative">
-                      <div className="flex items-start gap-4">
-                        <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-medium flex-shrink-0 mt-2">
-                          {index + 1}
-                        </div>
-                        <div className="flex-1 space-y-4">
-                          <div>
-                            <label className="block text-xs font-medium text-slate-500 mb-1">Question</label>
-                            <input
-                              type="text"
-                              value={item.question}
-                              disabled={adHocMode === "existing"}
-                              onChange={(e) => {
-                                const newItems = [...adHocItems];
-                                newItems[index].question = e.target.value;
-                                setAdHocItems(newItems);
-                              }}
-                              className={`w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 ${adHocMode === "existing" ? "bg-slate-50 text-slate-500 cursor-not-allowed" : ""}`}
-                            />
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="border border-slate-200 rounded-xl p-5 bg-slate-50/50"
+                        data-testid={`test-item-${item.id}`}
+                      >
+                        <div className="sr-only" data-testid={`text-item-settings-dirty-${item.id}`}>{item.question}</div>
+                        <div className="flex items-start gap-4">
+                          <div className="flex items-center gap-2 pt-2">
+                            <GripVertical className="w-4 h-4 text-slate-300" />
+                            <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-medium">
+                              {index + 1}
+                            </span>
                           </div>
-                          <div>
-                            <label className="block text-xs font-medium text-slate-500 mb-1">Type</label>
-                            <select
-                              value={item.answerType}
-                              disabled={adHocMode === "existing"}
-                              onChange={(e) => {
-                                const newItems = [...adHocItems];
-                                newItems[index].answerType = e.target.value;
-                                if (e.target.value === 'multiple_choice' && !item.options) {
-                                  newItems[index].options = [{ text: "Option 1", isNormal: true }, { text: "Option 2", isNormal: false }];
-                                }
-                                setAdHocItems(newItems);
-                              }}
-                              className={`w-full sm:w-auto px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${adHocMode === "existing" ? "bg-slate-50 text-slate-500 cursor-not-allowed" : ""}`}
-                            >
-                              <option value="ox">O/X</option>
-                              <option value="multiple_choice">Multiple Choice</option>
-                              <option value="text">Text</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {adHocMode !== "existing" && (
-                        <button
-                          onClick={() => setAdHocItems(adHocItems.filter((_, i) => i !== index))}
-                          className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
-                      
-                      {/* Options rendering for multiple choice */}
-                      {item.answerType === 'multiple_choice' && item.options && (
-                        <div className="mt-4 space-y-2">
-                          <label className="block text-xs font-medium text-slate-500">Options</label>
-                          {item.options.map((opt: any, optIndex: number) => (
-                            <div key={optIndex} className="flex gap-2 items-center">
-                              <span className="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-medium flex-shrink-0">
-                                {optIndex + 1}
-                              </span>
-                              <input
-                                type="text"
-                                value={opt.text}
-                                disabled={adHocMode === "existing"}
+                          <div className="flex-1 space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">Question</label>
+                              <Input
+                                value={item.question}
                                 onChange={(e) => {
                                   const newItems = [...adHocItems];
-                                  newItems[index].options[optIndex].text = e.target.value;
+                                  newItems[index].question = e.target.value;
                                   setAdHocItems(newItems);
                                 }}
-                                className={`flex-1 px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${adHocMode === "existing" ? "bg-slate-50 text-slate-500 cursor-not-allowed" : ""}`}
+                                disabled={adHocMode === "existing"}
+                                placeholder="Enter your question..."
+                                className="border-slate-200 bg-white"
+                                data-testid={`question-${item.id}`}
                               />
-                              <select
-                                value={opt.isNormal ? "true" : "false"}
-                                disabled={adHocMode === "existing"}
-                                onChange={(e) => {
-                                  const newItems = [...adHocItems];
-                                  newItems[index].options[optIndex].isNormal = e.target.value === "true";
-                                  setAdHocItems(newItems);
-                                }}
-                                className={`w-32 px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${opt.isNormal ? 'text-emerald-600 bg-emerald-50' : 'text-red-600 bg-red-50'} ${adHocMode === "existing" ? "opacity-70 cursor-not-allowed" : ""}`}
-                              >
-                                <option value="true" className="text-emerald-600">Normal</option>
-                                <option value="false" className="text-red-600">Abnormal</option>
-                              </select>
-                              {adHocMode !== "existing" && item.options.length > 1 && (
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">Answer Type</label>
+                              <div className="flex items-center gap-3">
                                 <button
                                   onClick={() => {
+                                    if (adHocMode === "existing") return;
                                     const newItems = [...adHocItems];
-                                    newItems[index].options = item.options.filter((_: any, i: number) => i !== optIndex);
+                                    newItems[index].answerType = "multiple_choice";
+                                    if (!item.options) {
+                                      newItems[index].options = [{ text: "Option 1", isNormal: true }, { text: "Option 2", isNormal: false }];
+                                    }
                                     setAdHocItems(newItems);
                                   }}
-                                  className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50"
+                                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                    item.answerType === "multiple_choice"
+                                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                  } ${adHocMode === "existing" ? "opacity-70 cursor-not-allowed" : ""}`}
+                                  data-testid={`type-multiple-${item.id}`}
                                 >
-                                  <Trash2 className="w-4 h-4" />
+                                  <List className="w-4 h-4" />
+                                  <span className="text-sm font-medium">Multiple Choice</span>
                                 </button>
-                              )}
+                                <button
+                                  onClick={() => {
+                                    if (adHocMode === "existing") return;
+                                    const newItems = [...adHocItems];
+                                    newItems[index].answerType = "text";
+                                    setAdHocItems(newItems);
+                                  }}
+                                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                    item.answerType === "text"
+                                      ? "border-green-500 bg-green-50 text-green-700"
+                                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                  } ${adHocMode === "existing" ? "opacity-70 cursor-not-allowed" : ""}`}
+                                  data-testid={`type-text-${item.id}`}
+                                >
+                                  <MessageSquare className="w-4 h-4" />
+                                  <span className="text-sm font-medium">Text</span>
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (adHocMode === "existing") return;
+                                    const newItems = [...adHocItems];
+                                    newItems[index].answerType = "ox";
+                                    setAdHocItems(newItems);
+                                  }}
+                                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                    item.answerType === "ox"
+                                      ? "border-purple-500 bg-purple-50 text-purple-700"
+                                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                  } ${adHocMode === "existing" ? "opacity-70 cursor-not-allowed" : ""}`}
+                                  data-testid={`type-ox-${item.id}`}
+                                >
+                                  <CheckSquare className="w-4 h-4" />
+                                  <span className="text-sm font-medium">O/X</span>
+                                </button>
+                              </div>
                             </div>
-                          ))}
+
+                            {item.answerType === "multiple_choice" && item.options && (
+                              <div className="pt-4 border-t border-slate-200">
+                                <label className="block text-sm font-medium text-slate-700 mb-3">Options</label>
+                                <div className="space-y-3">
+                                  {item.options.map((opt: any, optIndex: number) => (
+                                    <div key={optIndex} className="flex items-center gap-3">
+                                      <div className="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-medium shrink-0">
+                                        {optIndex + 1}
+                                      </div>
+                                      <Input
+                                        value={opt.text}
+                                        disabled={adHocMode === "existing"}
+                                        onChange={(e) => {
+                                          const newItems = [...adHocItems];
+                                          newItems[index].options[optIndex].text = e.target.value;
+                                          setAdHocItems(newItems);
+                                        }}
+                                        placeholder={`Option ${optIndex + 1}`}
+                                        className="flex-1 border-slate-200"
+                                        data-testid={`option-${item.id}-${optIndex}`}
+                                      />
+                                      <div className="flex items-center gap-2 shrink-0">
+                                        <button
+                                          onClick={() => {
+                                            if (adHocMode === "existing") return;
+                                            const newItems = [...adHocItems];
+                                            newItems[index].options[optIndex].isNormal = true;
+                                            setAdHocItems(newItems);
+                                          }}
+                                          className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                                            opt.isNormal
+                                              ? "bg-emerald-100 text-emerald-700"
+                                              : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                                          } ${adHocMode === "existing" ? "opacity-70 cursor-not-allowed" : ""}`}
+                                          data-testid={`status-normal-${item.id}-${optIndex}`}
+                                        >
+                                          Normal
+                                        </button>
+                                        <button
+                                          onClick={() => {
+                                            if (adHocMode === "existing") return;
+                                            const newItems = [...adHocItems];
+                                            newItems[index].options[optIndex].isNormal = false;
+                                            setAdHocItems(newItems);
+                                          }}
+                                          className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                                            !opt.isNormal
+                                              ? "bg-red-100 text-red-700"
+                                              : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                                          } ${adHocMode === "existing" ? "opacity-70 cursor-not-allowed" : ""}`}
+                                          data-testid={`status-abnormal-${item.id}-${optIndex}`}
+                                        >
+                                          Abnormal
+                                        </button>
+                                      </div>
+                                      {adHocMode !== "existing" && item.options.length > 1 && (
+                                        <button
+                                          onClick={() => {
+                                            const newItems = [...adHocItems];
+                                            newItems[index].options = item.options.filter((_: any, i: number) => i !== optIndex);
+                                            setAdHocItems(newItems);
+                                          }}
+                                          className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors shrink-0"
+                                          data-testid={`remove-option-${item.id}-${optIndex}`}
+                                        >
+                                          <Trash2 className="w-4 h-4" />
+                                        </button>
+                                      )}
+                                    </div>
+                                  ))}
+                                  {adHocMode !== "existing" && (
+                                    <Button
+                                      variant="outline"
+                                      onClick={() => {
+                                        const newItems = [...adHocItems];
+                                        newItems[index].options.push({ text: `Option ${item.options.length + 1}`, isNormal: true });
+                                        setAdHocItems(newItems);
+                                      }}
+                                      className="w-full gap-2 border-dashed border-2 text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300"
+                                      data-testid={`add-option-${item.id}`}
+                                    >
+                                      <Plus className="w-4 h-4" />
+                                      Add Option
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          
                           {adHocMode !== "existing" && (
                             <button
-                              onClick={() => {
-                                const newItems = [...adHocItems];
-                                newItems[index].options.push({ text: `Option ${item.options.length + 1}`, isNormal: true });
-                                setAdHocItems(newItems);
-                              }}
-                              className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 mt-2"
+                              onClick={() => setAdHocItems(adHocItems.filter((_, i) => i !== index))}
+                              className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors shrink-0 mt-8"
+                              data-testid={`remove-item-${item.id}`}
                             >
-                              <Plus className="w-3 h-3" /> Add Option
+                              <Trash2 className="w-5 h-5" />
                             </button>
                           )}
                         </div>
-                      )}
-                    </div>
-                  ))}
+                      </motion.div>
+                    ))}
                   {adHocItems.length === 0 && adHocMode !== "custom" && (
                     <div className="text-center py-8 text-slate-500 bg-white border border-slate-200 rounded-xl border-dashed">
                       No test items.

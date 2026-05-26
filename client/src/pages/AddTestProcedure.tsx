@@ -1290,20 +1290,6 @@ export default function AddTestProcedure() {
                 
                 {templateEditMode && (
                   <div className="mb-6 bg-slate-50 rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                    <div className="p-4 border-b border-slate-200 bg-white flex items-center gap-3">
-                      <button 
-                        onClick={() => setTemplateEditMode(false)}
-                        className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
-                      >
-                        <ChevronLeft className="w-5 h-5" />
-                      </button>
-                      <div>
-                        <h3 className="text-sm font-semibold text-slate-800">
-                          {editingTemplateId ? 'Edit Template' : 'Create New Template'}
-                        </h3>
-                      </div>
-                    </div>
-                    
                     <div className="p-5">
                       <div className="mb-6">
                         <label className="block text-xs font-medium text-slate-600 mb-1.5">Template Name</label>

@@ -2171,8 +2171,16 @@ export default function TestDetail() {
                   <button
                     onClick={() => {
                       setAdHocMode("custom");
-                      setAdHocItems([]);
-                      setShowTemplateDropdown(true);
+                      const existingItems = test.items.map((i, index) => ({
+                        id: Date.now() + index,
+                        question: i.question,
+                        answerType: i.answerType,
+                        options: i.options,
+                        status: "pending",
+                        answer: ""
+                      }));
+                      setAdHocItems(existingItems);
+                      setShowTemplateDropdown(false);
                     }}
                     className={`flex flex-col items-start p-4 rounded-xl border-2 text-left transition-all ${
                       adHocMode === "custom" 
@@ -2244,16 +2252,33 @@ export default function TestDetail() {
                                 const templateId = parseInt(e.target.value);
                                 const template = templates.find(t => t.id === templateId);
                                 if (template) {
-                                  const newItems = template.items.map((i: any, index: number) => ({
-                                    id: Date.now() + index,
-                                    question: i.question,
-                                    answerType: i.answerType,
-                                    options: i.options,
-                                    status: "pending",
-                                    answer: ""
-                                  }));
-                                  setAdHocItems([...adHocItems, ...newItems]);
-                                  setShowTemplateDropdown(false);
+                                  if (adHocItems.length > 0) {
+                                    if (window.confirm("Changing the template will overwrite all current test items. Are you sure you want to proceed?")) {
+                                      const newItems = template.items.map((i: any, index: number) => ({
+                                        id: Date.now() + index,
+                                        question: i.question,
+                                        answerType: i.answerType,
+                                        options: i.options,
+                                        status: "pending",
+                                        answer: ""
+                                      }));
+                                      setAdHocItems(newItems);
+                                      setShowTemplateDropdown(false);
+                                    } else {
+                                      e.target.value = "";
+                                    }
+                                  } else {
+                                    const newItems = template.items.map((i: any, index: number) => ({
+                                      id: Date.now() + index,
+                                      question: i.question,
+                                      answerType: i.answerType,
+                                      options: i.options,
+                                      status: "pending",
+                                      answer: ""
+                                    }));
+                                    setAdHocItems(newItems);
+                                    setShowTemplateDropdown(false);
+                                  }
                                 }
                               }}
                             >

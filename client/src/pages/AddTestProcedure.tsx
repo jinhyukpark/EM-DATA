@@ -218,7 +218,7 @@ export default function AddTestProcedure() {
 
   // Template state
   const [templates, setTemplates] = useState<{id: number; name: string; isDefault: boolean; items: TestItem[]}[]>([
-    { id: 1, name: "Basic QA Check", isDefault: true, items: [
+    { id: 1, name: "Basic QA Check", isDefault: false, items: [
       { id: 1, question: "Is the service responding correctly?", answerType: "ox", options: [] },
       { id: 2, question: "Are all endpoints accessible?", answerType: "ox", options: [] },
     ]},

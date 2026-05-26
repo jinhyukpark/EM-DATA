@@ -2232,47 +2232,53 @@ export default function TestDetail() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-base font-semibold text-slate-800">Test Items</h4>
-                  </div>
-
                   {adHocMode === "custom" && (
-                    <div className="flex flex-col gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl mb-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-slate-600">Templates:</span>
+                    <div className="flex items-center justify-between mb-6">
+                      <h4 className="text-lg font-semibold text-slate-800">Test Items</h4>
+                      <div className="flex gap-2">
                         {showTemplateDropdown ? (
-                          <select
-                            className="flex-1 max-w-[250px] px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) => {
-                              const templateId = parseInt(e.target.value);
-                              const template = templates.find(t => t.id === templateId);
-                              if (template) {
-                                const newItems = template.items.map((i: any, index: number) => ({
-                                  id: Date.now() + index,
-                                  question: i.question,
-                                  answerType: i.answerType,
-                                  options: i.options,
-                                  status: "pending",
-                                  answer: ""
-                                }));
-                                setAdHocItems([...adHocItems, ...newItems]);
-                                setShowTemplateDropdown(false);
-                              }
-                            }}
-                          >
-                            <option value="">Select a template...</option>
-                            {templates.map(t => (
-                              <option key={t.id} value={t.id}>{t.name}</option>
-                            ))}
-                          </select>
+                          <div className="flex items-center gap-2">
+                            <select
+                              className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[200px]"
+                              onChange={(e) => {
+                                const templateId = parseInt(e.target.value);
+                                const template = templates.find(t => t.id === templateId);
+                                if (template) {
+                                  const newItems = template.items.map((i: any, index: number) => ({
+                                    id: Date.now() + index,
+                                    question: i.question,
+                                    answerType: i.answerType,
+                                    options: i.options,
+                                    status: "pending",
+                                    answer: ""
+                                  }));
+                                  setAdHocItems([...adHocItems, ...newItems]);
+                                  setShowTemplateDropdown(false);
+                                }
+                              }}
+                            >
+                              <option value="">Select a template...</option>
+                              {templates.map(t => (
+                                <option key={t.id} value={t.id}>{t.name}</option>
+                              ))}
+                            </select>
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              onClick={() => setShowTemplateDropdown(false)}
+                              className="h-9 w-9 text-slate-400 hover:text-slate-600"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
                         ) : (
                           <Button 
                             onClick={() => setShowTemplateDropdown(true)}
                             variant="outline" 
-                            className="gap-2 border-slate-200 text-slate-600 hover:bg-slate-100 bg-white"
+                            className="gap-2 border-slate-200 text-slate-600 hover:bg-slate-50"
                           >
                             <Copy className="w-4 h-4" />
-                            Load from Template
+                            Load Template
                           </Button>
                         )}
                         <Button 
@@ -2298,12 +2304,26 @@ export default function TestDetail() {
                             }
                           }}
                           variant="outline" 
-                          className="gap-2 border-emerald-200 text-emerald-600 hover:bg-emerald-50 bg-white"
+                          className="gap-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-blue-600"
+                          disabled={adHocItems.length === 0}
                         >
                           <Save className="w-4 h-4" />
                           Save to Template
                         </Button>
+                        <Button 
+                          onClick={() => setAdHocItems([...adHocItems, { id: Date.now(), question: "", answerType: "text", status: "pending", answer: "" }])}
+                          className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Test Item
+                        </Button>
                       </div>
+                    </div>
+                  )}
+
+                  {adHocMode !== "custom" && (
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-base font-semibold text-slate-800">Test Items</h4>
                     </div>
                   )}
                   
@@ -2400,6 +2420,18 @@ export default function TestDetail() {
                                 </button>
                               </div>
                             </div>
+                            {item.answerType === "ox" && (
+                              <div className="flex items-center gap-6 bg-slate-50 border border-slate-200 rounded-lg p-4 mt-4">
+                                <div className="flex items-center gap-2">
+                                  <span className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold">O</span>
+                                  <span className="text-sm text-slate-600">Pass / Yes</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-sm font-bold">X</span>
+                                  <span className="text-sm text-slate-600">Fail / No</span>
+                                </div>
+                              </div>
+                            )}
 
                             {item.answerType === "multiple_choice" && item.options && (
                               <div className="pt-4 border-t border-slate-200">
@@ -2508,14 +2540,18 @@ export default function TestDetail() {
                       No test items.
                     </div>
                   )}
-                  {adHocMode === "custom" && (
-                    <button 
-                      onClick={() => setAdHocItems([...adHocItems, { id: Date.now(), question: "", answerType: "text", status: "pending", answer: "" }])}
-                      className="w-full flex items-center justify-center py-6 border-dashed border-2 border-slate-300 rounded-xl text-slate-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-colors bg-white font-medium"
-                    >
-                      <Plus className="w-5 h-5 mr-2" />
-                      Add Test Item
-                    </button>
+                  {adHocItems.length === 0 && adHocMode === "custom" && (
+                    <div className="text-center py-16 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                      <ClipboardCheck className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                      <p className="text-slate-600 font-medium mb-1">No test items added yet</p>
+                      <p className="text-slate-400 text-sm mb-6">
+                        Start building your custom inspection by adding test items.
+                      </p>
+                      <Button onClick={() => setAdHocItems([...adHocItems, { id: Date.now(), question: "", answerType: "text", status: "pending", answer: "" }])} variant="outline" className="gap-2 border-blue-300 text-blue-600 hover:bg-blue-50">
+                        <Plus className="w-4 h-4" />
+                        Add First Test Item
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>

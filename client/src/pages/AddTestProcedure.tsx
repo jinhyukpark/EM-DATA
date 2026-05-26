@@ -250,6 +250,39 @@ export default function AddTestProcedure() {
   const [editingTemplateId, setEditingTemplateId] = useState<number | null>(null);
   const [showUpdateAlertModal, setShowUpdateAlertModal] = useState(false);
 
+  const handleCancelEditTemplate = () => {
+    let isModified = false;
+    
+    if (editingTemplateId) {
+      const originalTemplate = templates.find(t => t.id === editingTemplateId);
+      if (originalTemplate) {
+        if (originalTemplate.name !== newTemplateName) {
+          isModified = true;
+        } else if (originalTemplate.items.length !== templateItems.length) {
+          isModified = true;
+        } else {
+          const origStr = JSON.stringify(originalTemplate.items.map(i => ({q: i.question, t: i.answerType, o: i.options})));
+          const currStr = JSON.stringify(templateItems.map(i => ({q: i.question, t: i.answerType, o: i.options})));
+          if (origStr !== currStr) {
+            isModified = true;
+          }
+        }
+      }
+    } else {
+      if (newTemplateName.trim() !== "" || templateItems.length > 0) {
+        isModified = true;
+      }
+    }
+
+    if (isModified) {
+      if (window.confirm("템플릿 수정을 취소하시겠습니까?")) {
+        setTemplateEditMode(false);
+      }
+    } else {
+      setTemplateEditMode(false);
+    }
+  };
+
   const startEditTemplate = (e: React.MouseEvent, templateId: number) => {
     e.stopPropagation();
     const template = templates.find(t => t.id === templateId);
@@ -1154,7 +1187,7 @@ export default function AddTestProcedure() {
                           <Button
                             variant="outline"
                             className="border-slate-300 text-slate-700 hover:bg-slate-100"
-                            onClick={() => setTemplateEditMode(false)}
+                            onClick={handleCancelEditTemplate}
                           >
                             Cancel
                           </Button>

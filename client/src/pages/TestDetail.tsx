@@ -1149,7 +1149,7 @@ export default function TestDetail() {
                             onClick={() => {
                               setAdHocDate(new Date().toISOString().split('T')[0]);
                               setAdHocTime("10:00");
-                              setAdHocAssignee(test.inspectors[0] || "");
+                              setAdHocAssignees(test.inspectors[0] ? [test.inspectors[0]] : []);
                               setAdHocItems(test.items.map(i => ({ ...i, answer: "", status: "pending", comment: "" })));
                               setAdHocMode("existing");
                               setAddInspectionModal(true);

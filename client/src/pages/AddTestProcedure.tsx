@@ -1281,11 +1281,9 @@ export default function AddTestProcedure() {
                       <div
                         key={template.id}
                         className={`relative p-4 pt-8 bg-white rounded-lg border-2 transition-all cursor-pointer hover:shadow-md group min-h-[100px] ${
-                          selectedTemplateId === template.id 
-                            ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200" 
-                            : template.isDefault 
-                              ? "border-blue-300 bg-blue-50/30" 
-                              : "border-slate-200 hover:border-blue-300"
+                          template.isDefault 
+                            ? "border-blue-300 bg-blue-50/30 hover:border-blue-400" 
+                            : "border-slate-200 hover:border-blue-300"
                         }`}
                         onClick={() => loadTemplate(template.id)}
                       >

@@ -371,6 +371,7 @@ export default function TestDetail() {
   const [adHocDate, setAdHocDate] = useState("");
   const [adHocTime, setAdHocTime] = useState("");
   const [adHocAssignees, setAdHocAssignees] = useState<string[]>([]);
+  const [assigneeDropdownOpen, setAssigneeDropdownOpen] = useState(false);
   const [adHocItems, setAdHocItems] = useState<any[]>([]);
   const [adHocMode, setAdHocMode] = useState<"existing" | "custom">("existing");
   const [adHocTimeType, setAdHocTimeType] = useState<"anytime" | "custom">("anytime");
@@ -2208,29 +2209,43 @@ export default function TestDetail() {
               
               <div className="p-6 overflow-y-auto flex-1 bg-slate-50/50">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  <div>
+                  <div className="relative">
                     <label className="block text-sm font-medium text-slate-700 mb-2">Assignees</label>
-                    <div className="flex flex-wrap gap-2">
-                      {test.inspectors.map((inspector) => (
-                        <button
-                          key={inspector}
-                          onClick={() => {
-                            if (adHocAssignees.includes(inspector)) {
-                              setAdHocAssignees(adHocAssignees.filter(a => a !== inspector));
-                            } else {
-                              setAdHocAssignees([...adHocAssignees, inspector]);
-                            }
-                          }}
-                          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${
-                            adHocAssignees.includes(inspector)
-                              ? "bg-blue-50 border-blue-200 text-blue-700"
-                              : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-                          }`}
-                        >
-                          {inspector}
-                        </button>
-                      ))}
+                    <div 
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 bg-white focus-within:ring-2 focus-within:ring-blue-500 cursor-pointer min-h-[42px] flex items-center justify-between"
+                      onClick={() => setAssigneeDropdownOpen(!assigneeDropdownOpen)}
+                    >
+                      <span className={adHocAssignees.length === 0 ? "text-slate-400" : ""}>
+                        {adHocAssignees.length > 0 ? adHocAssignees.join(", ") : "Select assignees..."}
+                      </span>
+                      <ChevronDown className="w-4 h-4 text-slate-400" />
                     </div>
+                    
+                    {assigneeDropdownOpen && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-50 py-1 max-h-60 overflow-y-auto">
+                        {test.inspectors.map((inspector) => (
+                          <label 
+                            key={inspector} 
+                            className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <input
+                              type="checkbox"
+                              className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                              checked={adHocAssignees.includes(inspector)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setAdHocAssignees([...adHocAssignees, inspector]);
+                                } else {
+                                  setAdHocAssignees(adHocAssignees.filter(a => a !== inspector));
+                                }
+                              }}
+                            />
+                            <span className="text-slate-700 text-sm font-medium">{inspector}</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
